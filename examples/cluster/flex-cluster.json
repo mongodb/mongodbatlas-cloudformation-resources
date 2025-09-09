@@ -1,0 +1,181 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a flex cluster using the MongoDB::Atlas::Cluster resource. This will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project"
+    },
+    "ClusterName": {
+      "Type": "String",
+      "Description": "Name to use for your Atlas Flex Cluster"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys",
+      "Default": "default"
+    },
+    "BackingProviderName": {
+      "Type": "String",
+      "Description": "Cloud service provider on which MongoDB Cloud provisioned the flex cluster",
+      "Default": "AWS",
+      "AllowedValues": [
+        "AWS",
+        "GCP",
+        "AZURE"
+      ]
+    },
+    "RegionName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the region for the flex cluster",
+      "Default": "US_EAST_1"
+    },
+    "TerminationProtectionEnabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether termination protection is enabled on the cluster",
+      "Default": "false",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    }
+  },
+  "Conditions": {
+    "IsTerminationProtectionEnabled": {
+      "Fn::Equals": [
+        {
+          "Ref": "TerminationProtectionEnabled"
+        },
+        "true"
+      ]
+    }
+  },
+  "Resources": {
+    "AtlasFlexCluster": {
+      "Type": "MongoDB::Atlas::Cluster",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Name": {
+          "Ref": "ClusterName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ClusterType": "REPLICASET",
+        "TerminationProtectionEnabled": {
+          "Fn::If": [
+            "IsTerminationProtectionEnabled",
+            true,
+            false
+          ]
+        },
+        "ReplicationSpecs": [
+          {
+            "AdvancedRegionConfigs": [
+              {
+                "ProviderName": "FLEX",
+                "RegionName": {
+                  "Ref": "RegionName"
+                },
+                "BackingProviderName": {
+                  "Ref": "BackingProviderName"
+                },
+                "Priority": 7
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "FlexClusterId": {
+      "Description": "Unique identifier of the flex cluster",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ClusterId"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "Id"
+        ]
+      }
+    },
+    "FlexClusterState": {
+      "Description": "Current state of the flex cluster",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "StateName"
+        ]
+      }
+    },
+    "FlexClusterType": {
+      "Description": "Flex cluster topology",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "ClusterType"
+        ]
+      }
+    },
+    "MongoDBVersion": {
+      "Description": "Version of MongoDB that the flex cluster runs",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "MongoDBVersion"
+        ]
+      }
+    },
+    "CreateDate": {
+      "Description": "Date and time when the flex cluster was created",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "CreatedDate"
+        ]
+      }
+    },
+    "VersionReleaseSystem": {
+      "Description": "Method by which the cluster maintains MongoDB versions",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "VersionReleaseSystem"
+        ]
+      }
+    },
+    "ConnectionStringStandard": {
+      "Description": "Public connection string using mongodb:// protocol",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "ConnectionStrings.Standard"
+        ]
+      }
+    },
+    "ConnectionStringStandardSrv": {
+      "Description": "Public connection string using mongodb+srv:// protocol",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "ConnectionStrings.StandardSrv"
+        ]
+      }
+    },
+    "BackupEnabled": {
+      "Description": "Flag indicating whether backups are enabled",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "BackupEnabled"
+        ]
+      }
+    }
+  }
+}

@@ -25,7 +25,7 @@ const (
 	flexProvider    = "FLEX"
 )
 
-// clusterToFlexModel transforms a Cluster Model to a FlexCluster Model representation.
+// clusterToFlexModel transforms a cluster model to a flex cluster model representation.
 // Returns nil if the cluster is not a flex cluster.
 func clusterToFlexModel(c *Model) *flex.Model {
 	if len(c.ReplicationSpecs) != 1 || len(c.ReplicationSpecs[0].AdvancedRegionConfigs) != 1 {
@@ -123,11 +123,11 @@ func fillModelForFlex(pe *handler.ProgressEvent, c *Model) {
 			BackingProviderName: f.ProviderSettings.BackingProviderName,
 			RegionName:          f.ProviderSettings.RegionName,
 			ProviderName:        f.ProviderSettings.ProviderName,
-			Priority:            util.Pointer(defaultPriority), // Default priority for flex clusters
+			Priority:            util.Pointer(defaultPriority),
 		}
 		replicationSpec := AdvancedReplicationSpec{
 			AdvancedRegionConfigs: []AdvancedRegionConfig{regionConfig},
-			ZoneName:              util.Pointer(defaultZoneName), // Default zone name
+			ZoneName:              util.Pointer(defaultZoneName),
 		}
 		c.ReplicationSpecs = []AdvancedReplicationSpec{replicationSpec}
 	} else {

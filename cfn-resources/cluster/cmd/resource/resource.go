@@ -84,6 +84,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if setupErr != nil {
 		return *setupErr, nil
 	}
+	if flexModel := clusterToFlexModel(currentModel); flexModel != nil {
+		pe := flex.HandleRead(&req, client, flexModel)
+		fillModelForFlex(&pe, currentModel)
+		return pe, nil
+	}
 	model, resp, err := readCluster(context.Background(), client, currentModel)
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe, nil
@@ -100,6 +105,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
+	}
+	if flexModel := clusterToFlexModel(currentModel); flexModel != nil {
+		pe := flex.HandleUpdate(&req, client, flexModel)
+		fillModelForFlex(&pe, currentModel)
+		return pe, nil
 	}
 	if util.IsCallback(&req) {
 		return updateClusterCallback(client, currentModel, *currentModel.ProjectId)

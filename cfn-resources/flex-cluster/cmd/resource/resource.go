@@ -49,16 +49,7 @@ func Read(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
-	if pe := util.HandleClusterError(err, resp); pe != nil {
-		return *pe, nil
-	}
-	updateModel(model, flexResp)
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         constants.ReadComplete,
-		ResourceModel:   model,
-	}, nil
+	return HandleRead(&req, client, model), nil
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -67,18 +58,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if util.IsCallback(&req) {
-		return validateProgress(client, model, false), nil
-	}
-	updateReq := &admin.FlexClusterDescriptionUpdate20241113{
-		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
-		Tags:                         expandTags(model.Tags),
-	}
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.UpdateFlexCluster(context.Background(), *model.ProjectId, *model.Name, updateReq).Execute()
-	if pe := util.HandleClusterError(err, resp); pe != nil {
-		return *pe, nil
-	}
-	return inProgressEvent(model, flexResp), nil
+	return HandleUpdate(&req, client, model), nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.

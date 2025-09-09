@@ -19,6 +19,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"go.mongodb.org/atlas-sdk/v20250312006/admin"
 )
 
@@ -36,6 +37,34 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		Tags:                         expandTags(model.Tags),
 	}
 	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), *model.ProjectId, flexReq).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe
+	}
+	return inProgressEvent(model, flexResp)
+}
+
+func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
+	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe
+	}
+	updateModel(model, flexResp)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         constants.ReadComplete,
+		ResourceModel:   model,
+	}
+}
+
+func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
+	if util.IsCallback(req) {
+		return validateProgress(client, model, false)
+	}
+	updateReq := &admin.FlexClusterDescriptionUpdate20241113{
+		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
+		Tags:                         expandTags(model.Tags),
+	}
+	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.UpdateFlexCluster(context.Background(), *model.ProjectId, *model.Name, updateReq).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}

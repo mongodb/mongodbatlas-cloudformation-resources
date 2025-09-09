@@ -129,6 +129,7 @@ func (c *localTestContext) setUp(t *testing.T) {
 
 func testCreateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
+	t.Logf("Creating stack with template:\n%s", c.template)
 
 	output := utility.CreateStack(t, c.cfnClient, stackName, c.template)
 	clusterID := getClusterIDFromStack(output)
@@ -229,6 +230,8 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 
 	c.template, c.err = newCFNTemplate(c.clusterTmplObj)
 	utility.FailNowIfError(t, "Error while reading CFN Template: %v", c.err)
+	t.Logf("Test setup complete. ProjectID: %s, ClusterName: %s, FlexClusterName: %s",
+		c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name, c.clusterTmplObj.FlexName)
 }
 
 func newCFNTemplate(tmpl testCluster) (string, error) {

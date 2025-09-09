@@ -36,8 +36,6 @@ fi
 
 echo "Check if a project is created $projectId"
 
-region="us-east-1"
-
 clusterName="${projectName}"
 
 WORDTOREMOVE="template."

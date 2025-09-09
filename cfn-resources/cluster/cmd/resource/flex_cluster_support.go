@@ -128,3 +128,17 @@ func fillModelForFlex(pe *handler.ProgressEvent, c *Model) {
 		c.ReplicationSpecs = nil
 	}
 }
+
+// fillModelForFlexList update the cluster list with flex clusters.
+func fillModelForFlexList(pe *handler.ProgressEvent, clusters []*Model) []*Model {
+	if pe.ResourceModel == nil {
+		return clusters
+	}
+	list := pe.ResourceModel.([]*flex.Model) // will panic if not a flex model array
+	for _, f := range list {
+		c := &Model{}
+		fillModelForFlex(&handler.ProgressEvent{ResourceModel: f}, c)
+		clusters = append(clusters, c)
+	}
+	return clusters
+}

@@ -76,35 +76,7 @@ func List(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	var allModels []*Model
-	const itemsPerPage = 100
-	for pageNum := 1; ; pageNum++ {
-		listOptions := &admin.ListFlexClustersApiParams{
-			GroupId:      *model.ProjectId,
-			ItemsPerPage: admin.PtrInt(itemsPerPage),
-			PageNum:      admin.PtrInt(pageNum),
-			IncludeCount: admin.PtrBool(true),
-		}
-		flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
-		if pe := util.HandleClusterError(err, resp); pe != nil {
-			return *pe, nil
-		}
-		results := flexListResp.GetResults()
-		for i := range results {
-			modelItem := &Model{}
-			updateModel(modelItem, &results[i])
-			allModels = append(allModels, modelItem)
-		}
-		if len(allModels) >= flexListResp.GetTotalCount() || len(results) < itemsPerPage {
-			break
-		}
-	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         constants.Complete,
-		ResourceModel:   allModels,
-	}, nil
+	return HandleList(&req, client, model), nil
 }
 
 func setupRequest(req handler.Request, model *Model, requiredFields []string) (*util.MongoDBClient, *handler.ProgressEvent) {

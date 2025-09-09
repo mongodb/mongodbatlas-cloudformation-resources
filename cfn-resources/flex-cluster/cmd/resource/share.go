@@ -81,3 +81,34 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 	}
 	return inProgressEvent(model, nil)
 }
+
+func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
+	var allModels []*Model
+	const itemsPerPage = 100
+	for pageNum := 1; ; pageNum++ {
+		listOptions := &admin.ListFlexClustersApiParams{
+			GroupId:      *model.ProjectId,
+			ItemsPerPage: admin.PtrInt(itemsPerPage),
+			PageNum:      admin.PtrInt(pageNum),
+			IncludeCount: admin.PtrBool(true),
+		}
+		flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return *pe
+		}
+		results := flexListResp.GetResults()
+		for i := range results {
+			modelItem := &Model{}
+			updateModel(modelItem, &results[i])
+			allModels = append(allModels, modelItem)
+		}
+		if len(allModels) >= flexListResp.GetTotalCount() || len(results) < itemsPerPage {
+			break
+		}
+	}
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         constants.Complete,
+		ResourceModel:   allModels,
+	}
+}

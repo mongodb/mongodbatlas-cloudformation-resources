@@ -218,6 +218,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 	}
 
+	// Get flex clusters and append them to the models list
+	flexModel := &flex.Model{ProjectId: currentModel.ProjectId}
+	pe := flex.HandleList(&req, client, flexModel)
+	models = fillModelForFlexList(&pe, models)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List",

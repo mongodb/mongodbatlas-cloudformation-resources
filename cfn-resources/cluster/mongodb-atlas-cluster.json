@@ -60,7 +60,8 @@
             "AWS",
             "GCP",
             "AZURE",
-            "TENANT"
+            "TENANT",
+            "FLEX"
           ]
         },
         "AnalyticsSpecs": {

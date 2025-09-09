@@ -301,6 +301,10 @@
           "description": "Variable that belongs to the set of the tag. For example, production in the environment : production tag."
         }
       },
+      "required": [
+        "Key",
+        "Value"
+      ],
       "additionalProperties": false
     }
   },

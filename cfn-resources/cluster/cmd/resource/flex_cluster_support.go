@@ -64,13 +64,11 @@ func clusterToFlexModel(c *Model) *flex.Model {
 			StandardSrv: c.ConnectionStrings.StandardSrv,
 		}
 	}
-	if len(c.Tags) > 0 {
-		f.Tags = make([]flex.Tag, len(c.Tags))
-		for i, tag := range c.Tags {
-			f.Tags[i] = flex.Tag{
-				Key:   tag.Key,
-				Value: tag.Value,
-			}
+	f.Tags = make([]flex.Tag, len(c.Tags))
+	for i, tag := range c.Tags {
+		f.Tags[i] = flex.Tag{
+			Key:   tag.Key,
+			Value: tag.Value,
 		}
 	}
 	return f
@@ -107,16 +105,12 @@ func fillModelForFlex(pe *handler.ProgressEvent, c *Model) {
 	} else {
 		c.ConnectionStrings = nil
 	}
-	if len(f.Tags) > 0 {
-		c.Tags = make([]Tag, len(f.Tags))
-		for i, tag := range f.Tags {
-			c.Tags[i] = Tag{
-				Key:   tag.Key,
-				Value: tag.Value,
-			}
+	c.Tags = make([]Tag, len(f.Tags))
+	for i, tag := range f.Tags {
+		c.Tags[i] = Tag{
+			Key:   tag.Key,
+			Value: tag.Value,
 		}
-	} else {
-		c.Tags = nil
 	}
 	if f.ProviderSettings != nil {
 		regionConfig := AdvancedRegionConfig{

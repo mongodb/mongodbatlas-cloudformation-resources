@@ -55,7 +55,7 @@
                 "RegionName": "US_EAST_1",
                 "BackingProviderName": "AWS",
                 "ProviderName": "FLEX",
-                "Priority": 7,
+                "Priority": 7
               }
             ]
           }

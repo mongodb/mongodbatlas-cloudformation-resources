@@ -168,30 +168,39 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *setupErr, nil
 	}
 
-	listOptions := &admin20231115014.ListClustersApiParams{
-		ItemsPerPage: admin20231115014.PtrInt(100),
-		PageNum:      admin20231115014.PtrInt(1),
-		GroupId:      *currentModel.ProjectId,
-		IncludeCount: admin20231115014.PtrBool(true),
-	}
-
-	clustersResponse, res, err := client.Atlas20231115014.ClustersApi.ListClustersWithParams(context.Background(), listOptions).Execute()
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-			res), nil
-	}
-	models := make([]*Model, *clustersResponse.TotalCount)
-	clusterResults := clustersResponse.GetResults()
-	for i := range clusterResults {
-		model := &Model{}
-		mapClusterToModel(model, &clusterResults[i])
-
-		processArgs, resp, err := client.Atlas20231115014.ClustersApi.GetClusterAdvancedConfiguration(context.Background(), *model.ProjectId, *model.Name).Execute()
-		if pe := util.HandleClusterError(err, resp); pe != nil {
-			return *pe, nil
+	var models []*Model
+	const itemsPerPage = 100
+	for pageNum := 1; ; pageNum++ {
+		listOptions := &admin20231115014.ListClustersApiParams{
+			ItemsPerPage: admin20231115014.PtrInt(itemsPerPage),
+			PageNum:      admin20231115014.PtrInt(pageNum),
+			GroupId:      *currentModel.ProjectId,
+			IncludeCount: admin20231115014.PtrBool(true),
 		}
-		model.AdvancedSettings = flattenProcessArgs(processArgs, &clusterResults[i])
-		models[i] = model
+
+		clustersResponse, res, err := client.Atlas20231115014.ClustersApi.ListClustersWithParams(context.Background(), listOptions).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error listing resources : %s", err.Error()),
+				res), nil
+		}
+
+		clusterResults := clustersResponse.GetResults()
+		for i := range clusterResults {
+			model := &Model{}
+			mapClusterToModel(model, &clusterResults[i])
+
+			processArgs, resp, err := client.Atlas20231115014.ClustersApi.GetClusterAdvancedConfiguration(context.Background(), *model.ProjectId, *model.Name).Execute()
+			if pe := util.HandleClusterError(err, resp); pe != nil {
+				return *pe, nil
+			}
+			model.AdvancedSettings = flattenProcessArgs(processArgs, &clusterResults[i])
+			models = append(models, model)
+		}
+
+		// Check if we've retrieved all clusters or if the current page has fewer items than requested
+		if len(models) >= clustersResponse.GetTotalCount() || len(clusterResults) < itemsPerPage {
+			break
+		}
 	}
 
 	return handler.ProgressEvent{

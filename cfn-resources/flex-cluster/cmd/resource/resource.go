@@ -32,13 +32,7 @@ var (
 	createRequiredFields           = []string{constants.ProjectID, constants.Name, "ProviderSettings"}
 	readUpdateDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
 	listRequiredFields             = []string{constants.ProjectID}
-	callbackContext                = map[string]any{"callback": true}
 )
-
-func isCallback(req *handler.Request) bool {
-	_, found := req.CallbackContext["callback"]
-	return found
-}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
@@ -46,7 +40,7 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if isCallback(&req) {
+	if util.IsCallback(&req) {
 		return validateProgress(client, model, false), nil
 	}
 	flexResp, pe := util.CreateFlexCluster(client, *model.ProjectId, *model.Name, *model.ProviderSettings.BackingProviderName, *model.ProviderSettings.RegionName, model.TerminationProtectionEnabled, expandTags(model.Tags))
@@ -80,7 +74,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if isCallback(&req) {
+	if util.IsCallback(&req) {
 		return validateProgress(client, model, false), nil
 	}
 	updateReq := &admin.FlexClusterDescriptionUpdate20241113{
@@ -100,7 +94,7 @@ func Delete(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if isCallback(&req) {
+	if util.IsCallback(&req) {
 		return validateProgress(client, model, true), nil
 	}
 	resp, err := client.AtlasSDK.FlexClustersApi.DeleteFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
@@ -225,7 +219,7 @@ func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription2024111
 		Message:              constants.Pending,
 		ResourceModel:        model,
 		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext:      callbackContext,
+		CallbackContext:      util.CallbackContext,
 	}
 }
 

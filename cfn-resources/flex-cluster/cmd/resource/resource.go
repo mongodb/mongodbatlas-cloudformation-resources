@@ -43,7 +43,7 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if util.IsCallback(&req) {
 		return validateProgress(client, model, false), nil
 	}
-	flexResp, pe := util.CreateFlexCluster(client, *model.ProjectId, *model.Name, *model.ProviderSettings.BackingProviderName, *model.ProviderSettings.RegionName, model.TerminationProtectionEnabled, expandTags(model.Tags))
+	flexResp, pe := CreateFlexCluster(client, model)
 	if pe != nil {
 		return *pe, nil
 	}

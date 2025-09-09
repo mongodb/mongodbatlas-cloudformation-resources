@@ -15,7 +15,6 @@
 package util
 
 import (
-	"context"
 	"net/http"
 	"strings"
 
@@ -23,7 +22,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20250312006/admin"
 )
 
 var CallbackContext = map[string]any{"callback": true}
@@ -49,19 +47,4 @@ func HandleClusterError(err error, resp *http.Response) *handler.ProgressEvent {
 		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeNotFound
 	}
 	return &pe
-}
-
-// CreateFlexCluster calls Atlas API to create a flex cluster.
-func CreateFlexCluster(client *MongoDBClient, projectID, name string, backingProvider, region string, terminationProtection *bool, tags *[]admin.ResourceTag) (*admin.FlexClusterDescription20241113, *handler.ProgressEvent) {
-	flexReq := &admin.FlexClusterDescriptionCreate20241113{
-		Name: name,
-		ProviderSettings: admin.FlexProviderSettingsCreate20241113{
-			BackingProviderName: backingProvider,
-			RegionName:          region,
-		},
-		TerminationProtectionEnabled: terminationProtection,
-		Tags:                         tags,
-	}
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), projectID, flexReq).Execute()
-	return flexResp, HandleClusterError(err, resp)
 }

@@ -1,0 +1,18 @@
+{
+  "ProjectId": "",
+  "Name": "",
+  "Profile": "default",
+  "ClusterType": "REPLICASET",
+  "ReplicationSpecs": [
+    {
+      "AdvancedRegionConfigs": [
+        {
+          "RegionName": "US_EAST_1",
+          "ProviderName": "FLEX",
+          "BackingProviderName": "AWS",
+          "Priority": "7"
+        }
+      ]
+    }
+  ]
+}

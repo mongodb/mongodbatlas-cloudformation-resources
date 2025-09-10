@@ -17,6 +17,7 @@ package utility
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -63,6 +64,38 @@ func createStackAndWait(client *cfn.Client, name, stackBody string) (*cfn.Descri
 	return describeStackOutput, nil
 }
 
+// getStackEventsString returns the events to help debug E2E failures.
+func getStackEventsString(svc *cfn.Client, stackID string) string {
+	eventsInput := &cfn.DescribeStackEventsInput{
+		StackName: aws.String(stackID),
+	}
+	eventsResp, err := svc.DescribeStackEvents(context.Background(), eventsInput)
+	if err != nil {
+		return fmt.Sprintf("Failed to get stack events: %v", err)
+	}
+	var eventsStr strings.Builder
+	// Show up to 20 most recent events, focusing on failures
+	count := 0
+	events := eventsResp.StackEvents
+	for i := range events {
+		event := &events[i]
+		if count >= 20 {
+			break
+		}
+		status := string(event.ResourceStatus)
+		if strings.Contains(status, "FAILED") || strings.Contains(status, "ROLLBACK") {
+			eventsStr.WriteString(fmt.Sprintf("[%s] %s - %s: %s - %s\n",
+				event.Timestamp.Format("15:04:05"),
+				util.SafeString(event.LogicalResourceId),
+				util.SafeString(event.ResourceType),
+				status,
+				util.SafeString(event.ResourceStatusReason)))
+			count++
+		}
+	}
+	return eventsStr.String()
+}
+
 func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeStacksOutput, error) {
 	req := cfn.DescribeStacksInput{
 		StackName: aws.String(stackID),
@@ -80,7 +113,8 @@ func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		case "CREATE_COMPLETE":
 			return resp, nil
 		case "CREATE_FAILED", "ROLLBACK_COMPLETE":
-			return nil, fmt.Errorf("stack status: %s : %s", statusStr, util.SafeString(resp.Stacks[0].StackStatusReason))
+			eventsStr := getStackEventsString(svc, stackID)
+			return nil, fmt.Errorf("stack status: %s : %s\nStack Events:\n%s", statusStr, util.SafeString(resp.Stacks[0].StackStatusReason), eventsStr)
 		}
 		time.Sleep(stackStatusWait)
 	}

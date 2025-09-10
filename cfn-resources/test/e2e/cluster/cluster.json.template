@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a global GEOSHARDED cluster",
+  "Description": "This template creates a global GEOSHARDED cluster and a FLEX cluster",
   "Mappings": {},
   "Resources": {
     "Cluster": {
@@ -40,10 +40,37 @@
           }
         ]
       }
+    },
+    "FlexCluster": {
+      "Type": "{{ .ResourceTypeName }}",
+      "Properties": {
+        "Name": "{{ .FlexName }}",
+        "ProjectId": "{{ .ProjectID }}",
+        "Profile": "{{ .Profile }}",
+        "ClusterType": "REPLICASET",
+        "ReplicationSpecs": [
+          {
+            "AdvancedRegionConfigs": [
+              {
+                "RegionName": "US_EAST_1",
+                "BackingProviderName": "AWS",
+                "ProviderName": "FLEX",
+                "Priority": 7
+              }
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "env",
+            "Value": "flex-development"
+          }
+        ]
+      }
     }
   },
   "Outputs": {
-   "MongoDBAtlasConnectionStrings": {
+    "MongoDBAtlasConnectionStrings": {
       "Description": "Cluster connection strings",
       "Export": {
         "Name": {
@@ -68,6 +95,43 @@
         "Fn::GetAtt": [
           "Cluster",
           "Id"
+        ]
+      }
+    },
+    "MongoDBAtlasFlexClusterID": {
+      "Description": "Flex Cluster Id",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-FlexID"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "FlexCluster",
+          "Id"
+        ]
+      }
+    },
+    "MongoDBAtlasFlexClusterConnectionStrings": {
+      "Description": "Flex Cluster connection strings",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-FlexConnectionStrings"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "FlexCluster",
+          "ConnectionStrings.Standard"
+        ]
+      }
+    },
+    "MongoDBAtlasFlexClusterStateName": {
+      "Description": "Flex Cluster State",
+      "Value": {
+        "Fn::GetAtt": [
+          "FlexCluster",
+          "StateName"
         ]
       }
     }

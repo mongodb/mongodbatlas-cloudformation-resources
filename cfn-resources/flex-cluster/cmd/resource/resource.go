@@ -17,12 +17,9 @@ package resource
 import (
 	"context"
 	"net/http"
-	"strings"
 
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -35,13 +32,7 @@ var (
 	createRequiredFields           = []string{constants.ProjectID, constants.Name, "ProviderSettings"}
 	readUpdateDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
 	listRequiredFields             = []string{constants.ProjectID}
-	callbackContext                = map[string]any{"callback": true}
 )
-
-func isCallback(req *handler.Request) bool {
-	_, found := req.CallbackContext["callback"]
-	return found
-}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
@@ -49,23 +40,7 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if isCallback(&req) {
-		return validateProgress(client, model, false), nil
-	}
-	flexReq := &admin.FlexClusterDescriptionCreate20241113{
-		Name: *model.Name,
-		ProviderSettings: admin.FlexProviderSettingsCreate20241113{
-			BackingProviderName: *model.ProviderSettings.BackingProviderName,
-			RegionName:          *model.ProviderSettings.RegionName,
-		},
-		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
-		Tags:                         expandTags(model.Tags),
-	}
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), *model.ProjectId, flexReq).Execute()
-	if pe := handleError(err, resp); pe != nil {
-		return *pe, nil
-	}
-	return inProgressEvent(model, flexResp), nil
+	return HandleCreate(&req, client, model), nil
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -74,16 +49,7 @@ func Read(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
-	if pe := handleError(err, resp); pe != nil {
-		return *pe, nil
-	}
-	updateModel(model, flexResp)
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         constants.ReadComplete,
-		ResourceModel:   model,
-	}, nil
+	return HandleRead(&req, client, model), nil
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -92,18 +58,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if isCallback(&req) {
-		return validateProgress(client, model, false), nil
-	}
-	updateReq := &admin.FlexClusterDescriptionUpdate20241113{
-		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
-		Tags:                         expandTags(model.Tags),
-	}
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.UpdateFlexCluster(context.Background(), *model.ProjectId, *model.Name, updateReq).Execute()
-	if pe := handleError(err, resp); pe != nil {
-		return *pe, nil
-	}
-	return inProgressEvent(model, flexResp), nil
+	return HandleUpdate(&req, client, model), nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -112,14 +67,7 @@ func Delete(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if isCallback(&req) {
-		return validateProgress(client, model, true), nil
-	}
-	resp, err := client.AtlasSDK.FlexClustersApi.DeleteFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
-	if pe := handleError(err, resp); pe != nil {
-		return *pe, nil
-	}
-	return inProgressEvent(model, nil), nil
+	return HandleDelete(&req, client, model), nil
 }
 
 // List handles the List event from the Cloudformation service.
@@ -128,43 +76,13 @@ func List(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	var allModels []*Model
-	const itemsPerPage = 100
-	for pageNum := 1; ; pageNum++ {
-		listOptions := &admin.ListFlexClustersApiParams{
-			GroupId:      *model.ProjectId,
-			ItemsPerPage: admin.PtrInt(itemsPerPage),
-			PageNum:      admin.PtrInt(pageNum),
-			IncludeCount: admin.PtrBool(true),
-		}
-		flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
-		if pe := handleError(err, resp); pe != nil {
-			return *pe, nil
-		}
-		results := flexListResp.GetResults()
-		for i := range results {
-			modelItem := &Model{}
-			updateModel(modelItem, &results[i])
-			allModels = append(allModels, modelItem)
-		}
-		if len(allModels) >= flexListResp.GetTotalCount() || len(results) < itemsPerPage {
-			break
-		}
-	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         constants.Complete,
-		ResourceModel:   allModels,
-	}, nil
+	return HandleList(&req, client, model), nil
 }
 
 func setupRequest(req handler.Request, model *Model, requiredFields []string) (*util.MongoDBClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-flexcluster")
-	if requiredFields != nil {
-		if modelValidation := validator.ValidateModel(requiredFields, model); modelValidation != nil {
-			return nil, modelValidation
-		}
+	if modelValidation := validator.ValidateModel(requiredFields, model); modelValidation != nil {
+		return nil, modelValidation
 	}
 	util.SetDefaultProfileIfNotDefined(&model.Profile)
 	client, peErr := util.NewAtlasClient(&req, model.Profile)
@@ -232,23 +150,6 @@ func updateModel(model *Model, flexResp *admin.FlexClusterDescription20241113) {
 	model.Tags = flattenTags(flexResp.Tags)
 }
 
-func handleError(err error, resp *http.Response) *handler.ProgressEvent {
-	if err == nil {
-		return nil
-	}
-	pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
-	if resp != nil && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), constants.Duplicate) {
-		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeAlreadyExists
-	}
-	if resp != nil && resp.StatusCode == http.StatusNotFound {
-		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeNotFound
-	}
-	if strings.Contains(err.Error(), "not exist") || strings.Contains(err.Error(), "being deleted") {
-		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeNotFound
-	}
-	return &pe
-}
-
 func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription20241113) handler.ProgressEvent {
 	updateModel(model, flexResp)
 	return handler.ProgressEvent{
@@ -263,7 +164,7 @@ func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription2024111
 func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) handler.ProgressEvent {
 	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
 	notFound := resp != nil && resp.StatusCode == http.StatusNotFound
-	if pe := handleError(err, nil); pe != nil && !notFound {
+	if pe := util.HandleClusterError(err, nil); pe != nil && !notFound {
 		return *pe
 	}
 	state := constants.DeletedState

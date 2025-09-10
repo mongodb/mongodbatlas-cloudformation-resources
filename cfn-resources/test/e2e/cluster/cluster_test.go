@@ -19,7 +19,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cluster/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
@@ -275,8 +274,8 @@ func readFromAtlas(t *testing.T, c *localTestContext) (project *admin20231115014
 func getClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
 	for i := 0; i < len(stackOutputs); i++ {
-		if *aws.String(*stackOutputs[i].OutputKey) == "MongoDBAtlasClusterID" {
-			return *aws.String(*stackOutputs[i].OutputValue)
+		if *stackOutputs[i].OutputKey == "MongoDBAtlasClusterID" {
+			return *stackOutputs[i].OutputValue
 		}
 	}
 	return ""
@@ -285,8 +284,8 @@ func getClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 func getFlexClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
 	for i := 0; i < len(stackOutputs); i++ {
-		if *aws.String(*stackOutputs[i].OutputKey) == "MongoDBAtlasFlexClusterID" {
-			return *aws.String(*stackOutputs[i].OutputValue)
+		if *stackOutputs[i].OutputKey == "MongoDBAtlasFlexClusterID" {
+			return *stackOutputs[i].OutputValue
 		}
 	}
 	return ""

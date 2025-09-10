@@ -26,16 +26,18 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312006/admin"
 )
 
 type localTestContext struct {
-	err                 error
-	cfnClient           *cloudformation.Client
-	atlasClient         *admin20231115014.APIClient
-	resourceCtx         utility.ResourceContext
-	template            string
-	replicationIDCreate string
-	clusterTmplObj      testCluster
+	err                    error
+	cfnClient              *cloudformation.Client
+	atlasClient20231115014 *admin20231115014.APIClient
+	atlasClient            *admin.APIClient
+	resourceCtx            utility.ResourceContext
+	template               string
+	replicationIDCreate    string
+	clusterTmplObj         testCluster
 }
 
 type testCluster struct {
@@ -122,7 +124,9 @@ func setupSuite(t *testing.T) *localTestContext {
 func (c *localTestContext) setUp(t *testing.T) {
 	t.Helper()
 	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory)
-	c.cfnClient, c.atlasClient = utility.NewClients20231115014(t)
+	c.cfnClient, c.atlasClient = utility.NewClients(t)
+	_, c.atlasClient20231115014 = utility.NewClients20231115014(t)
+
 	utility.PublishToPrivateRegistry(t, c.resourceCtx)
 	c.setupPrerequisites(t)
 }
@@ -147,12 +151,8 @@ func testCreateStack(t *testing.T, c *localTestContext) {
 	a.NotEmpty(replicationSpecs[0].GetId())
 	c.replicationIDCreate = replicationSpecs[0].GetId()
 
-	flexReplicationSpecs := flexCluster.GetReplicationSpecs()
-	a.Len(flexReplicationSpecs, 1)
-	a.Len(flexReplicationSpecs[0].GetRegionConfigs(), 1)
-	flexRegionConfig := flexReplicationSpecs[0].GetRegionConfigs()[0]
-	a.Equal("FLEX", flexRegionConfig.GetProviderName())
-	a.Equal("US_EAST_1", flexRegionConfig.GetRegionName())
+	a.Equal("FLEX", flexCluster.ProviderSettings.GetProviderName())
+	a.Equal("US_EAST_1", flexCluster.ProviderSettings.GetRegionName())
 }
 
 func testUpdateStack(t *testing.T, c *localTestContext) {
@@ -182,9 +182,9 @@ func testDeleteStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.DeleteStack(t, c.cfnClient, stackName)
 	a := assert.New(t)
-	_, resp, _ := c.atlasClient.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
+	_, resp, _ := c.atlasClient20231115014.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
 	a.Equal(404, resp.StatusCode)
-	_, flexResp, _ := c.atlasClient.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.FlexName).Execute()
+	_, flexResp, _ := c.atlasClient.FlexClustersApi.GetFlexCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.FlexName).Execute()
 	a.Equal(404, flexResp.StatusCode)
 }
 
@@ -197,7 +197,7 @@ func cleanupPrerequisites(t *testing.T, c *localTestContext) {
 	t.Helper()
 	t.Log("Cleaning up prerequisites")
 	if os.Getenv("MONGODB_ATLAS_PROJECT_ID") == "" {
-		utility.DeleteProject(t, c.atlasClient, c.clusterTmplObj.ProjectID)
+		utility.DeleteProject(t, c.atlasClient20231115014, c.clusterTmplObj.ProjectID)
 	} else {
 		t.Log("skipping project deletion (project managed outside of test)")
 	}
@@ -215,7 +215,7 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 		t.Logf("using projectID from env var %s", projectIDEnvVar)
 		projectID = projectIDEnvVar
 	} else {
-		projectID = utility.CreateProject(t, c.atlasClient, orgID, testProjectName)
+		projectID = utility.CreateProject(t, c.atlasClient20231115014, orgID, testProjectName)
 	}
 
 	c.clusterTmplObj = testCluster{
@@ -254,17 +254,17 @@ func checkReplicationSpecs(a *assert.Assertions, replicationSpecs []admin2023111
 	}
 }
 
-func readFromAtlas(t *testing.T, c *localTestContext) (project *admin20231115014.Group, cluster *admin20231115014.AdvancedClusterDescription, flexCluster *admin20231115014.AdvancedClusterDescription) {
+func readFromAtlas(t *testing.T, c *localTestContext) (project *admin20231115014.Group, cluster *admin20231115014.AdvancedClusterDescription, flexCluster *admin.FlexClusterDescription20241113) {
 	t.Helper()
 	context := ctx.Background()
 	projectID := c.clusterTmplObj.ProjectID
 	var err error
 	var getProjectResponse, getClusterResponse, getFlexClusterResponse *http.Response
-	project, getProjectResponse, err = c.atlasClient.ProjectsApi.GetProject(context, projectID).Execute()
+	project, getProjectResponse, err = c.atlasClient20231115014.ProjectsApi.GetProject(context, projectID).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
-	cluster, getClusterResponse, err = c.atlasClient.ClustersApi.GetCluster(context, projectID, c.clusterTmplObj.Name).Execute()
+	cluster, getClusterResponse, err = c.atlasClient20231115014.ClustersApi.GetCluster(context, projectID, c.clusterTmplObj.Name).Execute()
 	utility.FailNowIfError(t, "Err while retrieving Cluster from Atlas: %v", err)
-	flexCluster, getFlexClusterResponse, err = c.atlasClient.ClustersApi.GetCluster(context, projectID, c.clusterTmplObj.FlexName).Execute()
+	flexCluster, getFlexClusterResponse, err = c.atlasClient.FlexClustersApi.GetFlexCluster(context, projectID, c.clusterTmplObj.FlexName).Execute()
 	utility.FailNowIfError(t, "Err while retrieving Flex Cluster from Atlas: %v", err)
 	assert.Equal(t, 200, getProjectResponse.StatusCode)
 	assert.Equal(t, 200, getClusterResponse.StatusCode)

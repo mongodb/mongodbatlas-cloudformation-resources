@@ -35,8 +35,7 @@ import (
 )
 
 const (
-	LabelError      = "you should not set `Infrastructure Tool` label, it is used for internal purposes"
-	CallBackSeconds = 40
+	callBackSeconds = 40
 )
 
 var (
@@ -79,7 +78,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create Cluster `%s`", *cluster.StateName),
 		ResourceModel:        currentModel,
-		CallbackDelaySeconds: CallBackSeconds,
+		CallbackDelaySeconds: callBackSeconds,
 		CallbackContext:      callbackContext,
 	}, nil
 }
@@ -145,7 +144,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Update Cluster %s", state),
 		ResourceModel:        model,
-		CallbackDelaySeconds: CallBackSeconds,
+		CallbackDelaySeconds: callBackSeconds,
 		CallbackContext:      callbackContext,
 	}
 	return event, nil
@@ -178,7 +177,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:      handler.InProgress,
 			Message:              constants.DeleteInProgress,
 			ResourceModel:        currentModel,
-			CallbackDelaySeconds: CallBackSeconds,
+			CallbackDelaySeconds: callBackSeconds,
 			CallbackContext:      callbackContext,
 		},
 		nil
@@ -369,7 +368,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
 		p.OperationStatus = handler.InProgress
-		p.CallbackDelaySeconds = CallBackSeconds
+		p.CallbackDelaySeconds = callBackSeconds
 		p.Message = constants.Pending
 		p.CallbackContext = callbackContext
 		return p, nil

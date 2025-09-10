@@ -1,4 +1,4 @@
-// Copyright 2023 MongoDB Inc
+// Copyright 2025 MongoDB Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,21 +38,17 @@ func clusterToFlexModelIdentifier(req *handler.Request, client *util.MongoDBClie
 		ProjectId: c.ProjectId,
 		Name:      c.Name,
 	}
-	if flex.IsCallback(req) {
-		return f
-	}
 	if isCallback(req) {
-		return nil
+		return nil // cluster operation in progress
+	}
+	if flex.IsCallback(req) {
+		return f // flex operation in progress
 	}
 	_, _, errCluster := client.AtlasSDK.ClustersApi.GetCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
 	if errCluster != nil && strings.Contains(errCluster.Error(), "CANNOT_USE_FLEX_CLUSTER_IN_CLUSTER_API") {
 		return f
 	}
-	_, _, errFlex := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
-	if errFlex == nil {
-		return f
-	}
-	return nil // not a flex cluster
+	return nil
 }
 
 // clusterToFlexModelFull transforms a cluster model to a flex cluster model representation.

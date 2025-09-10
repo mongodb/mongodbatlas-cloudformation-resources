@@ -40,7 +40,7 @@ const (
 
 var (
 	defaultLabel                         = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas CloudFormation Provider")}
-	createReadUpdareDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
+	createReadUpdateDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
 	listRequiredFields                   = []string{constants.ProjectID}
 	callbackContext                      = map[string]any{"callbackCluster": true}
 )
@@ -52,7 +52,7 @@ func isCallback(req *handler.Request) bool {
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
+	client, setupErr := setupRequest(req, currentModel, createReadUpdateDeleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
@@ -85,7 +85,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
+	client, setupErr := setupRequest(req, currentModel, createReadUpdateDeleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
@@ -107,7 +107,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
+	client, setupErr := setupRequest(req, currentModel, createReadUpdateDeleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
@@ -152,7 +152,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
+	client, setupErr := setupRequest(req, currentModel, createReadUpdateDeleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}

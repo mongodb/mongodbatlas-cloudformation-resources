@@ -27,19 +27,33 @@ const (
 	flexProvider    = "FLEX"
 )
 
-// clusterToFlexModel transforms a cluster model to a flex cluster model representation.
+// clusterToFlexModelIdentifier transforms a cluster model to a flex cluster model representation.
+// It's used for Read and Delete where only the identifier is passed (project id and cluster name).
+// As regions are not passed, Atlas calls are made to learn if it's a flex cluster.
 // Returns nil if the cluster is not a flex cluster.
-func clusterToFlexModel(client *util.MongoDBClient, c *Model) *flex.Model {
+func clusterToFlexModelIdentifier(client *util.MongoDBClient, c *Model) *flex.Model {
+	f := &flex.Model{
+		Profile:   c.Profile,
+		ProjectId: c.ProjectId,
+		Name:      c.Name,
+	}
 	_, _, errFlex := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
 	existingFlex := errFlex == nil
-	flexCandidate := len(c.ReplicationSpecs) == 1 && len(c.ReplicationSpecs[0].AdvancedRegionConfigs) == 1 && util.SafeString(c.ReplicationSpecs[0].AdvancedRegionConfigs[0].ProviderName) == flexProvider
-	if !existingFlex && !flexCandidate {
+	if !existingFlex {
 		return nil
 	}
-	firstRegion := AdvancedRegionConfig{}
-	if flexCandidate {
-		firstRegion = c.ReplicationSpecs[0].AdvancedRegionConfigs[0]
+	return f
+}
+
+// clusterToFlexModelFull transforms a cluster model to a flex cluster model representation.
+// It's used for Create and Update where the full model is passed.
+// Regions are passed so not Atlas calls are needed to learn if it's a flex cluster.
+// Returns nil if the cluster is not a flex cluster.
+func clusterToFlexModelFull(c *Model) *flex.Model {
+	if len(c.ReplicationSpecs) != 1 || len(c.ReplicationSpecs[0].AdvancedRegionConfigs) != 1 {
+		return nil
 	}
+	firstRegion := c.ReplicationSpecs[0].AdvancedRegionConfigs[0]
 	f := &flex.Model{
 		Profile:                      c.Profile,
 		ProjectId:                    c.ProjectId,

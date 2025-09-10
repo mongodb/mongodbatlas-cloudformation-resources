@@ -15,6 +15,7 @@ package resource
 
 import (
 	"context"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	flex "github.com/mongodb/mongodbatlas-cloudformation-resources/flex-cluster/cmd/resource"
@@ -37,12 +38,15 @@ func clusterToFlexModelIdentifier(client *util.MongoDBClient, c *Model) *flex.Mo
 		ProjectId: c.ProjectId,
 		Name:      c.Name,
 	}
-	_, _, errFlex := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
-	existingFlex := errFlex == nil
-	if !existingFlex {
-		return nil
+	_, _, errCluster := client.AtlasSDK.ClustersApi.GetCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
+	if errCluster != nil && strings.Contains(errCluster.Error(), "CANNOT_USE_FLEX_CLUSTER_IN_CLUSTER_API") {
+		return f
 	}
-	return f
+	_, _, errFlex := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
+	if errFlex == nil {
+		return f
+	}
+	return nil // not a flex cluster
 }
 
 // clusterToFlexModelFull transforms a cluster model to a flex cluster model representation.

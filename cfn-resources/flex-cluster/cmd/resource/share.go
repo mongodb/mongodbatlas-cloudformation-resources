@@ -23,8 +23,15 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312006/admin"
 )
 
+var callbackContext = map[string]any{"callbackFlex": true}
+
+func IsCallback(req *handler.Request) bool {
+	_, found := req.CallbackContext["callbackFlex"]
+	return found
+}
+
 func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	if util.IsCallback(req) {
+	if IsCallback(req) {
 		return validateProgress(client, model, false)
 	}
 	flexReq := &admin.FlexClusterDescriptionCreate20241113{
@@ -57,7 +64,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 }
 
 func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	if util.IsCallback(req) {
+	if IsCallback(req) {
 		return validateProgress(client, model, false)
 	}
 	updateReq := &admin.FlexClusterDescriptionUpdate20241113{
@@ -72,7 +79,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 }
 
 func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	if util.IsCallback(req) {
+	if IsCallback(req) {
 		return validateProgress(client, model, true)
 	}
 	resp, err := client.AtlasSDK.FlexClustersApi.DeleteFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()

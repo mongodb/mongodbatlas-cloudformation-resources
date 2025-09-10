@@ -157,7 +157,7 @@ func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription2024111
 		Message:              constants.Pending,
 		ResourceModel:        model,
 		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext:      util.CallbackContext,
+		CallbackContext:      callbackContext,
 	}
 }
 

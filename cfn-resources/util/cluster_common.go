@@ -24,13 +24,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-var CallbackContext = map[string]any{"callback": true}
-
-func IsCallback(req *handler.Request) bool {
-	_, found := req.CallbackContext["callback"]
-	return found
-}
-
 // HandleClusterError provides common error handling for cluster operations.
 func HandleClusterError(err error, resp *http.Response) *handler.ProgressEvent {
 	if err == nil {

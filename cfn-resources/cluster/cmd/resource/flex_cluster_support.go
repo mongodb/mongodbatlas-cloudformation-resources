@@ -31,12 +31,18 @@ const (
 // clusterToFlexModelIdentifier transforms a cluster model to a flex cluster model representation.
 // It's used for Read and Delete where only the identifier is passed (project id and cluster name).
 // As regions are not passed, Atlas calls are made to learn if it's a flex cluster.
-// Returns nil if the cluster is not a flex cluster.
-func clusterToFlexModelIdentifier(client *util.MongoDBClient, c *Model) *flex.Model {
+// Returns nil if the it is not a flex cluster.
+func clusterToFlexModelIdentifier(req *handler.Request, client *util.MongoDBClient, c *Model) *flex.Model {
 	f := &flex.Model{
 		Profile:   c.Profile,
 		ProjectId: c.ProjectId,
 		Name:      c.Name,
+	}
+	if flex.IsCallback(req) {
+		return f
+	}
+	if isCallback(req) {
+		return nil
 	}
 	_, _, errCluster := client.AtlasSDK.ClustersApi.GetCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
 	if errCluster != nil && strings.Contains(errCluster.Error(), "CANNOT_USE_FLEX_CLUSTER_IN_CLUSTER_API") {
@@ -52,12 +58,15 @@ func clusterToFlexModelIdentifier(client *util.MongoDBClient, c *Model) *flex.Mo
 // clusterToFlexModelFull transforms a cluster model to a flex cluster model representation.
 // It's used for Create and Update where the full model is passed.
 // Regions are passed so not Atlas calls are needed to learn if it's a flex cluster.
-// Returns nil if the cluster is not a flex cluster.
+// Returns nil if the it is not a flex cluster.
 func clusterToFlexModelFull(c *Model) *flex.Model {
 	if len(c.ReplicationSpecs) != 1 || len(c.ReplicationSpecs[0].AdvancedRegionConfigs) != 1 {
 		return nil
 	}
 	firstRegion := c.ReplicationSpecs[0].AdvancedRegionConfigs[0]
+	if util.SafeString(firstRegion.ProviderName) != flexProvider {
+		return nil
+	}
 	f := &flex.Model{
 		Profile:                      c.Profile,
 		ProjectId:                    c.ProjectId,

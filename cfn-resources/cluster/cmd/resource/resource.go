@@ -43,7 +43,13 @@ var (
 	defaultLabel                         = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas CloudFormation Provider")}
 	createReadUpdareDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
 	listRequiredFields                   = []string{constants.ProjectID}
+	callbackContext                      = map[string]any{"callbackCluster": true}
 )
+
+func isCallback(req *handler.Request) bool {
+	_, found := req.CallbackContext["callbackCluster"]
+	return found
+}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -56,7 +62,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		fillModelForFlex(&pe, currentModel)
 		return pe, nil
 	}
-	if util.IsCallback(&req) {
+	if isCallback(&req) {
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 	currentModel.validateDefaultLabel()
@@ -74,7 +80,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		Message:              fmt.Sprintf("Create Cluster `%s`", *cluster.StateName),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext:      util.CallbackContext,
+		CallbackContext:      callbackContext,
 	}, nil
 }
 
@@ -84,7 +90,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if flexModel := clusterToFlexModelIdentifier(client, currentModel); flexModel != nil {
+	if flexModel := clusterToFlexModelIdentifier(&req, client, currentModel); flexModel != nil {
 		pe := flex.HandleRead(&req, client, flexModel)
 		fillModelForFlex(&pe, currentModel)
 		return pe, nil
@@ -111,7 +117,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		fillModelForFlex(&pe, currentModel)
 		return pe, nil
 	}
-	if util.IsCallback(&req) {
+	if isCallback(&req) {
 		return updateClusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 	currentModel.validateDefaultLabel()
@@ -140,7 +146,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              fmt.Sprintf("Update Cluster %s", state),
 		ResourceModel:        model,
 		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext:      util.CallbackContext,
+		CallbackContext:      callbackContext,
 	}
 	return event, nil
 }
@@ -151,12 +157,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if flexModel := clusterToFlexModelIdentifier(client, currentModel); flexModel != nil {
+	if flexModel := clusterToFlexModelIdentifier(&req, client, currentModel); flexModel != nil {
 		pe := flex.HandleDelete(&req, client, flexModel)
 		fillModelForFlex(&pe, currentModel)
 		return pe, nil
 	}
-	if util.IsCallback(&req) {
+	if isCallback(&req) {
 		return validateProgress(client, currentModel, constants.DeletedState)
 	}
 	params := &admin20231115014.DeleteClusterApiParams{
@@ -173,7 +179,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:              constants.DeleteInProgress,
 			ResourceModel:        currentModel,
 			CallbackDelaySeconds: CallBackSeconds,
-			CallbackContext:      util.CallbackContext,
+			CallbackContext:      callbackContext,
 		},
 		nil
 }
@@ -365,7 +371,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		p.OperationStatus = handler.InProgress
 		p.CallbackDelaySeconds = CallBackSeconds
 		p.Message = constants.Pending
-		p.CallbackContext = util.CallbackContext
+		p.CallbackContext = callbackContext
 		return p, nil
 	}
 

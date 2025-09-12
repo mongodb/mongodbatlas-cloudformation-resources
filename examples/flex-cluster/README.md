@@ -14,7 +14,7 @@
 ## Step 2: Create template using [flex-cluster.json](flex-cluster.json)
     Note: Make sure you are providing appropriate values for: 
     1. ProjectId
-    2. ClusterName (not Clustername)
+    2. ClusterName
     3. BackingProviderName: AWS, GCP or AZURE
     4. RegionName
     5. Profile (optional)

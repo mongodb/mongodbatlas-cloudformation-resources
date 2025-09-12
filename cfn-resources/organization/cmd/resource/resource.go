@@ -231,6 +231,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	responseChan := make(chan DeleteResponse, 1)
 	go func() {
 		response, err := deleteRequest.Execute()
+		if err != nil && response != nil && response.StatusCode == http.StatusInternalServerError {
+			time.Sleep(5 * time.Second)
+			retryRequest := conn.OrganizationsApi.DeleteOrganization(ctx, *currentModel.OrgId)
+			response, err = retryRequest.Execute()
+		}
 		responseChan <- DeleteResponse{Error: err, Response: response}
 	}()
 

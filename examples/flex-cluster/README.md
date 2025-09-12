@@ -5,7 +5,7 @@
 
    Step b: Search for Mongodb::Atlas::FlexCluster resource.
 
-         (Cloudformation > Public extensions > choose 'Third party' > Search with " Execution name prefix = MongoDB " )
+         (CloudFormation > Public extensions > choose 'Third party' > Search with " Execution name prefix = MongoDB " )
    Step c: Select and activate
          Enter the RoleArn that is created in step 1.
 

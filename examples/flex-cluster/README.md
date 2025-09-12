@@ -12,7 +12,7 @@
    Your FlexCluster Resource is ready to use.
 
 ## Step 2: Create template using [flex-cluster.json](flex-cluster.json)
-    Note: Make sure you are providing appropriate vales for 
+    Note: Make sure you are providing appropriate values for: 
     1. OrgId
     2. ProjectName
     3. Clustername

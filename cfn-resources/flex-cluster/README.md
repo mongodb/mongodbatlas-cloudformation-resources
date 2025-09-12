@@ -15,7 +15,7 @@ set up an [AWS Profile](/README.md#mongodb-atlas-api-keys-credential-management)
 
 ## Attributes and Parameters
 
-See the [resource docs](docs/README.md) and the [Flex Clusters API reference](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-flex-clusters).
+See the [resource docs](docs/README.md).
 
 ## Cloudformation Examples
 

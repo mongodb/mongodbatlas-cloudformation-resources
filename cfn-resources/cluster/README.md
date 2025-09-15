@@ -5,16 +5,9 @@ Provides a resource for managing [Clusters](https://www.mongodb.com/docs/api/doc
 lets you create, edit, and delete clusters. The resource requires your Project 
 ID to perform these actions.
 
-*Important:* `MongoDB::Atlas::Cluster` supports Flex Clusters, and all future
-updates for creating and managing Flex Clusters will be exclusively available 
-through this resource.
+*Note:* Upgrades to or from flex clusters are currently unavailable. We expect to support upgrades to or from flex clusters in the foreseeable future.
 
-*Important:* We recommend using `MongoDB::Atlas::Cluster` to create and manage
-Flex clusters instead of the `MongoDB::Atlas::FlexCluster` as future upgrades 
-will only be available through this resource.
-
-*Important:* Cluster upgrades to and from Flex Clusters are currently 
-unavailable but are planned for future development.
+*Important:* Use the `MongoDB::Atlas::Cluster` resource instead of the `MongoDB::Atlas::FlexCluster` resource to create and manage flex clusters. `MongoDB::Atlas::Cluster` supports flex clusters and future upgrades will only be available through this resource.
 
 
 

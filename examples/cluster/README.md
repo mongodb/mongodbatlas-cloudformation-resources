@@ -9,7 +9,7 @@
    Step c: Select and activate
          Enter the RoleArn that is created in step 1.
 
-   Cluster Resource is ready to use.
+   Your cluster Resource is ready to use.
 
 ## Step 2: Create template using [cluster.json](project-cluster.json)
     Note: Make sure you are providing appropriate vales for 

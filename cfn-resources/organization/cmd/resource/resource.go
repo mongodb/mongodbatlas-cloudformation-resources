@@ -231,6 +231,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	responseChan := make(chan DeleteResponse, 1)
 	go func() {
 		response, err := deleteRequest.Execute()
+		if err != nil && response != nil && response.StatusCode == http.StatusInternalServerError {
+			time.Sleep(20 * time.Second)
+			_, _ = logger.Warnf("waited 20s due to failed delete")
+			retryRequest := conn.OrganizationsApi.DeleteOrganization(ctx, *currentModel.OrgId)
+			response, err = retryRequest.Execute()
+		}
 		responseChan <- DeleteResponse{Error: err, Response: response}
 	}()
 
@@ -241,7 +247,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
 		}
 
-	case <-time.After(30 * time.Second):
+	case <-time.After(60 * time.Second):
 		// If the Delete is not completed in the above time,
 		// we return a progress event with inProgress status and callback context
 		return handler.ProgressEvent{

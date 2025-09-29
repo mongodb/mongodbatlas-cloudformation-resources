@@ -7,7 +7,7 @@ This file contains the steps to follow to test any changes to the CFN resources.
 ### Prerequisites
  - Install [AtlasCLI](https://www.mongodb.com/docs/atlas/cli/stable/install-atlas-cli/) and [configure the default profile](https://www.mongodb.com/docs/atlas/cli/stable/connect-atlas-cli/#select-a-connection-method) on your machine as the scripts use Atlas CLI
  - Ensure [AWS CLI](https://aws.amazon.com/cli/), [CFN CLI](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/what-is-cloudformation-cli.html), [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) are installed and configured correctly for your AWS account
- - Configure an Atlas profile secret in AWS account with your API keys. Refer [README](../../../README.md) for more information on how to do this
+ - Configure an Atlas profile secret in AWS account with your API keys. Refer to [README](README.md) for more information on how to do this
  - Have Docker running on your machine
  - Refer to the prerequisites for your resource in the `cfn-resources/[resource-folder]/test`
 

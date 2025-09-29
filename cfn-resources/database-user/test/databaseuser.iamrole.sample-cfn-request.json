@@ -1,26 +1,21 @@
 {
-    "desiredResourceState" : {
-        "resourceType" : "MongoDB::Atlas::DatabaseUser",
-        "properties" : {
-            "Username" : "Name",
-            "ProjectId" : "ProjectId",
-            "Profile" :"",
-            "DatabaseName": "$external",
-            "AWSIAMType": "ROLE",
-            "Roles": [
-                { "RoleName": "readWrite",
-                  "DatabaseName": "testdb"
-                }
-            ],
-            "Scopes": [    
-                { "Type": "CLUSTER",
-                  "Name": "testdb"
-                }
-            ]
-
-
-        }
-    },
-    "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",
-    "previousResourceState": { }
+  "desiredResourceState" : {
+    "Username": "Name",
+    "ProjectId": "ProjectId",
+    "Profile":"",
+    "DatabaseName": "$external",
+    "AWSIAMType": "ROLE",
+    "Roles": [
+      { "RoleName": "readWrite",
+        "DatabaseName": "testdb"
+      }
+    ],
+    "Scopes": [
+      { "Type": "CLUSTER",
+        "Name": "testdb"
+      }
+    ]
+  },
+  "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",
+  "previousResourceState": { }
 }

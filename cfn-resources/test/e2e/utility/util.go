@@ -27,7 +27,7 @@ import (
 	"testing"
 
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-	"go.mongodb.org/atlas-sdk/v20250312006/admin"
+	"go.mongodb.org/atlas-sdk/v20250312008/admin"
 
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 )

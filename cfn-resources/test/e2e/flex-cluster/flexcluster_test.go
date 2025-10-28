@@ -22,7 +22,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 	"github.com/stretchr/testify/assert"
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-	"go.mongodb.org/atlas-sdk/v20250312006/admin"
+	"go.mongodb.org/atlas-sdk/v20250312008/admin"
 )
 
 type localTestContext struct {

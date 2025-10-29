@@ -22,13 +22,12 @@ import (
 
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
-	flex "github.com/mongodb/mongodbatlas-cloudformation-resources/flex-cluster/cmd/resource"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/spf13/cast"
 
+	flex "github.com/mongodb/mongodbatlas-cloudformation-resources/flex-cluster/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
@@ -361,7 +360,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeServiceInternalError)}, nil
 	}
 
 	if !isReady {

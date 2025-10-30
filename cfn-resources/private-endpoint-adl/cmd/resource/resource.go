@@ -19,14 +19,16 @@ import (
 	"errors"
 	"net/http"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20250312006/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.EndpointID}
@@ -78,7 +80,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		EndpointId: *currentModel.EndpointId,
 		Comment:    currentModel.Comment,
 	}
-	_, resp, err := client.Atlas20231115014.DataFederationApi.CreateDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, &requestBody).Execute()
+	_, resp, err := client.AtlasSDK.DataFederationApi.CreateDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, &requestBody).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -91,9 +93,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func resourceAlreadyExists(client util.MongoDBClient, currentModel Model) (bool, *handler.ProgressEvent) {
-	_, resp, err := client.Atlas20231115014.DataFederationApi.GetDataFederationPrivateEndpoint(context.Background(), *currentModel.ProjectId, *currentModel.EndpointId).Execute()
+	_, resp, err := client.AtlasSDK.DataFederationApi.GetDataFederationPrivateEndpoint(context.Background(), *currentModel.ProjectId, *currentModel.EndpointId).Execute()
 	if err != nil {
-		if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115014.AsError(err); ok && apiError.Error == http.StatusNotFound {
 			return false, nil
 		}
 
@@ -124,7 +126,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	ctx := context.Background()
-	dlEndpoint, resp, err := client.Atlas20231115014.DataFederationApi.GetDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId).Execute()
+	dlEndpoint, resp, err := client.AtlasSDK.DataFederationApi.GetDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -160,7 +162,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	ctx := context.Background()
-	_, resp, err := client.Atlas20231115014.DataFederationApi.DeleteDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId).Execute()
+	resp, err := client.AtlasSDK.DataFederationApi.DeleteDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -186,7 +188,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	ctx := context.Background()
-	list, resp, err := client.Atlas20231115014.DataFederationApi.ListDataFederationPrivateEndpoints(ctx, *currentModel.ProjectId).Execute()
+	list, resp, err := client.AtlasSDK.DataFederationApi.ListDataFederationPrivateEndpoints(ctx, *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}

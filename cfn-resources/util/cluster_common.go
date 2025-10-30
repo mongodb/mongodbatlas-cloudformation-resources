@@ -19,7 +19,7 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
@@ -31,13 +31,13 @@ func HandleClusterError(err error, resp *http.Response) *handler.ProgressEvent {
 	}
 	pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 	if resp != nil && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), constants.Duplicate) {
-		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeAlreadyExists
+		pe.HandlerErrorCode = string(cloudformationtypes.HandlerErrorCodeAlreadyExists)
 	}
 	if resp != nil && resp.StatusCode == http.StatusNotFound {
-		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeNotFound
+		pe.HandlerErrorCode = string(cloudformationtypes.HandlerErrorCodeNotFound)
 	}
 	if strings.Contains(err.Error(), "not exist") || strings.Contains(err.Error(), "being deleted") {
-		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeNotFound
+		pe.HandlerErrorCode = string(cloudformationtypes.HandlerErrorCodeNotFound)
 	}
 	return &pe
 }

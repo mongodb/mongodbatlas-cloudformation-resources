@@ -19,19 +19,16 @@ import (
 	"fmt"
 	"net/http"
 
-	// admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20250312006/admin"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.TenantName}
@@ -71,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	dataLakeTenant, response, err := client.AtlasSDK.DataFederationApi.CreateFederatedDatabaseWithParams(
+	dataLakeTenant, response, err := client.Atlas20231115014.DataFederationApi.CreateFederatedDatabaseWithParams(
 		context.Background(),
 		&admin20231115014.CreateFederatedDatabaseApiParams{
 			GroupId:        *currentModel.ProjectId,
@@ -108,7 +105,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	dataLakeTenant, response, err := client.AtlasSDK.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
+	dataLakeTenant, response, err := client.Atlas20231115014.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
 	if err != nil {
 		return handleError(response, READ, err)
@@ -141,12 +138,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, checkExistsResponse, checkExistsErr := client.AtlasSDK.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
+	_, checkExistsResponse, checkExistsErr := client.Atlas20231115014.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 	if checkExistsErr != nil {
 		return handleError(checkExistsResponse, UPDATE, checkExistsErr)
 	}
 
-	updateFederatedDatabaseAPIRequest := client.AtlasSDK.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
+	updateFederatedDatabaseAPIRequest := client.Atlas20231115014.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
 	updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
 	dataLakeTenant, response, err := updateFederatedDatabaseAPIRequest.Execute()
 
@@ -180,7 +177,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	response, err := client.AtlasSDK.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
+	_, response, err := client.Atlas20231115014.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
 	if err != nil {
 		return handleError(response, DELETE, err)
@@ -210,7 +207,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	dataLakeTenants, response, err := client.AtlasSDK.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
+	dataLakeTenants, response, err := client.Atlas20231115014.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
 
 	if err != nil {
 		return handleError(response, LIST, err)
@@ -256,7 +253,7 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant admin20231115014.DataLak
 	cloudProviderConfig := model.CloudProviderConfig
 	if cloudProviderConfig != nil && cloudProviderConfig.TestS3Bucket != nil && cloudProviderConfig.RoleId != nil {
 		dataLakeTenant.CloudProviderConfig = &admin20231115014.DataLakeCloudProviderConfig{
-			Aws: &admin20231115014.DataLakeAWSCloudProviderConfig{
+			Aws: admin20231115014.DataLakeAWSCloudProviderConfig{
 				TestS3Bucket: *cloudProviderConfig.TestS3Bucket,
 				RoleId:       *cloudProviderConfig.RoleId,
 			},

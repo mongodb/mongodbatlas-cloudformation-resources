@@ -120,9 +120,19 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return updateClusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 	currentModel.validateDefaultLabel()
+
+	currentCluster, resp, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
+	}
+
+	// handle unpausing update
+	if pe, _ := handleUnpausingUpdate(client, currentCluster, currentModel); pe != nil {
+		return *pe, nil
+	}
+
 	adminCluster, errEvent := setClusterRequest(currentModel)
 	if len(adminCluster.GetReplicationSpecs()) > 0 {
-		currentCluster, _, _ := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
 		if currentCluster != nil {
 			adminCluster.ReplicationSpecs = AddReplicationSpecIDs(currentCluster.GetReplicationSpecs(), adminCluster.GetReplicationSpecs())
 		}
@@ -148,6 +158,26 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		CallbackContext:      callbackContext,
 	}
 	return event, nil
+}
+
+func handleUnpausingUpdate(client *util.MongoDBClient, currentCluster *admin20231115014.AdvancedClusterDescription, currentModel *Model) (*handler.ProgressEvent, error) {
+	if (currentCluster.Paused != nil && *currentCluster.Paused) && (currentModel.Paused == nil || !*currentModel.Paused) {
+		cluster, resp, err := client.Atlas20231115014.ClustersApi.UpdateCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name,
+			&admin20231115014.AdvancedClusterDescription{Paused: admin20231115014.PtrBool(false)}).Execute()
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return pe, nil
+		}
+		// returns InProgress event directly, if any other changes are made they will not be performed as part of this update operation
+		event := handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              fmt.Sprintf("Unpausing Cluster %s", *cluster.StateName),
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: callBackSeconds,
+			CallbackContext:      callbackContext,
+		}
+		return &event, nil
+	}
+	return nil, nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.

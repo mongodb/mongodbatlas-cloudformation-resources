@@ -63,7 +63,7 @@ jobs:
           MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/test/e2e/cluster
-          go test -timeout 90m -v cluster_test.go
+          go test -timeout 90m -v cluster_test.go cluster_pause_test.go
   
   
   flex-cluster:

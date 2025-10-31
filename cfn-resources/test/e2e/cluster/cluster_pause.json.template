@@ -1,0 +1,41 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Minimal template to exercise pausing/unpausing a single REPLICASET cluster",
+  "Resources": {
+    "Cluster": {
+      "Type": "{{ .ResourceTypeName }}",
+      "Properties": {
+        "Name": "{{ .Name }}",
+        "ProjectId": "{{ .ProjectID }}",
+        "Profile": "{{ .Profile }}",
+        "ClusterType": "REPLICASET",
+        "Paused": "{{ .Paused }}",
+      "ReplicationSpecs": [
+        {
+          "NumShards": 1,
+          "AdvancedRegionConfigs": [
+            {
+              "RegionName": "US_EAST_1",
+              "Priority": 7,
+              "ProviderName": "AWS",
+              "ElectableSpecs": {
+                "EbsVolumeType": "STANDARD",
+                "InstanceSize": "M10",
+                "NodeCount": 3
+              }
+            }
+          ]
+        }
+      ]
+      }
+    }
+  },
+  "Outputs": {
+    "MongoDBAtlasClusterID": {
+      "Description": "Cluster Id",
+      "Value": { "Fn::GetAtt": ["Cluster", "Id"] }
+    }
+  }
+}
+
+

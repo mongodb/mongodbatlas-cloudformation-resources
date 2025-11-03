@@ -56,7 +56,6 @@ var (
 )
 
 func TestClusterPauseCFN(t *testing.T) {
-	t.Parallel()
 	testCtx := setupPauseSuite(t)
 
 	t.Run("Validate Template", func(t *testing.T) {

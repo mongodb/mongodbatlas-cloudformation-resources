@@ -414,7 +414,7 @@
       "type": "string"
     },
     "Paused": {
-      "description": "Flag that indicates whether the cluster is paused or not.",
+      "description": "Flag that indicates whether the cluster is paused or not. When unpausing a cluster the update operaton will not perform any other changes to the cluster.",
       "type": "boolean"
     },
     "PitEnabled": {

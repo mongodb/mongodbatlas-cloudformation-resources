@@ -203,7 +203,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### Paused
 
-Flag that indicates whether the cluster is paused or not.
+Flag that indicates whether the cluster is paused or not. When unpausing a cluster the update operaton will not perform any other changes to the cluster.
 
 _Required_: No
 

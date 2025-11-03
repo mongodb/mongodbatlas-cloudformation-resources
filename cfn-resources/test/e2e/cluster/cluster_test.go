@@ -92,6 +92,7 @@ var (
 )
 
 func TestClusterCFN(t *testing.T) {
+	t.Parallel()
 	testCtx := setupSuite(t)
 
 	t.Run("Validate Template", func(t *testing.T) {

@@ -164,10 +164,7 @@ func handleUnpausingUpdate(client *util.MongoDBClient, currentCluster *admin2023
 	if (currentCluster.Paused != nil && *currentCluster.Paused) && (currentModel.Paused == nil || !*currentModel.Paused) {
 		_, resp, err := client.Atlas20231115014.ClustersApi.UpdateCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name,
 			&admin20231115014.AdvancedClusterDescription{Paused: admin20231115014.PtrBool(false)}).Execute()
-		if pe := util.HandleClusterError(err, resp); pe != nil {
-			return pe
-		}
-		return nil
+		return util.HandleClusterError(err, resp)
 	}
 	return nil
 }

@@ -126,8 +126,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	// handle unpausing update
-	if pe, _ := handleUnpausingUpdate(client, currentCluster, currentModel); pe != nil {
+	// Unpausing must be handled separately from other updates to avoid errors from the API.
+	if pe := handleUnpausingUpdate(client, currentCluster, currentModel); pe != nil {
 		return *pe, nil
 	}
 
@@ -160,24 +160,16 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return event, nil
 }
 
-func handleUnpausingUpdate(client *util.MongoDBClient, currentCluster *admin20231115014.AdvancedClusterDescription, currentModel *Model) (*handler.ProgressEvent, error) {
+func handleUnpausingUpdate(client *util.MongoDBClient, currentCluster *admin20231115014.AdvancedClusterDescription, currentModel *Model) *handler.ProgressEvent {
 	if (currentCluster.Paused != nil && *currentCluster.Paused) && (currentModel.Paused == nil || !*currentModel.Paused) {
-		cluster, resp, err := client.Atlas20231115014.ClustersApi.UpdateCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name,
+		_, resp, err := client.Atlas20231115014.ClustersApi.UpdateCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name,
 			&admin20231115014.AdvancedClusterDescription{Paused: admin20231115014.PtrBool(false)}).Execute()
 		if pe := util.HandleClusterError(err, resp); pe != nil {
-			return pe, nil
+			return pe
 		}
-		// returns InProgress event directly, if any other changes are made they will not be performed as part of this update operation
-		event := handler.ProgressEvent{
-			OperationStatus:      handler.InProgress,
-			Message:              fmt.Sprintf("Unpausing Cluster %s", *cluster.StateName),
-			ResourceModel:        currentModel,
-			CallbackDelaySeconds: callBackSeconds,
-			CallbackContext:      callbackContext,
-		}
-		return &event, nil
+		return nil
 	}
-	return nil, nil
+	return nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.

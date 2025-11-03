@@ -10,23 +10,23 @@
         "Profile": "{{ .Profile }}",
         "ClusterType": "REPLICASET",
         "Paused": "{{ .Paused }}",
-      "ReplicationSpecs": [
-        {
-          "NumShards": 1,
-          "AdvancedRegionConfigs": [
-            {
-              "RegionName": "US_EAST_1",
-              "Priority": 7,
-              "ProviderName": "AWS",
-              "ElectableSpecs": {
-                "EbsVolumeType": "STANDARD",
-                "InstanceSize": "M10",
-                "NodeCount": 3
+        "ReplicationSpecs": [
+          {
+            "NumShards": 1,
+            "AdvancedRegionConfigs": [
+              {
+                "RegionName": "US_EAST_1",
+                "Priority": 7,
+                "ProviderName": "AWS",
+                "ElectableSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": 3
+                }
               }
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ]
       }
     }
   },

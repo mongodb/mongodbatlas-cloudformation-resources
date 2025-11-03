@@ -41,8 +41,7 @@ type pauseTestCluster struct {
 }
 
 const (
-	pauseResourceDirectory = "cluster"
-	pauseCfnTemplatePath   = "cluster_pause.json.template"
+	pauseCfnTemplatePath = "cluster_pause.json.template"
 )
 
 // Replication specs are hardcoded in the CFN template for this test.
@@ -90,7 +89,7 @@ func setupPauseSuite(t *testing.T) *pauseTestContext {
 
 func (c *pauseTestContext) setUp(t *testing.T) {
 	t.Helper()
-	c.resourceCtx = utility.InitResourceCtx(pauseStackName, pauseRandSuffix, os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"), pauseResourceDirectory)
+	c.resourceCtx = utility.InitResourceCtx(pauseStackName, pauseRandSuffix, resourceTypeName, resourceDirectory)
 	c.cfnClient, _ = utility.NewClients(t)
 	_, c.atlasClient20231115014 = utility.NewClients20231115014(t)
 

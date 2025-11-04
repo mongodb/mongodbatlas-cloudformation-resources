@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package cluster_test
+package cluster_pause_test
 
 import (
 	ctx "context"
@@ -41,6 +41,8 @@ type pauseTestCluster struct {
 }
 
 const (
+	resourceTypeName     = "MongoDB::Atlas::Cluster"
+	resourceDirectory    = "cluster"
 	pauseCfnTemplatePath = "cluster_pause.json.template"
 )
 

@@ -52,6 +52,7 @@ type testCluster struct {
 const (
 	resourceTypeName  = "MongoDB::Atlas::Cluster"
 	resourceDirectory = "cluster"
+	e2eTestDirectory  = "cluster-basic"
 	cfnTemplatePath   = "cluster.json.template"
 )
 
@@ -122,7 +123,7 @@ func setupSuite(t *testing.T) *localTestContext {
 
 func (c *localTestContext) setUp(t *testing.T) {
 	t.Helper()
-	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory)
+	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory, admin.PtrString(e2eTestDirectory))
 	c.cfnClient, c.atlasClient = utility.NewClients(t)
 	_, c.atlasClient20231115014 = utility.NewClients20231115014(t)
 

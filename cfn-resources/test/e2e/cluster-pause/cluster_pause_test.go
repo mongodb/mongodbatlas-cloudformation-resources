@@ -142,8 +142,9 @@ func testCreatePauseStack(t *testing.T, c *pauseTestContext) {
 
 	cluster := readPauseClusterFromAtlas(t, c)
 
-	assert.Equal(t, cluster.GetId(), clusterID)
-	assert.False(t, cluster.GetPaused())
+	a := assert.New(t)
+	a.Equal(cluster.GetId(), clusterID)
+	a.False(cluster.GetPaused())
 }
 
 func testUpdatePauseState(t *testing.T, c *pauseTestContext, pause bool) {
@@ -164,14 +165,20 @@ func testUpdatePauseState(t *testing.T, c *pauseTestContext, pause bool) {
 
 	cluster := readPauseClusterFromAtlas(t, c)
 
-	assert.Equal(t, pause, cluster.GetPaused())
+	a := assert.New(t)
+	if pause {
+		a.True(cluster.GetPaused())
+	} else {
+		a.False(cluster.GetPaused())
+	}
 }
 
 func testDeletePauseStack(t *testing.T, c *pauseTestContext) {
 	t.Helper()
 	utility.DeleteStack(t, c.cfnClient, pauseStackName)
+	a := assert.New(t)
 	_, resp, _ := c.atlasClient20231115014.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
-	assert.Equal(t, 404, resp.StatusCode)
+	a.Equal(404, resp.StatusCode)
 }
 
 func cleanupPauseResources(t *testing.T, c *pauseTestContext) {

@@ -24,8 +24,7 @@ jobs:
           filters: |
             cluster:
               - 'cfn-resources/cluster/**'
-              - 'cfn-resources/test/e2e/cluster-basic/**'
-              - 'cfn-resources/test/e2e/cluster-pause/**'
+              - 'cfn-resources/test/e2e/cluster/**'
             flex-cluster:
               - 'cfn-resources/flex-cluster/**'
               - 'cfn-resources/test/e2e/flex-cluster/**'

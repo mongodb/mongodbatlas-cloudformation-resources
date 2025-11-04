@@ -16,18 +16,16 @@ package utility
 
 type ResourceContext struct {
 	ResourceDirectory      string
-	E2eTestDirectory       *string
 	ResourceTypeName       string
 	ResourceTypeNameForE2e string
 	E2eRandSuffix          string
 	StackName              string
 }
 
-func InitResourceCtx(stackName, randSuffix, resourceTypeName, resourceDirectory string, e2eTestDirectory *string) ResourceContext {
+func InitResourceCtx(stackName, randSuffix, resourceTypeName, resourceDirectory string) ResourceContext {
 	return ResourceContext{
 		StackName:              stackName,
 		ResourceDirectory:      resourceDirectory,
-		E2eTestDirectory:       e2eTestDirectory,
 		ResourceTypeName:       resourceTypeName,
 		E2eRandSuffix:          randSuffix,
 		ResourceTypeNameForE2e: resourceTypeName + randSuffix,

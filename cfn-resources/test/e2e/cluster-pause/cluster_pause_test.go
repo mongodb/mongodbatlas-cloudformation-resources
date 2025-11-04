@@ -43,7 +43,6 @@ type pauseTestCluster struct {
 const (
 	resourceTypeName     = "MongoDB::Atlas::Cluster"
 	resourceDirectory    = "cluster"
-	e2eTestDirectory     = "cluster-pause"
 	pauseCfnTemplatePath = "cluster_pause.json.template"
 )
 
@@ -92,7 +91,7 @@ func setupPauseSuite(t *testing.T) *pauseTestContext {
 
 func (c *pauseTestContext) setUp(t *testing.T) {
 	t.Helper()
-	c.resourceCtx = utility.InitResourceCtx(pauseStackName, pauseRandSuffix, resourceTypeName, resourceDirectory, admin20231115014.PtrString(e2eTestDirectory))
+	c.resourceCtx = utility.InitResourceCtx(pauseStackName, pauseRandSuffix, resourceTypeName, resourceDirectory)
 	c.cfnClient, _ = utility.NewClients(t)
 	_, c.atlasClient20231115014 = utility.NewClients20231115014(t)
 

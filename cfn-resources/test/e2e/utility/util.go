@@ -65,9 +65,6 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
 	t.Setenv("E2E_RAND_SUFFIX", rctx.E2eRandSuffix)
 	t.Setenv("RESOURCE_DIRECTORY_NAME", rctx.ResourceDirectory)
-	if rctx.E2eTestDirectory != nil {
-		t.Setenv("E2E_TEST_DIRECTORY_NAME", *rctx.E2eTestDirectory)
-	}
 	t.Cleanup(func() {
 		RunCleanupScript(t, rctx)
 	})

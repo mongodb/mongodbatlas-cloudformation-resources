@@ -90,7 +90,7 @@ func setupSuite(t *testing.T) *localTestContext {
 
 func (c *localTestContext) setUp(t *testing.T) {
 	t.Helper()
-	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory, nil)
+	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory)
 	c.cfnClient, c.atlasClient = utility.NewClients20231115014(t)
 	utility.PublishToPrivateRegistry(t, c.resourceCtx)
 	c.setupPrerequisites(t)

@@ -61,11 +61,13 @@ jobs:
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
           MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
-        # run idividual test allowing for parallel execution. Due to usage of t.Setenv() in test code, t.Parallel() is not possible
         run: |
           cd cfn-resources/test/e2e/cluster
           go test -timeout 90m -v -run '^TestClusterCFN$' .
 
+  # Run idividual test in separate test group for parallel execution. 
+  # Due to usage of t.Setenv() in test code t.Parallel() is not possible.
+  # Having both tests run in same `go test` execution is not possible due to scripts used for private registry publishing modifying same files 
   cluster-pause:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cluster == 'true' }}
@@ -93,7 +95,6 @@ jobs:
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
           MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
-        # run idividual test allowing for parallel execution. Due to usage of t.Setenv() in test code, t.Parallel() is not possible
         run: |
           cd cfn-resources/test/e2e/cluster
           go test -timeout 90m -v -run '^TestClusterPauseCFN$' .    

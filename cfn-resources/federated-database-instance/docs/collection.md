@@ -27,7 +27,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### DataSources
 
-Array that contains the data stores that map to a collection for this data lake.
+Array that contains the data stores that map to a collection for this Atlas Data Federation.
 
 _Required_: No
 

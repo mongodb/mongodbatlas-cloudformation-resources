@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates an Atlas Data Lake in the specified project",
+  "Description": "This template creates an Atlas Data Federation in the specified project",
   "Parameters": {
     "Profile": {
       "Type": "String",

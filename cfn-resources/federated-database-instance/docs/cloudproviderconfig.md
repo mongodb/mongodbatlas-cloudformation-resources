@@ -1,6 +1,6 @@
 # MongoDB::Atlas::FederatedDatabaseInstance CloudProviderConfig
 
-Cloud provider linked to this data lake..
+Cloud provider linked to this Atlas Data Federation.
 
 ## Syntax
 
@@ -26,7 +26,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### RoleId
 
-Unique identifier of the role that the data lake can use to access the data stores.Required if specifying cloudProviderConfig.
+Unique identifier of the role that the Atlas Data Federation can use to access the data stores.Required if specifying cloudProviderConfig.
 
 _Required_: No
 

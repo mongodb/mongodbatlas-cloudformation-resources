@@ -49,7 +49,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### TagSets
 
-List that contains tag sets or tag specification documents. If specified, Atlas Data Lake routes read requests to replica set member or members that are associated with the specified tags.
+List that contains tag sets or tag specification documents. If specified, Atlas Data Federation routes read requests to replica set member or members that are associated with the specified tags.
 
 _Required_: No
 

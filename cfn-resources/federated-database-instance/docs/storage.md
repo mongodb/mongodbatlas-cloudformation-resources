@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### Databases
 
-Array that contains the queryable databases and collections for this data lake.
+Array that contains the queryable databases and collections for this Atlas Data Federation.
 
 _Required_: No
 
@@ -38,7 +38,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Stores
 
-Array that contains the data stores for the data lake.
+Array that contains the data stores for the Atlas Data Federation.
 
 _Required_: No
 

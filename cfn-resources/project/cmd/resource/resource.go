@@ -21,7 +21,7 @@ import (
 	"reflect"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -86,7 +86,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, key := range currentModel.ProjectApiKeys {
 			if key.Key == nil {
 				errorMessage := fmt.Sprintf("ApiKey is missing the configuration for projectID=%s", projectID)
-				return progressevent.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInvalidRequest), nil
+				return progressevent.GetFailedEventByCode(errorMessage, string(cloudformationtypes.HandlerErrorCodeInvalidRequest)), nil
 			}
 			apiKey := *key.Key
 			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, apiKey, &admin20231115014.UpdateAtlasProjectApiKey{
@@ -196,7 +196,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while finding teams in project",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+				HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}, nil
 		}
 		if teamsAssigned != nil && teamsAssigned.Results != nil {
 			errorMessage, err := changeProjectTeams(*atlasV2, currentModel, teamsAssigned.GetResults())
@@ -204,7 +204,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          errorMessage,
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+					HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest),
 				}, nil
 			}
 		}
@@ -219,7 +219,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          fmt.Sprintf("Error while Un-assigning Key to project %s", err.Error()),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+					HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}, nil
 			}
 		}
 
@@ -231,7 +231,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          fmt.Sprintf("Error while Assigning Key to project %s", err.Error()),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+					HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}, nil
 			}
 		}
 
@@ -243,7 +243,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          fmt.Sprintf("Error while Assigning Key to project %s", err.Error()),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+					HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}, nil
 			}
 		}
 	}
@@ -340,7 +340,7 @@ func updateProject(client *admin20231115014.APIClient, currentModel *Model) (eve
 		if res.StatusCode == 401 { // cfn test
 			return progressevent.GetFailedEventByCode(
 				"Unauthorized Error: Unable to update project name. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
-				cloudformation.HandlerErrorCodeNotFound), nil, err
+				string(cloudformationtypes.HandlerErrorCodeNotFound)), nil, err
 		}
 		return progressevent.GetFailedEventByResponse(err.Error(),
 			res), project, err
@@ -354,7 +354,7 @@ func getProjectByID(id *string, atlasV2 *admin20231115014.APIClient) (event hand
 		if res.StatusCode == 401 { // cfn test
 			return progressevent.GetFailedEventByCode(
 				"Unauthorized Error: Unable to retrieve Project by ID. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
-				cloudformation.HandlerErrorCodeNotFound), nil, err
+				string(cloudformationtypes.HandlerErrorCodeNotFound)), nil, err
 		}
 		return progressevent.GetFailedEventByResponse(err.Error(),
 			res), project, err

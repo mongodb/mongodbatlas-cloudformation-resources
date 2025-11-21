@@ -19,7 +19,7 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -70,7 +70,7 @@ func CreatePrivateEndpoint(req handler.Request, endpointServiceName string, regi
 		vpcE, err := svc.CreateVpcEndpoint(&connection)
 		if err != nil {
 			fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
-				string(cloudformationtypes.HandlerErrorCodeGeneralServiceException))
+				string(types.HandlerErrorCodeGeneralServiceException))
 			return nil, &fpe
 		}
 
@@ -101,7 +101,7 @@ func DeletePrivateEndpoint(req handler.Request, interfaceEndpoints []string, reg
 
 	if err != nil {
 		fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error deleting vcp Endpoint: %s", err.Error()),
-			string(cloudformationtypes.HandlerErrorCodeGeneralServiceException))
+			string(types.HandlerErrorCodeGeneralServiceException))
 		return &fpe
 	}
 

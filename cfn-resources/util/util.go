@@ -34,7 +34,7 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/mongodb-forks/digest"
 	"github.com/mongodb-labs/go-client-mongodb-atlas-app-services/appservices"
@@ -140,7 +140,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 	}
 
 	// setup a transport to handle digest
@@ -152,7 +152,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
 	c := Config{BaseURL: prof.BaseURL, DebugClient: prof.UseDebug()}
@@ -163,7 +163,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
 	// new V2 version 20231115014 instance
@@ -172,7 +172,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
 	// latest V2 instance
@@ -181,7 +181,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
 	clients := &MongoDBClient{

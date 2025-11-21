@@ -24,7 +24,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -55,7 +55,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 
 	if *model.InstanceType != clusterInstanceType && *model.InstanceType != serverlessInstanceType {
 		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("InstanceType must be %s or %s", clusterInstanceType, serverlessInstanceType),
-			string(cloudformationtypes.HandlerErrorCodeInvalidRequest))
+			string(types.HandlerErrorCodeInvalidRequest))
 		return &pe
 	}
 
@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	err := currentModel.validateAsynchronousProperties()
 	if err != nil {
-		return progressevent.GetFailedEventByCode(err.Error(), string(cloudformationtypes.HandlerErrorCodeInvalidRequest)), err
+		return progressevent.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest)), err
 	}
 
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
@@ -152,7 +152,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "The job is in status cancelled, Cannot read a cancelled job",
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	return handler.ProgressEvent{
@@ -186,7 +186,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "The job is in status cancelled, Cannot delete a cancelled job",
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	if util.IsStringPresent(currentModel.FinishedAt) || aws.ToBool(currentModel.Failed) || aws.ToBool(currentModel.Expired) {
@@ -323,7 +323,7 @@ func createCallback(client *util.MongoDBClient, currentModel *Model, jobID, star
 			}
 		}
 
-		return progressevent.GetFailedEventByCode("Create failed with Timout", string(cloudformationtypes.HandlerErrorCodeInternalFailure))
+		return progressevent.GetFailedEventByCode("Create failed with Timout", string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	return progressevent.GetInProgressProgressEvent(

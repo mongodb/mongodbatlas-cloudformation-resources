@@ -23,7 +23,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if aws.ToBool(atlasAuditing.Enabled) {
 		return handler.ProgressEvent{
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeAlreadyExists),
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
@@ -120,7 +120,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	if !aws.ToBool(atlasAuditing.Enabled) {
 		return handler.ProgressEvent{
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound),
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
@@ -158,7 +158,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	if !resourceEnabled {
 		return handler.ProgressEvent{
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound),
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			OperationStatus:  handler.Failed,
 			Message:          "resource not found",
 		}, nil
@@ -224,7 +224,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if !resourceEnabled {
 		return handler.ProgressEvent{
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound),
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}

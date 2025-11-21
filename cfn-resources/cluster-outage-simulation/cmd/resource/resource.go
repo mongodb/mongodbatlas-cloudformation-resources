@@ -24,7 +24,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/spf13/cast"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
@@ -74,7 +74,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          constants.AlreadyExist,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeAlreadyExists)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 
 	requestBody := admin20231115014.ClusterOutageSimulation{
@@ -133,7 +133,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          constants.ResourceNotFound,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	convertToUIModel(*outageSimulation, currentModel)
@@ -174,7 +174,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          constants.ResourceNotFound,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	simulationObject, res, err := client.Atlas20231115014.ClusterOutageSimulationApi.EndOutageSimulation(context.Background(), projectID, clusterName).Execute()
@@ -232,7 +232,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeServiceInternalError)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
 
 	if !isReady {

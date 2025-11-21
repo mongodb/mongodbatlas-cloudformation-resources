@@ -22,7 +22,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -82,11 +82,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	events, _ := Read(req, prevModel, currentModel)
-	if events.HandlerErrorCode == string(cloudformationtypes.HandlerErrorCodeNotFound) {
+	if events.HandlerErrorCode == string(types.HandlerErrorCodeNotFound) {
 		return handler.ProgressEvent{
 			Message:          "Not Found",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	return cloudBackupScheduleCreateOrUpdate(req, prevModel, currentModel)
@@ -175,12 +175,12 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error) {
 	if len(currentModel.Policies) == 0 {
 		msg := "validation error: policies cannot be empty"
-		return progressevent.GetFailedEventByCode(msg, string(cloudformationtypes.HandlerErrorCodeInvalidRequest)), errors.New(msg)
+		return progressevent.GetFailedEventByCode(msg, string(types.HandlerErrorCodeInvalidRequest)), errors.New(msg)
 	}
 	for _, policy := range currentModel.Policies {
 		if len(policy.PolicyItems) == 0 {
 			msg := "validation error: policy items cannot be empty"
-			return progressevent.GetFailedEventByCode(msg, string(cloudformationtypes.HandlerErrorCodeInvalidRequest)), errors.New(msg)
+			return progressevent.GetFailedEventByCode(msg, string(types.HandlerErrorCodeInvalidRequest)), errors.New(msg)
 		}
 		for _, policyItem := range policy.PolicyItems {
 			if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
@@ -189,7 +189,7 @@ func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          err.Error(),
-					HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}, err
+					HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, err
 			}
 		}
 	}
@@ -203,7 +203,7 @@ func validateExportDetails(currentModel *Model) (pe handler.ProgressEvent, err e
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeInvalidRequest)}, err
+				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, err
 		}
 	}
 	return handler.ProgressEvent{}, nil
@@ -216,7 +216,7 @@ func validateExist(policy *admin20231115014.DiskBackupSnapshotSchedule) *handler
 	return &handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          "Not Found",
-		HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}
+		HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 }
 
 func (m *Model) getParams() *admin20231115014.DiskBackupSnapshotSchedule {

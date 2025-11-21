@@ -22,7 +22,7 @@ import (
 	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -60,7 +60,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusConflict {
 			return progress_events.GetFailedEventByCode("Resource already exists",
-				string(cloudformationtypes.HandlerErrorCodeAlreadyExists)), nil
+				string(types.HandlerErrorCodeAlreadyExists)), nil
 		}
 
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),

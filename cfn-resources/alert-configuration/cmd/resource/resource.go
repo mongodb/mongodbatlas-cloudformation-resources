@@ -25,7 +25,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/spf13/cast"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
@@ -70,12 +70,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Already Exists",
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeAlreadyExists)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 
 	notifications, err := expandAlertConfigurationNotification(currentModel.Notifications)
 	if err != nil {
-		return progressevents.GetFailedEventByCode(err.Error(), string(cloudformationtypes.HandlerErrorCodeInvalidRequest)), err
+		return progressevents.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest)), err
 	}
 
 	alertConfigRequest := admin20231115014.GroupAlertsConfig{
@@ -127,7 +127,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	alertConfig, resp, err := atlasV2.AlertConfigurationsApi.GetAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
@@ -167,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	// In order to update an alert config it is necessary to send the original alert configuration request again, if not the
@@ -231,7 +231,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	res, err := atlasV2.AlertConfigurationsApi.DeleteAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
@@ -250,7 +250,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          "List operation is not supported",
-		HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}, nil
+		HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 }
 
 func isExist(currentModel *Model, client *admin20231115014.APIClient) bool {

@@ -24,7 +24,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/spf13/cast"
 
 	flex "github.com/mongodb/mongodbatlas-cloudformation-resources/flex-cluster/cmd/resource"
@@ -379,7 +379,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeServiceInternalError)}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
 
 	if !isReady {

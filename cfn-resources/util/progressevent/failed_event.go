@@ -18,21 +18,21 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	cloudformationtypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 )
 
 func getHandlerErrorCode(response *http.Response) string {
 	switch response.StatusCode {
 	case http.StatusBadRequest:
-		return string(cloudformationtypes.HandlerErrorCodeInvalidRequest)
+		return string(types.HandlerErrorCodeInvalidRequest)
 	case http.StatusNotFound:
-		return string(cloudformationtypes.HandlerErrorCodeNotFound)
+		return string(types.HandlerErrorCodeNotFound)
 	case http.StatusInternalServerError:
-		return string(cloudformationtypes.HandlerErrorCodeServiceInternalError)
+		return string(types.HandlerErrorCodeServiceInternalError)
 	case http.StatusPaymentRequired, http.StatusUnauthorized:
-		return string(cloudformationtypes.HandlerErrorCodeAccessDenied)
+		return string(types.HandlerErrorCodeAccessDenied)
 	default:
-		return string(cloudformationtypes.HandlerErrorCodeInternalFailure)
+		return string(types.HandlerErrorCodeInternalFailure)
 	}
 }
 
@@ -41,28 +41,28 @@ func GetFailedEventByResponse(message string, response *http.Response) handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          message,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeHandlerInternalFailure)}
+			HandlerErrorCode: string(types.HandlerErrorCodeHandlerInternalFailure)}
 	}
 
 	if response.StatusCode == http.StatusConflict {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          message,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeAlreadyExists)}
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}
 	}
 
 	if response.StatusCode == http.StatusUnauthorized {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Not found",
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 	}
 
 	if response.StatusCode == http.StatusBadRequest {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          message,
-			HandlerErrorCode: string(cloudformationtypes.HandlerErrorCodeNotFound)}
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 	}
 
 	return handler.ProgressEvent{

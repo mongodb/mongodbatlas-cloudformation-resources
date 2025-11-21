@@ -50,7 +50,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
           cache: false # see https://github.com/golangci/golangci-lint-action/issues/807
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@4afd733a84b1f43292c63897423277bb7f4313a9
+        uses: golangci/golangci-lint-action@0a35821d5c230e903fcfe077583637dea1b27b47
         with:
           version: v2.4.0 # Also update GOLANGCI_VERSION variable in Makefile when updating this version
           working-directory: cfn-resources
@@ -78,7 +78,7 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@40c09b7dc99638e5ddb0bfd91c1673effc064d8a
+        uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261
   shellcheck:
     name: shellcheck
     runs-on: ubuntu-latest

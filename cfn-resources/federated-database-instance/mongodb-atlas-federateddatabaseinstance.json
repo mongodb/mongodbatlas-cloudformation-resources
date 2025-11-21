@@ -3,23 +3,23 @@
   "definitions": {
     "CloudProviderConfig": {
       "type": "object",
-      "description": "Cloud provider linked to this data lake..",
+      "description": "Cloud provider linked to this Atlas Data Federation.",
       "properties": {
         "ExternalId": {
           "type": "string",
-          "description": "Unique identifier of the role that the data lake can use to access the data stores.Required if specifying cloudProviderConfig."
+          "description": "Unique identifier of the role that the Atlas Data Federation can use to access the data stores.Required if specifying cloudProviderConfig."
         },
         "IamAssumedRoleARN": {
           "type": "string",
-          "description": "Amazon Resource Name (ARN) of the Identity and Access Management (IAM) role that the data lake assumes when accessing data stores."
+          "description": "Amazon Resource Name (ARN) of the Identity and Access Management (IAM) role that the Atlas Data Federation assumes when accessing data stores."
         },
         "IamUserARN": {
           "type": "string",
-          "description": "Amazon Resource Name (ARN) of the user that the data lake assumes when accessing data stores."
+          "description": "Amazon Resource Name (ARN) of the user that the Atlas Data Federation assumes when accessing data stores."
         },
         "RoleId": {
           "type": "string",
-          "description": "Unique identifier of the role that the data lake can use to access the data stores.Required if specifying cloudProviderConfig."
+          "description": "Unique identifier of the role that the Atlas Data Federation can use to access the data stores.Required if specifying cloudProviderConfig."
         },
         "TestS3Bucket": {
           "type": "string",
@@ -30,15 +30,15 @@
     },
     "DataProcessRegion": {
       "type": "object",
-      "description": "Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.",
+      "description": "Information about the cloud provider region to which the Atlas Data Federation routes client connections. MongoDB Cloud supports AWS only.",
       "properties": {
         "CloudProvider": {
           "type": "string",
-          "description": "Name of the cloud service that hosts the data lake's data stores."
+          "description": "Name of the cloud service that hosts the Atlas Data Federation data stores."
         },
         "Region": {
           "type": "string",
-          "description": "Name of the region to which the data lake routes client connections."
+          "description": "Name of the region to which the Atlas Data Federation routes client connections."
         }
       },
       "required": [
@@ -53,7 +53,7 @@
         "Databases": {
           "type": "array",
           "insertionOrder": false,
-          "description": "Array that contains the queryable databases and collections for this data lake.",
+          "description": "Array that contains the queryable databases and collections for this Atlas Data Federation.",
           "items": {
             "$ref": "#/definitions/Database",
             "type": "object"
@@ -62,7 +62,7 @@
         "Stores": {
           "type": "array",
           "insertionOrder": false,
-          "description": "Array that contains the data stores for the data lake.",
+          "description": "Array that contains the data stores for the Atlas Data Federation.",
           "items": {
             "$ref": "#/definitions/Store",
             "type": "object"
@@ -89,7 +89,7 @@
         },
         "Name": {
           "type": "string",
-          "description": "Human-readable label that identifies the database to which the data lake maps data."
+          "description": "Human-readable label that identifies the database to which the Atlas Data Federation maps data."
         },
         "Views": {
           "type": "array",
@@ -105,11 +105,11 @@
     },
     "Store": {
       "type": "object",
-      "description": "Array that contains the data stores for the data lake.",
+      "description": "Array that contains the data stores for the Atlas Data Federation.",
       "properties": {
         "Name": {
           "type": "string",
-          "description": "Human-readable label that identifies the data store. The databases.[n].collections.[n].dataSources.[n].storeName field references this values as part of the mapping configuration. To use MongoDB Cloud as a data store, the data lake requires a serverless instance or an M10 or higher cluster."
+          "description": "Human-readable label that identifies the data store. The databases.[n].collections.[n].dataSources.[n].storeName field references this values as part of the mapping configuration. To use MongoDB Cloud as a data store, the Atlas Data Federation requires a serverless instance or an M10 or higher cluster."
         },
         "Provider": {
           "type": "string",
@@ -137,7 +137,7 @@
       "properties": {
         "DataSources": {
           "type": "array",
-          "description": "Array that contains the data stores that map to a collection for this data lake.",
+          "description": "Array that contains the data stores that map to a collection for this Atlas Data Federation.",
           "insertionOrder": false,
           "items": {
             "$ref": "#/definitions/DataSource",
@@ -192,7 +192,7 @@
         },
         "Urls": {
           "type": "array",
-          "description": "URLs of the publicly accessible data files. You can't specify URLs that require authentication. Atlas Data Lake creates a partition for each URL. If empty or omitted, Data Lake uses the URLs from the store specified in the dataSources.storeName parameter.",
+          "description": "URLs of the publicly accessible data files. You can't specify URLs that require authentication. Atlas Data Federation creates a partition for each URL. If empty or omitted, Data Federation uses the URLs from the store specified in the dataSources.storeName parameter.",
           "insertionOrder": false,
           "items": {
             "type": "string"
@@ -232,7 +232,7 @@
         },
         "TagSets": {
           "type": "array",
-          "description": "List that contains tag sets or tag specification documents. If specified, Atlas Data Lake routes read requests to replica set member or members that are associated with the specified tags.",
+          "description": "List that contains tag sets or tag specification documents. If specified, Atlas Data Federation routes read requests to replica set member or members that are associated with the specified tags.",
           "insertionOrder": false,
           "items": {
             "$ref": "#/definitions/ReadReferenceTags"
@@ -295,12 +295,12 @@
   "properties": {
     "CloudProviderConfig": {
       "type": "object",
-      "description": "Cloud provider linked to this data lake.",
+      "description": "Cloud provider linked to this Atlas Data Federation.",
       "$ref": "#/definitions/CloudProviderConfig"
     },
     "DataProcessRegion": {
       "type": "object",
-      "description": "Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.",
+      "description": "Information about the cloud provider region to which the Atlas Data Federation routes client connections. MongoDB Cloud supports AWS only.",
       "$ref": "#/definitions/DataProcessRegion"
     },
     "ProjectId": {

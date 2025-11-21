@@ -50,7 +50,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Name
 
-Human-readable label that identifies the database to which the data lake maps data.
+Human-readable label that identifies the database to which the Atlas Data Federation maps data.
 
 _Required_: No
 

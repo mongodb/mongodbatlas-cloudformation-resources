@@ -41,7 +41,7 @@ Properties:
 
 #### CloudProviderConfig
 
-Cloud provider linked to this data lake..
+Cloud provider linked to this Atlas Data Federation.
 
 _Required_: No
 
@@ -51,7 +51,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### DataProcessRegion
 
-Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.
+Information about the cloud provider region to which the Atlas Data Federation routes client connections. MongoDB Cloud supports AWS only.
 
 _Required_: No
 

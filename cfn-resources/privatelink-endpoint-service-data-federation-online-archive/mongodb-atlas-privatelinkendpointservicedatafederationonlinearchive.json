@@ -18,7 +18,7 @@
     },
     "EndpointId": {
       "type": "string",
-      "description": "Unique 22-character alphanumeric string that identifies the private endpoint.Reg ex ^vpce-[0-9a-f]{17}$ . \n\nAtlas Data Lake supports Amazon Web Services private endpoints using the AWS PrivateLink feature."
+      "description": "Unique 22-character alphanumeric string that identifies the private endpoint.Reg ex ^vpce-[0-9a-f]{17}$ . \n\nAtlas Data Federation supports Amazon Web Services private endpoints using the AWS PrivateLink feature."
     },
     "Type": {
       "type": "string",

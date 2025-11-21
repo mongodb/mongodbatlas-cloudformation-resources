@@ -1,8 +1,0 @@
-{
-  "Comment": "materializeMonthlyProductSales1000",
-  "Provider": "AWS",
-  "Type": "DATA_LAKE",
-  "ProjectId": "<grp_id>",
-  "EndpointId": "",
-  "Profile": "default"
-}

@@ -22,7 +22,7 @@ import (
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/spf13/cast"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -595,7 +595,7 @@ func setClusterRequest(currentModel *Model) (*admin20231115014.AdvancedClusterDe
 		return clusterRequest, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
 		}
 	}
 	clusterRequest.Tags = tags

@@ -21,16 +21,18 @@ import (
 	"net/http"
 	"strings"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.APIUserID}
@@ -79,14 +81,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          EitherOrMessage,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	if currentModel.CidrBlock != nil && currentModel.IpAddress != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          MutualExclusiveMessage,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	// createReq.ApiService.
@@ -140,14 +142,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          EitherOrMessage,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	if currentModel.CidrBlock != nil && currentModel.IpAddress != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          MutualExclusiveMessage,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	entry := getEntryAddress(currentModel)
@@ -191,14 +193,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          EitherOrMessage,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	if currentModel.CidrBlock != nil && currentModel.IpAddress != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          MutualExclusiveMessage,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	entry := getEntryAddress(currentModel)
@@ -294,14 +296,14 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInternalFailure)}, nil
 	}
 
 	if response.StatusCode == http.StatusConflict {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }

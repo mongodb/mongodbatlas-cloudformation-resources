@@ -15,13 +15,17 @@
 package profile
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/secretsmanager"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 )
 
@@ -41,18 +45,37 @@ func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) 
 		profileName = aws.String(DefaultProfile)
 	}
 
-	secretsManagerClient := secretsmanager.New(req.Session)
+	// Build v2 config using CFN-provided session credentials and region
+	credsValue, err := req.Session.Config.Credentials.Get()
+	if err != nil {
+		return nil, err
+	}
+	region := ""
+	if req.Session.Config.Region != nil {
+		region = *req.Session.Config.Region
+	}
+	cfg, err := config.LoadDefaultConfig(
+		context.Background(),
+		config.WithRegion(region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
+			credsValue.AccessKeyID, credsValue.SecretAccessKey, credsValue.SessionToken,
+		)),
+	)
+	if err != nil {
+		return nil, err
+	}
+	secretsManagerClient := secretsmanager.NewFromConfig(cfg)
 	secretID := *profileName
 	if prefixRequired {
 		secretID = SecretNameWithPrefix(*profileName)
 	}
-	resp, err := secretsManagerClient.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretID})
+	resp, err := secretsManagerClient.GetSecretValue(context.Background(), &secretsmanager.GetSecretValueInput{SecretId: &secretID})
 	if err != nil {
 		return nil, err
 	}
 
 	profile := new(Profile)
-	err = json.Unmarshal([]byte(*resp.SecretString), &profile)
+	err = json.Unmarshal([]byte(aws.ToString(resp.SecretString)), &profile)
 	if err != nil {
 		return nil, err
 	}

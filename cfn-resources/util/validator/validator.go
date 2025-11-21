@@ -20,7 +20,7 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
@@ -37,7 +37,7 @@ func ValidateModel(fields []string, model interface{}) *handler.ProgressEvent {
 	}
 
 	progressEvent := progressevents.GetFailedEventByCode(fmt.Sprintf("The next fields are required%s", requiredFields),
-		cloudformation.HandlerErrorCodeInvalidRequest)
+		string(types.HandlerErrorCodeInvalidRequest))
 
 	return &progressEvent
 }

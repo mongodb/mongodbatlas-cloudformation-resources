@@ -23,7 +23,6 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 )
 
@@ -52,22 +51,9 @@ func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, pub
 	// sess := credentials.SessionFromCredentialsProvider(creds)
 	// create a new secret from this struct with the json string
 
-	credsValue, err := req.Session.Config.Credentials.Get()
+	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
-		return nil, err
-	}
-	region := ""
-	if req.Session.Config.Region != nil {
-		region = *req.Session.Config.Region
-	}
-	cfg, err := config.LoadDefaultConfig(
-		context.Background(),
-		config.WithRegion(region),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			credsValue.AccessKeyID, credsValue.SecretAccessKey, credsValue.SessionToken,
-		)),
-	)
-	if err != nil {
+		log.Printf("error loading AWS config: %v", err)
 		return nil, err
 	}
 	svc := secretsmanager.NewFromConfig(cfg)
@@ -89,21 +75,7 @@ func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, pub
 }
 
 func GetAPIKeyFromDeploymentSecret(req *handler.Request, secretName string) (DeploymentSecret, error) {
-	credsValue, err := req.Session.Config.Credentials.Get()
-	if err != nil {
-		return DeploymentSecret{}, err
-	}
-	region := ""
-	if req.Session.Config.Region != nil {
-		region = *req.Session.Config.Region
-	}
-	cfg, err := config.LoadDefaultConfig(
-		context.Background(),
-		config.WithRegion(region),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			credsValue.AccessKeyID, credsValue.SecretAccessKey, credsValue.SessionToken,
-		)),
-	)
+	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
 		return DeploymentSecret{}, err
 	}

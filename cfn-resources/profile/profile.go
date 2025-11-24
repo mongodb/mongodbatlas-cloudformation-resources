@@ -23,7 +23,6 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -45,22 +44,7 @@ func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) 
 		profileName = aws.String(DefaultProfile)
 	}
 
-	// Build v2 config using CFN-provided session credentials and region
-	credsValue, err := req.Session.Config.Credentials.Get()
-	if err != nil {
-		return nil, err
-	}
-	region := ""
-	if req.Session.Config.Region != nil {
-		region = *req.Session.Config.Region
-	}
-	cfg, err := config.LoadDefaultConfig(
-		context.Background(),
-		config.WithRegion(region),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			credsValue.AccessKeyID, credsValue.SecretAccessKey, credsValue.SessionToken,
-		)),
-	)
+	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
 		return nil, err
 	}

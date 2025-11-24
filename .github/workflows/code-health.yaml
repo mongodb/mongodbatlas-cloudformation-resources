@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+    - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
     - name: Set up Go
       uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00
       with:
@@ -21,7 +21,7 @@ jobs:
   mock-generation:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
       - name: Set up Go
         uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00
         with:
@@ -44,7 +44,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
       - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -62,7 +62,7 @@ jobs:
   check-copyright:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
       - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -76,21 +76,21 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261
   shellcheck:
     name: shellcheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
       - name: Run ShellCheck
         uses: bewuethr/shellcheck-action@80bac2daa9fcf95d648200a793d00060857e6dc4
   cfn-lint:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
       - name: 'Setup cfn-lint'
         uses: scottbrenner/cfn-lint-action@25ee47d1ab3146bda904df745511735cc0b9a970
       - name: 'Run cfn-lint'
@@ -103,7 +103,7 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
       - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00
         with:
           go-version-file: 'cfn-resources/go.mod'

@@ -15,15 +15,13 @@
 package profile
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/secretsmanager"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 )
@@ -44,22 +42,18 @@ func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) 
 		profileName = aws.String(DefaultProfile)
 	}
 
-	cfg, err := config.LoadDefaultConfig(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	secretsManagerClient := secretsmanager.NewFromConfig(cfg)
+	secretsManagerClient := secretsmanager.New(req.Session)
 	secretID := *profileName
 	if prefixRequired {
 		secretID = SecretNameWithPrefix(*profileName)
 	}
-	resp, err := secretsManagerClient.GetSecretValue(context.Background(), &secretsmanager.GetSecretValueInput{SecretId: &secretID})
+	resp, err := secretsManagerClient.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretID})
 	if err != nil {
 		return nil, err
 	}
 
 	profile := new(Profile)
-	err = json.Unmarshal([]byte(aws.ToString(resp.SecretString)), &profile)
+	err = json.Unmarshal([]byte(*resp.SecretString), &profile)
 	if err != nil {
 		return nil, err
 	}

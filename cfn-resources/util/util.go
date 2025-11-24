@@ -33,9 +33,7 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
-	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/mongodb-forks/digest"
 	"github.com/mongodb-labs/go-client-mongodb-atlas-app-services/appservices"
 	appServicesAuth "github.com/mongodb-labs/go-client-mongodb-atlas-app-services/auth"
@@ -279,30 +277,6 @@ func ToStringMapE(ep any) (map[string]any, error) {
 		return eMap, err
 	}
 	return eMap, nil
-}
-
-func CreateSSManagerClient(ctx context.Context) (*ssm.Client, error) {
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		return nil, err
-	}
-	ssmCli := ssm.NewFromConfig(cfg)
-	return ssmCli, nil
-}
-
-func Get(keyID, prefix string) string {
-	ssmClient, err := CreateSSManagerClient(context.Background())
-	if err != nil {
-		return ""
-	}
-	parameterName := buildKey(keyID, prefix)
-	decrypt := true
-	getParamOutput, err := ssmClient.GetParameter(context.Background(), &ssm.GetParameterInput{Name: aws.String(parameterName), WithDecryption: aws.Bool(decrypt)})
-	if err != nil {
-		return ""
-	}
-
-	return aws.ToString(getParamOutput.Parameter.Value)
 }
 
 func Pointer[T any](x T) *T {

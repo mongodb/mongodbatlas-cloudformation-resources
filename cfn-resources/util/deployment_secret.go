@@ -79,7 +79,7 @@ func GetAPIKeyFromDeploymentSecret(req *handler.Request, secretName string) (Dep
 	}
 
 	var key DeploymentSecret
-	err = json.Unmarshal([]byte(aws.ToString(output.SecretString)), &key)
+	err = json.Unmarshal([]byte(*output.SecretString), &key)
 	if err != nil {
 		log.Printf("Error --- %v", err.Error())
 		return key, err

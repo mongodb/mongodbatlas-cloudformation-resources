@@ -57,7 +57,7 @@ func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) 
 	}
 
 	profile := new(Profile)
-	err = json.Unmarshal([]byte(aws.ToString(resp.SecretString)), &profile)
+	err = json.Unmarshal([]byte(*resp.SecretString), &profile)
 	if err != nil {
 		return nil, err
 	}

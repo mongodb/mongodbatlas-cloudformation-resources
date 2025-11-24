@@ -48,7 +48,6 @@ func setup() {
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	// temp test
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
 		return *err, nil

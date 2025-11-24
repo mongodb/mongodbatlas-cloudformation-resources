@@ -44,7 +44,6 @@ const (
 	DeletingState    = "Deleting"
 	DeleteInProgress = "Delete Organization is in progress"
 	DeleteCompleted  = "Delete Organization is completed"
-	// temp test
 )
 
 type OrgProfile struct {

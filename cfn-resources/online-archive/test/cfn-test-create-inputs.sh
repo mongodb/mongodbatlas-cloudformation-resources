@@ -33,7 +33,7 @@ echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delet
 ClusterName="${projectName}"
 
 # shellcheck disable=SC2086
-atlas clusters create "${ClusterName}" --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
+atlas clusters create "${ClusterName}" --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
 atlas clusters watch "${ClusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${ClusterName}\""
 

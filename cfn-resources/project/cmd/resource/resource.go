@@ -339,7 +339,7 @@ func updateProject(client *admin20231115014.APIClient, currentModel *Model) (eve
 	}
 	project, res, err := client.ProjectsApi.UpdateProject(context.Background(), *currentModel.Id, &projectUpdate).Execute()
 	if err != nil {
-		if res.StatusCode == 401 { // cfn test
+		if res != nil && res.StatusCode == 401 { // cfn test
 			return progressevent.GetFailedEventByCode(
 				"Unauthorized Error: Unable to update project name. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				string(types.HandlerErrorCodeNotFound)), nil, err
@@ -353,7 +353,7 @@ func updateProject(client *admin20231115014.APIClient, currentModel *Model) (eve
 func getProjectByID(id *string, atlasV2 *admin20231115014.APIClient) (event handler.ProgressEvent, model *admin20231115014.Group, err error) {
 	project, res, err := atlasV2.ProjectsApi.GetProject(context.Background(), *id).Execute()
 	if err != nil {
-		if res.StatusCode == 401 { // cfn test
+		if res != nil && res.StatusCode == 401 { // cfn test
 			return progressevent.GetFailedEventByCode(
 				"Unauthorized Error: Unable to retrieve Project by ID. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				string(types.HandlerErrorCodeNotFound)), nil, err

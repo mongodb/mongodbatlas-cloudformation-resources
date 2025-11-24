@@ -283,12 +283,6 @@ func Pointer[T any](x T) *T {
 	return &x
 }
 
-func buildKey(keyID, storePrefix string) string {
-	// this is strictly coupled with permissions for handlers, changing this means changing permissions in handler
-	// moreover changing this might cause pollution in parameter store -  be sure you know what you are doing
-	return fmt.Sprintf("%s-%s", storePrefix, keyID)
-}
-
 // Contains checks if a string is present in a slice
 func Contains(s []string, str string) bool {
 	for _, v := range s {

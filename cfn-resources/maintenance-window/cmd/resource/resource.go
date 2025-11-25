@@ -19,8 +19,8 @@ import (
 	"errors"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -53,7 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	maintenanceWindow, _ := get(client, *currentModel)
 	if maintenanceWindow != nil {
-		return progress_events.GetFailedEventByCode("resource already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
+		return progress_events.GetFailedEventByCode("resource already exists", string(types.HandlerErrorCodeAlreadyExists)), nil
 	}
 
 	atlasModel := currentModel.toAtlasModel()
@@ -188,7 +188,7 @@ func get(client *util.MongoDBClient, currentModel Model) (*admin20231115002.Grou
 
 	if isResponseEmpty(maintenanceWindow) {
 		_, _ = logger.Warnf("Read - resource is empty: %+v", err)
-		ev := progress_events.GetFailedEventByCode("resource not found", cloudformation.HandlerErrorCodeNotFound)
+		ev := progress_events.GetFailedEventByCode("resource not found", string(types.HandlerErrorCodeNotFound))
 		return nil, &ev
 	}
 

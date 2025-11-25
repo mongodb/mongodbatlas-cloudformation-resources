@@ -22,14 +22,16 @@ import (
 	"math/big"
 	"strconv"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var (
@@ -174,13 +176,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func validateExist(info *admin20231115002.EncryptionAtRest) *handler.ProgressEvent {
-	if info != nil && info.AwsKms != nil && aws.BoolValue(info.AwsKms.Enabled) {
+	if info != nil && info.AwsKms != nil && aws.ToBool(info.AwsKms.Enabled) {
 		return nil
 	}
 	return &handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          "Resource Not Found",
-		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+		HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 }
 
 func randInt64() int64 {

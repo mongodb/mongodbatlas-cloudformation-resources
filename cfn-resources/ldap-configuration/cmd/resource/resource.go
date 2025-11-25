@@ -19,8 +19,8 @@ import (
 	"errors"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -64,7 +64,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if isResourceEnabled(ldapConf) {
-		return progressevent.GetFailedEventByCode("Authentication is already enabled for the selected project", cloudformation.HandlerErrorCodeAlreadyExists), nil
+		return progressevent.GetFailedEventByCode("Authentication is already enabled for the selected project", string(types.HandlerErrorCodeAlreadyExists)), nil
 	}
 
 	currentModel.AuthenticationEnabled = aws.Bool(true)
@@ -206,7 +206,7 @@ func get(client *util.MongoDBClient, groupID string) (*admin20231115002.UserSecu
 	}
 
 	if !isResourceEnabled(ldapConf) {
-		errPe := progressevent.GetFailedEventByCode("LDAP Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
+		errPe := progressevent.GetFailedEventByCode("LDAP Authentication is disabled for the selected project", string(types.HandlerErrorCodeNotFound))
 		return nil, &errPe
 	}
 

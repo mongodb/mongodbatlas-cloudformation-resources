@@ -18,14 +18,16 @@ import (
 	"context"
 	"errors"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.ClusterName}
@@ -80,11 +82,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	events, _ := Read(req, prevModel, currentModel)
-	if events.HandlerErrorCode == cloudformation.HandlerErrorCodeNotFound {
+	if events.HandlerErrorCode == string(types.HandlerErrorCodeNotFound) {
 		return handler.ProgressEvent{
 			Message:          "Not Found",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	return cloudBackupScheduleCreateOrUpdate(req, prevModel, currentModel)
@@ -173,12 +175,12 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error) {
 	if len(currentModel.Policies) == 0 {
 		msg := "validation error: policies cannot be empty"
-		return progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
+		return progressevent.GetFailedEventByCode(msg, string(types.HandlerErrorCodeInvalidRequest)), errors.New(msg)
 	}
 	for _, policy := range currentModel.Policies {
 		if len(policy.PolicyItems) == 0 {
 			msg := "validation error: policy items cannot be empty"
-			return progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
+			return progressevent.GetFailedEventByCode(msg, string(types.HandlerErrorCodeInvalidRequest)), errors.New(msg)
 		}
 		for _, policyItem := range policy.PolicyItems {
 			if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
@@ -187,7 +189,7 @@ func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          err.Error(),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
+					HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, err
 			}
 		}
 	}
@@ -201,7 +203,7 @@ func validateExportDetails(currentModel *Model) (pe handler.ProgressEvent, err e
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
+				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, err
 		}
 	}
 	return handler.ProgressEvent{}, nil
@@ -214,7 +216,7 @@ func validateExist(policy *admin20231115014.DiskBackupSnapshotSchedule) *handler
 	return &handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          "Not Found",
-		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+		HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 }
 
 func (m *Model) getParams() *admin20231115014.DiskBackupSnapshotSchedule {
@@ -227,7 +229,7 @@ func (m *Model) getParams() *admin20231115014.DiskBackupSnapshotSchedule {
 		UseOrgAndGroupNamesInExportPrefix: m.UseOrgAndGroupNamesInExportPrefix,
 		Policies:                          expandPolicies(m.Policies),
 		CopySettings:                      expandCopySettings(m.CopySettings),
-		Export:                            expandExport(m.Export, aws.BoolValue(m.AutoExportEnabled)),
+		Export:                            expandExport(m.Export, aws.ToBool(m.AutoExportEnabled)),
 		UpdateSnapshots:                   m.UpdateSnapshots,
 		DeleteCopiedBackups:               expandDeleteCopiedBackups(m.DeleteCopiedBackups),
 	}
@@ -248,7 +250,7 @@ func (m *Model) newModel(policy *admin20231115014.DiskBackupSnapshotSchedule) *M
 		Policies:                          flattenPolicies(policy.Policies),
 		Links:                             flattenLinks(policy.Links),
 		CopySettings:                      flattenCopySettings(policy.CopySettings),
-		Export:                            flattenExport(policy.Export, aws.BoolValue(policy.AutoExportEnabled)),
+		Export:                            flattenExport(policy.Export, aws.ToBool(policy.AutoExportEnabled)),
 	}
 }
 
@@ -302,10 +304,10 @@ func expandPolicyItems(cloudPolicyItems []ApiPolicyItemView) *[]admin20231115014
 	for _, policyItem := range cloudPolicyItems {
 		cPolicyItem := admin20231115014.DiskBackupApiPolicyItem{
 			Id:                policyItem.ID,
-			FrequencyInterval: aws.IntValue(policyItem.FrequencyInterval),
+			FrequencyInterval: util.SafeInt(policyItem.FrequencyInterval),
 			FrequencyType:     util.SafeString(policyItem.FrequencyType),
 			RetentionUnit:     util.SafeString(policyItem.RetentionUnit),
-			RetentionValue:    aws.IntValue(policyItem.RetentionValue),
+			RetentionValue:    util.SafeInt(policyItem.RetentionValue),
 		}
 		policyItems = append(policyItems, cPolicyItem)
 	}

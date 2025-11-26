@@ -19,15 +19,17 @@ import (
 	"errors"
 	"net/http"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -58,9 +60,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if aws.BoolValue(atlasAuditing.Enabled) {
+	if aws.ToBool(atlasAuditing.Enabled) {
 		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
@@ -116,9 +118,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if !aws.BoolValue(atlasAuditing.Enabled) {
+	if !aws.ToBool(atlasAuditing.Enabled) {
 		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
@@ -156,7 +158,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	if !resourceEnabled {
 		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			OperationStatus:  handler.Failed,
 			Message:          "resource not found",
 		}, nil
@@ -222,7 +224,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if !resourceEnabled {
 		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
@@ -254,7 +256,7 @@ func isEnabled(client admin20231115014.APIClient, currentModel Model) (bool, *ha
 		return false, &er
 	}
 
-	return aws.BoolValue(atlasAuditing.Enabled), nil
+	return aws.ToBool(atlasAuditing.Enabled), nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

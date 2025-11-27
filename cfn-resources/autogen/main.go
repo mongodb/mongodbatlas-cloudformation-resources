@@ -43,7 +43,7 @@ const (
 	deleteReqFields = "DeleteRequiredFields"
 	listReqFields   = "ListRequiredFields"
 	handler         = "github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	cloudformation  = "github.com/aws/aws-sdk-go/service/cloudformation"
+	cloudformation  = "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	util            = "github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	validator       = "github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	progressEvent   = "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"

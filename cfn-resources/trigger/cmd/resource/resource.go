@@ -22,8 +22,8 @@ import (
 	"log"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb-labs/go-client-mongodb-atlas-app-services/appservices"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
@@ -67,13 +67,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+			string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 
 	eventTrigger, err := newEventTrigger(currentModel)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating event trigger request : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+			string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 	et, resp, err := client.EventTriggers.Create(ctx, *currentModel.ProjectId, *currentModel.AppId, eventTrigger)
 	if err != nil {
@@ -92,7 +92,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.Id == nil {
 		err := errors.New("no Id found in currentModel")
 		return progressevents.GetFailedEventByCode(err.Error(),
-			cloudformation.HandlerErrorCodeNotFound), nil
+			string(types.HandlerErrorCodeNotFound)), nil
 	}
 	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
@@ -103,7 +103,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+			string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 
 	trigger, resp, err := client.EventTriggers.Get(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id)
@@ -123,7 +123,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Id == nil {
 		err := errors.New("no Id found in currentModel")
 		return progressevents.GetFailedEventByCode(err.Error(),
-			cloudformation.HandlerErrorCodeNotFound), nil
+			string(types.HandlerErrorCodeNotFound)), nil
 	}
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
@@ -134,13 +134,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+			string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 
 	eventTrigger, err := newEventTrigger(currentModel)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating trigger request : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+			string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 	_, resp, err := client.EventTriggers.Update(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id, eventTrigger)
 	if err != nil {
@@ -158,7 +158,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Id == nil {
 		err := errors.New("no Id found in currentModel")
 		return progressevents.GetFailedEventByCode(err.Error(),
-			cloudformation.HandlerErrorCodeNotFound), nil
+			string(types.HandlerErrorCodeNotFound)), nil
 	}
 	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
@@ -169,7 +169,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+			string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 
 	resp, err := client.EventTriggers.Delete(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id)
@@ -193,7 +193,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+			string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 
 	triggers, resp, err := client.EventTriggers.List(ctx, *currentModel.ProjectId, *currentModel.AppId)
@@ -250,8 +250,8 @@ func newEventTrigger(model *Model) (*appservices.EventTriggerRequest, error) {
 			}
 			conf.Project = m
 		}
-		conf.Collection = aws.StringValue(dTrigger.Collection)
-		conf.ServiceID = aws.StringValue(dTrigger.ServiceId)
+		conf.Collection = aws.ToString(dTrigger.Collection)
+		conf.ServiceID = aws.ToString(dTrigger.ServiceId)
 		conf.OperationTypes = dTrigger.OperationTypes
 		conf.FullDocument = dTrigger.FullDocument
 		conf.FullDocumentBeforeChange = dTrigger.FullDocumentBeforeChange

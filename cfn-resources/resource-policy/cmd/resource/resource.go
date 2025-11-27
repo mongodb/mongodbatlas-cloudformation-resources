@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312006/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -113,7 +113,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Update failed",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 		}, nil
 	}
 	resourcePolicyReq := NewResourcePolicyUpdateReq(currentModel)

@@ -28,7 +28,6 @@ jobs:
      project: ${{ steps.filter.outputs.project }}
      resource-policy: ${{ steps.filter.outputs.resource-policy }}
      search-deployment: ${{ steps.filter.outputs.search-deployment }}
-     serverless-private-endpoint: ${{ steps.filter.outputs.serverless-private-endpoint }}
      stream-connection: ${{ steps.filter.outputs.stream-connection }}
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
    steps:
@@ -72,8 +71,6 @@ jobs:
           - 'cfn-resources/resource-policy/**'
         search-deployment:
           - 'cfn-resources/search-deployment/**'
-        serverless-private-endpoint:
-          - 'cfn-resources/serverless-private-endpoint/**'
         stream-connection:
           - 'cfn-resources/stream-connection/**'
         stream-instance:
@@ -774,48 +771,6 @@ jobs:
 
           cat inputs/inputs_1_create.json
 
-          make run-contract-testing
-          make delete-test-resources
-  serverless-private-endpoint:
-    needs: change-detection
-    if: ${{ needs.change-detection.outputs.  serverless-private-endpoint == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
-      - uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@c71dd89d980e49367c70391e8ada4353f52f2800
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
-      - name: Run the Contract test
-        shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
-          MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
-        run: |
-          pushd cfn-resources/serverless-private-endpoint
-          make create-test-resources
-          
-          cat inputs/inputs_1_create.json
-          cat inputs/inputs_1_update.json
-          
           make run-contract-testing
           make delete-test-resources
   stream-connection:

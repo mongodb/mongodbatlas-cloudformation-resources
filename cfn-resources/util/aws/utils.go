@@ -15,18 +15,23 @@
 package aws
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/awsconfig"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-func newEc2Client(region string, req handler.Request) *ec2.EC2 {
-	return ec2.New(req.Session, aws.NewConfig().WithRegion(region))
+func newEc2Client(region string, req handler.Request) *ec2.Client {
+	cfg := awsconfig.FromHandlerRequest(&req)
+	cfg.Region = convertToAWSRegion(region)
+	return ec2.NewFromConfig(cfg)
 }
 
 type PrivateEndpointInput struct {
@@ -49,25 +54,17 @@ func convertToAWSRegion(region string) string {
 func CreatePrivateEndpoint(req handler.Request, endpointServiceName string, region string, privateEndpointInputs []PrivateEndpointInput) ([]PrivateEndpointOutput, *handler.ProgressEvent) {
 	svc := newEc2Client(convertToAWSRegion(region), req)
 
-	vcpType := "Interface"
-
 	subnetIDs := make([]PrivateEndpointOutput, len(privateEndpointInputs))
 
 	for i, pe := range privateEndpointInputs {
-		subnetIDsIn := make([]*string, len(pe.SubnetIDs))
-
-		for i := range pe.SubnetIDs {
-			subnetIDsIn[i] = &(pe.SubnetIDs[i])
+		connection := &ec2.CreateVpcEndpointInput{
+			VpcId:           aws.String(pe.VpcID),
+			ServiceName:     aws.String(endpointServiceName),
+			VpcEndpointType: ec2types.VpcEndpointTypeInterface,
+			SubnetIds:       pe.SubnetIDs,
 		}
 
-		connection := ec2.CreateVpcEndpointInput{
-			VpcId:           &pe.VpcID,
-			ServiceName:     &endpointServiceName,
-			VpcEndpointType: &vcpType,
-			SubnetIds:       subnetIDsIn,
-		}
-
-		vpcE, err := svc.CreateVpcEndpoint(&connection)
+		vpcE, err := svc.CreateVpcEndpoint(context.Background(), connection)
 		if err != nil {
 			fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
 				string(types.HandlerErrorCodeGeneralServiceException))
@@ -87,17 +84,11 @@ func CreatePrivateEndpoint(req handler.Request, endpointServiceName string, regi
 func DeletePrivateEndpoint(req handler.Request, interfaceEndpoints []string, region string) *handler.ProgressEvent {
 	svc := newEc2Client(convertToAWSRegion(region), req)
 
-	vpcEndpointIDs := make([]*string, 0)
-	for i := range interfaceEndpoints {
-		vpcEndpointIDs = append(vpcEndpointIDs, &interfaceEndpoints[i])
+	connection := &ec2.DeleteVpcEndpointsInput{
+		VpcEndpointIds: interfaceEndpoints,
 	}
 
-	connection := ec2.DeleteVpcEndpointsInput{
-		DryRun:         nil,
-		VpcEndpointIds: vpcEndpointIDs,
-	}
-
-	_, err := svc.DeleteVpcEndpoints(&connection)
+	_, err := svc.DeleteVpcEndpoints(context.Background(), connection)
 
 	if err != nil {
 		fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error deleting vcp Endpoint: %s", err.Error()),

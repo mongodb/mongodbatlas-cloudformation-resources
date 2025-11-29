@@ -19,8 +19,8 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -93,7 +93,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "no Id found in currentModel",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
 		return *err, nil
@@ -125,7 +125,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "no Id found in currentModel",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 	if err := validator.ValidateModel(UpdateRequiredFields, currentModel); err != nil {
 		return *err, nil
@@ -335,12 +335,12 @@ func validateProgress(ctx context.Context, client *util.MongoDBClient, currentMo
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
 	if *archive.State == targetState {
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
-		p.OperationStatus = cloudformation.OperationStatusInProgress
+		p.OperationStatus = handler.InProgress
 		p.CallbackDelaySeconds = 60
 		p.Message = "Pending"
 		p.CallbackContext = map[string]interface{}{
@@ -350,7 +350,7 @@ func validateProgress(ctx context.Context, client *util.MongoDBClient, currentMo
 		return p, nil
 	}
 	p := handler.NewProgressEvent()
-	p.OperationStatus = cloudformation.OperationStatusSuccess
+	p.OperationStatus = handler.Success
 	p.Message = "Complete"
 	if *archive.State != "DELETED" {
 		p.ResourceModel = currentModel

@@ -54,7 +54,7 @@ if atlas clusters describe "${cluster1}" --projectId "${projectId}"; then
 	echo "Cluster found"
 else
 	echo "Cluster1 not found, creating..."
-	atlas clusters create "${cluster1}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+	atlas clusters create "${cluster1}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
 	atlas clusters watch "${cluster1}" --projectId "${projectId}"
 	echo -e "Created Cluster \"${cluster1}\""
 fi
@@ -63,7 +63,7 @@ if atlas clusters describe "${cluster2}" --projectId "${projectId}"; then
 	echo "Cluster found"
 else
 	echo "Cluster2 not found, creating..."
-	atlas clusters create "${cluster2}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+	atlas clusters create "${cluster2}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
 	atlas clusters watch "${cluster2}" --projectId "${projectId}"
 	echo -e "Created Cluster \"${cluster2}\""
 fi

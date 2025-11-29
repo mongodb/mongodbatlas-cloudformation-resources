@@ -16,8 +16,8 @@ package resource
 
 import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
@@ -42,7 +42,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			Message:          "The previous model does not have entry. You should use CREATE instead of UPDATE",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	existingEntries, err := getAllEntries(client, *currentModel.ProjectId)
@@ -50,21 +50,21 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			Message:          "Error in retrieving the existing entries",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, err
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, err
 	}
 
 	if *existingEntries.TotalCount == 0 {
 		return handler.ProgressEvent{
 			Message:          "You have no entry in the accesslist. You should use CREATE instead of UPDATE",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	if len(currentModel.AccessList) == 0 {
 		return handler.ProgressEvent{
 			Message:          "You cannot have an empty accesslist. You shoud use DELETE instead of UPDATE",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	// We need to make sure that the entries in the previous and current model are not in the accesslist.

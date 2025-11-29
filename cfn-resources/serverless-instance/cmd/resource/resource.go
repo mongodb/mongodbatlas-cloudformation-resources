@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -84,7 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+				HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 		}
 
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil

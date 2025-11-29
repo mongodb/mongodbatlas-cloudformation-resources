@@ -21,7 +21,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -57,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError),
 		}, nil
 	}
 
@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError),
 		}, nil
 	}
 
@@ -94,7 +94,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	config, event, err := ReadConfig(client, currentModel)
 	if err != nil {
 		if config == nil {
-			return progressevent.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+			return progressevent.GetFailedEventByCode("Resource Not Found", string(types.HandlerErrorCodeNotFound)), nil
 		}
 
 		return event, nil
@@ -116,7 +116,7 @@ func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handle
 			return nil, handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 		}
 
 		return nil, progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to fetch managed namespace : %s", err.Error()),
@@ -129,7 +129,7 @@ func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handle
 		return nil, handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, errors.New("resource not found")
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, errors.New("resource not found")
 	}
 	readModel := newModel(globalCluster, currentModel)
 	return readModel, handler.ProgressEvent{}, nil
@@ -184,7 +184,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if !isExist(client, currentModel) {
-		return progressevent.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+		return progressevent.GetFailedEventByCode("Resource Not Found", string(types.HandlerErrorCodeNotFound)), nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -197,7 +197,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "request doest not contain any item to remove",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	if len(remove) > 0 {
@@ -207,7 +207,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _, err := client.Atlas20231115002.GlobalClustersApi.DeleteAllCustomZoneMappings(context.Background(), projectID, clusterName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByCode(fmt.Sprintf("Failed to remove custom zones : %s", err.Error()),
-				cloudformation.HandlerErrorCodeInvalidRequest), nil
+				string(types.HandlerErrorCodeInvalidRequest)), nil
 		}
 	}
 	return handler.ProgressEvent{

@@ -20,14 +20,16 @@ import (
 	"fmt"
 	"net/http"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func setup() {
@@ -179,7 +181,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			Message:          fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	peerID := *currentModel.Id
@@ -294,7 +296,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func validateDeletionProcess(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	state, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
-		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
+		return progressevent.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest))
 	}
 
 	if state == StatusDeleted {
@@ -316,10 +318,10 @@ func validateDeletionProcess(client *util.MongoDBClient, currentModel *Model) ha
 func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	state, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
-		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
+		return progressevent.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest))
 	}
 	if state == StatusFailed {
-		return progressevent.GetFailedEventByCode("Creation failed", cloudformation.HandlerErrorCodeInternalFailure)
+		return progressevent.GetFailedEventByCode("Creation failed", string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	if state == StatusPendingAcceptance || state == StatusAvailable {

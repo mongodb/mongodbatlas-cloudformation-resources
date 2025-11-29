@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -33,7 +33,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if len(currentModel.AccessList) == 0 {
-		return progressevents.GetFailedEventByCode("AccessList must not be empty", cloudformation.HandlerErrorCodeInvalidRequest), nil
+		return progressevents.GetFailedEventByCode("AccessList must not be empty", string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -62,7 +62,7 @@ func createEntries(model *Model, client *util.MongoDBClient) (handler.ProgressEv
 		return handler.ProgressEvent{
 			Message:          "Error in parsing the resource schema",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, err
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, err
 	}
 
 	projectID := *model.ProjectId
@@ -72,12 +72,12 @@ func createEntries(model *Model, client *util.MongoDBClient) (handler.ProgressEv
 			return handler.ProgressEvent{
 				Message:          fmt.Sprintf("Error validating entries: %s", err.Error()),
 				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure}, err
+				HandlerErrorCode: string(types.HandlerErrorCodeInternalFailure)}, err
 		}
 		return handler.ProgressEvent{
 			Message:          "Entry already exists in the access list",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, err
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, err
 	}
 
 	if _, _, err := client.Atlas20231115002.ProjectIPAccessListApi.CreateProjectIpAccessList(context.Background(), projectID, &request.Results).Execute(); err != nil {
@@ -85,7 +85,7 @@ func createEntries(model *Model, client *util.MongoDBClient) (handler.ProgressEv
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, err
 	}
 
 	return handler.ProgressEvent{}, nil

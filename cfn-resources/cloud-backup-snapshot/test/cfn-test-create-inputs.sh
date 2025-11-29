@@ -43,7 +43,7 @@ if [ -z "$projectId" ]; then
 	echo -e "Cant find project \"${projectName}\"\n"
 fi
 
-atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
 atlas clusters watch "${clusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${clusterName}\""
 

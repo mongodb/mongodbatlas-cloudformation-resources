@@ -44,7 +44,11 @@ func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) 
 		profileName = aws.String(DefaultProfile)
 	}
 
-	// Create AWS SDK v2 config using CloudFormation handler's SDK v1 session credentials
+	// When migrating to AWS SDK v2, we can't use config.LoadDefaultConfig() directly in CloudFormation resource handlers.
+	// The cloudformation-cli-go-plugin provides credentials via handler.Request.Session, which is an AWS SDK v1 session.
+	// These credentials have the permissions defined in our resource execution roles (e.g., Secrets Manager access).
+	// Using LoadDefaultConfig() would use the Lambda's base execution role instead, which lacks these permissions.
+	// See: https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/issues/237
 	cfg := awsconfig.FromHandlerRequest(req)
 	secretsManagerClient := secretsmanager.NewFromConfig(cfg)
 	secretID := *profileName

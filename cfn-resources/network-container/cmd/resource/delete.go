@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -59,7 +59,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus: handler.Failed,
 			Message: `You are trying to delete a container that is in use. (container.provisioned = true)
 			Please, make sure to delete the network peering and the atlas cluster before deleting the container`,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeResourceConflict,
+			HandlerErrorCode: string(types.HandlerErrorCodeResourceConflict),
 		}, nil
 	}
 
@@ -95,7 +95,7 @@ func retryDeleteIfRequired(client *util.MongoDBClient, response *http.Response, 
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          fmt.Sprintf("Please, make sure to delete the network peering and the atlas cluster before deleting the container: %s", errSecondCall.Error()),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeResourceConflict,
+			HandlerErrorCode: string(types.HandlerErrorCodeResourceConflict),
 		}, nil
 	}
 

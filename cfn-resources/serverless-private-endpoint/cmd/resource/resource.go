@@ -531,7 +531,7 @@ func (currentModel *Model) validateAwsPrivateEndpointProperties() *handler.Progr
 		}
 
 		if currentModel.AwsPrivateEndpointConfigurationProperties.Region == nil {
-			pe := progressevents.GetFailedEventByCode("Validation failed: REgion must be present when CreateAndAssignAWSPrivateEndpoint is true", string(types.HandlerErrorCodeInvalidRequest))
+			pe := progressevents.GetFailedEventByCode("Validation failed: Region must be present when CreateAndAssignAWSPrivateEndpoint is true", string(types.HandlerErrorCodeInvalidRequest))
 			return &pe
 		}
 

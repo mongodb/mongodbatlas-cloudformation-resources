@@ -70,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
 	federatedSettingsOrganizationRoleMapping, resp, err := client.Atlas20231115002.FederatedAuthenticationApi.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "DUPLICATE_ROLE_MAPPING") {
+		if resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "DUPLICATE_ROLE_MAPPING") {
 			return progressevent.GetFailedEventByCode("Resource already exists",
 				string(types.HandlerErrorCodeAlreadyExists)), nil
 		}

@@ -32,6 +32,8 @@ func Create(req *handler.Request, secretName string, data interface{}, descripti
 		return nil, nil, err
 	}
 
+	// Create service client value configured for credentials
+	// from assumed role.
 	cfg := awsconfig.FromHandlerRequest(req)
 	svc := secretsmanager.NewFromConfig(cfg)
 
@@ -43,6 +45,8 @@ func Create(req *handler.Request, secretName string, data interface{}, descripti
 
 	result, err := svc.CreateSecret(context.Background(), input)
 	if err != nil {
+		// Print the error, cast err to awserr. Error to get the Code and
+		// Message from an error.
 		log.Printf("error create secret: %+v", err.Error())
 		return nil, nil, err
 	}
@@ -56,6 +60,8 @@ func PutSecret(req *handler.Request, secretName string, data interface{}, descri
 		return nil, nil, err
 	}
 
+	// Create service client value configured for credentials
+	// from assumed role.
 	cfg := awsconfig.FromHandlerRequest(req)
 	svc := secretsmanager.NewFromConfig(cfg)
 
@@ -66,6 +72,8 @@ func PutSecret(req *handler.Request, secretName string, data interface{}, descri
 
 	result, err := svc.PutSecretValue(context.Background(), input)
 	if err != nil {
+		// Print the error, cast err to awserr. Error to get the Code and
+		// Message from an error.
 		log.Printf("error during put secret: %+v", err.Error())
 		return nil, nil, err
 	}

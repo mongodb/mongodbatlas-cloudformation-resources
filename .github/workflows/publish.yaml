@@ -44,7 +44,7 @@ jobs:
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
       - uses: aws-actions/setup-sam@c71dd89d980e49367c70391e8ada4353f52f2800
         with:
           use-installer: true

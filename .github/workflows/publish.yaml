@@ -39,12 +39,12 @@ jobs:
     name: publish-${{ matrix.region }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
       - uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
       - uses: aws-actions/setup-sam@c71dd89d980e49367c70391e8ada4353f52f2800
         with:
           use-installer: true
@@ -107,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: terraform-provider-mongodbatlas-checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
           repository: mongodb/terraform-provider-mongodbatlas
           ref: master

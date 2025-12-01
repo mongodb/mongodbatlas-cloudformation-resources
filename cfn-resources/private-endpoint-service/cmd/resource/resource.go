@@ -21,15 +21,14 @@ import (
 	"fmt"
 	"net/http"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 const (
@@ -152,7 +151,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if privateEndpointResponse == nil {
 		return progressevent.GetFailedEventByCode("Error deleting resource, private Endpoint Response is null",
-			cloudformation.HandlerErrorCodeNotFound), nil
+			string(types.HandlerErrorCodeNotFound)), nil
 	}
 
 	deletePrivateEndpointRequest := client.Atlas20231115014.PrivateEndpointServicesApi.DeletePrivateEndpointService(context.Background(), *currentModel.ProjectId,
@@ -268,7 +267,7 @@ func create(client *util.MongoDBClient, currentModel *Model) handler.ProgressEve
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource already exists",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}
 	}
 
 	if err != nil {
@@ -284,7 +283,7 @@ func create(client *util.MongoDBClient, currentModel *Model) handler.ProgressEve
 	callBackMap, err := callBackContext.convertToInterface()
 	if err != nil {
 		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
-			cloudformation.HandlerErrorCodeServiceInternalError)
+			string(types.HandlerErrorCodeServiceInternalError))
 	}
 
 	currentModel.completeByConnection(*createPrivateEndpointResponse)
@@ -307,7 +306,7 @@ func validateCreationCompletion(client *util.MongoDBClient, currentModel *Model,
 	currentModel.completeByConnection(*privateEndpointResponse)
 
 	if privateEndpointResponse.Status == nil {
-		return progressevent.GetFailedEventByCode("Error getting private endpoint status : status null", cloudformation.HandlerErrorCodeServiceInternalError)
+		return progressevent.GetFailedEventByCode("Error getting private endpoint status : status null", string(types.HandlerErrorCodeServiceInternalError))
 	}
 
 	switch *privateEndpointResponse.Status {
@@ -320,7 +319,7 @@ func validateCreationCompletion(client *util.MongoDBClient, currentModel *Model,
 		callBackMap, err := callBackContext.convertToInterface()
 		if err != nil {
 			return progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
-				cloudformation.HandlerErrorCodeServiceInternalError)
+				string(types.HandlerErrorCodeServiceInternalError))
 		}
 
 		return progressevent.GetInProgressProgressEvent("Private endpoint service initiating", callBackMap,
@@ -333,7 +332,7 @@ func validateCreationCompletion(client *util.MongoDBClient, currentModel *Model,
 	default:
 		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error creating private endpoint in status : %s",
 			*privateEndpointResponse.Status),
-			cloudformation.HandlerErrorCodeInvalidRequest)
+			string(types.HandlerErrorCodeInvalidRequest))
 	}
 }
 

@@ -21,7 +21,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	resource_constats "github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpoint"
@@ -216,7 +216,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if privateEndpointResponse == nil {
 		return progressevent.GetFailedEventByCode("Error deleting resource, private Endpoint Response is null",
-			cloudformation.HandlerErrorCodeNotFound), nil
+			string(types.HandlerErrorCodeNotFound)), nil
 	}
 
 	privateEndpoint := *privateEndpointResponse
@@ -323,7 +323,7 @@ func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *hand
 	eventStatus, err := resource_constats.ParseEventStatus(fmt.Sprintf("%v", callback))
 	if err != nil {
 		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error parsing callback status : %s", err.Error()),
-			cloudformation.HandlerErrorCodeServiceInternalError)
+			string(types.HandlerErrorCodeServiceInternalError))
 		return "", &pe
 	}
 

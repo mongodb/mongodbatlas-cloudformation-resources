@@ -21,7 +21,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	teamuser "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -202,7 +202,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	teamID := cast.ToString(currentModel.TeamId)
@@ -246,7 +246,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Unable to update users",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+			HandlerErrorCode: string(types.HandlerErrorCodeInternalFailure),
 		}, nil
 	}
 
@@ -340,14 +340,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 	if currentModel.ProjectId != nil {
 		if err := removeFromProject(atlasV2, currentModel); err != nil {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Unable to Delete",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+				HandlerErrorCode: string(types.HandlerErrorCodeInternalFailure),
 			}, nil
 		}
 	}
@@ -359,7 +359,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Unable to Delete",
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+					HandlerErrorCode: string(types.HandlerErrorCodeInternalFailure),
 				}, nil
 			}
 
@@ -368,7 +368,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Unable to Delete from organization but successfully removed from project",
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+					HandlerErrorCode: string(types.HandlerErrorCodeInternalFailure),
 				}, nil
 			}
 		}

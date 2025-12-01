@@ -21,7 +21,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -67,7 +67,7 @@ func Create(client util.MongoDBClient, region string, groupID string) handler.Pr
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource already exists",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}
 	}
 
 	if err != nil {
@@ -98,7 +98,7 @@ func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req 
 	err := PrivateEndpointCallBackContext.FillStruct(req.CallbackContext)
 	if err != nil {
 		ev := progressevent.GetFailedEventByCode(fmt.Sprintf("Error parsing PrivateEndpointCallBackContext : %s", err.Error()),
-			cloudformation.HandlerErrorCodeServiceInternalError)
+			string(types.HandlerErrorCodeServiceInternalError))
 		return nil, &ev
 	}
 
@@ -134,7 +134,7 @@ func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req 
 	default:
 		ev := progressevent.GetFailedEventByCode(fmt.Sprintf("Error creating private endpoint in status : %s",
 			*privateEndpointResponse.Status),
-			cloudformation.HandlerErrorCodeInvalidRequest)
+			string(types.HandlerErrorCodeInvalidRequest))
 		return nil, &ev
 	}
 }

@@ -21,13 +21,15 @@ import (
 	"net/http"
 	"strings"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var CreateRequiredFields = []string{constants.FederationSettingsID, constants.OrgID, constants.ExternalGroupName, constants.RoleAssignments}
@@ -70,7 +72,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		if resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "DUPLICATE_ROLE_MAPPING") {
 			return progressevent.GetFailedEventByCode("Resource already exists",
-				cloudformation.HandlerErrorCodeAlreadyExists), nil
+				string(types.HandlerErrorCodeAlreadyExists)), nil
 		}
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp), nil
@@ -132,7 +134,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	roleMappingID := currentModel.Id
 
 	if !isRoleMappingExists(currentModel, client) {
-		return progressevent.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+		return progressevent.GetFailedEventByCode("Not Found", string(types.HandlerErrorCodeNotFound)), nil
 	}
 
 	if (currentModel.RoleAssignments) == nil || len(currentModel.RoleAssignments) == 0 {
@@ -140,7 +142,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
@@ -175,7 +177,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Check if  already exist
 	if !isRoleMappingExists(currentModel, client) {
-		return progressevent.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+		return progressevent.GetFailedEventByCode("Not Found", string(types.HandlerErrorCodeNotFound)), nil
 	}
 
 	federationSettingsID := currentModel.FederationSettingsId

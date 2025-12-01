@@ -18,14 +18,15 @@ import (
 	"context"
 	"errors"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.UserID}
@@ -56,10 +57,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "resource already exists",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 
-	if expirationMonths := aws.IntValue(currentModel.MonthsUntilExpiration); expirationMonths > 0 {
+	if currentModel.MonthsUntilExpiration != nil && *currentModel.MonthsUntilExpiration > 0 {
+		expirationMonths := *currentModel.MonthsUntilExpiration
 		cert := admin20231115002.NewUserCert()
 		cert.MonthsUntilExpiration = &expirationMonths
 		res, _, err := client.Atlas20231115002.X509AuthenticationApi.CreateDatabaseUserCertificate(context.Background(), *currentModel.ProjectId, *currentModel.UserName, cert).Execute()
@@ -67,7 +69,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 		}
 		if res != "" {
 			currentModel.CustomerX509 = &CustomerX509{
@@ -81,7 +83,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 		}
 	}
 
@@ -114,7 +116,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "config is not available",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	currentModel.CustomerX509 = &CustomerX509{
@@ -153,7 +155,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "config is not available",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	_, _, err = client.Atlas20231115002.X509AuthenticationApi.DisableCustomerManagedX509(context.Background(), *currentModel.ProjectId).Execute()
@@ -161,7 +163,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Unable to Delete",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+			HandlerErrorCode: string(types.HandlerErrorCodeInternalFailure),
 		}, nil
 	}
 

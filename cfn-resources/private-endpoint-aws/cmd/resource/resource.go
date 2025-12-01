@@ -21,16 +21,17 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 func setup() {
@@ -125,9 +126,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	defer response.Body.Close()
 	if err != nil {
 		if response.StatusCode == http.StatusConflict {
-			return progress_events.GetFailedEventByCode(fmt.Sprintf("error creating Serverless Private Endpoint %s",
-					err.Error()), cloudformation.HandlerErrorCodeAlreadyExists),
-				nil
+			return progress_events.GetFailedEventByCode(
+				fmt.Sprintf("error creating Serverless Private Endpoint %s", err.Error()),
+				string(types.HandlerErrorCodeAlreadyExists),
+			), nil
 		}
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
 				err.Error()), response),

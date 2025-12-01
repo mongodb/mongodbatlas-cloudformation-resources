@@ -20,7 +20,7 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -53,7 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if isRegModeSettingExists(currentModel, mongodbClient) {
 		return progressevent.GetFailedEventByCode(fmt.Sprintf("Regionalized Setting for Private Endpoint already enabled for : %s", *currentModel.ProjectId),
-			cloudformation.HandlerErrorCodeAlreadyExists), nil
+			string(types.HandlerErrorCodeAlreadyExists)), nil
 	}
 
 	// API call to Add Regional Mode for Private Endpoint
@@ -80,7 +80,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	enabled := regPrivateEndpointSetting.Enabled
 	if !enabled {
 		return progressevent.GetFailedEventByCode(fmt.Sprintf("Regionalized Setting for Private Endpoint not found for Project : %s", *currentModel.ProjectId),
-			cloudformation.HandlerErrorCodeNotFound), nil
+			string(types.HandlerErrorCodeNotFound)), nil
 	}
 
 	return handler.ProgressEvent{
@@ -125,7 +125,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	return progressevent.GetFailedEventByCode(fmt.Sprintf("Error in disabling regionalized mode for private endpoint for Project : %s", *currentModel.ProjectId),
-		cloudformation.HandlerErrorCodeNotFound), nil
+		string(types.HandlerErrorCodeNotFound)), nil
 }
 
 // List handles the List event from the Cloudformation service.

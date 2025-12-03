@@ -39,7 +39,7 @@ mkdir inputs
 project_Id="${2:-$PROJECT_ID}"
 db_name="${3:-$DB_NAME}"
 coll_name="${4:-$COLLECTION_NAME}"
-trigger_name="cfn-test-trigger-${RANDOM}"
+trigger_name="cfn-test-trigger-$(date +%s)"
 func_name="${5:-$FUNC_NAME}"
 func_id="${6:-$FUNC_ID}"
 service_id="${7:-$SERVICE_ID}"

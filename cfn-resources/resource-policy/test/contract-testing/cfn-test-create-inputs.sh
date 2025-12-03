@@ -9,7 +9,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# setting projectName
-policyName="ct-resource-policy-$((1 + RANDOM % 10000))"
+# setting policyName
+policyName="ct-resource-policy-$(date +%s)"
 
-./test/cfn-test-create-inputs.sh $policyName
+./test/cfn-test-create-inputs.sh "$policyName"

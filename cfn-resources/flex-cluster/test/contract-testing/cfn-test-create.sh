@@ -5,7 +5,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-projectName="cfn-test-bot-$((1 + RANDOM % 10000))"
+projectName="cfn-test-bot-$(date +%s)"
 
 # create project
 projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')

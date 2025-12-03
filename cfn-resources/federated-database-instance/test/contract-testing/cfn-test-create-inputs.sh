@@ -31,6 +31,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
 fi
 
 # setting projectName
-projectName="ct-federated-db-instance-$((1 + RANDOM % 10000))"
+projectName="ct-federated-db-instance-$(date +%s)"
 # trigger create inputs for the cfn test
-./test/cfn-test-create-inputs.sh $projectName
+./test/cfn-test-create-inputs.sh "$projectName"

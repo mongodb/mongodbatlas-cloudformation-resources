@@ -27,7 +27,7 @@ else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
-streamInstanceName="stream-$RANDOM"
+streamInstanceName="stream-$(date +%s)"
 cloudProvider="AWS"
 region="VIRGINIA_USA"
 tier="SP30"

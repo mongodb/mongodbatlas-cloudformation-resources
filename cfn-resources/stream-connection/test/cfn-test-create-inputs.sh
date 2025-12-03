@@ -35,7 +35,7 @@ clusterName="cluster-$RANDOM"
 atlas streams instances create "${instanceName}" --projectId "${projectId}" --region VIRGINIA_USA --provider ${cloudProvider}
 echo -e "Created StreamInstance \"${instanceName}\""
 
-atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 6.0 --diskSizeGB 10 --output=json
+atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
 atlas clusters watch "${clusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${clusterName}\""
 

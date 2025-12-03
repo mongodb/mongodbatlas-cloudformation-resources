@@ -11,8 +11,8 @@ function usage {
 }
 
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
-
 clusterName=$(jq -r '.ClusterName' ./inputs/inputs_1_create.json)
+instanceName=$(jq -r '.InstanceName' ./inputs/inputs_1_create.json)
 
 if atlas cluster delete "${clusterName}" --projectId "${projectId}" --force; then
 	echo "deleting cluster with name ${clusterName}"
@@ -23,6 +23,13 @@ fi
 atlas cluster watch "${clusterName}" --projectId "${projectId}" && status=0 || status=$?
 if [ "$status" -eq 0 ]; then
 	echo "Cluster '${clusterName}' has been successfully watched until deletion."
+fi
+
+#delete stream instance
+if atlas streams instances delete "${instanceName}" --projectId "${projectId}" --force; then
+	echo "deleting stream instance with name ${instanceName}"
+else
+	echo "failed to delete the stream instance with name ${instanceName}"
 fi
 
 #delete project

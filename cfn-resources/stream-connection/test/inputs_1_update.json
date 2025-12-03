@@ -6,7 +6,7 @@
   "ConnectionName": "ConnectionNameCluster",
   "Type": "Cluster",
   "DbRoleToExecute": {
-    "Role": "readWrite",
+    "Role": "readWriteAnyDatabase",
     "Type": "BUILT_IN"
   }
 }

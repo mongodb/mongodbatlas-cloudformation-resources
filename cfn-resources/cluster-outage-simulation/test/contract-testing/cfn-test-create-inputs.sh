@@ -15,6 +15,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
 fi
 
 # setting projectName
-projectName="cluster-outage-simulation-$(date +%s)"
+projectName="cluster-outage-simulation-$(date +%s%3N)"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

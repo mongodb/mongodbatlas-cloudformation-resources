@@ -10,6 +10,6 @@ set -o nounset
 set -o pipefail
 
 # setting projectName
-projectName="ct-search-deployment-$(date +%s)"
+projectName="ct-search-deployment-$(date +%s%3N)"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

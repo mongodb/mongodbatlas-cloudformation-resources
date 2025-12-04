@@ -32,7 +32,7 @@ fi
 org_id="${MONGODB_ATLAS_ORG_ID}"
 profile="${MONGODB_ATLAS_PROFILE}"
 
-project_name="Project-$(date +%s)"
+project_name="Project-$(date +%s%3N)"
 projectId=$(atlas projects create "${project_name}" --orgId "${org_id}" --output json | jq -r '.id')
 
 rm -rf "inputs" && mkdir "inputs"

@@ -28,9 +28,9 @@ else
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
-instanceName="stream-instance-$(date +%s)"
+instanceName="stream-instance-$(date +%s%3N)"
 cloudProvider="AWS"
-clusterName="cluster-$(date +%s)"
+clusterName="cluster-$(date +%s%3N)"
 
 atlas streams instances create "${instanceName}" --projectId "${projectId}" --region VIRGINIA_USA --provider ${cloudProvider}
 echo -e "Created StreamInstance \"${instanceName}\""

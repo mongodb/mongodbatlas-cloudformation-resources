@@ -16,6 +16,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
 fi
 
 # setting projectName
-projectName="stream-instance-$(date +%s)"
+projectName="stream-instance-$(date +%s%3N)"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

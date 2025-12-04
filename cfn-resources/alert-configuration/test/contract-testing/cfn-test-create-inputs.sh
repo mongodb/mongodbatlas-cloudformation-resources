@@ -10,6 +10,6 @@ set -o nounset
 set -o pipefail
 
 # setting projectName
-projectName="ct-alert-config-$(date +%s)"
+projectName="ct-alert-config-$(date +%s%3N)"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

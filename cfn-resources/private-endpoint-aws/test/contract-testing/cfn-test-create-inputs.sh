@@ -16,6 +16,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ];then
 fi
 
 # setting projectName
-projectName="ct-private-endpoint-$(date +%s)"
+projectName="ct-private-endpoint-$(date +%s%3N)"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

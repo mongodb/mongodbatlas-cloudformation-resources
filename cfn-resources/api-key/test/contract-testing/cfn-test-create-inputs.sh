@@ -9,6 +9,6 @@ set -o nounset
 set -o pipefail
 
 # setting projectName
-projectName="cfn-bot-apikey-test-$(date +%s)"
+projectName="cfn-bot-apikey-test-$(date +%s%3N)"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

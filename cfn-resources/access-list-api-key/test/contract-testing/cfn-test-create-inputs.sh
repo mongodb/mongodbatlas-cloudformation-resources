@@ -15,6 +15,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
 fi
 
 # setting projectName
-projectName="cfn-bot-access-list-$(date +%s%3N)"
+projectName="cfn-bot-access-list-$(date +%s)-$RANDOM"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

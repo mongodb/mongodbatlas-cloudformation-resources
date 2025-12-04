@@ -32,7 +32,7 @@ fi
 org_id="${MONGODB_ATLAS_ORG_ID}"
 team_id="${MONGODB_ATLAS_TEAM_ID}"
 profile="${MONGODB_ATLAS_PROFILE}"
-project_name="Project-$(date +%s%3N)"
+project_name="Project-$(date +%s)-$RANDOM"
 
 if [ -z "${MONGODB_ATLAS_ORG_API_KEY_ID+x}" ]; then
 	api_key_id=$(atlas organizations apikeys create --desc "Created as part of the contract testing: ${project_name}" --role ORG_MEMBER --output json | jq -r '.id')

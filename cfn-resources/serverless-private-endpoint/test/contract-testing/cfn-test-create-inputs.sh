@@ -15,6 +15,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
 fi
 
 # setting projectName
-projectName="ct-private-endpoint-serverless-$(date +%s%3N)"
+projectName="ct-private-endpoint-serverless-$(date +%s)-$RANDOM"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

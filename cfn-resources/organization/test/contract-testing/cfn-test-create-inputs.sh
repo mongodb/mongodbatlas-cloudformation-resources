@@ -9,7 +9,7 @@ set -o nounset
 set -o pipefail
 
 # setting orgName
-orgName="cfn-bot-org-test-$(date +%s%3N)"
+orgName="cfn-bot-org-test-$(date +%s)-$RANDOM"
 
 if [ -z ${MONGODB_ATLAS_PROFILE+x} ]; then
 	echo "MONGODB_ATLAS_PROFILE is not set, exiting..."

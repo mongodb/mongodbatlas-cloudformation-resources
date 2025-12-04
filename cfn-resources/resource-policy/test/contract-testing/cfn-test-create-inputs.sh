@@ -10,6 +10,6 @@ set -o nounset
 set -o pipefail
 
 # setting policyName
-policyName="ct-resource-policy-$(date +%s%3N)"
+policyName="ct-resource-policy-$(date +%s)-$RANDOM"
 
 ./test/cfn-test-create-inputs.sh "$policyName"

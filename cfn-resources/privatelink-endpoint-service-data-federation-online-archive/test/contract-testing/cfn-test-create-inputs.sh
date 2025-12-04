@@ -14,6 +14,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
 fi
 
 # setting projectName
-projectName="pes-online-archive-$((1 + RANDOM % 10000))"
+projectName="pes-online-archive-$(date +%s)-$RANDOM"
 
-./test/cfn-test-create-inputs.sh $projectName
+./test/cfn-test-create-inputs.sh "$projectName"

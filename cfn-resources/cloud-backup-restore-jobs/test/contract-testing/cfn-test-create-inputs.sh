@@ -10,6 +10,6 @@ set -o nounset
 set -o pipefail
 
 # setting projectName
-projectName="ct-cloud-backup-restore-jobs-$((1 + RANDOM % 10000))"
+projectName="ct-cloud-backup-restore-jobs-$(date +%s)-$RANDOM"
 
-./test/cfn-test-create-inputs.sh $projectName
+./test/cfn-test-create-inputs.sh "$projectName"

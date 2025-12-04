@@ -43,7 +43,7 @@ fi
 cluster_name=${ClusterName}
 db_name="${4:-sample_airbnb}"
 coll_name="${5:-listingsAndReviews}"
-index_name="search-$RANDOM"
+index_name="search-$(date +%s)-$RANDOM"
 u_index_name="${index_name}"
 WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit

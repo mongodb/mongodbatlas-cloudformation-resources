@@ -36,7 +36,7 @@ else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
-clusterName="cfn-test-bot-$((1 + RANDOM % 10000))"
+clusterName="cfn-test-bot-$(date +%s)-$RANDOM"
 echo "clusterName: $clusterName"
 
 WORDTOREMOVE="template."

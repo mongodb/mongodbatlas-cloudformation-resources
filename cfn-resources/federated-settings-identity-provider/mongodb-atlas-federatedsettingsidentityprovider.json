@@ -1,0 +1,137 @@
+{
+  "typeName": "MongoDB::Atlas::FederatedSettingsIdentityProvider",
+  "description": "Resource for managing MongoDB Atlas Federated Settings Identity Providers (SAML and OIDC) within an Atlas federation.",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/federated-settings-identity-provider",
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secrets Manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
+    },
+    "FederationSettingsId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your federation.",
+      "minLength": 24,
+      "maxLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Name": {
+      "type": "string",
+      "description": "Human-readable name (display name) of the identity provider."
+    },
+    "IssuerUri": {
+      "type": "string",
+      "description": "Issuer URI of the identity provider."
+    },
+    "RequestBinding": {
+      "type": "string",
+      "description": "SAML request binding."
+    },
+    "ResponseSignatureAlgorithm": {
+      "type": "string",
+      "description": "SAML response signature algorithm."
+    },
+    "AssociatedDomains": {
+      "type": "array",
+      "description": "List of associated domains for this identity provider.",
+      "insertionOrder": false,
+      "items": {
+        "type": "string"
+      }
+    },
+    "SsoDebugEnabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether to enable SSO debug."
+    },
+    "SsoUrl": {
+      "type": "string",
+      "description": "SSO URL."
+    },
+    "Status": {
+      "type": "string",
+      "description": "Identity provider status."
+    },
+    "OktaIdpId": {
+      "type": "string",
+      "description": "Legacy identity provider identifier (Okta IdP ID). Returned by the API."
+    },
+    "IdpId": {
+      "type": "string",
+      "description": "Unique identifier of the identity provider. Returned by the API."
+    },
+    "Protocol": {
+      "type": "string",
+      "description": "Identity provider protocol.",
+      "enum": ["SAML", "OIDC"]
+    },
+    "Audience": {
+      "type": "string",
+      "description": "OIDC audience."
+    },
+    "ClientId": {
+      "type": "string",
+      "description": "OIDC client ID."
+    },
+    "GroupsClaim": {
+      "type": "string",
+      "description": "OIDC groups claim."
+    },
+    "RequestedScopes": {
+      "type": "array",
+      "description": "OIDC requested scopes.",
+      "insertionOrder": false,
+      "items": {
+        "type": "string"
+      }
+    },
+    "UserClaim": {
+      "type": "string",
+      "description": "OIDC user claim."
+    },
+    "Description": {
+      "type": "string",
+      "description": "Description of the identity provider."
+    },
+    "AuthorizationType": {
+      "type": "string",
+      "description": "OIDC authorization type."
+    },
+    "IdpType": {
+      "type": "string",
+      "description": "Identity provider type (for OIDC)."
+    }
+  },
+  "additionalProperties": false,
+  "required": ["FederationSettingsId", "Name", "IssuerUri"],
+  "readOnlyProperties": ["/properties/OktaIdpId", "/properties/IdpId"],
+  "createOnlyProperties": [
+    "/properties/FederationSettingsId",
+    "/properties/Profile"
+  ],
+  "primaryIdentifier": [
+    "/properties/FederationSettingsId",
+    "/properties/IdpId",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "read": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "update": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "delete": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "list": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/federated-settings-identity-provider/README.md",
+  "tagging": {
+    "taggable": false
+  }
+}

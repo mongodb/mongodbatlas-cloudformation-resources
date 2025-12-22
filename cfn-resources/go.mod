@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.6
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.71.4
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.276.1
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.278.0
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.41.0
 	github.com/aws/smithy-go v1.24.0
 	github.com/dave/jennifer v1.7.1

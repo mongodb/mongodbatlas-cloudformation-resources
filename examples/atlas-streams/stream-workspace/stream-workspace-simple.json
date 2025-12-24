@@ -1,0 +1,74 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Simple MongoDB Atlas StreamWorkspace CloudFormation Template (JSON format)",
+  "Parameters": {
+    "ProjectId": {
+      "Description": "Your MongoDB Cloud Project ID",
+      "Type": "String"
+    },
+    "WorkspaceName": {
+      "Description": "Name for the Stream Workspace",
+      "Type": "String"
+    },
+    "Profile": {
+      "Description": "AWS Secrets Manager profile name",
+      "Type": "String",
+      "Default": "default"
+    }
+  },
+  "Resources": {
+    "StreamWorkspace": {
+      "Type": "MongoDB::Atlas::StreamWorkspace",
+      "Properties": {
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DataProcessRegion": {
+          "CloudProvider": "AWS",
+          "Region": "VIRGINIA_USA"
+        },
+        "StreamConfig": {
+          "Tier": "SP30",
+          "MaxTierSize": "SP50"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "StreamWorkspaceId": {
+      "Description": "The unique identifier for the Stream Workspace",
+      "Value": {
+        "Fn::GetAtt": [
+          "StreamWorkspace",
+          "Id"
+        ]
+      }
+    },
+    "StreamWorkspaceName": {
+      "Description": "The name of the Stream Workspace",
+      "Value": {
+        "Ref": "WorkspaceName"
+      }
+    },
+    "StreamWorkspaceHostnames": {
+      "Description": "List of hostnames assigned to the stream workspace",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          {
+        "Fn::GetAtt": [
+          "StreamWorkspace",
+              "Hostnames"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

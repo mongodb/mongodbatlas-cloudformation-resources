@@ -1,0 +1,111 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a stream processor that reads from a sample connection and emits data to a time-series collection in a cluster connection using $emit.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id (24 hexadecimal characters)"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processing workspace"
+    },
+    "ProcessorName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processor"
+    },
+    "SourceConnectionName": {
+      "Type": "String",
+      "Default": "sample_stream_solar",
+      "Description": "Name of the source stream connection (e.g., sample_stream_solar for sample data)"
+    },
+    "SinkConnectionName": {
+      "Type": "String",
+      "Description": "Name of the sink stream connection (must be a cluster connection)"
+    },
+    "SinkDatabase": {
+      "Type": "String",
+      "Default": "sample",
+      "Description": "Name of the database for the sink connection"
+    },
+    "SinkCollection": {
+      "Type": "String",
+      "Default": "solar",
+      "Description": "Name of the time-series collection for the sink connection"
+    },
+    "TimeField": {
+      "Type": "String",
+      "Default": "_ts",
+      "Description": "Field name containing the timestamp for the time-series collection"
+    },
+    "DesiredState": {
+      "Type": "String",
+      "Default": "STARTED",
+      "Description": "Desired state of the stream processor",
+      "AllowedValues": ["CREATED", "STARTED", "STOPPED"]
+    }
+  },
+  "Resources": {
+    "StreamProcessor": {
+      "Type": "MongoDB::Atlas::StreamProcessor",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "ProcessorName": {
+          "Ref": "ProcessorName"
+        },
+        "Pipeline": {
+          "Fn::Sub": [
+            "[{\"$source\": {\"connectionName\": \"${SourceConnection}\"}}, {\"$emit\": {\"connectionName\": \"${SinkConnection}\", \"db\": \"${SinkDb}\", \"coll\": \"${SinkColl}\", \"timeseries\": {\"timeField\": \"${TimeField}\"}}}]",
+            {
+              "SourceConnection": {
+                "Ref": "SourceConnectionName"
+              },
+              "SinkConnection": {
+                "Ref": "SinkConnectionName"
+              },
+              "SinkDb": {
+                "Ref": "SinkDatabase"
+              },
+              "SinkColl": {
+                "Ref": "SinkCollection"
+              },
+              "TimeField": {
+                "Ref": "TimeField"
+              }
+            }
+          ]
+        },
+        "DesiredState": {
+          "Ref": "DesiredState"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ProcessorId": {
+      "Description": "Unique identifier of the stream processor",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessor", "Id"]
+      }
+    },
+    "ProcessorState": {
+      "Description": "Current state of the stream processor from Atlas API",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessor", "State"]
+      }
+    }
+  }
+}

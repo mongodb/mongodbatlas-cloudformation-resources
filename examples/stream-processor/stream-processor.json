@@ -1,0 +1,93 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a stream processor on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processing workspace"
+    },
+    "ProcessorName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processor"
+    },
+    "SourceConnectionName": {
+      "Type": "String",
+      "Description": "Name of the source stream connection (e.g., sample_stream_solar for sample data, or a cluster/kafka connection name)",
+      "Default": "sample_stream_solar"
+    },
+    "SinkConnectionName": {
+      "Type": "String",
+      "Description": "Name of the sink stream connection (must be a cluster connection)"
+    },
+    "SinkDatabase": {
+      "Type": "String",
+      "Default": "test",
+      "Description": "Name of the database for the sink connection"
+    },
+    "SinkCollection": {
+      "Type": "String",
+      "Default": "output",
+      "Description": "Name of the collection for the sink connection"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys",
+      "Default": "default"
+    }
+  },
+  "Resources": {
+    "AtlasStreamProcessor": {
+      "Type": "MongoDB::Atlas::StreamProcessor",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "ProcessorName": {
+          "Ref": "ProcessorName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "Pipeline": {
+          "Fn::Sub": [
+            "[{\"$source\": {\"connectionName\": \"${SourceConnection}\"}}, {\"$merge\": {\"into\": {\"connectionName\": \"${SinkConnection}\", \"db\": \"${SinkDb}\", \"coll\": \"${SinkColl}\"}}}]",
+            {
+              "SourceConnection": {
+                "Ref": "SourceConnectionName"
+              },
+              "SinkConnection": {
+                "Ref": "SinkConnectionName"
+              },
+              "SinkDb": {
+                "Ref": "SinkDatabase"
+              },
+              "SinkColl": {
+                "Ref": "SinkCollection"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "StreamProcessorId": {
+      "Description": "Unique identifier of the stream processor",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ProcessorId"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": ["AtlasStreamProcessor", "Id"]
+      }
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "typeName": "MongoDB::Atlas::StreamProcessor",
+  "description": "Returns, adds, edits, and removes Atlas Stream Processors.",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git",
+  "definitions": {
+    "StreamsDLQ": {
+      "type": "object",
+      "description": "Dead letter queue for the stream processor. Refer to the MongoDB Atlas Docs for more information.",
+      "properties": {
+        "Coll": {
+          "type": "string",
+          "description": "Name of the collection to use for the DLQ."
+        },
+        "ConnectionName": {
+          "type": "string",
+          "description": "Name of the connection to write DLQ messages to. Must be an Atlas connection."
+        },
+        "Db": {
+          "type": "string",
+          "description": "Name of the database to use for the DLQ."
+        }
+      },
+      "required": ["Coll", "ConnectionName", "Db"],
+      "additionalProperties": false
+    },
+    "StreamsOptions": {
+      "type": "object",
+      "description": "Optional configuration for the stream processor.",
+      "properties": {
+        "Dlq": {
+          "$ref": "#/definitions/StreamsDLQ"
+        }
+      },
+      "required": ["Dlq"],
+      "additionalProperties": false
+    },
+    "Timeouts": {
+      "type": "object",
+      "description": "Configurable timeouts for stream processor operations.",
+      "properties": {
+        "Create": {
+          "type": "string",
+          "description": "Timeout for create operation in Go duration format (e.g., '5m', '10s'). Default is 20 minutes."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    },
+    "ProjectId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project. \n\n**NOTE**: Groups and projects are synonymous terms. Your group id is the same as your project id. For existing groups, your group/project id remains the same. The resource and corresponding endpoints use the term groups.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "InstanceName": {
+      "type": "string",
+      "description": "Label that identifies the stream processing workspace. This field is deprecated in favor of WorkspaceName. Exactly one of InstanceName or WorkspaceName must be provided."
+    },
+    "WorkspaceName": {
+      "type": "string",
+      "description": "Label that identifies the stream processing workspace. This is the preferred field name. Exactly one of InstanceName or WorkspaceName must be provided."
+    },
+    "ProcessorName": {
+      "type": "string",
+      "description": "Label that identifies the stream processor."
+    },
+    "Pipeline": {
+      "type": "string",
+      "description": "Stream aggregation pipeline you want to apply to your streaming data. This should be a JSON-encoded array of pipeline stages. Refer to MongoDB Atlas Docs for more information on stream aggregation pipelines."
+    },
+    "State": {
+      "type": "string",
+      "description": "The state of the stream processor. Commonly occurring states are 'CREATED', 'STARTED', 'STOPPED' and 'FAILED'. Used to start or stop the Stream Processor. Valid values are CREATED, STARTED or STOPPED. When a Stream Processor is created without specifying the state, it will default to CREATED state. When a Stream Processor is updated without specifying the state, it will default to the Previous state.\n\n**NOTE** When a Stream Processor is updated without specifying the state, it is stopped and then restored to previous state upon update completion.",
+      "enum": ["CREATED", "STARTED", "STOPPED"]
+    },
+    "Options": {
+      "$ref": "#/definitions/StreamsOptions"
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the stream processor."
+    },
+    "Stats": {
+      "type": "string",
+      "description": "The stats associated with the stream processor as a JSON string. Refer to the MongoDB Atlas Docs for more information."
+    },
+    "Timeouts": {
+      "$ref": "#/definitions/Timeouts",
+      "description": "Configurable timeouts for stream processor operations."
+    },
+    "DeleteOnCreateTimeout": {
+      "type": "boolean",
+      "description": "Indicates whether to delete the resource being created if a timeout is reached when waiting for completion. When set to `true` and timeout occurs, it triggers the deletion and returns immediately without waiting for deletion to complete. When set to `false`, the timeout will not trigger resource deletion. If you suspect a transient error when the value is `true`, wait before retrying to allow resource deletion to finish. Default is `true`."
+    }
+  },
+  "additionalProperties": false,
+  "required": ["ProjectId", "ProcessorName", "Pipeline"],
+  "readOnlyProperties": ["/properties/Id", "/properties/Stats"],
+  "writeOnlyProperties": ["/properties/DeleteOnCreateTimeout"],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/InstanceName",
+    "/properties/WorkspaceName",
+    "/properties/ProcessorName",
+    "/properties/Profile"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/InstanceName",
+    "/properties/WorkspaceName",
+    "/properties/ProcessorName",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "read": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "update": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "delete": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/stream-processor/README.md",
+  "tagging": {
+    "taggable": false
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a stream processor for a given stream workspace in the specified project. The processor uses a sample data source connection and merges data into a cluster connection.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id (24 hexadecimal characters)"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processing workspace"
+    },
+    "ProcessorName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processor"
+    },
+    "SourceConnectionName": {
+      "Type": "String",
+      "Description": "Name of the source stream connection (e.g., sample_stream_solar for sample data, or a cluster/kafka connection name)"
+    },
+    "SinkConnectionName": {
+      "Type": "String",
+      "Description": "Name of the sink stream connection (must be a cluster connection)"
+    },
+    "SinkDatabase": {
+      "Type": "String",
+      "Default": "test",
+      "Description": "Name of the database for the sink connection"
+    },
+    "SinkCollection": {
+      "Type": "String",
+      "Default": "output",
+      "Description": "Name of the collection for the sink connection"
+    },
+    "State": {
+      "Type": "String",
+      "Default": "CREATED",
+      "Description": "Initial state of the stream processor",
+      "AllowedValues": ["CREATED", "STARTED", "STOPPED"]
+    }
+  },
+  "Resources": {
+    "StreamProcessor": {
+      "Type": "MongoDB::Atlas::StreamProcessor",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "ProcessorName": {
+          "Ref": "ProcessorName"
+        },
+        "Pipeline": {
+          "Fn::Sub": [
+            "[{\"$source\": {\"connectionName\": \"${SourceConnection}\"}}, {\"$merge\": {\"into\": {\"connectionName\": \"${SinkConnection}\", \"db\": \"${SinkDb}\", \"coll\": \"${SinkColl}\"}}}]",
+            {
+              "SourceConnection": {
+                "Ref": "SourceConnectionName"
+              },
+              "SinkConnection": {
+                "Ref": "SinkConnectionName"
+              },
+              "SinkDb": {
+                "Ref": "SinkDatabase"
+              },
+              "SinkColl": {
+                "Ref": "SinkCollection"
+              }
+            }
+          ]
+        },
+        "State": {
+          "Ref": "State"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ProcessorId": {
+      "Description": "Unique identifier of the stream processor",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessor", "Id"]
+      }
+    },
+    "ProcessorState": {
+      "Description": "Current state of the stream processor",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessor", "State"]
+      }
+    }
+  }
+}

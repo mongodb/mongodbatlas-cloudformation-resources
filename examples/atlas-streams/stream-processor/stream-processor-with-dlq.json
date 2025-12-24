@@ -1,0 +1,139 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a stream processor with Dead Letter Queue (DLQ) configuration. The processor uses a source connection and merges data into a cluster connection, with failed messages sent to a DLQ collection.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id (24 hexadecimal characters)"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processing workspace"
+    },
+    "ProcessorName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processor"
+    },
+    "SourceConnectionName": {
+      "Type": "String",
+      "Description": "Name of the source stream connection"
+    },
+    "SinkConnectionName": {
+      "Type": "String",
+      "Description": "Name of the sink stream connection (must be a cluster connection)"
+    },
+    "SinkDatabase": {
+      "Type": "String",
+      "Default": "test",
+      "Description": "Name of the database for the sink connection"
+    },
+    "SinkCollection": {
+      "Type": "String",
+      "Default": "output",
+      "Description": "Name of the collection for the sink connection"
+    },
+    "DlqConnectionName": {
+      "Type": "String",
+      "Description": "Name of the DLQ connection (must be a cluster connection)"
+    },
+    "DlqDatabase": {
+      "Type": "String",
+      "Default": "dlq",
+      "Description": "Name of the database for the DLQ"
+    },
+    "DlqCollection": {
+      "Type": "String",
+      "Default": "dlq-messages",
+      "Description": "Name of the collection for the DLQ"
+    },
+    "State": {
+      "Type": "String",
+      "Default": "CREATED",
+      "Description": "Initial state of the stream processor",
+      "AllowedValues": [
+        "CREATED",
+        "STARTED",
+        "STOPPED"
+      ]
+    }
+  },
+  "Resources": {
+    "StreamProcessor": {
+      "Type": "MongoDB::Atlas::StreamProcessor",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "ProcessorName": {
+          "Ref": "ProcessorName"
+        },
+        "Pipeline": {
+          "Fn::Sub": [
+            "[{\"$source\": {\"connectionName\": \"${SourceConnection}\"}}, {\"$merge\": {\"into\": {\"connectionName\": \"${SinkConnection}\", \"db\": \"${SinkDb}\", \"coll\": \"${SinkColl}\"}}}]",
+            {
+              "SourceConnection": {
+                "Ref": "SourceConnectionName"
+              },
+              "SinkConnection": {
+                "Ref": "SinkConnectionName"
+              },
+              "SinkDb": {
+                "Ref": "SinkDatabase"
+              },
+              "SinkColl": {
+                "Ref": "SinkCollection"
+              }
+            }
+          ]
+        },
+        "State": {
+          "Ref": "State"
+        },
+        "Options": {
+          "Dlq": {
+            "ConnectionName": {
+              "Ref": "DlqConnectionName"
+            },
+            "Db": {
+              "Ref": "DlqDatabase"
+            },
+            "Coll": {
+              "Ref": "DlqCollection"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ProcessorId": {
+      "Description": "Unique identifier of the stream processor",
+      "Value": {
+        "Fn::GetAtt": [
+          "StreamProcessor",
+          "Id"
+        ]
+      }
+    },
+    "ProcessorState": {
+      "Description": "Current state of the stream processor",
+      "Value": {
+        "Fn::GetAtt": [
+          "StreamProcessor",
+          "State"
+        ]
+      }
+    }
+  }
+}

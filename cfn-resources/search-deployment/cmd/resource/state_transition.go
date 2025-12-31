@@ -19,36 +19,58 @@ import (
 	"net/http"
 	"strings"
 
+	admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
-func HandleStateTransition(connV2 admin20231115014.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
+func ValidateProgress(connV2 admin20250312010.APIClient, currentModel *Model, isDelete bool) handler.ProgressEvent {
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
+
+	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+
+	notFound := resp != nil && resp.StatusCode == http.StatusNotFound
+	doesNotExist := resp != nil && resp.StatusCode == http.StatusBadRequest && err != nil &&
+		strings.Contains(err.Error(), "ATLAS_SEARCH_DEPLOYMENT_DOES_NOT_EXIST")
+
 	if err != nil {
-		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
+		if isDelete && (notFound || doesNotExist) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
-				ResourceModel:   nil,
 				Message:         constants.Complete,
 			}
 		}
 		return progressevent.GetFailedEventByResponse(err.Error(), resp)
 	}
 
-	newModel := NewCFNSearchDeployment(currentModel, apiResp)
-	if util.SafeString(newModel.StateName) == targetState {
+	state := constants.DeletedState
+	if apiResp != nil && apiResp.StateName != nil {
+		state = *apiResp.StateName
+	}
+	targetState := constants.IdleState
+	if isDelete {
+		targetState = constants.DeletedState
+	}
+
+	if state != targetState {
+		return inProgressEvent(constants.Pending, currentModel, apiResp)
+	}
+
+	if isDelete {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
-			ResourceModel:   newModel,
 			Message:         constants.Complete,
 		}
 	}
 
-	return inProgressEvent(constants.Pending, &newModel)
+	newModel := NewCFNSearchDeployment(currentModel, apiResp)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         constants.Complete,
+		ResourceModel:   &newModel,
+	}
 }

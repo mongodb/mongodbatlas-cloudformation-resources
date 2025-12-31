@@ -30,4 +30,4 @@ run-contract-testing:
 	@echo "==> Run contract testing"
 	make build
 	sam local start-lambda &
-	cfn test --function-name TestEntrypoint --verbose
+	cfn test --verbose --enforce-timeout 3600

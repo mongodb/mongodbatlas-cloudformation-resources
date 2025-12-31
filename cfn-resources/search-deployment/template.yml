@@ -4,7 +4,7 @@ Description: AWS SAM template for the MongoDB::Atlas::SearchDeployment resource 
 
 Globals:
   Function:
-    Timeout: 180  # docker start-up times can be long for SAM CLI
+    Timeout: 900  # Search deployment operations can take 15+ minutes (UPDATING state transitions are long-running)
     MemorySize: 256
 
 Resources:

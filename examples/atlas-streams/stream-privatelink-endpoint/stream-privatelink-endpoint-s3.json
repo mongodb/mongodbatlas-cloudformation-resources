@@ -1,0 +1,60 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Stream Processing Private Link Endpoint for AWS S3. This enables secure, private connectivity between Atlas Stream Processing and AWS S3 over AWS PrivateLink.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your Atlas project"
+    },
+    "Region": {
+      "Type": "String",
+      "Description": "AWS region where the S3 bucket is located (e.g., us-east-1, eu-west-1)",
+      "Default": "eu-west-1"
+    },
+    "ServiceEndpointId": {
+      "Type": "String",
+      "Description": "S3 service endpoint ID in the format 'com.amazonaws.<region>.s3' (e.g., 'com.amazonaws.eu-west-1.s3')",
+      "Default": "com.amazonaws.eu-west-1.s3"
+    }
+  },
+  "Resources": {
+    "StreamPrivatelinkEndpoint": {
+      "Type": "MongoDB::Atlas::StreamPrivatelinkEndpoint",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ProviderName": "AWS",
+        "Vendor": "S3",
+        "Region": {
+          "Ref": "Region"
+        },
+        "ServiceEndpointId": {
+          "Ref": "ServiceEndpointId"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "PrivateLinkEndpointId": {
+      "Description": "The ID of the Private Link connection",
+      "Value": {
+        "Ref": "StreamPrivatelinkEndpoint"
+      }
+    },
+    "State": {
+      "Description": "Status of the connection",
+      "Value": {
+        "Fn::GetAtt": ["StreamPrivatelinkEndpoint", "State"]
+      }
+    }
+  }
+}

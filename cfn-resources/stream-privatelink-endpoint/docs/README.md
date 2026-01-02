@@ -20,7 +20,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#arn" title="Arn">Arn</a>" : <i>String</i>,
         "<a href="#dnsdomain" title="DnsDomain">DnsDomain</a>" : <i>String</i>,
         "<a href="#dnssubdomain" title="DnsSubDomain">DnsSubDomain</a>" : <i>[ String, ... ]</i>,
-        "<a href="#tags" title="Tags">Tags</a>" : <i>[ <a href="tag.md">Tag</a>, ... ]</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
@@ -40,8 +39,6 @@ Properties:
     <a href="#dnsdomain" title="DnsDomain">DnsDomain</a>: <i>String</i>
     <a href="#dnssubdomain" title="DnsSubDomain">DnsSubDomain</a>: <i>
       - String</i>
-    <a href="#tags" title="Tags">Tags</a>: <i>
-      - <a href="tag.md">Tag</a></i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
@@ -130,16 +127,6 @@ Sub-Domain name of Confluent cluster. These are typically your availability zone
 _Required_: No
 
 _Type_: List of String
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### Tags
-
-An array of key-value pairs to apply to this resource.
-
-_Required_: No
-
-_Type_: List of <a href="tag.md">Tag</a>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 

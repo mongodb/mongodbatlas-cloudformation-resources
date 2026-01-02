@@ -18,8 +18,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
-	admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312010/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -35,7 +36,6 @@ const (
 	VendorMSK       = "MSK"
 	VendorS3        = "S3"
 
-	// State constants
 	StateIdle            = "IDLE"
 	StateWorking         = "WORKING"
 	StateDone            = "DONE"
@@ -44,7 +44,7 @@ const (
 	StateDeleting        = "DELETING"
 	StateDeleted         = "DELETED"
 
-	CallbackDelaySeconds = 30
+	CallbackDelaySeconds = 3
 )
 
 var (
@@ -54,8 +54,7 @@ var (
 	ListRequiredFields   = []string{constants.ProjectID}
 )
 
-// initEnvWithLatestClient is a variable to allow mocking in tests
-var initEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin20250312010.APIClient, *handler.ProgressEvent) {
+var InitEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-stream-privatelink-endpoint")
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -64,8 +63,7 @@ var initEnvWithLatestClient = func(req handler.Request, currentModel *Model, req
 		return nil, errEvent
 	}
 
-	// Validate vendor-specific requirements
-	if errEvent := validateVendorRequirements(currentModel); errEvent != nil {
+	if errEvent := ValidateVendorRequirements(currentModel); errEvent != nil {
 		return nil, errEvent
 	}
 
@@ -76,7 +74,7 @@ var initEnvWithLatestClient = func(req handler.Request, currentModel *Model, req
 	return client.AtlasSDK, nil
 }
 
-func validateVendorRequirements(model *Model) *handler.ProgressEvent {
+func ValidateVendorRequirements(model *Model) *handler.ProgressEvent {
 	if model.Vendor == nil {
 		return nil
 	}
@@ -99,7 +97,6 @@ func validateVendorRequirements(model *Model) *handler.ProgressEvent {
 				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
 			}
 		}
-		// ServiceEndpointId is required for AWS CONFLUENT (GCP uses service_attachment_uris which we don't support)
 		if model.ServiceEndpointId == nil || *model.ServiceEndpointId == "" {
 			return &handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -116,7 +113,6 @@ func validateVendorRequirements(model *Model) *handler.ProgressEvent {
 				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
 			}
 		}
-		// Region cannot be set for MSK (it's computed from ARN)
 		if model.Region != nil && *model.Region != "" {
 			return &handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -146,12 +142,15 @@ func validateVendorRequirements(model *Model) *handler.ProgressEvent {
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Check if this is a callback from a previous Create operation
-	if req.CallbackContext != nil {
-		return handleCreateCallback(req, currentModel)
+	if IsCallback(&req) {
+		conn, peErr := InitEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+		if peErr != nil {
+			return *peErr, nil
+		}
+		return HandleCreateCallback(context.Background(), conn, req, currentModel)
 	}
 
-	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, CreateRequiredFields)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -162,28 +161,147 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	streamsPrivateLinkConnection, apiResp, err := conn.StreamsApi.CreatePrivateLinkConnection(ctx, projectID, streamPrivatelinkEndpointReq).Execute()
 	if err != nil {
-		return handleError(apiResp, constants.CREATE, err)
+		return HandleError(apiResp, constants.CREATE, err)
 	}
 
-	// Set the ID in the model for state tracking
 	currentModel.Id = streamsPrivateLinkConnection.Id
 
-	// Wait for state transition using callback mechanism
-	return waitForStateTransition(ctx, conn, currentModel, []string{StateIdle, StateWorking}, []string{StateDone, StateFailed}, false)
-}
-
-func handleCreateCallback(req handler.Request, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	if streamsPrivateLinkConnection.State != nil {
+		initialState := *streamsPrivateLinkConnection.State
+		if initialState == StateDone {
+			resourceModel := GetStreamPrivatelinkEndpointModel(streamsPrivateLinkConnection, currentModel)
+			resourceModel.ProjectId = currentModel.ProjectId
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Create completed",
+				ResourceModel:   resourceModel,
+			}, nil
+		}
+		if initialState == StateFailed {
+			errorMsg := "Private endpoint is in a failed status"
+			if streamsPrivateLinkConnection.ErrorMessage != nil {
+				errorMsg = fmt.Sprintf("%s: %s", errorMsg, *streamsPrivateLinkConnection.ErrorMessage)
+			}
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          errorMsg,
+				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
+			}, nil
+		}
 	}
 
-	ctx := context.Background()
-	return waitForStateTransition(ctx, conn.AtlasSDK, currentModel, []string{StateIdle, StateWorking}, []string{StateDone, StateFailed}, false)
+	callbackCtx := BuildCallbackContext(projectID, util.SafeString(currentModel.Id))
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              "Creating private link endpoint",
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: CallbackDelaySeconds,
+		CallbackContext:      callbackCtx,
+	}, nil
+}
+
+func IsCallback(req *handler.Request) bool {
+	if req.CallbackContext == nil {
+		return false
+	}
+	_, found := req.CallbackContext["callbackStreamPrivatelinkEndpoint"]
+	return found
+}
+
+func BuildCallbackContext(projectID, connectionID string) map[string]interface{} {
+	return map[string]interface{}{
+		"callbackStreamPrivatelinkEndpoint": true,
+		"projectID":                         projectID,
+		"connectionID":                      connectionID,
+	}
+}
+
+func HandleCreateCallback(ctx context.Context, atlasClient *admin.APIClient, req handler.Request, currentModel *Model) (handler.ProgressEvent, error) {
+	projectID := util.SafeString(currentModel.ProjectId)
+	if projectID == "" {
+		if pid, ok := req.CallbackContext["projectID"].(string); ok {
+			projectID = pid
+			if currentModel.ProjectId == nil {
+				currentModel.ProjectId = &pid
+			}
+		}
+	}
+
+	connectionID := util.SafeString(currentModel.Id)
+	if connectionID == "" {
+		if id, ok := req.CallbackContext["connectionID"].(string); ok {
+			connectionID = id
+			currentModel.Id = &id
+		} else {
+			return handler.ProgressEvent{
+				OperationStatus: handler.Failed,
+				Message:         "Missing connection ID in callback context",
+			}, nil
+		}
+	}
+
+	streamsPrivateLinkConnection, apiResp, err := atlasClient.StreamsApi.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
+	if err != nil {
+		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+			return handler.ProgressEvent{
+				OperationStatus:      handler.InProgress,
+				Message:              "Resource not yet available, retrying...",
+				ResourceModel:        currentModel,
+				CallbackDelaySeconds: CallbackDelaySeconds,
+				CallbackContext:      BuildCallbackContext(projectID, connectionID),
+			}, nil
+		}
+		return HandleError(apiResp, constants.CREATE, err)
+	}
+
+	currentState := ""
+	if streamsPrivateLinkConnection.State != nil {
+		currentState = *streamsPrivateLinkConnection.State
+	}
+
+	switch currentState {
+	case StateDone:
+		resourceModel := GetStreamPrivatelinkEndpointModel(streamsPrivateLinkConnection, currentModel)
+		resourceModel.ProjectId = currentModel.ProjectId
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Create completed",
+			ResourceModel:   resourceModel,
+		}, nil
+
+	case StateFailed:
+		errorMsg := "Private endpoint is in a failed status"
+		if streamsPrivateLinkConnection.ErrorMessage != nil {
+			errorMsg = fmt.Sprintf("%s: %s", errorMsg, *streamsPrivateLinkConnection.ErrorMessage)
+		}
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          errorMsg,
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
+		}, nil
+
+	case StateIdle, StateWorking, "":
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              fmt.Sprintf("Waiting for state transition. Current state: %s", currentState),
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: CallbackDelaySeconds,
+			CallbackContext:      BuildCallbackContext(projectID, connectionID),
+		}, nil
+
+	default:
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              fmt.Sprintf("Waiting for state transition. Current state: %s", currentState),
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: CallbackDelaySeconds,
+			CallbackContext:      BuildCallbackContext(projectID, connectionID),
+		}, nil
+	}
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, ReadRequiredFields)
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, ReadRequiredFields)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -201,14 +319,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			}, nil
 		}
-		return handleError(apiResp, constants.READ, err)
+		return HandleError(apiResp, constants.READ, err)
 	}
 
 	resourceModel := GetStreamPrivatelinkEndpointModel(streamsPrivateLinkConnection, currentModel)
 	resourceModel.ProjectId = currentModel.ProjectId
 
-	// Handle empty DnsSubDomain array - preserve null state if it was null in currentModel
-	if currentModel.DnsSubDomain == nil && (resourceModel.DnsSubDomain == nil || len(resourceModel.DnsSubDomain) == 0) {
+	if currentModel.DnsSubDomain == nil && len(resourceModel.DnsSubDomain) == 0 {
 		resourceModel.DnsSubDomain = nil
 	}
 
@@ -219,7 +336,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Update is not supported for stream private link endpoints
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          "Updating the private endpoint for streams is not supported. To modify your infrastructure, please delete the existing resource and create a new one with the necessary updates",
@@ -228,43 +344,126 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Check if this is a callback from a previous Delete operation
-	if req.CallbackContext != nil {
-		return handleDeleteCallback(req, currentModel)
+	connectionID := util.SafeString(currentModel.Id)
+	if connectionID == "" {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          constants.ResourceNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
 	}
 
-	conn, peErr := initEnvWithLatestClient(req, currentModel, DeleteRequiredFields)
+	if req.CallbackContext != nil {
+		if _, ok := req.CallbackContext["callbackStreamPrivatelinkEndpoint"]; ok {
+			conn, peErr := InitEnvWithLatestClient(req, currentModel, DeleteRequiredFields)
+			if peErr != nil {
+				return *peErr, nil
+			}
+			return HandleDeleteCallback(context.Background(), conn, req, currentModel)
+		}
+	}
+
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, DeleteRequiredFields)
 	if peErr != nil {
+		if peErr.HandlerErrorCode == string(types.HandlerErrorCodeInvalidRequest) {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          constants.ResourceNotFound,
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
 		return *peErr, nil
 	}
 
 	ctx := context.Background()
+	projectID := util.SafeString(currentModel.ProjectId)
+
+	streamsPrivateLinkConnection, apiResp, err := conn.StreamsApi.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
+	if err != nil {
+		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          constants.ResourceNotFound,
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
+		if apiResp != nil && apiResp.StatusCode >= http.StatusInternalServerError {
+			return HandleError(apiResp, constants.DELETE, err)
+		}
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          constants.ResourceNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
+	}
+
+	if streamsPrivateLinkConnection.State != nil {
+		if *streamsPrivateLinkConnection.State == StateDeleted {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          constants.ResourceNotFound,
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
+	}
+
+	deleteResp, err := conn.StreamsApi.DeletePrivateLinkConnection(ctx, projectID, connectionID).Execute()
+	if err != nil {
+		if deleteResp != nil && deleteResp.StatusCode == http.StatusNotFound {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          constants.ResourceNotFound,
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
+		if deleteResp != nil && deleteResp.StatusCode >= http.StatusInternalServerError {
+			return HandleError(deleteResp, constants.DELETE, err)
+		}
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          constants.ResourceNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              "Deleting private link endpoint",
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: CallbackDelaySeconds,
+		CallbackContext:      BuildCallbackContext(projectID, connectionID),
+	}, nil
+}
+
+func HandleDeleteCallback(ctx context.Context, atlasClient *admin.APIClient, req handler.Request, currentModel *Model) (handler.ProgressEvent, error) {
 	projectID := util.SafeString(currentModel.ProjectId)
 	connectionID := util.SafeString(currentModel.Id)
 
-	_, err := conn.StreamsApi.DeletePrivateLinkConnection(ctx, projectID, connectionID).Execute()
-	if err != nil {
-		// DeletePrivateLinkConnection doesn't return a response body, so we can't check for 404 here.
-		// If the resource is already deleted, the waitForStateTransition will handle it via GetPrivateLinkConnection.
-		return handleError(nil, constants.DELETE, err)
+	if projectID == "" {
+		if pid, ok := req.CallbackContext["projectID"].(string); ok {
+			projectID = pid
+		}
+	}
+	if connectionID == "" {
+		if id, ok := req.CallbackContext["connectionID"].(string); ok {
+			connectionID = id
+			currentModel.Id = &id
+		}
 	}
 
-	// Wait for deletion state transition using callback mechanism
-	return waitForStateTransition(ctx, conn, currentModel, []string{StateDeleteRequested, StateDeleting}, []string{StateDeleted, StateFailed}, true)
-}
-
-func handleDeleteCallback(req handler.Request, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	if projectID == "" || connectionID == "" {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          constants.ResourceNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
 	}
 
-	ctx := context.Background()
-	return waitForStateTransition(ctx, conn.AtlasSDK, currentModel, []string{StateDeleteRequested, StateDeleting}, []string{StateDeleted, StateFailed}, true)
+	return WaitForStateTransition(ctx, atlasClient, currentModel, []string{StateDeleteRequested, StateDeleting}, []string{StateDeleted, StateFailed}, true)
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, ListRequiredFields)
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, ListRequiredFields)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -272,13 +471,21 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ctx := context.Background()
 	projectID := util.SafeString(currentModel.ProjectId)
 
-	accumulatedConnections, apiResp, err := getAllPrivateLinkConnections(ctx, conn, projectID)
+	accumulatedConnections, apiResp, err := GetAllPrivateLinkConnections(ctx, conn, projectID)
 	if err != nil {
-		return handleError(apiResp, constants.LIST, err)
+		return HandleError(apiResp, constants.LIST, err)
 	}
 
 	response := make([]interface{}, 0)
 	for i := range accumulatedConnections {
+		connectionState := ""
+		if accumulatedConnections[i].State != nil {
+			connectionState = *accumulatedConnections[i].State
+		}
+		if connectionState == StateDeleted || connectionState == StateDeleteRequested || connectionState == StateDeleting {
+			continue
+		}
+
 		model := GetStreamPrivatelinkEndpointModel(&accumulatedConnections[i], nil)
 		model.ProjectId = currentModel.ProjectId
 		model.Profile = currentModel.Profile
@@ -292,12 +499,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func getAllPrivateLinkConnections(ctx context.Context, conn *admin20250312010.APIClient, projectID string) ([]admin20250312010.StreamsPrivateLinkConnection, *http.Response, error) {
+func GetAllPrivateLinkConnections(ctx context.Context, conn *admin.APIClient, projectID string) ([]admin.StreamsPrivateLinkConnection, *http.Response, error) {
 	pageNum := 1
-	accumulatedConnections := make([]admin20250312010.StreamsPrivateLinkConnection, 0)
+	accumulatedConnections := make([]admin.StreamsPrivateLinkConnection, 0)
 
 	for allRecordsRetrieved := false; !allRecordsRetrieved; {
-		connections, apiResp, err := conn.StreamsApi.ListPrivateLinkConnectionsWithParams(ctx, &admin20250312010.ListPrivateLinkConnectionsApiParams{
+		connections, apiResp, err := conn.StreamsApi.ListPrivateLinkConnectionsWithParams(ctx, &admin.ListPrivateLinkConnectionsApiParams{
 			GroupId:      projectID,
 			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),
 			PageNum:      util.Pointer(pageNum),
@@ -314,21 +521,41 @@ func getAllPrivateLinkConnections(ctx context.Context, conn *admin20250312010.AP
 	return accumulatedConnections, nil, nil
 }
 
-func waitForStateTransition(ctx context.Context, conn *admin20250312010.APIClient, currentModel *Model, pendingStates, targetStates []string, isDelete bool) (handler.ProgressEvent, error) {
+func WaitForStateTransition(ctx context.Context, conn *admin.APIClient, currentModel *Model, pendingStates, targetStates []string, isDelete bool) (handler.ProgressEvent, error) {
 	projectID := util.SafeString(currentModel.ProjectId)
 	connectionID := util.SafeString(currentModel.Id)
 
-	// Get current state
 	streamsPrivateLinkConnection, apiResp, err := conn.StreamsApi.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
 	if err != nil {
-		// For delete operations, 404 means already deleted
 		if isDelete && apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				Message:         "Resource deleted",
 			}, nil
 		}
-		return handleError(apiResp, constants.DELETE, err)
+		if !isDelete && apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+			return handler.ProgressEvent{
+				OperationStatus:      handler.InProgress,
+				Message:              "Resource not yet available, retrying...",
+				ResourceModel:        currentModel,
+				CallbackDelaySeconds: CallbackDelaySeconds,
+				CallbackContext:      BuildCallbackContext(projectID, connectionID),
+			}, nil
+		}
+		if isDelete {
+			if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+				return handler.ProgressEvent{
+					OperationStatus: handler.Success,
+					Message:         "Resource already deleted",
+				}, nil
+			}
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          constants.ResourceNotFound,
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
+		return HandleError(apiResp, constants.CREATE, err)
 	}
 
 	currentState := ""
@@ -336,7 +563,16 @@ func waitForStateTransition(ctx context.Context, conn *admin20250312010.APIClien
 		currentState = *streamsPrivateLinkConnection.State
 	}
 
-	// Check if we've reached a target state
+	if currentState == "" {
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              "Resource state not yet available, waiting...",
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: CallbackDelaySeconds,
+			CallbackContext:      BuildCallbackContext(projectID, connectionID),
+		}, nil
+	}
+
 	for _, targetState := range targetStates {
 		if currentState == targetState {
 			if currentState == StateFailed {
@@ -351,7 +587,6 @@ func waitForStateTransition(ctx context.Context, conn *admin20250312010.APIClien
 				}, nil
 			}
 
-			// For delete operations, don't return the model
 			if isDelete {
 				return handler.ProgressEvent{
 					OperationStatus: handler.Success,
@@ -359,7 +594,6 @@ func waitForStateTransition(ctx context.Context, conn *admin20250312010.APIClien
 				}, nil
 			}
 
-			// For create operations, return the model
 			resourceModel := GetStreamPrivatelinkEndpointModel(streamsPrivateLinkConnection, currentModel)
 			resourceModel.ProjectId = currentModel.ProjectId
 
@@ -371,24 +605,25 @@ func waitForStateTransition(ctx context.Context, conn *admin20250312010.APIClien
 		}
 	}
 
-	// Check if we're still in a pending state
 	for _, pendingState := range pendingStates {
 		if currentState == pendingState {
-			// Return InProgress to trigger callback
 			return handler.ProgressEvent{
 				OperationStatus:      handler.InProgress,
 				Message:              fmt.Sprintf("Waiting for state transition. Current state: %s", currentState),
 				ResourceModel:        currentModel,
 				CallbackDelaySeconds: CallbackDelaySeconds,
-				CallbackContext: map[string]interface{}{
-					"stateName": currentState,
-					"id":        connectionID,
-				},
+				CallbackContext:      BuildCallbackContext(projectID, connectionID),
 			}, nil
 		}
 	}
 
-	// If we're in an unexpected state, fail
+	if isDelete {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          constants.ResourceNotFound,
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
+	}
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          fmt.Sprintf("Unexpected state: %s", currentState),
@@ -396,10 +631,9 @@ func waitForStateTransition(ctx context.Context, conn *admin20250312010.APIClien
 	}, nil
 }
 
-func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
+func HandleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error: %s", method, err.Error())
 
-	// Check for specific error conditions
 	if response != nil {
 		if response.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
@@ -407,6 +641,16 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 				Message:          constants.ResourceNotFound,
 				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			}, nil
+		}
+		if response.StatusCode == http.StatusBadRequest {
+			errStr := err.Error()
+			if strings.Contains(errStr, "STREAM_PRIVATE_LINK_ALREADY_EXISTS") || strings.Contains(errStr, "already exists") {
+				return handler.ProgressEvent{
+					OperationStatus:  handler.Failed,
+					Message:          errMsg,
+					HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists),
+				}, nil
+			}
 		}
 	}
 

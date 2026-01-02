@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource
+package resource_test
 
 import (
 	"testing"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-privatelink-endpoint/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312010/admin"
 )
 
 func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
@@ -34,12 +35,12 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 	dnsSubDomain := []string{"az1", "az2"}
 
 	testCases := map[string]struct {
-		apiResp      *admin20250312010.StreamsPrivateLinkConnection
-		currentModel *Model
-		validateFunc func(t *testing.T, result *Model)
+		apiResp      *admin.StreamsPrivateLinkConnection
+		currentModel *resource.Model
+		validateFunc func(t *testing.T, result *resource.Model)
 	}{
 		"withCurrentModel": {
-			apiResp: &admin20250312010.StreamsPrivateLinkConnection{
+			apiResp: &admin.StreamsPrivateLinkConnection{
 				Id:       &connectionID,
 				Provider: providerName,
 				Vendor:   &vendor,
@@ -47,12 +48,12 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 				Arn:      &arn,
 				State:    &state,
 			},
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:    &projectID,
 				Profile:      util.StringPtr("default"),
 				ProviderName: &providerName,
 			},
-			validateFunc: func(t *testing.T, result *Model) {
+			validateFunc: func(t *testing.T, result *resource.Model) {
 				assert.Equal(t, connectionID, *result.Id)
 				assert.Equal(t, providerName, *result.ProviderName)
 				assert.Equal(t, vendor, *result.Vendor)
@@ -64,14 +65,14 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 			},
 		},
 		"withoutCurrentModel": {
-			apiResp: &admin20250312010.StreamsPrivateLinkConnection{
+			apiResp: &admin.StreamsPrivateLinkConnection{
 				Id:       &connectionID,
 				Provider: providerName,
 				Vendor:   &vendor,
 				Region:   &region,
 			},
 			currentModel: nil,
-			validateFunc: func(t *testing.T, result *Model) {
+			validateFunc: func(t *testing.T, result *resource.Model) {
 				assert.Equal(t, connectionID, *result.Id)
 				assert.Equal(t, providerName, *result.ProviderName)
 				assert.Equal(t, vendor, *result.Vendor)
@@ -80,23 +81,23 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 			},
 		},
 		"withDnsFields": {
-			apiResp: &admin20250312010.StreamsPrivateLinkConnection{
+			apiResp: &admin.StreamsPrivateLinkConnection{
 				Id:           &connectionID,
 				Provider:     providerName,
 				Vendor:       util.StringPtr("CONFLUENT"),
 				DnsDomain:    &dnsDomain,
 				DnsSubDomain: &dnsSubDomain,
 			},
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId: &projectID,
 			},
-			validateFunc: func(t *testing.T, result *Model) {
+			validateFunc: func(t *testing.T, result *resource.Model) {
 				assert.Equal(t, dnsDomain, *result.DnsDomain)
 				assert.Equal(t, dnsSubDomain, result.DnsSubDomain)
 			},
 		},
 		"withReadOnlyFields": {
-			apiResp: &admin20250312010.StreamsPrivateLinkConnection{
+			apiResp: &admin.StreamsPrivateLinkConnection{
 				Id:                    &connectionID,
 				Provider:              providerName,
 				InterfaceEndpointId:   util.StringPtr("vpce-12345678"),
@@ -105,10 +106,10 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 				State:                 &state,
 				ErrorMessage:          util.StringPtr("Test error"),
 			},
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId: &projectID,
 			},
-			validateFunc: func(t *testing.T, result *Model) {
+			validateFunc: func(t *testing.T, result *resource.Model) {
 				assert.Equal(t, "vpce-12345678", *result.InterfaceEndpointId)
 				assert.Equal(t, "test-endpoint", *result.InterfaceEndpointName)
 				assert.Equal(t, "123456789012", *result.ProviderAccountId)
@@ -117,17 +118,17 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 			},
 		},
 		"preservesCurrentModelFields": {
-			apiResp: &admin20250312010.StreamsPrivateLinkConnection{
+			apiResp: &admin.StreamsPrivateLinkConnection{
 				Id:       &connectionID,
 				Provider: providerName,
 			},
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:    &projectID,
 				Profile:      util.StringPtr("custom-profile"),
 				ProviderName: &providerName,
 				Vendor:       &vendor,
 			},
-			validateFunc: func(t *testing.T, result *Model) {
+			validateFunc: func(t *testing.T, result *resource.Model) {
 				// Should preserve ProjectId and Profile from currentModel
 				assert.Equal(t, projectID, *result.ProjectId)
 				assert.Equal(t, "custom-profile", *result.Profile)
@@ -139,7 +140,7 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			result := GetStreamPrivatelinkEndpointModel(tc.apiResp, tc.currentModel)
+			result := resource.GetStreamPrivatelinkEndpointModel(tc.apiResp, tc.currentModel)
 			if tc.validateFunc != nil {
 				tc.validateFunc(t, result)
 			}
@@ -159,16 +160,16 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 	dnsSubDomain := []string{"az1", "az2"}
 
 	testCases := map[string]struct {
-		model        *Model
-		validateFunc func(t *testing.T, result *admin20250312010.StreamsPrivateLinkConnection)
+		model        *resource.Model
+		validateFunc func(t *testing.T, result *admin.StreamsPrivateLinkConnection)
 	}{
 		"MSKVendor": {
-			model: &Model{
+			model: &resource.Model{
 				ProviderName: &providerName,
 				Vendor:       &vendorMSK,
 				Arn:          &arn,
 			},
-			validateFunc: func(t *testing.T, result *admin20250312010.StreamsPrivateLinkConnection) {
+			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
 				assert.Equal(t, providerName, result.Provider)
 				assert.Equal(t, vendorMSK, *result.Vendor)
 				assert.Equal(t, arn, *result.Arn)
@@ -177,7 +178,7 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 			},
 		},
 		"ConfluentVendor": {
-			model: &Model{
+			model: &resource.Model{
 				ProviderName:      &providerName,
 				Vendor:            &vendorConfluent,
 				Region:            &region,
@@ -185,7 +186,7 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 				DnsDomain:         &dnsDomain,
 				DnsSubDomain:      dnsSubDomain,
 			},
-			validateFunc: func(t *testing.T, result *admin20250312010.StreamsPrivateLinkConnection) {
+			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
 				assert.Equal(t, providerName, result.Provider)
 				assert.Equal(t, vendorConfluent, *result.Vendor)
 				assert.Equal(t, region, *result.Region)
@@ -195,13 +196,13 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 			},
 		},
 		"S3Vendor": {
-			model: &Model{
+			model: &resource.Model{
 				ProviderName:      &providerName,
 				Vendor:            &vendorS3,
 				Region:            &region,
 				ServiceEndpointId: &serviceEndpointId,
 			},
-			validateFunc: func(t *testing.T, result *admin20250312010.StreamsPrivateLinkConnection) {
+			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
 				assert.Equal(t, providerName, result.Provider)
 				assert.Equal(t, vendorS3, *result.Vendor)
 				assert.Equal(t, region, *result.Region)
@@ -209,12 +210,12 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 			},
 		},
 		"nilDnsSubDomain": {
-			model: &Model{
+			model: &resource.Model{
 				ProviderName: &providerName,
 				Vendor:       &vendorConfluent,
 				DnsSubDomain: nil,
 			},
-			validateFunc: func(t *testing.T, result *admin20250312010.StreamsPrivateLinkConnection) {
+			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
 				assert.Nil(t, result.DnsSubDomain)
 			},
 		},
@@ -222,7 +223,7 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			result := NewStreamPrivatelinkEndpointReq(tc.model)
+			result := resource.NewStreamPrivatelinkEndpointReq(tc.model)
 			if tc.validateFunc != nil {
 				tc.validateFunc(t, result)
 			}

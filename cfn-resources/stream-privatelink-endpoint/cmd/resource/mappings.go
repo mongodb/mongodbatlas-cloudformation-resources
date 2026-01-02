@@ -15,14 +15,12 @@
 package resource
 
 import (
-	admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312010/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-// GetStreamPrivatelinkEndpointModel maps Atlas API response to CFN Model
-// CRITICAL: Preserves currentModel if provided to maintain primary identifier fields
-func GetStreamPrivatelinkEndpointModel(apiResp *admin20250312010.StreamsPrivateLinkConnection, currentModel *Model) *Model {
+func GetStreamPrivatelinkEndpointModel(apiResp *admin.StreamsPrivateLinkConnection, currentModel *Model) *Model {
 	var model *Model
 	if currentModel != nil {
 		model = currentModel
@@ -30,7 +28,6 @@ func GetStreamPrivatelinkEndpointModel(apiResp *admin20250312010.StreamsPrivateL
 		model = new(Model)
 	}
 
-	// Populate from API response
 	if apiResp.Id != nil {
 		model.Id = apiResp.Id
 	}
@@ -71,12 +68,10 @@ func GetStreamPrivatelinkEndpointModel(apiResp *admin20250312010.StreamsPrivateL
 		model.ErrorMessage = apiResp.ErrorMessage
 	}
 
-	// Preserve ProjectId from currentModel if present, otherwise it should be set by caller
 	if model.ProjectId == nil && currentModel != nil {
 		model.ProjectId = currentModel.ProjectId
 	}
 
-	// Preserve Profile from currentModel if present
 	if currentModel != nil && currentModel.Profile != nil {
 		model.Profile = currentModel.Profile
 	}
@@ -84,9 +79,8 @@ func GetStreamPrivatelinkEndpointModel(apiResp *admin20250312010.StreamsPrivateL
 	return model
 }
 
-// NewStreamPrivatelinkEndpointReq maps CFN Model to Atlas API request
-func NewStreamPrivatelinkEndpointReq(model *Model) *admin20250312010.StreamsPrivateLinkConnection {
-	req := &admin20250312010.StreamsPrivateLinkConnection{
+func NewStreamPrivatelinkEndpointReq(model *Model) *admin.StreamsPrivateLinkConnection {
+	req := &admin.StreamsPrivateLinkConnection{
 		Provider: util.SafeString(model.ProviderName),
 	}
 
@@ -105,7 +99,7 @@ func NewStreamPrivatelinkEndpointReq(model *Model) *admin20250312010.StreamsPriv
 	if model.DnsDomain != nil {
 		req.DnsDomain = model.DnsDomain
 	}
-	if model.DnsSubDomain != nil && len(model.DnsSubDomain) > 0 {
+	if len(model.DnsSubDomain) > 0 {
 		req.DnsSubDomain = &model.DnsSubDomain
 	}
 

@@ -1,11 +1,33 @@
-.PHONY: build test clean
+.PHONY: build debug clean create-test-resources delete-test-resources run-contract-testing
+tags=logging callback metrics scheduler
+cgo=0
+goos=linux
+goarch=amd64
+CFNREP_GIT_SHA?=$(shell git rev-parse HEAD)
+ldXflags=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=${CFNREP_GIT_SHA}
+ldXflagsD=-X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=${CFNREP_GIT_SHA}
 
 build:
-	make -f makebuild  # this runs build steps required by the cfn cli
-
-test:
 	cfn generate
-	env GOOS=linux go build -ldflags="-s -w" -tags="lambda.norpc,$(TAGS)" -o bin/bootstrap cmd/main.go
+	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflags)" -tags="$(tags)" -o bin/bootstrap cmd/main.go
+
+debug:
+	cfn generate
+	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflagsD)" -tags="$(tags)" -o bin/bootstrap cmd/main.go
 
 clean:
 	rm -rf bin
+
+create-test-resources:
+	@echo "==> Creating test files and resources for contract testing"
+	./test/contract-testing/cfn-test-create.sh
+
+delete-test-resources:
+	@echo "==> Delete test resources used for contract testing"
+	./test/contract-testing/cfn-test-delete.sh
+
+run-contract-testing:
+	@echo "==> Run contract testing"
+	make build
+	sam local start-lambda &
+	cfn test --function-name TestEntrypoint --verbose

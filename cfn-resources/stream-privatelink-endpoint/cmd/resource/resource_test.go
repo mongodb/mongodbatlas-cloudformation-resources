@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource
+package resource_test
 
 import (
 	"context"
@@ -22,23 +22,24 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-privatelink-endpoint/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312010/admin"
 	"go.mongodb.org/atlas-sdk/v20250312010/mockadmin"
 )
 
 // Helper function to create a test model
-func createTestModel() *Model {
+func createTestModel() *resource.Model {
 	projectID := "507f1f77bcf86cd799439011"
 	providerName := "AWS"
 	vendor := "MSK"
 	arn := "arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster/12345678-1234-1234-1234-123456789012-1"
 
-	return &Model{
+	return &resource.Model{
 		Profile:      util.StringPtr("default"),
 		ProjectId:    &projectID,
 		ProviderName: &providerName,
@@ -47,7 +48,7 @@ func createTestModel() *Model {
 	}
 }
 
-func createTestModelConfluent() *Model {
+func createTestModelConfluent() *resource.Model {
 	projectID := "507f1f77bcf86cd799439011"
 	providerName := "AWS"
 	vendor := "CONFLUENT"
@@ -56,7 +57,7 @@ func createTestModelConfluent() *Model {
 	dnsDomain := "test.example.com"
 	dnsSubDomain := []string{"az1", "az2"}
 
-	return &Model{
+	return &resource.Model{
 		Profile:           util.StringPtr("default"),
 		ProjectId:         &projectID,
 		ProviderName:      &providerName,
@@ -68,14 +69,14 @@ func createTestModelConfluent() *Model {
 	}
 }
 
-func createTestModelS3() *Model {
+func createTestModelS3() *resource.Model {
 	projectID := "507f1f77bcf86cd799439011"
 	providerName := "AWS"
 	vendor := "S3"
 	region := "us-east-1"
 	serviceEndpointId := "com.amazonaws.us-east-1.s3"
 
-	return &Model{
+	return &resource.Model{
 		Profile:           util.StringPtr("default"),
 		ProjectId:         &projectID,
 		ProviderName:      &providerName,
@@ -86,14 +87,14 @@ func createTestModelS3() *Model {
 }
 
 // Helper function to create a test API response
-func createTestAPIResponse() *admin20250312010.StreamsPrivateLinkConnection {
+func createTestAPIResponse() *admin.StreamsPrivateLinkConnection {
 	connectionID := "507f1f77bcf86cd799439012"
 	providerName := "AWS"
 	vendor := "MSK"
 	state := "DONE"
 	arn := "arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster/12345678-1234-1234-1234-123456789012-1"
 
-	return &admin20250312010.StreamsPrivateLinkConnection{
+	return &admin.StreamsPrivateLinkConnection{
 		Id:       &connectionID,
 		Provider: providerName,
 		Vendor:   &vendor,
@@ -105,12 +106,12 @@ func createTestAPIResponse() *admin20250312010.StreamsPrivateLinkConnection {
 // Test validation errors
 func TestCreateValidationErrors(t *testing.T) {
 	testCases := map[string]struct {
-		currentModel   *Model
+		currentModel   *resource.Model
 		expectedStatus handler.Status
 		expectedMsg    string
 	}{
 		"missingProjectId": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProviderName: util.StringPtr("AWS"),
 				Vendor:       util.StringPtr("MSK"),
 			},
@@ -118,7 +119,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "required",
 		},
 		"missingProviderName": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
 				Vendor:    util.StringPtr("MSK"),
 			},
@@ -126,7 +127,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "required",
 		},
 		"missingVendor": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:    util.StringPtr("507f1f77bcf86cd799439011"),
 				ProviderName: util.StringPtr("AWS"),
 			},
@@ -134,7 +135,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "required",
 		},
 		"missingArnForMSK": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:    util.StringPtr("507f1f77bcf86cd799439011"),
 				ProviderName: util.StringPtr("AWS"),
 				Vendor:       util.StringPtr("MSK"),
@@ -143,7 +144,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "Arn is required",
 		},
 		"regionSetForMSK": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:    util.StringPtr("507f1f77bcf86cd799439011"),
 				ProviderName: util.StringPtr("AWS"),
 				Vendor:       util.StringPtr("MSK"),
@@ -154,7 +155,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "Region cannot be set for vendor MSK",
 		},
 		"missingDnsDomainForConfluent": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:         util.StringPtr("507f1f77bcf86cd799439011"),
 				ProviderName:      util.StringPtr("AWS"),
 				Vendor:            util.StringPtr("CONFLUENT"),
@@ -165,7 +166,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "DnsDomain is required",
 		},
 		"missingRegionForConfluent": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:         util.StringPtr("507f1f77bcf86cd799439011"),
 				ProviderName:      util.StringPtr("AWS"),
 				Vendor:            util.StringPtr("CONFLUENT"),
@@ -176,7 +177,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "Region is required",
 		},
 		"missingServiceEndpointIdForConfluent": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:    util.StringPtr("507f1f77bcf86cd799439011"),
 				ProviderName: util.StringPtr("AWS"),
 				Vendor:       util.StringPtr("CONFLUENT"),
@@ -187,7 +188,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "ServiceEndpointId is required",
 		},
 		"missingRegionForS3": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:         util.StringPtr("507f1f77bcf86cd799439011"),
 				ProviderName:      util.StringPtr("AWS"),
 				Vendor:            util.StringPtr("S3"),
@@ -197,7 +198,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			expectedMsg:    "Region is required",
 		},
 		"missingServiceEndpointIdForS3": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId:    util.StringPtr("507f1f77bcf86cd799439011"),
 				ProviderName: util.StringPtr("AWS"),
 				Vendor:       util.StringPtr("S3"),
@@ -213,7 +214,7 @@ func TestCreateValidationErrors(t *testing.T) {
 			req := handler.Request{
 				RequestContext: handler.RequestContext{},
 			}
-			event, err := Create(req, nil, tc.currentModel)
+			event, err := resource.Create(req, nil, tc.currentModel)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -224,19 +225,19 @@ func TestCreateValidationErrors(t *testing.T) {
 
 func TestReadValidationErrors(t *testing.T) {
 	testCases := map[string]struct {
-		currentModel   *Model
+		currentModel   *resource.Model
 		expectedStatus handler.Status
 		expectedMsg    string
 	}{
 		"missingProjectId": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				Id: util.StringPtr("507f1f77bcf86cd799439012"),
 			},
 			expectedStatus: handler.Failed,
 			expectedMsg:    "required",
 		},
 		"missingId": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
 			},
 			expectedStatus: handler.Failed,
@@ -249,7 +250,7 @@ func TestReadValidationErrors(t *testing.T) {
 			req := handler.Request{
 				RequestContext: handler.RequestContext{},
 			}
-			event, err := Read(req, nil, tc.currentModel)
+			event, err := resource.Read(req, nil, tc.currentModel)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -260,23 +261,23 @@ func TestReadValidationErrors(t *testing.T) {
 
 func TestDeleteValidationErrors(t *testing.T) {
 	testCases := map[string]struct {
-		currentModel   *Model
+		currentModel   *resource.Model
 		expectedStatus handler.Status
 		expectedMsg    string
 	}{
 		"missingProjectId": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				Id: util.StringPtr("507f1f77bcf86cd799439012"),
 			},
 			expectedStatus: handler.Failed,
-			expectedMsg:    "required",
+			expectedMsg:    constants.ResourceNotFound,
 		},
 		"missingId": {
-			currentModel: &Model{
+			currentModel: &resource.Model{
 				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
 			},
 			expectedStatus: handler.Failed,
-			expectedMsg:    "required",
+			expectedMsg:    constants.ResourceNotFound,
 		},
 	}
 
@@ -285,7 +286,7 @@ func TestDeleteValidationErrors(t *testing.T) {
 			req := handler.Request{
 				RequestContext: handler.RequestContext{},
 			}
-			event, err := Delete(req, nil, tc.currentModel)
+			event, err := resource.Delete(req, nil, tc.currentModel)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -296,12 +297,12 @@ func TestDeleteValidationErrors(t *testing.T) {
 
 func TestListValidationErrors(t *testing.T) {
 	testCases := map[string]struct {
-		currentModel   *Model
+		currentModel   *resource.Model
 		expectedStatus handler.Status
 		expectedMsg    string
 	}{
 		"missingProjectId": {
-			currentModel:   &Model{},
+			currentModel:   &resource.Model{},
 			expectedStatus: handler.Failed,
 			expectedMsg:    "required",
 		},
@@ -312,7 +313,7 @@ func TestListValidationErrors(t *testing.T) {
 			req := handler.Request{
 				RequestContext: handler.RequestContext{},
 			}
-			event, err := List(req, nil, tc.currentModel)
+			event, err := resource.List(req, nil, tc.currentModel)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -327,7 +328,7 @@ func TestUpdate(t *testing.T) {
 	}
 	currentModel := createTestModel()
 
-	event, err := Update(req, nil, currentModel)
+	event, err := resource.Update(req, nil, currentModel)
 
 	require.NoError(t, err)
 	assert.Equal(t, handler.Failed, event.OperationStatus)
@@ -338,14 +339,14 @@ func TestUpdate(t *testing.T) {
 // Test CRUD operations with mocks
 func TestCreateWithMocks(t *testing.T) {
 	// Save original function
-	originalInitEnv := initEnvWithLatestClient
+	originalInitEnv := resource.InitEnvWithLatestClient
 	defer func() {
-		initEnvWithLatestClient = originalInitEnv
+		resource.InitEnvWithLatestClient = originalInitEnv
 	}()
 
 	testCases := map[string]struct {
 		req            handler.Request
-		currentModel   *Model
+		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
 	}{
@@ -355,15 +356,12 @@ func TestCreateWithMocks(t *testing.T) {
 			},
 			currentModel: createTestModel(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.CreatePrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.CreatePrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().CreatePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
+				doneState := "DONE"
+				apiResp.State = &doneState
 				m.EXPECT().CreatePrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
-
-				// State transition check
-				getReq := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
-				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq)
-				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
 			},
 			expectedStatus: handler.Success,
 		},
@@ -376,17 +374,12 @@ func TestCreateWithMocks(t *testing.T) {
 			},
 			currentModel: createTestModel(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.CreatePrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.CreatePrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().CreatePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				workingState := "WORKING"
 				apiResp.State = &workingState
 				m.EXPECT().CreatePrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
-
-				// State transition check - still in progress
-				getReq := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
-				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq)
-				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
 			},
 			expectedStatus: handler.InProgress,
 		},
@@ -396,7 +389,7 @@ func TestCreateWithMocks(t *testing.T) {
 			},
 			currentModel: createTestModel(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.CreatePrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.CreatePrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().CreatePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				failedState := "FAILED"
@@ -404,11 +397,6 @@ func TestCreateWithMocks(t *testing.T) {
 				apiResp.State = &failedState
 				apiResp.ErrorMessage = &errorMsg
 				m.EXPECT().CreatePrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
-
-				// State transition check - failed
-				getReq := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
-				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq)
-				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
 			},
 			expectedStatus: handler.Failed,
 		},
@@ -418,7 +406,7 @@ func TestCreateWithMocks(t *testing.T) {
 			},
 			currentModel: createTestModel(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.CreatePrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.CreatePrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().CreatePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().CreatePrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("API error"))
 			},
@@ -431,14 +419,14 @@ func TestCreateWithMocks(t *testing.T) {
 			mockApi := mockadmin.NewStreamsApi(t)
 			tc.mockSetup(mockApi)
 
-			mockClient := &admin20250312010.APIClient{}
+			mockClient := &admin.APIClient{}
 			mockClient.StreamsApi = mockApi
 
-			initEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin20250312010.APIClient, *handler.ProgressEvent) {
+			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
 			}
 
-			event, err := Create(tc.req, nil, tc.currentModel)
+			event, err := resource.Create(tc.req, nil, tc.currentModel)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -448,14 +436,14 @@ func TestCreateWithMocks(t *testing.T) {
 
 func TestReadWithMocks(t *testing.T) {
 	// Save original function
-	originalInitEnv := initEnvWithLatestClient
+	originalInitEnv := resource.InitEnvWithLatestClient
 	defer func() {
-		initEnvWithLatestClient = originalInitEnv
+		resource.InitEnvWithLatestClient = originalInitEnv
 	}()
 
 	testCases := map[string]struct {
 		req            handler.Request
-		currentModel   *Model
+		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
 	}{
@@ -463,14 +451,14 @@ func TestReadWithMocks(t *testing.T) {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
@@ -481,14 +469,14 @@ func TestReadWithMocks(t *testing.T) {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 404}, fmt.Errorf("not found"))
 			},
@@ -498,7 +486,7 @@ func TestReadWithMocks(t *testing.T) {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModelConfluent()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
@@ -506,7 +494,7 @@ func TestReadWithMocks(t *testing.T) {
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				emptyDnsSubDomain := []string{}
@@ -519,14 +507,14 @@ func TestReadWithMocks(t *testing.T) {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("server error"))
 			},
@@ -539,14 +527,14 @@ func TestReadWithMocks(t *testing.T) {
 			mockApi := mockadmin.NewStreamsApi(t)
 			tc.mockSetup(mockApi)
 
-			mockClient := &admin20250312010.APIClient{}
+			mockClient := &admin.APIClient{}
 			mockClient.StreamsApi = mockApi
 
-			initEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin20250312010.APIClient, *handler.ProgressEvent) {
+			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
 			}
 
-			event, err := Read(tc.req, nil, tc.currentModel)
+			event, err := resource.Read(tc.req, nil, tc.currentModel)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -556,14 +544,14 @@ func TestReadWithMocks(t *testing.T) {
 
 func TestDeleteWithMocks(t *testing.T) {
 	// Save original function
-	originalInitEnv := initEnvWithLatestClient
+	originalInitEnv := resource.InitEnvWithLatestClient
 	defer func() {
-		initEnvWithLatestClient = originalInitEnv
+		resource.InitEnvWithLatestClient = originalInitEnv
 	}()
 
 	testCases := map[string]struct {
 		req            handler.Request
-		currentModel   *Model
+		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
 	}{
@@ -571,27 +559,27 @@ func TestDeleteWithMocks(t *testing.T) {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.DeletePrivateLinkConnectionApiRequest{ApiService: m}
+				// Initial check for resource existence
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
+				apiResp1 := createTestAPIResponse()
+				doneState := "DONE"
+				apiResp1.State = &doneState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp1, &http.Response{StatusCode: 200}, nil)
+
+				// Delete call
+				req := admin.DeletePrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().DeletePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().DeletePrivateLinkConnectionExecute(mock.Anything).Return(&http.Response{StatusCode: 200}, nil)
-
-				// State transition check
-				getReq := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
-				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq)
-				deletedState := "DELETED"
-				apiResp := &admin20250312010.StreamsPrivateLinkConnection{
-					State: &deletedState,
-				}
-				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
 			},
-			expectedStatus: handler.Success,
+			expectedStatus: handler.InProgress,
 		},
 		// Note: deleteWithCallback test is skipped because handleDeleteCallback calls util.NewAtlasClient
 		// which requires a valid handler.Request with Session, which is complex to mock in unit tests.
@@ -600,25 +588,25 @@ func TestDeleteWithMocks(t *testing.T) {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.DeletePrivateLinkConnectionApiRequest{ApiService: m}
+				// Initial check for resource existence
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
+				apiResp1 := createTestAPIResponse()
+				doneState := "DONE"
+				apiResp1.State = &doneState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp1, &http.Response{StatusCode: 200}, nil)
+
+				// Delete call
+				req := admin.DeletePrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().DeletePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().DeletePrivateLinkConnectionExecute(mock.Anything).Return(&http.Response{StatusCode: 200}, nil)
-
-				// State transition check - still deleting
-				getReq := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
-				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq)
-				deletingState := "DELETING"
-				apiResp := &admin20250312010.StreamsPrivateLinkConnection{
-					State: &deletingState,
-				}
-				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
 			},
 			expectedStatus: handler.InProgress,
 		},
@@ -626,66 +614,116 @@ func TestDeleteWithMocks(t *testing.T) {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.DeletePrivateLinkConnectionApiRequest{ApiService: m}
-				m.EXPECT().DeletePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
-				m.EXPECT().DeletePrivateLinkConnectionExecute(mock.Anything).Return(&http.Response{StatusCode: 200}, nil)
-
-				// State transition check - 404 means already deleted
-				getReq := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
-				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq)
+				// Initial check for resource existence - returns 404
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
 				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 404}, fmt.Errorf("not found"))
 			},
-			expectedStatus: handler.Success,
+			expectedStatus: handler.Failed,
 		},
 		"deleteWithFailedState": {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.DeletePrivateLinkConnectionApiRequest{ApiService: m}
+				// Initial check for resource existence
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
+				apiResp1 := createTestAPIResponse()
+				doneState := "DONE"
+				apiResp1.State = &doneState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp1, &http.Response{StatusCode: 200}, nil)
+
+				// Delete call
+				req := admin.DeletePrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().DeletePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().DeletePrivateLinkConnectionExecute(mock.Anything).Return(&http.Response{StatusCode: 200}, nil)
-
-				// State transition check - failed
-				getReq := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
-				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq)
-				failedState := "FAILED"
-				errorMsg := "Delete failed"
-				apiResp := &admin20250312010.StreamsPrivateLinkConnection{
-					State:        &failedState,
-					ErrorMessage: &errorMsg,
-				}
-				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
 			},
-			expectedStatus: handler.Failed,
+			expectedStatus: handler.InProgress,
 		},
 		"deleteWithApiError": {
 			req: handler.Request{
 				RequestContext: handler.RequestContext{},
 			},
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.DeletePrivateLinkConnectionApiRequest{ApiService: m}
+				// Initial check for resource existence
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
+				apiResp1 := createTestAPIResponse()
+				doneState := "DONE"
+				apiResp1.State = &doneState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp1, &http.Response{StatusCode: 200}, nil)
+
+				// Delete call fails
+				req := admin.DeletePrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().DeletePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().DeletePrivateLinkConnectionExecute(mock.Anything).Return(&http.Response{StatusCode: 500}, fmt.Errorf("delete failed"))
+			},
+			expectedStatus: handler.Failed,
+		},
+		"deleteWithAlreadyDeletedState": {
+			req: handler.Request{
+				RequestContext: handler.RequestContext{},
+			},
+			currentModel: func() *resource.Model {
+				m := createTestModel()
+				id := "507f1f77bcf86cd799439012"
+				m.Id = &id
+				return m
+			}(),
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				// Initial check for resource existence - already deleted
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
+				apiResp1 := createTestAPIResponse()
+				deletedState := "DELETED"
+				apiResp1.State = &deletedState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp1, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Failed,
+		},
+		"deleteWithDeleteNotFound": {
+			req: handler.Request{
+				RequestContext: handler.RequestContext{},
+			},
+			currentModel: func() *resource.Model {
+				m := createTestModel()
+				id := "507f1f77bcf86cd799439012"
+				m.Id = &id
+				return m
+			}(),
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				// Initial check for resource existence
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
+				apiResp1 := createTestAPIResponse()
+				doneState := "DONE"
+				apiResp1.State = &doneState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp1, &http.Response{StatusCode: 200}, nil)
+
+				// Delete call returns 404
+				req := admin.DeletePrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().DeletePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().DeletePrivateLinkConnectionExecute(mock.Anything).Return(&http.Response{StatusCode: 404}, fmt.Errorf("not found"))
 			},
 			expectedStatus: handler.Failed,
 		},
@@ -696,14 +734,14 @@ func TestDeleteWithMocks(t *testing.T) {
 			mockApi := mockadmin.NewStreamsApi(t)
 			tc.mockSetup(mockApi)
 
-			mockClient := &admin20250312010.APIClient{}
+			mockClient := &admin.APIClient{}
 			mockClient.StreamsApi = mockApi
 
-			initEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin20250312010.APIClient, *handler.ProgressEvent) {
+			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
 			}
 
-			event, err := Delete(tc.req, nil, tc.currentModel)
+			event, err := resource.Delete(tc.req, nil, tc.currentModel)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -713,14 +751,14 @@ func TestDeleteWithMocks(t *testing.T) {
 
 func TestListWithMocks(t *testing.T) {
 	// Save original function
-	originalInitEnv := initEnvWithLatestClient
+	originalInitEnv := resource.InitEnvWithLatestClient
 	defer func() {
-		initEnvWithLatestClient = originalInitEnv
+		resource.InitEnvWithLatestClient = originalInitEnv
 	}()
 
 	testCases := map[string]struct {
 		req            handler.Request
-		currentModel   *Model
+		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
 		expectedCount  int
@@ -731,14 +769,14 @@ func TestListWithMocks(t *testing.T) {
 			},
 			currentModel: createTestModel(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.ListPrivateLinkConnectionsApiRequest{ApiService: m}
+				req := admin.ListPrivateLinkConnectionsApiRequest{ApiService: m}
 				m.EXPECT().ListPrivateLinkConnectionsWithParams(mock.Anything, mock.Anything).Return(req)
 				connection1 := createTestAPIResponse()
 				connectionID2 := "507f1f77bcf86cd799439013"
 				connection2 := createTestAPIResponse()
 				connection2.Id = &connectionID2
-				results := []admin20250312010.StreamsPrivateLinkConnection{*connection1, *connection2}
-				paginated := &admin20250312010.PaginatedApiStreamsPrivateLink{
+				results := []admin.StreamsPrivateLinkConnection{*connection1, *connection2}
+				paginated := &admin.PaginatedApiStreamsPrivateLink{
 					Results:    &results,
 					TotalCount: util.Pointer(2),
 				}
@@ -753,7 +791,7 @@ func TestListWithMocks(t *testing.T) {
 			},
 			currentModel: createTestModel(),
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.ListPrivateLinkConnectionsApiRequest{ApiService: m}
+				req := admin.ListPrivateLinkConnectionsApiRequest{ApiService: m}
 				m.EXPECT().ListPrivateLinkConnectionsWithParams(mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().ListPrivateLinkConnectionsExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("list failed"))
 			},
@@ -766,14 +804,14 @@ func TestListWithMocks(t *testing.T) {
 			mockApi := mockadmin.NewStreamsApi(t)
 			tc.mockSetup(mockApi)
 
-			mockClient := &admin20250312010.APIClient{}
+			mockClient := &admin.APIClient{}
 			mockClient.StreamsApi = mockApi
 
-			initEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin20250312010.APIClient, *handler.ProgressEvent) {
+			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
 			}
 
-			event, err := List(tc.req, nil, tc.currentModel)
+			event, err := resource.List(tc.req, nil, tc.currentModel)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -788,7 +826,7 @@ func TestListWithMocks(t *testing.T) {
 
 func TestWaitForStateTransition(t *testing.T) {
 	testCases := map[string]struct {
-		currentModel   *Model
+		currentModel   *resource.Model
 		pendingStates  []string
 		targetStates   []string
 		isDelete       bool
@@ -796,17 +834,17 @@ func TestWaitForStateTransition(t *testing.T) {
 		expectedStatus handler.Status
 	}{
 		"reachedTargetStateDone": {
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
-			pendingStates: []string{StateIdle, StateWorking},
-			targetStates:  []string{StateDone, StateFailed},
+			pendingStates: []string{resource.StateIdle, resource.StateWorking},
+			targetStates:  []string{resource.StateDone, resource.StateFailed},
 			isDelete:      false,
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				doneState := "DONE"
@@ -816,17 +854,17 @@ func TestWaitForStateTransition(t *testing.T) {
 			expectedStatus: handler.Success,
 		},
 		"reachedTargetStateFailed": {
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
-			pendingStates: []string{StateIdle, StateWorking},
-			targetStates:  []string{StateDone, StateFailed},
+			pendingStates: []string{resource.StateIdle, resource.StateWorking},
+			targetStates:  []string{resource.StateDone, resource.StateFailed},
 			isDelete:      false,
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				failedState := "FAILED"
@@ -838,17 +876,17 @@ func TestWaitForStateTransition(t *testing.T) {
 			expectedStatus: handler.Failed,
 		},
 		"inPendingState": {
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
-			pendingStates: []string{StateIdle, StateWorking},
-			targetStates:  []string{StateDone, StateFailed},
+			pendingStates: []string{resource.StateIdle, resource.StateWorking},
+			targetStates:  []string{resource.StateDone, resource.StateFailed},
 			isDelete:      false,
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				workingState := "WORKING"
@@ -858,17 +896,17 @@ func TestWaitForStateTransition(t *testing.T) {
 			expectedStatus: handler.InProgress,
 		},
 		"deleteReachedDeletedState": {
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
-			pendingStates: []string{StateDeleteRequested, StateDeleting},
-			targetStates:  []string{StateDeleted, StateFailed},
+			pendingStates: []string{resource.StateDeleteRequested, resource.StateDeleting},
+			targetStates:  []string{resource.StateDeleted, resource.StateFailed},
 			isDelete:      true,
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				deletedState := "DELETED"
@@ -878,34 +916,34 @@ func TestWaitForStateTransition(t *testing.T) {
 			expectedStatus: handler.Success,
 		},
 		"deleteWithNotFound": {
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
-			pendingStates: []string{StateDeleteRequested, StateDeleting},
-			targetStates:  []string{StateDeleted, StateFailed},
+			pendingStates: []string{resource.StateDeleteRequested, resource.StateDeleting},
+			targetStates:  []string{resource.StateDeleted, resource.StateFailed},
 			isDelete:      true,
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 404}, fmt.Errorf("not found"))
 			},
 			expectedStatus: handler.Success,
 		},
 		"unexpectedState": {
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
-			pendingStates: []string{StateIdle, StateWorking},
-			targetStates:  []string{StateDone, StateFailed},
+			pendingStates: []string{resource.StateIdle, resource.StateWorking},
+			targetStates:  []string{resource.StateDone, resource.StateFailed},
 			isDelete:      false,
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
 				unexpectedState := "UNEXPECTED"
@@ -915,17 +953,17 @@ func TestWaitForStateTransition(t *testing.T) {
 			expectedStatus: handler.Failed,
 		},
 		"getStateError": {
-			currentModel: func() *Model {
+			currentModel: func() *resource.Model {
 				m := createTestModel()
 				id := "507f1f77bcf86cd799439012"
 				m.Id = &id
 				return m
 			}(),
-			pendingStates: []string{StateIdle, StateWorking},
-			targetStates:  []string{StateDone, StateFailed},
+			pendingStates: []string{resource.StateIdle, resource.StateWorking},
+			targetStates:  []string{resource.StateDone, resource.StateFailed},
 			isDelete:      false,
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("server error"))
 			},
@@ -938,10 +976,10 @@ func TestWaitForStateTransition(t *testing.T) {
 			mockApi := mockadmin.NewStreamsApi(t)
 			tc.mockSetup(mockApi)
 
-			mockClient := &admin20250312010.APIClient{}
+			mockClient := &admin.APIClient{}
 			mockClient.StreamsApi = mockApi
 
-			event, err := waitForStateTransition(context.Background(), mockClient, tc.currentModel, tc.pendingStates, tc.targetStates, tc.isDelete)
+			event, err := resource.WaitForStateTransition(context.Background(), mockClient, tc.currentModel, tc.pendingStates, tc.targetStates, tc.isDelete)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -951,25 +989,25 @@ func TestWaitForStateTransition(t *testing.T) {
 
 func TestValidateVendorRequirements(t *testing.T) {
 	testCases := map[string]struct {
-		model         *Model
+		model         *resource.Model
 		expectedError bool
 		expectedMsg   string
 	}{
 		"nilVendor": {
-			model: &Model{
+			model: &resource.Model{
 				ProviderName: util.StringPtr("AWS"),
 			},
 			expectedError: false,
 		},
 		"validMSK": {
-			model: &Model{
+			model: &resource.Model{
 				Vendor: util.StringPtr("MSK"),
 				Arn:    util.StringPtr("arn:aws:kafka:us-east-1:123456789012:cluster/test"),
 			},
 			expectedError: false,
 		},
 		"confluentMissingDnsDomain": {
-			model: &Model{
+			model: &resource.Model{
 				Vendor:            util.StringPtr("CONFLUENT"),
 				Region:            util.StringPtr("us-east-1"),
 				ServiceEndpointId: util.StringPtr("com.amazonaws.vpce.us-east-1.vpce-svc-12345678"),
@@ -978,7 +1016,7 @@ func TestValidateVendorRequirements(t *testing.T) {
 			expectedMsg:   "DnsDomain is required",
 		},
 		"confluentMissingRegion": {
-			model: &Model{
+			model: &resource.Model{
 				Vendor:            util.StringPtr("CONFLUENT"),
 				DnsDomain:         util.StringPtr("test.example.com"),
 				ServiceEndpointId: util.StringPtr("com.amazonaws.vpce.us-east-1.vpce-svc-12345678"),
@@ -987,7 +1025,7 @@ func TestValidateVendorRequirements(t *testing.T) {
 			expectedMsg:   "Region is required",
 		},
 		"confluentMissingServiceEndpointId": {
-			model: &Model{
+			model: &resource.Model{
 				Vendor:    util.StringPtr("CONFLUENT"),
 				DnsDomain: util.StringPtr("test.example.com"),
 				Region:    util.StringPtr("us-east-1"),
@@ -996,14 +1034,14 @@ func TestValidateVendorRequirements(t *testing.T) {
 			expectedMsg:   "ServiceEndpointId is required",
 		},
 		"mskMissingArn": {
-			model: &Model{
+			model: &resource.Model{
 				Vendor: util.StringPtr("MSK"),
 			},
 			expectedError: true,
 			expectedMsg:   "Arn is required",
 		},
 		"mskWithRegion": {
-			model: &Model{
+			model: &resource.Model{
 				Vendor: util.StringPtr("MSK"),
 				Arn:    util.StringPtr("arn:aws:kafka:us-east-1:123456789012:cluster/test"),
 				Region: util.StringPtr("us-east-1"),
@@ -1012,7 +1050,7 @@ func TestValidateVendorRequirements(t *testing.T) {
 			expectedMsg:   "Region cannot be set for vendor MSK",
 		},
 		"s3MissingRegion": {
-			model: &Model{
+			model: &resource.Model{
 				Vendor:            util.StringPtr("S3"),
 				ServiceEndpointId: util.StringPtr("com.amazonaws.us-east-1.s3"),
 			},
@@ -1020,7 +1058,7 @@ func TestValidateVendorRequirements(t *testing.T) {
 			expectedMsg:   "Region is required",
 		},
 		"s3MissingServiceEndpointId": {
-			model: &Model{
+			model: &resource.Model{
 				Vendor: util.StringPtr("S3"),
 				Region: util.StringPtr("us-east-1"),
 			},
@@ -1031,7 +1069,7 @@ func TestValidateVendorRequirements(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			result := validateVendorRequirements(tc.model)
+			result := resource.ValidateVendorRequirements(tc.model)
 			if tc.expectedError {
 				require.NotNil(t, result)
 				assert.Equal(t, handler.Failed, result.OperationStatus)
@@ -1062,6 +1100,26 @@ func TestHandleError(t *testing.T) {
 			expectedErrorCode:  string(types.HandlerErrorCodeNotFound),
 			expectedMsgContain: constants.ResourceNotFound,
 		},
+		"alreadyExistsError": {
+			response: &http.Response{
+				StatusCode: http.StatusBadRequest,
+			},
+			method:             constants.CREATE,
+			err:                fmt.Errorf("STREAM_PRIVATE_LINK_ALREADY_EXISTS: resource already exists"),
+			expectedStatus:     handler.Failed,
+			expectedErrorCode:  string(types.HandlerErrorCodeAlreadyExists),
+			expectedMsgContain: "CREATE error",
+		},
+		"alreadyExistsErrorAlt": {
+			response: &http.Response{
+				StatusCode: http.StatusBadRequest,
+			},
+			method:             constants.CREATE,
+			err:                fmt.Errorf("resource already exists"),
+			expectedStatus:     handler.Failed,
+			expectedErrorCode:  string(types.HandlerErrorCodeAlreadyExists),
+			expectedMsgContain: "CREATE error",
+		},
 		"otherError": {
 			response: &http.Response{
 				StatusCode: http.StatusBadRequest,
@@ -1084,7 +1142,7 @@ func TestHandleError(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			event, err := handleError(tc.response, tc.method, tc.err)
+			event, err := resource.HandleError(tc.response, tc.method, tc.err)
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
@@ -1106,11 +1164,11 @@ func TestGetAllPrivateLinkConnections(t *testing.T) {
 		"singlePage": {
 			projectID: "507f1f77bcf86cd799439011",
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.ListPrivateLinkConnectionsApiRequest{ApiService: m}
+				req := admin.ListPrivateLinkConnectionsApiRequest{ApiService: m}
 				m.EXPECT().ListPrivateLinkConnectionsWithParams(mock.Anything, mock.Anything).Return(req)
 				connection1 := createTestAPIResponse()
-				results := []admin20250312010.StreamsPrivateLinkConnection{*connection1}
-				paginated := &admin20250312010.PaginatedApiStreamsPrivateLink{
+				results := []admin.StreamsPrivateLinkConnection{*connection1}
+				paginated := &admin.PaginatedApiStreamsPrivateLink{
 					Results:    &results,
 					TotalCount: util.Pointer(1),
 				}
@@ -1123,24 +1181,24 @@ func TestGetAllPrivateLinkConnections(t *testing.T) {
 			projectID: "507f1f77bcf86cd799439011",
 			mockSetup: func(m *mockadmin.StreamsApi) {
 				// First page
-				req1 := admin20250312010.ListPrivateLinkConnectionsApiRequest{ApiService: m}
+				req1 := admin.ListPrivateLinkConnectionsApiRequest{ApiService: m}
 				m.EXPECT().ListPrivateLinkConnectionsWithParams(mock.Anything, mock.Anything).Return(req1).Once()
 				connection1 := createTestAPIResponse()
-				results1 := []admin20250312010.StreamsPrivateLinkConnection{*connection1}
-				paginated1 := &admin20250312010.PaginatedApiStreamsPrivateLink{
+				results1 := []admin.StreamsPrivateLinkConnection{*connection1}
+				paginated1 := &admin.PaginatedApiStreamsPrivateLink{
 					Results:    &results1,
 					TotalCount: util.Pointer(2),
 				}
 				m.EXPECT().ListPrivateLinkConnectionsExecute(mock.Anything).Return(paginated1, &http.Response{StatusCode: 200}, nil).Once()
 
 				// Second page
-				req2 := admin20250312010.ListPrivateLinkConnectionsApiRequest{ApiService: m}
+				req2 := admin.ListPrivateLinkConnectionsApiRequest{ApiService: m}
 				m.EXPECT().ListPrivateLinkConnectionsWithParams(mock.Anything, mock.Anything).Return(req2).Once()
 				connectionID2 := "507f1f77bcf86cd799439013"
 				connection2 := createTestAPIResponse()
 				connection2.Id = &connectionID2
-				results2 := []admin20250312010.StreamsPrivateLinkConnection{*connection2}
-				paginated2 := &admin20250312010.PaginatedApiStreamsPrivateLink{
+				results2 := []admin.StreamsPrivateLinkConnection{*connection2}
+				paginated2 := &admin.PaginatedApiStreamsPrivateLink{
 					Results:    &results2,
 					TotalCount: util.Pointer(2),
 				}
@@ -1152,7 +1210,7 @@ func TestGetAllPrivateLinkConnections(t *testing.T) {
 		"apiError": {
 			projectID: "507f1f77bcf86cd799439011",
 			mockSetup: func(m *mockadmin.StreamsApi) {
-				req := admin20250312010.ListPrivateLinkConnectionsApiRequest{ApiService: m}
+				req := admin.ListPrivateLinkConnectionsApiRequest{ApiService: m}
 				m.EXPECT().ListPrivateLinkConnectionsWithParams(mock.Anything, mock.Anything).Return(req)
 				m.EXPECT().ListPrivateLinkConnectionsExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("server error"))
 			},
@@ -1165,10 +1223,10 @@ func TestGetAllPrivateLinkConnections(t *testing.T) {
 			mockApi := mockadmin.NewStreamsApi(t)
 			tc.mockSetup(mockApi)
 
-			mockClient := &admin20250312010.APIClient{}
+			mockClient := &admin.APIClient{}
 			mockClient.StreamsApi = mockApi
 
-			result, resp, err := getAllPrivateLinkConnections(context.Background(), mockClient, tc.projectID)
+			result, resp, err := resource.GetAllPrivateLinkConnections(context.Background(), mockClient, tc.projectID)
 
 			if tc.expectedError {
 				require.Error(t, err)
@@ -1178,6 +1236,774 @@ func TestGetAllPrivateLinkConnections(t *testing.T) {
 				assert.Equal(t, tc.expectedCount, len(result))
 				assert.Nil(t, resp)
 			}
+		})
+	}
+}
+
+func TestDeleteWithMoreEdgeCases(t *testing.T) {
+	originalInitEnv := resource.InitEnvWithLatestClient
+	defer func() {
+		resource.InitEnvWithLatestClient = originalInitEnv
+	}()
+
+	testCases := map[string]struct {
+		req            handler.Request
+		currentModel   *resource.Model
+		mockSetup      func(*mockadmin.StreamsApi)
+		expectedStatus handler.Status
+	}{
+		"deleteWithGet500Error": {
+			req: handler.Request{
+				RequestContext: handler.RequestContext{},
+			},
+			currentModel: func() *resource.Model {
+				m := createTestModel()
+				id := "507f1f77bcf86cd799439012"
+				m.Id = &id
+				return m
+			}(),
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("server error"))
+			},
+			expectedStatus: handler.Failed,
+		},
+		"deleteWithGetNon404Non500Error": {
+			req: handler.Request{
+				RequestContext: handler.RequestContext{},
+			},
+			currentModel: func() *resource.Model {
+				m := createTestModel()
+				id := "507f1f77bcf86cd799439012"
+				m.Id = &id
+				return m
+			}(),
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				getReq1 := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(getReq1)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 400}, fmt.Errorf("bad request"))
+			},
+			expectedStatus: handler.Failed,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			mockApi := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockApi)
+
+			mockClient := &admin.APIClient{}
+			mockClient.StreamsApi = mockApi
+
+			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
+				return mockClient, nil
+			}
+
+			event, err := resource.Delete(tc.req, nil, tc.currentModel)
+
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
+		})
+	}
+}
+
+func TestWaitForStateTransitionMoreCases(t *testing.T) {
+	testCases := map[string]struct {
+		currentModel   *resource.Model
+		pendingStates  []string
+		targetStates   []string
+		isDelete       bool
+		mockSetup      func(*mockadmin.StreamsApi)
+		expectedStatus handler.Status
+	}{
+		"emptyState": {
+			currentModel: func() *resource.Model {
+				m := createTestModel()
+				id := "507f1f77bcf86cd799439012"
+				m.Id = &id
+				return m
+			}(),
+			pendingStates: []string{resource.StateIdle, resource.StateWorking},
+			targetStates:  []string{resource.StateDone, resource.StateFailed},
+			isDelete:      false,
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				apiResp.State = nil
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.InProgress,
+		},
+		"nonDeleteWith404": {
+			currentModel: func() *resource.Model {
+				m := createTestModel()
+				id := "507f1f77bcf86cd799439012"
+				m.Id = &id
+				return m
+			}(),
+			pendingStates: []string{resource.StateIdle, resource.StateWorking},
+			targetStates:  []string{resource.StateDone, resource.StateFailed},
+			isDelete:      false,
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 404}, fmt.Errorf("not found"))
+			},
+			expectedStatus: handler.InProgress,
+		},
+		"deleteWith500Error": {
+			currentModel: func() *resource.Model {
+				m := createTestModel()
+				id := "507f1f77bcf86cd799439012"
+				m.Id = &id
+				return m
+			}(),
+			pendingStates: []string{resource.StateDeleteRequested, resource.StateDeleting},
+			targetStates:  []string{resource.StateDeleted, resource.StateFailed},
+			isDelete:      true,
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("server error"))
+			},
+			expectedStatus: handler.Failed,
+		},
+		"deleteWithNon404Non500Error": {
+			currentModel: func() *resource.Model {
+				m := createTestModel()
+				id := "507f1f77bcf86cd799439012"
+				m.Id = &id
+				return m
+			}(),
+			pendingStates: []string{resource.StateDeleteRequested, resource.StateDeleting},
+			targetStates:  []string{resource.StateDeleted, resource.StateFailed},
+			isDelete:      true,
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 400}, fmt.Errorf("bad request"))
+			},
+			expectedStatus: handler.Failed,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			mockApi := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockApi)
+
+			mockClient := &admin.APIClient{}
+			mockClient.StreamsApi = mockApi
+
+			event, err := resource.WaitForStateTransition(context.Background(), mockClient, tc.currentModel, tc.pendingStates, tc.targetStates, tc.isDelete)
+
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
+		})
+	}
+}
+
+func TestIsCallback(t *testing.T) {
+	testCases := map[string]struct {
+		req            *handler.Request
+		expectedResult bool
+	}{
+		"isCallback": {
+			req: &handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+				},
+			},
+			expectedResult: true,
+		},
+		"notCallback": {
+			req: &handler.Request{
+				CallbackContext: map[string]any{},
+			},
+			expectedResult: false,
+		},
+		"nilCallbackContext": {
+			req: &handler.Request{
+				CallbackContext: nil,
+			},
+			expectedResult: false,
+		},
+		"differentCallbackKey": {
+			req: &handler.Request{
+				CallbackContext: map[string]any{
+					"otherCallback": true,
+				},
+			},
+			expectedResult: false,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			result := resource.IsCallback(tc.req)
+			assert.Equal(t, tc.expectedResult, result)
+		})
+	}
+}
+
+func TestBuildCallbackContext(t *testing.T) {
+	testCases := map[string]struct {
+		projectID    string
+		connectionID string
+		validateFunc func(t *testing.T, ctx map[string]interface{})
+	}{
+		"basic": {
+			projectID:    "507f1f77bcf86cd799439011",
+			connectionID: "507f1f77bcf86cd799439012",
+			validateFunc: func(t *testing.T, ctx map[string]interface{}) {
+				t.Helper()
+				assert.True(t, ctx["callbackStreamPrivatelinkEndpoint"].(bool))
+				assert.Equal(t, "507f1f77bcf86cd799439011", ctx["projectID"])
+				assert.Equal(t, "507f1f77bcf86cd799439012", ctx["connectionID"])
+			},
+		},
+		"emptyStrings": {
+			projectID:    "",
+			connectionID: "",
+			validateFunc: func(t *testing.T, ctx map[string]interface{}) {
+				t.Helper()
+				assert.True(t, ctx["callbackStreamPrivatelinkEndpoint"].(bool))
+				assert.Equal(t, "", ctx["projectID"])
+				assert.Equal(t, "", ctx["connectionID"])
+			},
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			ctx := resource.BuildCallbackContext(tc.projectID, tc.connectionID)
+			if tc.validateFunc != nil {
+				tc.validateFunc(t, ctx)
+			}
+		})
+	}
+
+}
+
+func TestHandleCreateCallback(t *testing.T) {
+	testCases := map[string]struct {
+		currentModel   *resource.Model
+		req            handler.Request
+		mockSetup      func(*mockadmin.StreamsApi)
+		expectedStatus handler.Status
+	}{
+		"doneState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				doneState := resource.StateDone
+				apiResp.State = &doneState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Success,
+		},
+		"failedState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				failedState := resource.StateFailed
+				errorMsg := "Connection failed"
+				apiResp.State = &failedState
+				apiResp.ErrorMessage = &errorMsg
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Failed,
+		},
+		"idleState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				idleState := resource.StateIdle
+				apiResp.State = &idleState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.InProgress,
+		},
+		"workingState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				workingState := resource.StateWorking
+				apiResp.State = &workingState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.InProgress,
+		},
+		"emptyState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				apiResp.State = nil
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.InProgress,
+		},
+		"notFoundRetry": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 404}, fmt.Errorf("not found"))
+			},
+			expectedStatus: handler.InProgress,
+		},
+		"apiError": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("server error"))
+			},
+			expectedStatus: handler.Failed,
+		},
+		"missingConnectionID": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+			},
+			mockSetup:      func(m *mockadmin.StreamsApi) {},
+			expectedStatus: handler.Failed,
+		},
+		"projectIDFromContext": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				Id: util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				doneState := resource.StateDone
+				apiResp.State = &doneState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Success,
+		},
+		"connectionIDFromContext": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				doneState := resource.StateDone
+				apiResp.State = &doneState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Success,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			mockStreamsAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockStreamsAPI)
+
+			mockClient := &admin.APIClient{}
+			mockClient.StreamsApi = mockStreamsAPI
+
+			event, err := resource.HandleCreateCallback(context.Background(), mockClient, tc.req, tc.currentModel)
+
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
+		})
+	}
+}
+
+func TestHandleDeleteCallback(t *testing.T) {
+	testCases := map[string]struct {
+		currentModel   *resource.Model
+		req            handler.Request
+		mockSetup      func(*mockadmin.StreamsApi)
+		expectedStatus handler.Status
+	}{
+		"deletedState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				deletedState := resource.StateDeleted
+				apiResp.State = &deletedState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Success,
+		},
+		"deleteRequestedState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				deleteRequestedState := resource.StateDeleteRequested
+				apiResp.State = &deleteRequestedState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.InProgress,
+		},
+		"deletingState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				deletingState := resource.StateDeleting
+				apiResp.State = &deletingState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.InProgress,
+		},
+		"failedState": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				failedState := resource.StateFailed
+				errorMsg := "Delete failed"
+				apiResp.State = &failedState
+				apiResp.ErrorMessage = &errorMsg
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Failed,
+		},
+		"notFoundSuccess": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 404}, fmt.Errorf("not found"))
+			},
+			expectedStatus: handler.Success,
+		},
+		"apiError": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+				Id:        util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 500}, fmt.Errorf("server error"))
+			},
+			expectedStatus: handler.Failed,
+		},
+		"missingProjectIDAndConnectionID": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+				},
+			},
+			currentModel:   &resource.Model{},
+			mockSetup:      func(m *mockadmin.StreamsApi) {},
+			expectedStatus: handler.Failed,
+		},
+		"missingProjectID": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				Id: util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup:      func(m *mockadmin.StreamsApi) {},
+			expectedStatus: handler.Failed,
+		},
+		"missingConnectionID": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+			},
+			mockSetup:      func(m *mockadmin.StreamsApi) {},
+			expectedStatus: handler.Failed,
+		},
+		"projectIDFromContext": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				Id: util.StringPtr("507f1f77bcf86cd799439012"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				deletedState := resource.StateDeleted
+				apiResp.State = &deletedState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Success,
+		},
+		"connectionIDFromContext": {
+			req: handler.Request{
+				CallbackContext: map[string]any{
+					"callbackStreamPrivatelinkEndpoint": true,
+					"projectID":                         "507f1f77bcf86cd799439011",
+					"connectionID":                      "507f1f77bcf86cd799439012",
+				},
+			},
+			currentModel: &resource.Model{
+				ProjectId: util.StringPtr("507f1f77bcf86cd799439011"),
+			},
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				deletedState := resource.StateDeleted
+				apiResp.State = &deletedState
+				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.Success,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			mockStreamsAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockStreamsAPI)
+
+			mockClient := &admin.APIClient{}
+			mockClient.StreamsApi = mockStreamsAPI
+
+			event, err := resource.HandleDeleteCallback(context.Background(), mockClient, tc.req, tc.currentModel)
+
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
+		})
+	}
+}
+
+func TestCreateMoreEdgeCases(t *testing.T) {
+	originalInitEnv := resource.InitEnvWithLatestClient
+	defer func() {
+		resource.InitEnvWithLatestClient = originalInitEnv
+	}()
+
+	testCases := map[string]struct {
+		req            handler.Request
+		currentModel   *resource.Model
+		mockSetup      func(*mockadmin.StreamsApi)
+		expectedStatus handler.Status
+	}{
+		"createWithAlreadyExistsError": {
+			req: handler.Request{
+				RequestContext: handler.RequestContext{},
+			},
+			currentModel: createTestModelS3(),
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.CreatePrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().CreatePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				m.EXPECT().CreatePrivateLinkConnectionExecute(mock.Anything).Return(nil, &http.Response{StatusCode: 400}, fmt.Errorf("STREAM_PRIVATE_LINK_ALREADY_EXISTS: resource already exists"))
+			},
+			expectedStatus: handler.Failed,
+		},
+		"createWithConfluentVendor": {
+			req: handler.Request{
+				RequestContext: handler.RequestContext{},
+			},
+			currentModel: createTestModelConfluent(),
+			mockSetup: func(m *mockadmin.StreamsApi) {
+				req := admin.CreatePrivateLinkConnectionApiRequest{ApiService: m}
+				m.EXPECT().CreatePrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
+				apiResp := createTestAPIResponse()
+				workingState := resource.StateWorking
+				apiResp.State = &workingState
+				m.EXPECT().CreatePrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
+			},
+			expectedStatus: handler.InProgress,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			mockStreamsAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockStreamsAPI)
+
+			mockClient := &admin.APIClient{}
+			mockClient.StreamsApi = mockStreamsAPI
+
+			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
+				return mockClient, nil
+			}
+
+			event, err := resource.Create(tc.req, nil, tc.currentModel)
+
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
 		})
 	}
 }

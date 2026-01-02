@@ -12,7 +12,20 @@ function usage {
 
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 clusterName=$(jq -r '.ClusterName' ./inputs/inputs_1_create.json)
-instanceName=$(jq -r '.InstanceName' ./inputs/inputs_1_create.json)
+
+# Get workspace name or instance name (workspace name takes precedence)
+workspaceName=$(jq -r '.WorkspaceName // empty' ./inputs/inputs_1_create.json)
+instanceName=$(jq -r '.InstanceName // empty' ./inputs/inputs_1_create.json)
+
+# Use WorkspaceName if available, otherwise fall back to InstanceName
+if [ -n "${workspaceName}" ] && [ "${workspaceName}" != "null" ] && [ "${workspaceName}" != "" ]; then
+	workspaceOrInstanceName="${workspaceName}"
+elif [ -n "${instanceName}" ] && [ "${instanceName}" != "null" ] && [ "${instanceName}" != "" ]; then
+	workspaceOrInstanceName="${instanceName}"
+else
+	echo "Error: Neither WorkspaceName nor InstanceName found in inputs_1_create.json"
+	exit 1
+fi
 
 if atlas cluster delete "${clusterName}" --projectId "${projectId}" --force; then
 	echo "deleting cluster with name ${clusterName}"
@@ -25,11 +38,11 @@ if [ "$status" -eq 0 ]; then
 	echo "Cluster '${clusterName}' has been successfully watched until deletion."
 fi
 
-#delete stream instance
-if atlas streams instances delete "${instanceName}" --projectId "${projectId}" --force; then
-	echo "deleting stream instance with name ${instanceName}"
+#delete stream workspace/instance (using instances delete for backward compatibility)
+if atlas streams instances delete "${workspaceOrInstanceName}" --projectId "${projectId}" --force; then
+	echo "deleting stream workspace/instance with name ${workspaceOrInstanceName}"
 else
-	echo "failed to delete the stream instance with name ${instanceName}"
+	echo "failed to delete the stream workspace/instance with name ${workspaceOrInstanceName}"
 fi
 
 #delete project

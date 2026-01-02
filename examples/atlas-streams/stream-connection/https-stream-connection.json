@@ -1,0 +1,79 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates one connection of type 'Https' for a given stream instance in the specified project",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id",
+      "MinLength": 24,
+      "MaxLength": 24,
+      "AllowedPattern": "^([a-f0-9]{24})$"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream workspace"
+    },
+    "ConnectionName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream connection",
+      "Default": "HttpsConnection"
+    },
+    "HttpsUrl": {
+      "Type": "String",
+      "Description": "URL endpoint for the HTTPS connection. Must be a valid HTTPS URL.",
+      "AllowedPattern": "^https://.*"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "StreamConnection": {
+      "Type": "MongoDB::Atlas::StreamConnection",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ConnectionName": {
+          "Ref": "ConnectionName"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "Type": "Https",
+        "Url": {
+          "Ref": "HttpsUrl"
+        },
+        "Headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer updated-token-67891",
+          "X-API-Key": "my-new-api-key-123456"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ConnectionName": {
+      "Description": "Name of the created stream connection",
+      "Value": {
+        "Ref": "ConnectionName"
+      }
+    },
+    "ConnectionType": {
+      "Description": "Type of the stream connection",
+      "Value": "Https"
+    },
+    "HttpsUrl": {
+      "Description": "HTTPS endpoint URL",
+      "Value": {
+        "Ref": "HttpsUrl"
+      }
+    }
+  }
+}

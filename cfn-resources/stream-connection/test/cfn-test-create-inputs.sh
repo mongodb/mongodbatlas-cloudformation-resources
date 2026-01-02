@@ -18,73 +18,79 @@ fi
 
 projectName="${1:-$PROJECT_NAME}"
 echo "$projectName"
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
-if [ -z "$projectId" ]; then
-	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
-	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+# Use existing project ID if set, otherwise try to find or create project
+if [ -n "${MONGODB_ATLAS_PROJECT_ID:-}" ]; then
+	projectId="${MONGODB_ATLAS_PROJECT_ID}"
+	echo -e "Using existing project ID from MONGODB_ATLAS_PROJECT_ID: ${projectId}\n"
 else
-	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+	projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+	if [ -z "$projectId" ]; then
+		projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+		echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+	else
+		echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+	fi
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
-instanceName="stream-instance-$(date +%s)-$RANDOM"
+workspaceName="stream-workspace-$(date +%s)-$RANDOM"
 cloudProvider="AWS"
 clusterName="cluster-$(date +%s)-$RANDOM"
 
-atlas streams instances create "${instanceName}" --projectId "${projectId}" --region VIRGINIA_USA --provider ${cloudProvider}
-echo -e "Created StreamInstance \"${instanceName}\""
+atlas streams instances create "${workspaceName}" --projectId "${projectId}" --region VIRGINIA_USA --provider ${cloudProvider}
+echo -e "Created StreamWorkspace \"${workspaceName}\""
 
 atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
 atlas clusters watch "${clusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${clusterName}\""
 
 jq --arg cluster_name "$clusterName" \
-	--arg instance_name "$instanceName" \
+	--arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile | .ClusterName?|=$cluster_name
    | .ProjectId?|=$project_id
-   | .InstanceName?|=$instance_name' \
+   | .WorkspaceName?|=$workspace_name' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
 jq --arg cluster_name "$clusterName" \
-	--arg instance_name "$instanceName" \
+	--arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile | .ClusterName?|=$cluster_name
    | .ProjectId?|=$project_id
-   | .InstanceName?|=$instance_name' \
+   | .WorkspaceName?|=$workspace_name' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
 
-jq --arg instance_name "$instanceName" \
+jq --arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
-   | .InstanceName?|=$instance_name' \
+   | .WorkspaceName?|=$workspace_name' \
 	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
 
-jq --arg instance_name "$instanceName" \
+jq --arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
-   | .InstanceName?|=$instance_name' \
+   | .WorkspaceName?|=$workspace_name' \
 	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"
 
-jq --arg instance_name "$instanceName" \
+jq --arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
-   | .InstanceName?|=$instance_name' \
+   | .WorkspaceName?|=$workspace_name' \
 	"$(dirname "$0")/inputs_3_create.json" >"inputs/inputs_3_create.json"
 
-jq --arg instance_name "$instanceName" \
+jq --arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
-   | .InstanceName?|=$instance_name' \
+   | .WorkspaceName?|=$workspace_name' \
 	"$(dirname "$0")/inputs_3_update.json" >"inputs/inputs_3_update.json"

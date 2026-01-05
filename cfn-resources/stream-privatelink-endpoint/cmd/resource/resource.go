@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 
 	"go.mongodb.org/atlas-sdk/v20250312010/admin"
@@ -574,47 +575,47 @@ func WaitForStateTransition(ctx context.Context, conn *admin.APIClient, currentM
 	}
 
 	for _, targetState := range targetStates {
-		if currentState == targetState {
-			if currentState == StateFailed {
-				errorMsg := "Private endpoint is in a failed status"
-				if streamsPrivateLinkConnection.ErrorMessage != nil {
-					errorMsg = fmt.Sprintf("%s: %s", errorMsg, *streamsPrivateLinkConnection.ErrorMessage)
-				}
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          errorMsg,
-					HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
-				}, nil
+		if currentState != targetState {
+			continue
+		}
+
+		if currentState == StateFailed {
+			errorMsg := "Private endpoint is in a failed status"
+			if streamsPrivateLinkConnection.ErrorMessage != nil {
+				errorMsg = fmt.Sprintf("%s: %s", errorMsg, *streamsPrivateLinkConnection.ErrorMessage)
 			}
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          errorMsg,
+				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
+			}, nil
+		}
 
-			if isDelete {
-				return handler.ProgressEvent{
-					OperationStatus: handler.Success,
-					Message:         "Delete completed",
-				}, nil
-			}
-
-			resourceModel := GetStreamPrivatelinkEndpointModel(streamsPrivateLinkConnection, currentModel)
-			resourceModel.ProjectId = currentModel.ProjectId
-
+		if isDelete {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
-				Message:         "Create completed",
-				ResourceModel:   resourceModel,
+				Message:         "Delete completed",
 			}, nil
 		}
+
+		resourceModel := GetStreamPrivatelinkEndpointModel(streamsPrivateLinkConnection, currentModel)
+		resourceModel.ProjectId = currentModel.ProjectId
+
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Create completed",
+			ResourceModel:   resourceModel,
+		}, nil
 	}
 
-	for _, pendingState := range pendingStates {
-		if currentState == pendingState {
-			return handler.ProgressEvent{
-				OperationStatus:      handler.InProgress,
-				Message:              fmt.Sprintf("Waiting for state transition. Current state: %s", currentState),
-				ResourceModel:        currentModel,
-				CallbackDelaySeconds: CallbackDelaySeconds,
-				CallbackContext:      BuildCallbackContext(projectID, connectionID),
-			}, nil
-		}
+	if slices.Contains(pendingStates, currentState) {
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              fmt.Sprintf("Waiting for state transition. Current state: %s", currentState),
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: CallbackDelaySeconds,
+			CallbackContext:      BuildCallbackContext(projectID, connectionID),
+		}, nil
 	}
 
 	if isDelete {

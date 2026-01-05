@@ -53,7 +53,7 @@ func createTestModelConfluent() *resource.Model {
 	providerName := "AWS"
 	vendor := "CONFLUENT"
 	region := "us-east-1"
-	serviceEndpointId := "com.amazonaws.vpce.us-east-1.vpce-svc-12345678"
+	serviceEndpointID := "com.amazonaws.vpce.us-east-1.vpce-svc-12345678"
 	dnsDomain := "test.example.com"
 	dnsSubDomain := []string{"az1", "az2"}
 
@@ -63,7 +63,7 @@ func createTestModelConfluent() *resource.Model {
 		ProviderName:      &providerName,
 		Vendor:            &vendor,
 		Region:            &region,
-		ServiceEndpointId: &serviceEndpointId,
+		ServiceEndpointId: &serviceEndpointID,
 		DnsDomain:         &dnsDomain,
 		DnsSubDomain:      dnsSubDomain,
 	}
@@ -74,7 +74,7 @@ func createTestModelS3() *resource.Model {
 	providerName := "AWS"
 	vendor := "S3"
 	region := "us-east-1"
-	serviceEndpointId := "com.amazonaws.us-east-1.s3"
+	serviceEndpointID := "com.amazonaws.us-east-1.s3"
 
 	return &resource.Model{
 		Profile:           util.StringPtr("default"),
@@ -82,7 +82,7 @@ func createTestModelS3() *resource.Model {
 		ProviderName:      &providerName,
 		Vendor:            &vendor,
 		Region:            &region,
-		ServiceEndpointId: &serviceEndpointId,
+		ServiceEndpointId: &serviceEndpointID,
 	}
 }
 
@@ -345,10 +345,10 @@ func TestCreateWithMocks(t *testing.T) {
 	}()
 
 	testCases := map[string]struct {
-		req            handler.Request
 		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
+		req            handler.Request
 	}{
 		"successfulCreateMSK": {
 			req: handler.Request{
@@ -416,11 +416,11 @@ func TestCreateWithMocks(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			mockApi := mockadmin.NewStreamsApi(t)
-			tc.mockSetup(mockApi)
+			mockAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockAPI)
 
 			mockClient := &admin.APIClient{}
-			mockClient.StreamsApi = mockApi
+			mockClient.StreamsApi = mockAPI
 
 			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
@@ -442,10 +442,10 @@ func TestReadWithMocks(t *testing.T) {
 	}()
 
 	testCases := map[string]struct {
-		req            handler.Request
 		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
+		req            handler.Request
 	}{
 		"successfulRead": {
 			req: handler.Request{
@@ -497,8 +497,8 @@ func TestReadWithMocks(t *testing.T) {
 				req := admin.GetPrivateLinkConnectionApiRequest{ApiService: m}
 				m.EXPECT().GetPrivateLinkConnection(mock.Anything, mock.Anything, mock.Anything).Return(req)
 				apiResp := createTestAPIResponse()
-				emptyDnsSubDomain := []string{}
-				apiResp.DnsSubDomain = &emptyDnsSubDomain
+				emptyDNSSubDomain := []string{}
+				apiResp.DnsSubDomain = &emptyDNSSubDomain
 				m.EXPECT().GetPrivateLinkConnectionExecute(mock.Anything).Return(apiResp, &http.Response{StatusCode: 200}, nil)
 			},
 			expectedStatus: handler.Success,
@@ -524,11 +524,11 @@ func TestReadWithMocks(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			mockApi := mockadmin.NewStreamsApi(t)
-			tc.mockSetup(mockApi)
+			mockAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockAPI)
 
 			mockClient := &admin.APIClient{}
-			mockClient.StreamsApi = mockApi
+			mockClient.StreamsApi = mockAPI
 
 			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
@@ -550,10 +550,10 @@ func TestDeleteWithMocks(t *testing.T) {
 	}()
 
 	testCases := map[string]struct {
-		req            handler.Request
 		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
+		req            handler.Request
 	}{
 		"successfulDelete": {
 			req: handler.Request{
@@ -731,11 +731,11 @@ func TestDeleteWithMocks(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			mockApi := mockadmin.NewStreamsApi(t)
-			tc.mockSetup(mockApi)
+			mockAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockAPI)
 
 			mockClient := &admin.APIClient{}
-			mockClient.StreamsApi = mockApi
+			mockClient.StreamsApi = mockAPI
 
 			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
@@ -757,10 +757,10 @@ func TestListWithMocks(t *testing.T) {
 	}()
 
 	testCases := map[string]struct {
-		req            handler.Request
 		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
+		req            handler.Request
 		expectedCount  int
 	}{
 		"successfulList": {
@@ -801,11 +801,11 @@ func TestListWithMocks(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			mockApi := mockadmin.NewStreamsApi(t)
-			tc.mockSetup(mockApi)
+			mockAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockAPI)
 
 			mockClient := &admin.APIClient{}
-			mockClient.StreamsApi = mockApi
+			mockClient.StreamsApi = mockAPI
 
 			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
@@ -817,7 +817,7 @@ func TestListWithMocks(t *testing.T) {
 			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
 			if tc.expectedStatus == handler.Success {
 				if event.ResourceModels != nil {
-					assert.Equal(t, tc.expectedCount, len(event.ResourceModels))
+					assert.Len(t, event.ResourceModels, tc.expectedCount)
 				}
 			}
 		})
@@ -827,11 +827,11 @@ func TestListWithMocks(t *testing.T) {
 func TestWaitForStateTransition(t *testing.T) {
 	testCases := map[string]struct {
 		currentModel   *resource.Model
+		mockSetup      func(*mockadmin.StreamsApi)
+		expectedStatus handler.Status
 		pendingStates  []string
 		targetStates   []string
 		isDelete       bool
-		mockSetup      func(*mockadmin.StreamsApi)
-		expectedStatus handler.Status
 	}{
 		"reachedTargetStateDone": {
 			currentModel: func() *resource.Model {
@@ -973,11 +973,11 @@ func TestWaitForStateTransition(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			mockApi := mockadmin.NewStreamsApi(t)
-			tc.mockSetup(mockApi)
+			mockAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockAPI)
 
 			mockClient := &admin.APIClient{}
-			mockClient.StreamsApi = mockApi
+			mockClient.StreamsApi = mockAPI
 
 			event, err := resource.WaitForStateTransition(context.Background(), mockClient, tc.currentModel, tc.pendingStates, tc.targetStates, tc.isDelete)
 
@@ -990,8 +990,8 @@ func TestWaitForStateTransition(t *testing.T) {
 func TestValidateVendorRequirements(t *testing.T) {
 	testCases := map[string]struct {
 		model         *resource.Model
-		expectedError bool
 		expectedMsg   string
+		expectedError bool
 	}{
 		"nilVendor": {
 			model: &resource.Model{
@@ -1156,8 +1156,8 @@ func TestHandleError(t *testing.T) {
 
 func TestGetAllPrivateLinkConnections(t *testing.T) {
 	testCases := map[string]struct {
-		projectID     string
 		mockSetup     func(*mockadmin.StreamsApi)
+		projectID     string
 		expectedCount int
 		expectedError bool
 	}{
@@ -1220,11 +1220,11 @@ func TestGetAllPrivateLinkConnections(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			mockApi := mockadmin.NewStreamsApi(t)
-			tc.mockSetup(mockApi)
+			mockAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockAPI)
 
 			mockClient := &admin.APIClient{}
-			mockClient.StreamsApi = mockApi
+			mockClient.StreamsApi = mockAPI
 
 			result, resp, err := resource.GetAllPrivateLinkConnections(context.Background(), mockClient, tc.projectID)
 
@@ -1233,7 +1233,7 @@ func TestGetAllPrivateLinkConnections(t *testing.T) {
 				assert.Nil(t, result)
 			} else {
 				require.NoError(t, err)
-				assert.Equal(t, tc.expectedCount, len(result))
+				assert.Len(t, result, tc.expectedCount)
 				assert.Nil(t, resp)
 			}
 		})
@@ -1247,10 +1247,10 @@ func TestDeleteWithMoreEdgeCases(t *testing.T) {
 	}()
 
 	testCases := map[string]struct {
-		req            handler.Request
 		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
+		req            handler.Request
 	}{
 		"deleteWithGet500Error": {
 			req: handler.Request{
@@ -1290,11 +1290,11 @@ func TestDeleteWithMoreEdgeCases(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			mockApi := mockadmin.NewStreamsApi(t)
-			tc.mockSetup(mockApi)
+			mockAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockAPI)
 
 			mockClient := &admin.APIClient{}
-			mockClient.StreamsApi = mockApi
+			mockClient.StreamsApi = mockAPI
 
 			resource.InitEnvWithLatestClient = func(req handler.Request, currentModel *resource.Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 				return mockClient, nil
@@ -1311,11 +1311,11 @@ func TestDeleteWithMoreEdgeCases(t *testing.T) {
 func TestWaitForStateTransitionMoreCases(t *testing.T) {
 	testCases := map[string]struct {
 		currentModel   *resource.Model
+		mockSetup      func(*mockadmin.StreamsApi)
+		expectedStatus handler.Status
 		pendingStates  []string
 		targetStates   []string
 		isDelete       bool
-		mockSetup      func(*mockadmin.StreamsApi)
-		expectedStatus handler.Status
 	}{
 		"emptyState": {
 			currentModel: func() *resource.Model {
@@ -1391,11 +1391,11 @@ func TestWaitForStateTransitionMoreCases(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			mockApi := mockadmin.NewStreamsApi(t)
-			tc.mockSetup(mockApi)
+			mockAPI := mockadmin.NewStreamsApi(t)
+			tc.mockSetup(mockAPI)
 
 			mockClient := &admin.APIClient{}
-			mockClient.StreamsApi = mockApi
+			mockClient.StreamsApi = mockAPI
 
 			event, err := resource.WaitForStateTransition(context.Background(), mockClient, tc.currentModel, tc.pendingStates, tc.targetStates, tc.isDelete)
 
@@ -1450,9 +1450,9 @@ func TestIsCallback(t *testing.T) {
 
 func TestBuildCallbackContext(t *testing.T) {
 	testCases := map[string]struct {
+		validateFunc func(t *testing.T, ctx map[string]interface{})
 		projectID    string
 		connectionID string
-		validateFunc func(t *testing.T, ctx map[string]interface{})
 	}{
 		"basic": {
 			projectID:    "507f1f77bcf86cd799439011",
@@ -1470,8 +1470,8 @@ func TestBuildCallbackContext(t *testing.T) {
 			validateFunc: func(t *testing.T, ctx map[string]interface{}) {
 				t.Helper()
 				assert.True(t, ctx["callbackStreamPrivatelinkEndpoint"].(bool))
-				assert.Equal(t, "", ctx["projectID"])
-				assert.Equal(t, "", ctx["connectionID"])
+				assert.Empty(t, ctx["projectID"])
+				assert.Empty(t, ctx["connectionID"])
 			},
 		},
 	}
@@ -1484,15 +1484,14 @@ func TestBuildCallbackContext(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestHandleCreateCallback(t *testing.T) {
 	testCases := map[string]struct {
 		currentModel   *resource.Model
-		req            handler.Request
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
+		req            handler.Request
 	}{
 		"doneState": {
 			req: handler.Request{
@@ -1719,9 +1718,9 @@ func TestHandleCreateCallback(t *testing.T) {
 func TestHandleDeleteCallback(t *testing.T) {
 	testCases := map[string]struct {
 		currentModel   *resource.Model
-		req            handler.Request
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
+		req            handler.Request
 	}{
 		"deletedState": {
 			req: handler.Request{
@@ -1954,10 +1953,10 @@ func TestCreateMoreEdgeCases(t *testing.T) {
 	}()
 
 	testCases := map[string]struct {
-		req            handler.Request
 		currentModel   *resource.Model
 		mockSetup      func(*mockadmin.StreamsApi)
 		expectedStatus handler.Status
+		req            handler.Request
 	}{
 		"createWithAlreadyExistsError": {
 			req: handler.Request{

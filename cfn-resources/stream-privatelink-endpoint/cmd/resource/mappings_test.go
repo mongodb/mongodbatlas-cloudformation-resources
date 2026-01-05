@@ -17,8 +17,8 @@ package resource_test
 import (
 	"testing"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-privatelink-endpoint/cmd/resource"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20250312010/admin"
 )
@@ -54,6 +54,7 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 				ProviderName: &providerName,
 			},
 			validateFunc: func(t *testing.T, result *resource.Model) {
+				t.Helper()
 				assert.Equal(t, connectionID, *result.Id)
 				assert.Equal(t, providerName, *result.ProviderName)
 				assert.Equal(t, vendor, *result.Vendor)
@@ -73,6 +74,7 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 			},
 			currentModel: nil,
 			validateFunc: func(t *testing.T, result *resource.Model) {
+				t.Helper()
 				assert.Equal(t, connectionID, *result.Id)
 				assert.Equal(t, providerName, *result.ProviderName)
 				assert.Equal(t, vendor, *result.Vendor)
@@ -92,6 +94,7 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 				ProjectId: &projectID,
 			},
 			validateFunc: func(t *testing.T, result *resource.Model) {
+				t.Helper()
 				assert.Equal(t, dnsDomain, *result.DnsDomain)
 				assert.Equal(t, dnsSubDomain, result.DnsSubDomain)
 			},
@@ -110,6 +113,7 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 				ProjectId: &projectID,
 			},
 			validateFunc: func(t *testing.T, result *resource.Model) {
+				t.Helper()
 				assert.Equal(t, "vpce-12345678", *result.InterfaceEndpointId)
 				assert.Equal(t, "test-endpoint", *result.InterfaceEndpointName)
 				assert.Equal(t, "123456789012", *result.ProviderAccountId)
@@ -129,6 +133,7 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 				Vendor:       &vendor,
 			},
 			validateFunc: func(t *testing.T, result *resource.Model) {
+				t.Helper()
 				// Should preserve ProjectId and Profile from currentModel
 				assert.Equal(t, projectID, *result.ProjectId)
 				assert.Equal(t, "custom-profile", *result.Profile)
@@ -155,7 +160,7 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 	vendorS3 := "S3"
 	region := "us-east-1"
 	arn := "arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster/12345678-1234-1234-1234-123456789012-1"
-	serviceEndpointId := "com.amazonaws.vpce.us-east-1.vpce-svc-12345678"
+	serviceEndpointID := "com.amazonaws.vpce.us-east-1.vpce-svc-12345678"
 	dnsDomain := "test.example.com"
 	dnsSubDomain := []string{"az1", "az2"}
 
@@ -170,6 +175,7 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 				Arn:          &arn,
 			},
 			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
+				t.Helper()
 				assert.Equal(t, providerName, result.Provider)
 				assert.Equal(t, vendorMSK, *result.Vendor)
 				assert.Equal(t, arn, *result.Arn)
@@ -182,15 +188,16 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 				ProviderName:      &providerName,
 				Vendor:            &vendorConfluent,
 				Region:            &region,
-				ServiceEndpointId: &serviceEndpointId,
+				ServiceEndpointId: &serviceEndpointID,
 				DnsDomain:         &dnsDomain,
 				DnsSubDomain:      dnsSubDomain,
 			},
 			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
+				t.Helper()
 				assert.Equal(t, providerName, result.Provider)
 				assert.Equal(t, vendorConfluent, *result.Vendor)
 				assert.Equal(t, region, *result.Region)
-				assert.Equal(t, serviceEndpointId, *result.ServiceEndpointId)
+				assert.Equal(t, serviceEndpointID, *result.ServiceEndpointId)
 				assert.Equal(t, dnsDomain, *result.DnsDomain)
 				assert.Equal(t, dnsSubDomain, *result.DnsSubDomain)
 			},
@@ -200,13 +207,14 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 				ProviderName:      &providerName,
 				Vendor:            &vendorS3,
 				Region:            &region,
-				ServiceEndpointId: &serviceEndpointId,
+				ServiceEndpointId: &serviceEndpointID,
 			},
 			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
+				t.Helper()
 				assert.Equal(t, providerName, result.Provider)
 				assert.Equal(t, vendorS3, *result.Vendor)
 				assert.Equal(t, region, *result.Region)
-				assert.Equal(t, serviceEndpointId, *result.ServiceEndpointId)
+				assert.Equal(t, serviceEndpointID, *result.ServiceEndpointId)
 			},
 		},
 		"nilDnsSubDomain": {
@@ -216,6 +224,7 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 				DnsSubDomain: nil,
 			},
 			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
+				t.Helper()
 				assert.Nil(t, result.DnsSubDomain)
 			},
 		},

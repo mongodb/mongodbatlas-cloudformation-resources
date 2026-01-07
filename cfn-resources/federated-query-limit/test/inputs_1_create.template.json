@@ -2,6 +2,7 @@
   "ProjectId": "",
   "TenantName":"",
   "LimitName": "bytesProcessed.query",
+  "OverrunPolicy": "BLOCK",
   "Value": "2000000000",
   "Profile": "default"
 }

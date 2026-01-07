@@ -1,0 +1,12 @@
+{
+  "OrgId": "OrgId",
+  "ClientId": "",
+  "Name": "cfn-test-service-account-updated",
+  "Description": "Service account updated for CFN testing - all updatable fields changed",
+  "Roles": [
+    "ORG_MEMBER",
+    "ORG_GROUP_CREATOR"
+  ],
+  "Profile": "default"
+}
+

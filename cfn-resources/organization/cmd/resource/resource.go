@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20250312010/admin"
+	admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -79,19 +79,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	conn := client.AtlasSDK
 	ctx := context.Background()
 
-	_, _, err := secrets.Get(&req, *currentModel.AwsSecretName)
-	if err != nil {
-		// Delete the APIKey from Atlas
-		_, _ = logger.Warnf("error : no Secret exists with %s", *currentModel.AwsSecretName)
-		response := &http.Response{StatusCode: http.StatusBadRequest}
-		return handleError(response, constants.CREATE, err)
-	}
-
 	apikeyInputs := setAPIkeyInputs(currentModel)
 	setDefaultsIfNotDefined(currentModel)
 
+	// Validate that the API key has ORG_OWNER role (required per Terraform validation)
+	if validationErr := validateAPIKeyRoles(currentModel.APIKey.Roles); validationErr != nil {
+		return *validationErr, nil
+	}
+
 	// Set the roles from model
-	orgInput := &admin.CreateOrganizationRequest{
+	orgInput := &admin20250312010.CreateOrganizationRequest{
 		ApiKey:                    apikeyInputs,
 		OrgOwnerId:                currentModel.OrgOwnerId,
 		Name:                      *currentModel.Name,
@@ -161,25 +158,51 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	if modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	// Check if resource exists by checking required fields - if not present, resource doesn't exist
+	if currentModel.OrgId == nil || currentModel.AwsSecretName == nil || currentModel.Name == nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Organization not found",
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
 	}
 
 	newOrgClient, peErr := util.NewAtlasClientRemovingProfilePrefix(&req, currentModel.AwsSecretName)
 	if peErr != nil {
-		return *peErr, nil
+		// If can't get client (e.g., secret doesn't exist), resource doesn't exist
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Organization not found",
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
 	}
 	conn := newOrgClient.AtlasSDK
 	ctx := context.Background()
 
 	setDefaultsIfNotDefined(currentModel)
-	atlasOrg := admin.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name, SkipDefaultAlertsSettings: currentModel.SkipDefaultAlertsSettings}
+	atlasOrg := admin20250312010.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name, SkipDefaultAlertsSettings: currentModel.SkipDefaultAlertsSettings}
 
 	if _, response, err := conn.OrganizationsApi.UpdateOrg(ctx, *currentModel.OrgId, &atlasOrg).Execute(); err != nil {
+		if response != nil && (response.StatusCode == http.StatusNotFound || response.StatusCode == http.StatusUnauthorized) {
+			// Resource doesn't exist - return NotFound
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Organization not found",
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
 		return handleError(response, constants.UPDATE, err)
 	}
 
 	if _, response, err := conn.OrganizationsApi.UpdateOrgSettings(ctx, *currentModel.OrgId, newOrganizationSettings(currentModel)).Execute(); err != nil {
+		if response != nil && (response.StatusCode == http.StatusNotFound || response.StatusCode == http.StatusUnauthorized) {
+			// Resource doesn't exist - return NotFound
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Organization not found",
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
 		return handleError(response, constants.UPDATE, err)
 	}
 
@@ -193,13 +216,23 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	if modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	// Check if resource exists by checking required fields - if not present, resource doesn't exist
+	if currentModel.OrgId == nil || currentModel.AwsSecretName == nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Organization not found",
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
 	}
 
 	newOrgClient, peErr := util.NewAtlasClientRemovingProfilePrefix(&req, currentModel.AwsSecretName)
 	if peErr != nil {
-		return *peErr, nil
+		// If can't get client (e.g., secret doesn't exist), resource doesn't exist
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Organization not found",
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
 	}
 	conn := newOrgClient.AtlasSDK
 	ctx := context.Background()
@@ -209,15 +242,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return deleteCallback(ctx, conn, currentModel)
 	}
 
-	// Read before delete
+	// Read before delete - check if org exists
 	_, response, err := currentModel.getOrgDetails(ctx, conn, currentModel)
 	if err != nil {
-		return handleError(response, constants.DELETE, err)
-	}
-
-	// If exists
-	_, response, err = currentModel.getOrgDetails(ctx, conn, currentModel)
-	if err != nil && response.StatusCode == http.StatusUnauthorized {
+		if response != nil && (response.StatusCode == http.StatusNotFound || response.StatusCode == http.StatusUnauthorized) {
+			// Resource doesn't exist - return NotFound
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Organization not found",
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
 		return handleError(response, constants.DELETE, err)
 	}
 
@@ -261,7 +296,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   nil}, nil
 }
 
-func deleteCallback(ctx context.Context, conn *admin.APIClient, currentModel *Model) (handler.ProgressEvent, error) {
+func deleteCallback(ctx context.Context, conn *admin20250312010.APIClient, currentModel *Model) (handler.ProgressEvent, error) {
 	// Read before delete
 	org, response, err := currentModel.getOrgDetails(ctx, conn, currentModel)
 	if err != nil {
@@ -297,7 +332,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, currentModel *Model) (responseModel *Model, response *http.Response, err error) {
+func (model *Model) getOrgDetails(ctx context.Context, conn *admin20250312010.APIClient, currentModel *Model) (responseModel *Model, response *http.Response, err error) {
 	org, response, err := conn.OrganizationsApi.GetOrg(ctx, *currentModel.OrgId).Execute()
 	if err != nil {
 		return nil, response, err
@@ -315,6 +350,7 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	model.MultiFactorAuthRequired = settings.MultiFactorAuthRequired
 	model.RestrictEmployeeAccess = settings.RestrictEmployeeAccess
 	model.GenAIFeaturesEnabled = settings.GenAIFeaturesEnabled
+	model.SecurityContact = settings.SecurityContact
 
 	return model, response, nil
 }
@@ -345,20 +381,21 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func setAPIkeyInputs(currentModel *Model) (apiKeyInput *admin.CreateAtlasOrganizationApiKey) {
-	apiKeyInput = &admin.CreateAtlasOrganizationApiKey{
+func setAPIkeyInputs(currentModel *Model) (apiKeyInput *admin20250312010.CreateAtlasOrganizationApiKey) {
+	apiKeyInput = &admin20250312010.CreateAtlasOrganizationApiKey{
 		Desc:  util.SafeString(currentModel.APIKey.Description),
 		Roles: currentModel.APIKey.Roles,
 	}
 	return apiKeyInput
 }
 
-func newOrganizationSettings(model *Model) *admin.OrganizationSettings {
-	return &admin.OrganizationSettings{
+func newOrganizationSettings(model *Model) *admin20250312010.OrganizationSettings {
+	return &admin20250312010.OrganizationSettings{
 		ApiAccessListRequired:   model.ApiAccessListRequired,
 		MultiFactorAuthRequired: model.MultiFactorAuthRequired,
 		RestrictEmployeeAccess:  model.RestrictEmployeeAccess,
 		GenAIFeaturesEnabled:    model.GenAIFeaturesEnabled,
+		SecurityContact:         model.SecurityContact,
 	}
 }
 
@@ -371,5 +408,27 @@ func setDefaultsIfNotDefined(m *Model) {
 	}
 	if m.GenAIFeaturesEnabled == nil {
 		m.GenAIFeaturesEnabled = util.Pointer(true)
+	}
+}
+
+func validateAPIKeyRoles(roles []string) *handler.ProgressEvent {
+	if len(roles) == 0 {
+		return &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "APIKey.Roles must be provided and include ORG_OWNER role",
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
+		}
+	}
+
+	for _, role := range roles {
+		if role == "ORG_OWNER" {
+			return nil
+		}
+	}
+
+	return &handler.ProgressEvent{
+		OperationStatus:  handler.Failed,
+		Message:          "APIKey.Roles must include the ORG_OWNER role to create a new organization",
+		HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
 	}
 }

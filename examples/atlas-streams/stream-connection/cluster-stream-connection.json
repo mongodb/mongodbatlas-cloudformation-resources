@@ -11,9 +11,9 @@
       "Type": "String",
       "Description": "Atlas Project Id"
     },
-    "InstanceName": {
+    "WorkspaceName": {
       "Type": "String",
-      "Description": "Human-readable label that identifies the stream instance"
+      "Description": "Human-readable label that identifies the stream workspace"
     },
     "ConnectionName": {
       "Type": "String",
@@ -50,8 +50,8 @@
         "ConnectionName": {
           "Ref": "ConnectionName"
         },
-        "InstanceName": {
-          "Ref": "InstanceName"
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
         },
         "ClusterName": {
           "Ref": "ClusterName"

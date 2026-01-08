@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::StreamConnection",
   "additionalProperties": false,
-  "description": "Returns, adds, edits, and removes one connection for a stream instance in the specified project. To use this resource, the requesting API Key must have the Project Owner roles.",
+  "description": "Returns, adds, edits, and removes one connection for a stream workspace in the specified project. To use this resource, the requesting API Key must have the Project Owner roles.",
   "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/stream-connection/README.md",
   "definitions": {
@@ -30,7 +30,11 @@
       "properties": {
         "Mechanism": {
           "type": "string",
-          "description": "Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512."
+          "description": "Style of authentication. Can be one of PLAIN, SCRAM-256, SCRAM-512, or OAUTHBEARER."
+        },
+        "Method": {
+          "type": "string",
+          "description": "OAuth authentication method."
         },
         "Username": {
           "type": "string",
@@ -40,6 +44,27 @@
           "type": "string",
           "format": "password",
           "description": "Password of the account to connect to the Kafka cluster. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials."
+        },
+        "TokenEndpointUrl": {
+          "type": "string",
+          "description": "OAuth token endpoint URL."
+        },
+        "ClientId": {
+          "type": "string",
+          "description": "OAuth client ID."
+        },
+        "ClientSecret": {
+          "type": "string",
+          "format": "password",
+          "description": "OAuth client secret. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials."
+        },
+        "Scope": {
+          "type": "string",
+          "description": "OAuth scope."
+        },
+        "SaslOauthbearerExtensions": {
+          "type": "string",
+          "description": "SASL OAuth bearer extensions."
         }
       },
       "additionalProperties": false
@@ -68,6 +93,52 @@
         }
       },
       "additionalProperties": false
+    },
+    "Networking": {
+      "type": "object",
+      "description": "Networking configuration for AWS PrivateLink connections.",
+      "properties": {
+        "Access": {
+          "type": "object",
+          "description": "Network access configuration.",
+          "properties": {
+            "Type": {
+              "type": "string",
+              "description": "Type of network access. PRIVATE_ENDPOINT for AWS PrivateLink.",
+              "enum": [
+                "PRIVATE_ENDPOINT",
+                "PUBLIC"
+              ]
+            },
+            "ConnectionId": {
+              "type": "string",
+              "description": "Unique identifier of the AWS PrivateLink connection."
+            }
+          },
+          "required": [
+            "Type"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "Access"
+      ],
+      "additionalProperties": false
+    },
+    "Aws": {
+      "type": "object",
+      "description": "AWS Lambda connection configuration.",
+      "properties": {
+        "RoleArn": {
+          "type": "string",
+          "description": "Amazon Resource Name (ARN) of the IAM role for AWS Lambda connection."
+        }
+      },
+      "required": [
+        "RoleArn"
+      ],
+      "additionalProperties": false
     }
   },
   "properties": {
@@ -89,20 +160,33 @@
     },
     "InstanceName": {
       "type": "string",
-      "description": "Human-readable label that identifies the stream instance."
+      "description": "Human-readable label that identifies the stream instance. Deprecated: Use WorkspaceName instead."
+    },
+    "WorkspaceName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the stream workspace."
     },
     "Type": {
       "type": "string",
-      "description": "Type of the connection. Can be either Cluster, Kafka, or Sample.",
+      "description": "Type of the connection. Can be Cluster, Kafka, Sample, AWSLambda, or Https.",
       "enum": [
         "Kafka",
         "Cluster",
-        "Sample"
+        "Sample",
+        "AWSLambda",
+        "Https"
       ]
     },
     "ClusterName": {
       "type": "string",
       "description": "Name of the cluster configured for this connection."
+    },
+    "ClusterProjectId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the project containing the cluster for cross-project cluster connections.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
     },
     "DbRoleToExecute": {
       "$ref": "#/definitions/DBRoleToExecute"
@@ -119,6 +203,26 @@
     },
     "Config": {
       "$ref": "#/definitions/Config"
+    },
+    "Networking": {
+      "$ref": "#/definitions/Networking"
+    },
+    "Aws": {
+      "$ref": "#/definitions/Aws"
+    },
+    "Url": {
+      "type": "string",
+      "description": "URL endpoint for HTTPS type connections."
+    },
+    "Headers": {
+      "type": "object",
+      "description": "HTTP headers for HTTPS type connections.",
+      "patternProperties": {
+        "^[A-Za-z0-9-]+$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "handlers": {
@@ -151,23 +255,25 @@
   "primaryIdentifier": [
     "/properties/ProjectId",
     "/properties/ConnectionName",
-    "/properties/InstanceName",
+    "/properties/WorkspaceName",
     "/properties/Profile"
   ],
   "required": [
     "ProjectId",
     "ConnectionName",
-    "InstanceName",
     "Type"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
     "/properties/InstanceName",
+    "/properties/WorkspaceName",
     "/properties/ConnectionName",
+    "/properties/Type",
     "/properties/Profile"
   ],
   "writeOnlyProperties": [
-    "/properties/Authentication/Password"
+    "/properties/Authentication/Password",
+    "/properties/Authentication/ClientSecret"
   ],
   "tagging": {
     "taggable": false

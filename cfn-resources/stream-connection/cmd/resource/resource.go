@@ -19,9 +19,10 @@ import (
 	"fmt"
 	"net/http"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312010/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -32,15 +33,42 @@ import (
 const (
 	ClusterConnectionType = "Cluster"
 	KafkaConnectionType   = "Kafka"
+	AWSLambdaType         = "AWSLambda"
+	HTTPSType             = "Https"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName, constants.Type}
-var ReadRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName}
-var UpdateRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName, constants.Type}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName}
-var ListRequiredFields = []string{constants.ProjectID, constants.InstanceName}
+var CreateRequiredFields = []string{constants.ProjectID, constants.ConnectionName, constants.Type}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ConnectionName}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.ConnectionName, constants.Type}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ConnectionName}
+var ListRequiredFields = []string{constants.ProjectID}
 
-func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin20231115014.APIClient, *handler.ProgressEvent) {
+func getWorkspaceOrInstanceName(model *Model) (*string, *handler.ProgressEvent) {
+	if model.WorkspaceName != nil && *model.WorkspaceName != "" {
+		return model.WorkspaceName, nil
+	}
+	if model.InstanceName != nil && *model.InstanceName != "" {
+		return model.InstanceName, nil
+	}
+	return nil, &handler.ProgressEvent{
+		OperationStatus:  handler.Failed,
+		Message:          "Either WorkspaceName or InstanceName must be provided",
+		HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
+	}
+}
+
+func normalizeWorkspaceName(model *Model) {
+	if model != nil {
+		if model.WorkspaceName != nil && *model.WorkspaceName != "" {
+			return
+		}
+		if model.InstanceName != nil && *model.InstanceName != "" {
+			model.WorkspaceName = model.InstanceName
+		}
+	}
+}
+
+var InitEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-stream-connection")
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -49,15 +77,22 @@ func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredF
 		return nil, errEvent
 	}
 
+	normalizeWorkspaceName(currentModel)
+
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return nil, peErr
 	}
-	return client.Atlas20231115014, nil
+	return client.AtlasSDK, nil
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -65,10 +100,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
-	instanceName := currentModel.InstanceName
 	streamConnectionReq := newStreamConnectionReq(currentModel)
 
-	streamConnResp, apiResp, err := conn.StreamsApi.CreateStreamConnection(ctx, *projectID, *instanceName, streamConnectionReq).Execute()
+	streamConnResp, apiResp, err := conn.StreamsApi.CreateStreamConnection(ctx, *projectID, *workspaceOrInstanceName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -83,15 +117,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, ReadRequiredFields)
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, ReadRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	projectID := currentModel.ProjectId
-	instanceName := currentModel.InstanceName
 	connectionName := currentModel.ConnectionName
-	streamConnResp, apiResp, err := conn.StreamsApi.GetStreamConnection(context.Background(), *projectID, *instanceName, *connectionName).Execute()
+	streamConnResp, apiResp, err := conn.StreamsApi.GetStreamConnection(context.Background(), *projectID, *workspaceOrInstanceName, *connectionName).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.READ, err)
 	}
@@ -105,7 +143,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, UpdateRequiredFields)
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, UpdateRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -113,10 +156,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
-	instanceName := currentModel.InstanceName
 	connectionName := currentModel.ConnectionName
 	streamConnectionReq := newStreamConnectionReq(currentModel)
-	streamConnResp, apiResp, err := conn.StreamsApi.UpdateStreamConnection(ctx, *projectID, *instanceName, *connectionName, streamConnectionReq).Execute()
+	streamConnResp, apiResp, err := conn.StreamsApi.UpdateStreamConnection(ctx, *projectID, *workspaceOrInstanceName, *connectionName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
@@ -131,7 +173,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, DeleteRequiredFields)
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, DeleteRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -139,9 +186,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
-	instanceName := currentModel.InstanceName
 	connectionName := currentModel.ConnectionName
-	if _, apiResp, err := conn.StreamsApi.DeleteStreamConnection(ctx, *projectID, *instanceName, *connectionName).Execute(); err != nil {
+	apiResp, err := conn.StreamsApi.DeleteStreamConnection(ctx, *projectID, *workspaceOrInstanceName, *connectionName).Execute()
+	if err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}
 
@@ -152,7 +199,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, ListRequiredFields)
+	conn, peErr := InitEnvWithLatestClient(req, currentModel, ListRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -160,9 +212,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
-	instanceName := currentModel.InstanceName
 
-	accumulatedStreamConns, apiResp, err := getAllStreamConnections(ctx, conn, *projectID, *instanceName)
+	accumulatedStreamConns, apiResp, err := getAllStreamConnections(ctx, conn, *projectID, *workspaceOrInstanceName)
 	if err != nil {
 		return handleError(apiResp, constants.LIST, err)
 	}
@@ -171,7 +222,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range accumulatedStreamConns {
 		model := GetStreamConnectionModel(&accumulatedStreamConns[i], nil)
 		model.ProjectId = currentModel.ProjectId
-		model.InstanceName = currentModel.InstanceName
+		if currentModel.WorkspaceName != nil {
+			model.WorkspaceName = currentModel.WorkspaceName
+		} else {
+			model.InstanceName = currentModel.InstanceName
+		}
 		model.Profile = currentModel.Profile
 
 		response = append(response, model)
@@ -183,14 +238,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func getAllStreamConnections(ctx context.Context, conn *admin20231115014.APIClient, projectID, instanceName string) ([]admin20231115014.StreamsConnection, *http.Response, error) {
+func getAllStreamConnections(ctx context.Context, conn *admin.APIClient, projectID, workspaceOrInstanceName string) ([]admin.StreamsConnection, *http.Response, error) {
 	pageNum := 1
-	accumulatedStreamConns := make([]admin20231115014.StreamsConnection, 0)
+	accumulatedStreamConns := make([]admin.StreamsConnection, 0)
 
 	for allRecordsRetrieved := false; !allRecordsRetrieved; {
-		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin20231115014.ListStreamConnectionsApiParams{
+		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
 			GroupId:      projectID,
-			TenantName:   instanceName,
+			TenantName:   workspaceOrInstanceName,
 			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),
 			PageNum:      util.Pointer(pageNum),
 		}).Execute()

@@ -1,0 +1,164 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates one connection of type 'Kafka' with OAuth authentication for a given stream instance in the specified project",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id",
+      "MinLength": 24,
+      "MaxLength": 24,
+      "AllowedPattern": "^([a-f0-9]{24})$"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream workspace"
+    },
+    "ConnectionName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream connection",
+      "Default": "KafkaOAuthConnection"
+    },
+    "BootstrapServers": {
+      "Type": "String",
+      "Description": "Comma separated list of Kafka broker addresses (e.g., 'pkc-xxxxx.us-east-1.aws.confluent.cloud:9092')"
+    },
+    "OAuthTokenEndpointUrl": {
+      "Type": "String",
+      "Description": "OAuth 2.0 token endpoint URL for authentication"
+    },
+    "OAuthClientId": {
+      "Type": "String",
+      "Description": "OAuth 2.0 client identifier"
+    },
+    "OAuthClientSecret": {
+      "Type": "String",
+      "Description": "OAuth 2.0 client secret. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials.",
+      "NoEcho": true
+    },
+    "OAuthScope": {
+      "Type": "String",
+      "Description": "OAuth 2.0 scope (e.g., 'read:messages write:messages')",
+      "Default": ""
+    },
+    "SaslOauthbearerExtensions": {
+      "Type": "String",
+      "Description": "SASL OAUTHBEARER extensions (e.g., 'logicalCluster=lkc-kmom,identityPoolId=pool-lAr')",
+      "Default": ""
+    },
+    "SecurityProtocol": {
+      "Type": "String",
+      "Description": "Describes the transport type. For OAuth, typically SASL_SSL.",
+      "Default": "SASL_SSL",
+      "AllowedValues": [
+        "PLAINTEXT",
+        "SSL",
+        "SASL_PLAINTEXT",
+        "SASL_SSL"
+      ]
+    },
+    "BrokerPublicCertificate": {
+      "Type": "String",
+      "Description": "A trusted, public x509 certificate for connecting to Kafka over SSL. Required if SecurityProtocol is SSL or SASL_SSL.",
+      "Default": ""
+    },
+    "ConfigAutoOffsetReset": {
+      "Type": "String",
+      "Description": "Kafka consumer configuration for auto.offset.reset",
+      "Default": "earliest",
+      "AllowedValues": [
+        "earliest",
+        "latest",
+        "none"
+      ]
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "StreamConnection": {
+      "Type": "MongoDB::Atlas::StreamConnection",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ConnectionName": {
+          "Ref": "ConnectionName"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "Type": "Kafka",
+        "BootstrapServers": {
+          "Ref": "BootstrapServers"
+        },
+        "Authentication": {
+          "Mechanism": "OAUTHBEARER",
+          "Method": "OIDC",
+          "TokenEndpointUrl": {
+            "Ref": "OAuthTokenEndpointUrl"
+          },
+          "ClientId": {
+            "Ref": "OAuthClientId"
+          },
+          "ClientSecret": {
+            "Ref": "OAuthClientSecret"
+          },
+          "Scope": {
+            "Ref": "OAuthScope"
+          },
+          "SaslOauthbearerExtensions": {
+            "Ref": "SaslOauthbearerExtensions"
+          }
+        },
+        "Security": {
+          "Protocol": {
+            "Ref": "SecurityProtocol"
+          },
+          "BrokerPublicCertificate": {
+            "Ref": "BrokerPublicCertificate"
+          }
+        },
+        "Config": {
+          "auto.offset.reset": {
+            "Ref": "ConfigAutoOffsetReset"
+          }
+        },
+        "Networking": {
+          "Access": {
+            "Type": "PUBLIC"
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ConnectionName": {
+      "Description": "Name of the created stream connection",
+      "Value": {
+        "Ref": "ConnectionName"
+      }
+    },
+    "ConnectionType": {
+      "Description": "Type of the stream connection",
+      "Value": "Kafka"
+    },
+    "AuthenticationMechanism": {
+      "Description": "Kafka authentication mechanism",
+      "Value": "OAUTHBEARER"
+    },
+    "BootstrapServers": {
+      "Description": "Kafka bootstrap servers",
+      "Value": {
+        "Ref": "BootstrapServers"
+      }
+    }
+  }
+}
+

@@ -20,12 +20,12 @@ github.com/aws/aws-sdk-go-v2/internal/ini v1.8.4 h1:WKuaxf++XKWlHWu9ECbMlha8WOEG
 github.com/aws/aws-sdk-go-v2/internal/ini v1.8.4/go.mod h1:ZWy7j6v1vWGmPReu0iSGvRiise4YI5SkR3OHKTZ6Wuc=
 github.com/aws/aws-sdk-go-v2/service/cloudformation v1.71.5 h1:UNllAzfiRvz9il9s0yHJkySMJbxWqEVDfyLdDblnuT4=
 github.com/aws/aws-sdk-go-v2/service/cloudformation v1.71.5/go.mod h1:d6XSvIZM3pSKyXNbezwYT3nAcJeUzsJIXtZMNuQ9K2k=
-github.com/aws/aws-sdk-go-v2/service/ec2 v1.279.0 h1:o7eJKe6VYAnqERPlLAvDW5VKXV6eTKv1oxTpMoDP378=
-github.com/aws/aws-sdk-go-v2/service/ec2 v1.279.0/go.mod h1:Wg68QRgy2gEGGdmTPU/UbVpdv8sM14bUZmF64KFwAsY=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.279.1 h1:hnNVFVOYrzJjkqI+mxc1M4ztgcVw986n0t0TCPlnDPY=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.279.1/go.mod h1:Uy+C+Sc58jozdoL1McQr8bDsEvNFx+/nBY+vpO1HVUY=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.4 h1:0ryTNEdJbzUCEWkVXEXoqlXV72J5keC1GvILMOuD00E=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.4/go.mod h1:HQ4qwNZh32C3CBeO6iJLQlgtMzqeG17ziAA/3KDJFow=
-github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.16 h1:oHjJHeUy0ImIV0bsrX0X91GkV5nJAyv1l1CC9lnO0TI=
-github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.16/go.mod h1:iRSNGgOYmiYwSCXxXaKb9HfOEj40+oTKn8pTxMlYkRM=
+github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.17 h1:RuNSMoozM8oXlgLG/n6WLaFGoea7/CddrCfIiSA+xdY=
+github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.17/go.mod h1:F2xxQ9TZz5gDWsclCtPQscGpP0VUOc8RqgFM3vDENmU=
 github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.41.1 h1:72DBkm/CCuWx2LMHAXvLDkZfzopT3psfAeyZDIt1/yE=
 github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.41.1/go.mod h1:A+oSJxFvzgjZWkpM0mXs3RxB5O1SD6473w3qafOC9eU=
 github.com/aws/aws-sdk-go-v2/service/signin v1.0.4 h1:HpI7aMmJ+mm1wkSHIA2t5EaFFv5EFYXePW30p1EIrbQ=

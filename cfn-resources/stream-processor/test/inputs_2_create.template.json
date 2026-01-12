@@ -1,0 +1,12 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ProcessorName": "test-processor-2",
+  "Pipeline": "[{\"$source\": {\"connectionName\": \"sample_stream_solar\"}}, {\"$merge\": {\"into\": {\"connectionName\": \"SINK_CONNECTION_PLACEHOLDER\", \"db\": \"test\", \"coll\": \"output\"}}}]",
+  "State": "STARTED",
+  "Timeouts": {
+    "Create": "25m"
+  },
+  "DeleteOnCreateTimeout": true
+}

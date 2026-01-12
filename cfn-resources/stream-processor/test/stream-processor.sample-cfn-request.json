@@ -1,0 +1,11 @@
+{
+  "desiredResourceState": {
+    "Profile": "default",
+    "ProjectId": "",
+    "WorkspaceName": "",
+    "ProcessorName": "sample-processor",
+    "Pipeline": "[{\"$match\": {\"status\": \"active\"}}]",
+    "State": "CREATED"
+  },
+  "previousResourceState": {}
+}

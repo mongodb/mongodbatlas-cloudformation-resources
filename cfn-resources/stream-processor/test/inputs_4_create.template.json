@@ -1,0 +1,9 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "InstanceName": "",
+  "ProcessorName": "test-processor-4-kafka-to-cluster",
+  "Pipeline": "[{\"$source\": {\"connectionName\": \"KAFKA_SOURCE_CONNECTION_PLACEHOLDER\", \"topic\": \"random_topic\"}}, {\"$emit\": {\"connectionName\": \"CLUSTER_SINK_CONNECTION_PLACEHOLDER\", \"db\": \"kafka\", \"coll\": \"kafka_messages\", \"timeseries\": {\"timeField\": \"ts\"}}}]",
+  "State": "CREATED"
+}

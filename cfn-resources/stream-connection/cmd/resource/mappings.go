@@ -15,7 +15,7 @@
 package resource
 
 import (
-	"go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )

@@ -1,4 +1,4 @@
-// Copyright 2024 MongoDB Inc
+// Copyright 2026 MongoDB Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -134,10 +134,8 @@ func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
 			},
 			validateFunc: func(t *testing.T, result *resource.Model) {
 				t.Helper()
-				// Should preserve ProjectId and Profile from currentModel
 				assert.Equal(t, projectID, *result.ProjectId)
 				assert.Equal(t, "custom-profile", *result.Profile)
-				// Should update from API response
 				assert.Equal(t, connectionID, *result.Id)
 			},
 		},

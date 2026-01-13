@@ -1,0 +1,10 @@
+{
+  "ProjectId": "",
+  "ProviderName": "AWS",
+  "Vendor": "CONFLUENT",
+  "Region": "",
+  "DnsDomain": "",
+  "ServiceEndpointId": "",
+  "DnsSubDomain": [],
+  "Profile": "default"
+}

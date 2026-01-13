@@ -21,13 +21,13 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func setup() {
@@ -57,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError),
 		}, nil
 	}
 
@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError),
 		}, nil
 	}
 
@@ -94,7 +94,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	config, event, err := ReadConfig(client, currentModel)
 	if err != nil {
 		if config == nil {
-			return progressevent.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+			return progressevent.GetFailedEventByCode("Resource Not Found", string(types.HandlerErrorCodeNotFound)), nil
 		}
 
 		return event, nil
@@ -112,11 +112,11 @@ func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handle
 
 	globalCluster, resp, err := client.Atlas20231115002.GlobalClustersApi.GetManagedNamespace(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return nil, handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 		}
 
 		return nil, progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to fetch managed namespace : %s", err.Error()),
@@ -129,13 +129,13 @@ func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handle
 		return nil, handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, errors.New("resource not found")
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, errors.New("resource not found")
 	}
 	readModel := newModel(globalCluster, currentModel)
 	return readModel, handler.ProgressEvent{}, nil
 }
 
-func newModel(globalCluster *admin.GeoSharding, currentModel *Model) *Model {
+func newModel(globalCluster *admin20231115002.GeoSharding, currentModel *Model) *Model {
 	readModel := new(Model)
 	readModel.ProjectId = currentModel.ProjectId
 	readModel.ClusterName = currentModel.ClusterName
@@ -147,7 +147,7 @@ func newModel(globalCluster *admin.GeoSharding, currentModel *Model) *Model {
 	return readModel
 }
 
-func flattenManagedNamespaces(managedNamespaces []admin.ManagedNamespaces) []ManagedNamespace {
+func flattenManagedNamespaces(managedNamespaces []admin20231115002.ManagedNamespaces) []ManagedNamespace {
 	var results []ManagedNamespace
 	for ind := range managedNamespaces {
 		namespace := ManagedNamespace{
@@ -184,7 +184,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if !isExist(client, currentModel) {
-		return progressevent.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+		return progressevent.GetFailedEventByCode("Resource Not Found", string(types.HandlerErrorCodeNotFound)), nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -197,7 +197,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "request doest not contain any item to remove",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	if len(remove) > 0 {
@@ -207,7 +207,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _, err := client.Atlas20231115002.GlobalClustersApi.DeleteAllCustomZoneMappings(context.Background(), projectID, clusterName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByCode(fmt.Sprintf("Failed to remove custom zones : %s", err.Error()),
-				cloudformation.HandlerErrorCodeInvalidRequest), nil
+				string(types.HandlerErrorCodeInvalidRequest)), nil
 		}
 	}
 	return handler.ProgressEvent{
@@ -228,7 +228,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 
 func removeManagedNamespaces(ctx context.Context, client *util.MongoDBClient, remove []ManagedNamespace, projectID, clusterName string) {
 	for _, m := range remove {
-		addManagedNamespace := &admin.DeleteManagedNamespaceApiParams{
+		addManagedNamespace := &admin20231115002.DeleteManagedNamespaceApiParams{
 			Collection:  m.Collection,
 			Db:          m.Db,
 			ClusterName: clusterName,
@@ -242,15 +242,15 @@ func removeManagedNamespaces(ctx context.Context, client *util.MongoDBClient, re
 	}
 }
 
-func newCustomZoneMappings(currentModel *Model) *admin.CustomZoneMappings {
-	return &admin.CustomZoneMappings{
+func newCustomZoneMappings(currentModel *Model) *admin20231115002.CustomZoneMappings {
+	return &admin20231115002.CustomZoneMappings{
 		CustomZoneMappings: modelToCustomZoneMappings(currentModel.CustomZoneMappings),
 	}
 }
 
 func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, nameSpaces []ManagedNamespace, projectID, clusterName string) error {
 	for _, mn := range nameSpaces {
-		addManagedNamespace := &admin.ManagedNamespace{
+		addManagedNamespace := &admin20231115002.ManagedNamespace{
 			Collection:     mn.Collection,
 			Db:             mn.Db,
 			CustomShardKey: mn.CustomShardKey,
@@ -266,11 +266,11 @@ func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, na
 	return nil
 }
 
-func modelToCustomZoneMappings(tfList []ZoneMapping) []admin.ZoneMapping {
-	apiObjects := make([]admin.ZoneMapping, len(tfList))
+func modelToCustomZoneMappings(tfList []ZoneMapping) []admin20231115002.ZoneMapping {
+	apiObjects := make([]admin20231115002.ZoneMapping, len(tfList))
 	for i, tfMapRaw := range tfList {
 		if util.IsStringPresent(tfMapRaw.Location) || util.IsStringPresent(tfMapRaw.Zone) {
-			apiObjects[i] = admin.ZoneMapping{
+			apiObjects[i] = admin20231115002.ZoneMapping{
 				Location: *tfMapRaw.Location,
 				Zone:     *tfMapRaw.Zone,
 			}

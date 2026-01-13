@@ -1,6 +1,6 @@
 # MongoDB::Atlas::FederatedDatabaseInstance DataProcessRegion
 
-Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.
+Information about the cloud provider region to which the Atlas Data Federation routes client connections. MongoDB Cloud supports AWS only.
 
 ## Syntax
 
@@ -26,7 +26,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### CloudProvider
 
-Name of the cloud service that hosts the data lake's data stores.
+Name of the cloud service that hosts the Atlas Data Federation data stores.
 
 _Required_: No
 
@@ -36,7 +36,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Region
 
-Name of the region to which the data lake routes client connections.
+Name of the region to which the Atlas Data Federation routes client connections.
 
 _Required_: Yes
 

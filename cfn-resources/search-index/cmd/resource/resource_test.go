@@ -20,7 +20,7 @@ import (
 
 	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-index/cmd/resource"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func TestConvertToAnySliceEmptyList(t *testing.T) {
@@ -79,7 +79,7 @@ func TestNewTokenizerModelWithNilInput(t *testing.T) {
 
 	result := resource.NewTokenizerModel(tokenizer)
 
-	expected := admin.ApiAtlasFTSAnalyzersTokenizer{}
+	expected := admin20231115002.ApiAtlasFTSAnalyzersTokenizer{}
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Expected: %v, but got: %v", expected, result)
 	}
@@ -97,7 +97,7 @@ func TestNewTokenizerModelWithPartialParameters(t *testing.T) {
 
 	result := resource.NewTokenizerModel(tokenizer)
 
-	expected := admin.ApiAtlasFTSAnalyzersTokenizer{
+	expected := admin20231115002.ApiAtlasFTSAnalyzersTokenizer{
 		MaxGram:        nil,
 		MinGram:        nil,
 		Type:           ptr.String("standard"),

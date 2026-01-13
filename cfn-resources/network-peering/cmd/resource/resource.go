@@ -20,14 +20,16 @@ import (
 	"fmt"
 	"net/http"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func setup() {
@@ -97,13 +99,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		awsAccountID = &req.RequestContext.AccountID
 	}
 
-	peerRequest := admin.BaseNetworkPeeringConnectionSettings{
+	peerRequest := admin20231115002.BaseNetworkPeeringConnectionSettings{
 		ContainerId:         *currentModel.ContainerId,
 		VpcId:               currentModel.VpcId,
 		AccepterRegionName:  currentModel.AccepterRegionName,
 		AwsAccountId:        awsAccountID,
 		RouteTableCidrBlock: currentModel.RouteTableCIDRBlock,
-		ProviderName:        admin.PtrString(constants.AWS),
+		ProviderName:        admin20231115002.PtrString(constants.AWS),
 	}
 
 	peerResponse, resp, err := client.Atlas20231115002.NetworkPeeringApi.CreatePeeringConnection(context.Background(), projectID, &peerRequest).Execute()
@@ -179,11 +181,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			Message:          fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	peerID := *currentModel.Id
-	peerRequest := admin.BaseNetworkPeeringConnectionSettings{}
+	peerRequest := admin20231115002.BaseNetworkPeeringConnectionSettings{}
 
 	if region := currentModel.AccepterRegionName; region != nil {
 		peerRequest.AccepterRegionName = region
@@ -193,7 +195,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		peerRequest.AwsAccountId = accountID
 	}
 
-	peerRequest.ProviderName = admin.PtrString(constants.AWS)
+	peerRequest.ProviderName = admin20231115002.PtrString(constants.AWS)
 	if rtTableBlock := currentModel.RouteTableCIDRBlock; rtTableBlock != nil {
 		peerRequest.RouteTableCidrBlock = rtTableBlock
 	}
@@ -294,7 +296,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func validateDeletionProcess(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	state, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
-		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
+		return progressevent.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest))
 	}
 
 	if state == StatusDeleted {
@@ -316,10 +318,10 @@ func validateDeletionProcess(client *util.MongoDBClient, currentModel *Model) ha
 func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	state, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
-		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
+		return progressevent.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest))
 	}
 	if state == StatusFailed {
-		return progressevent.GetFailedEventByCode("Creation failed", cloudformation.HandlerErrorCodeInternalFailure)
+		return progressevent.GetFailedEventByCode("Creation failed", string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	if state == StatusPendingAcceptance || state == StatusAvailable {
@@ -343,7 +345,7 @@ func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) ha
 func getStatus(client *util.MongoDBClient, projectID, peerID string) (statusName string, err error) {
 	peerResponse, _, err := client.Atlas20231115002.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return StatusDeleted, nil
 		}
 

@@ -29,7 +29,6 @@ projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
 	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-
 	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
@@ -37,27 +36,17 @@ fi
 
 echo "Check if a project is created $projectId"
 
-region="us-east-1"
-
 clusterName="${projectName}"
 
-jq --arg region "$region" \
+WORDTOREMOVE="template."
+cd "$(dirname "$0")" || exit
+for inputFile in inputs_*; do
+	outputFile=${inputFile//$WORDTOREMOVE/}
+	jq --arg projectId "$projectId" \
 	--arg clusterName "$clusterName" \
-	--arg projectId "$projectId" \
 	--arg profile "$profile" \
-	'.Profile?|=$profile | .Name?|=$clusterName | .ProjectId?|=$projectId ' \
-	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
-jq --arg region "$region" \
-	--arg clusterName "$clusterName" \
-	--arg projectId "$projectId" \
-	--arg profile "$profile" \
-	'.Profile?|=$profile | .Name?|=$clusterName | .ProjectId?|=$projectId ' \
-	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
-
-jq --arg region "$region" \
-	--arg clusterName "$clusterName" \
-	--arg projectId "$projectId" \
-	--arg profile "$profile" \
-	'.Profile?|=$profile | .Name?|=$clusterName | .ProjectId?|=$projectId ' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
+	'.Profile?|=$profile | .ProjectId?|=$projectId |.Name?|=$clusterName' \
+		"$inputFile" >"../inputs/$outputFile"
+done
+cd ..
+ls -l inputs

@@ -20,17 +20,19 @@ import (
 	"log"
 	"net/http"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	"github.com/spf13/cast"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 const (
@@ -72,10 +74,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          constants.AlreadyExist,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 
-	requestBody := admin.ClusterOutageSimulation{
+	requestBody := admin20231115014.ClusterOutageSimulation{
 		OutageFilters: newOutageFilters(currentModel),
 	}
 
@@ -131,7 +133,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          constants.ResourceNotFound,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	convertToUIModel(*outageSimulation, currentModel)
@@ -172,7 +174,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          constants.ResourceNotFound,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	simulationObject, res, err := client.Atlas20231115014.ClusterOutageSimulationApi.EndOutageSimulation(context.Background(), projectID, clusterName).Execute()
@@ -206,11 +208,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func newOutageFilters(currentModel *Model) *[]admin.AtlasClusterOutageSimulationOutageFilter {
-	outageFilters := make([]admin.AtlasClusterOutageSimulationOutageFilter, 0)
+func newOutageFilters(currentModel *Model) *[]admin20231115014.AtlasClusterOutageSimulationOutageFilter {
+	outageFilters := make([]admin20231115014.AtlasClusterOutageSimulationOutageFilter, 0)
 
 	for ind := range currentModel.OutageFilters {
-		mMatcher := admin.AtlasClusterOutageSimulationOutageFilter{
+		mMatcher := admin20231115014.AtlasClusterOutageSimulationOutageFilter{
 			CloudProvider: currentModel.OutageFilters[ind].CloudProvider,
 			RegionName:    currentModel.OutageFilters[ind].Region,
 			Type:          currentModel.OutageFilters[ind].Type,
@@ -230,7 +232,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
 
 	if !isReady {
@@ -299,7 +301,7 @@ func setup() {
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
-func convertToUIModel(outageSimulation admin.ClusterOutageSimulation, currentModel *Model) *Model {
+func convertToUIModel(outageSimulation admin20231115014.ClusterOutageSimulation, currentModel *Model) *Model {
 	currentModel.SimulationId = outageSimulation.Id
 
 	if outageSimulation.StartRequestDate != nil {
@@ -314,7 +316,7 @@ func convertToUIModel(outageSimulation admin.ClusterOutageSimulation, currentMod
 	return currentModel
 }
 
-func convertOutageFiltersToModel(outageFilters []admin.AtlasClusterOutageSimulationOutageFilter) []Filter {
+func convertOutageFiltersToModel(outageFilters []admin20231115014.AtlasClusterOutageSimulationOutageFilter) []Filter {
 	outageFilterList := make([]Filter, 0)
 
 	for ind := range outageFilters {

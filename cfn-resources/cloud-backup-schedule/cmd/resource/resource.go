@@ -18,14 +18,16 @@ import (
 	"context"
 	"errors"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.ClusterName}
@@ -80,11 +82,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	events, _ := Read(req, prevModel, currentModel)
-	if events.HandlerErrorCode == cloudformation.HandlerErrorCodeNotFound {
+	if events.HandlerErrorCode == string(types.HandlerErrorCodeNotFound) {
 		return handler.ProgressEvent{
 			Message:          "Not Found",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	return cloudBackupScheduleCreateOrUpdate(req, prevModel, currentModel)
@@ -173,12 +175,12 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error) {
 	if len(currentModel.Policies) == 0 {
 		msg := "validation error: policies cannot be empty"
-		return progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
+		return progressevent.GetFailedEventByCode(msg, string(types.HandlerErrorCodeInvalidRequest)), errors.New(msg)
 	}
 	for _, policy := range currentModel.Policies {
 		if len(policy.PolicyItems) == 0 {
 			msg := "validation error: policy items cannot be empty"
-			return progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
+			return progressevent.GetFailedEventByCode(msg, string(types.HandlerErrorCodeInvalidRequest)), errors.New(msg)
 		}
 		for _, policyItem := range policy.PolicyItems {
 			if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
@@ -187,7 +189,7 @@ func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          err.Error(),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
+					HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, err
 			}
 		}
 	}
@@ -201,24 +203,24 @@ func validateExportDetails(currentModel *Model) (pe handler.ProgressEvent, err e
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
+				HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, err
 		}
 	}
 	return handler.ProgressEvent{}, nil
 }
 
-func validateExist(policy *admin.DiskBackupSnapshotSchedule) *handler.ProgressEvent {
+func validateExist(policy *admin20231115014.DiskBackupSnapshotSchedule) *handler.ProgressEvent {
 	if policy.Policies != nil && len(policy.GetPolicies()) > 0 && len(policy.GetPolicies()[0].GetPolicyItems()) > 0 {
 		return nil
 	}
 	return &handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          "Not Found",
-		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+		HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 }
 
-func (m *Model) getParams() *admin.DiskBackupSnapshotSchedule {
-	return &admin.DiskBackupSnapshotSchedule{
+func (m *Model) getParams() *admin20231115014.DiskBackupSnapshotSchedule {
+	return &admin20231115014.DiskBackupSnapshotSchedule{
 		AutoExportEnabled:                 m.AutoExportEnabled,
 		ReferenceHourOfDay:                m.ReferenceHourOfDay,
 		ReferenceMinuteOfHour:             m.ReferenceMinuteOfHour,
@@ -227,13 +229,13 @@ func (m *Model) getParams() *admin.DiskBackupSnapshotSchedule {
 		UseOrgAndGroupNamesInExportPrefix: m.UseOrgAndGroupNamesInExportPrefix,
 		Policies:                          expandPolicies(m.Policies),
 		CopySettings:                      expandCopySettings(m.CopySettings),
-		Export:                            expandExport(m.Export, aws.BoolValue(m.AutoExportEnabled)),
+		Export:                            expandExport(m.Export, aws.ToBool(m.AutoExportEnabled)),
 		UpdateSnapshots:                   m.UpdateSnapshots,
 		DeleteCopiedBackups:               expandDeleteCopiedBackups(m.DeleteCopiedBackups),
 	}
 }
 
-func (m *Model) newModel(policy *admin.DiskBackupSnapshotSchedule) *Model {
+func (m *Model) newModel(policy *admin20231115014.DiskBackupSnapshotSchedule) *Model {
 	return &Model{
 		Profile:                           m.Profile,
 		ProjectId:                         m.ProjectId,
@@ -248,22 +250,22 @@ func (m *Model) newModel(policy *admin.DiskBackupSnapshotSchedule) *Model {
 		Policies:                          flattenPolicies(policy.Policies),
 		Links:                             flattenLinks(policy.Links),
 		CopySettings:                      flattenCopySettings(policy.CopySettings),
-		Export:                            flattenExport(policy.Export, aws.BoolValue(policy.AutoExportEnabled)),
+		Export:                            flattenExport(policy.Export, aws.ToBool(policy.AutoExportEnabled)),
 	}
 }
 
-func expandExport(export *Export, enabled bool) *admin.AutoExportPolicy {
+func expandExport(export *Export, enabled bool) *admin20231115014.AutoExportPolicy {
 	if export == nil || !enabled {
 		return nil
 	}
 
-	return &admin.AutoExportPolicy{
+	return &admin20231115014.AutoExportPolicy{
 		ExportBucketId: export.ExportBucketId,
 		FrequencyType:  export.FrequencyType,
 	}
 }
 
-func flattenExport(export *admin.AutoExportPolicy, enabled bool) *Export {
+func flattenExport(export *admin20231115014.AutoExportPolicy, enabled bool) *Export {
 	if export == nil || !enabled {
 		return nil
 	}
@@ -273,10 +275,10 @@ func flattenExport(export *admin.AutoExportPolicy, enabled bool) *Export {
 	}
 }
 
-func expandPolicies(policies []ApiPolicyView) *[]admin.AdvancedDiskBackupSnapshotSchedulePolicy {
-	schedulePolicies := make([]admin.AdvancedDiskBackupSnapshotSchedulePolicy, 0)
+func expandPolicies(policies []ApiPolicyView) *[]admin20231115014.AdvancedDiskBackupSnapshotSchedulePolicy {
+	schedulePolicies := make([]admin20231115014.AdvancedDiskBackupSnapshotSchedulePolicy, 0)
 	for _, s := range policies {
-		policy := admin.AdvancedDiskBackupSnapshotSchedulePolicy{
+		policy := admin20231115014.AdvancedDiskBackupSnapshotSchedulePolicy{
 			Id:          s.ID,
 			PolicyItems: expandPolicyItems(s.PolicyItems),
 		}
@@ -285,7 +287,7 @@ func expandPolicies(policies []ApiPolicyView) *[]admin.AdvancedDiskBackupSnapsho
 	return &schedulePolicies
 }
 
-func flattenPolicies(policies *[]admin.AdvancedDiskBackupSnapshotSchedulePolicy) []ApiPolicyView {
+func flattenPolicies(policies *[]admin20231115014.AdvancedDiskBackupSnapshotSchedulePolicy) []ApiPolicyView {
 	snapPolicies := make([]ApiPolicyView, 0)
 	for _, policy := range *policies {
 		snapPolicy := ApiPolicyView{
@@ -297,22 +299,22 @@ func flattenPolicies(policies *[]admin.AdvancedDiskBackupSnapshotSchedulePolicy)
 	return snapPolicies
 }
 
-func expandPolicyItems(cloudPolicyItems []ApiPolicyItemView) *[]admin.DiskBackupApiPolicyItem {
-	policyItems := make([]admin.DiskBackupApiPolicyItem, 0)
+func expandPolicyItems(cloudPolicyItems []ApiPolicyItemView) *[]admin20231115014.DiskBackupApiPolicyItem {
+	policyItems := make([]admin20231115014.DiskBackupApiPolicyItem, 0)
 	for _, policyItem := range cloudPolicyItems {
-		cPolicyItem := admin.DiskBackupApiPolicyItem{
+		cPolicyItem := admin20231115014.DiskBackupApiPolicyItem{
 			Id:                policyItem.ID,
-			FrequencyInterval: aws.IntValue(policyItem.FrequencyInterval),
+			FrequencyInterval: util.SafeInt(policyItem.FrequencyInterval),
 			FrequencyType:     util.SafeString(policyItem.FrequencyType),
 			RetentionUnit:     util.SafeString(policyItem.RetentionUnit),
-			RetentionValue:    aws.IntValue(policyItem.RetentionValue),
+			RetentionValue:    util.SafeInt(policyItem.RetentionValue),
 		}
 		policyItems = append(policyItems, cPolicyItem)
 	}
 	return &policyItems
 }
 
-func flattenPolicyItems(policyItems []admin.DiskBackupApiPolicyItem) []ApiPolicyItemView {
+func flattenPolicyItems(policyItems []admin20231115014.DiskBackupApiPolicyItem) []ApiPolicyItemView {
 	cloudPolicyItems := make([]ApiPolicyItemView, 0)
 	for _, policyItem := range policyItems {
 		snapPolicy := ApiPolicyItemView{
@@ -327,10 +329,10 @@ func flattenPolicyItems(policyItems []admin.DiskBackupApiPolicyItem) []ApiPolicy
 	return cloudPolicyItems
 }
 
-func expandCopySettings(copySettings []ApiAtlasDiskBackupCopySettingView) *[]admin.DiskBackupCopySetting {
-	cloudCopySettings := make([]admin.DiskBackupCopySetting, 0)
+func expandCopySettings(copySettings []ApiAtlasDiskBackupCopySettingView) *[]admin20231115014.DiskBackupCopySetting {
+	cloudCopySettings := make([]admin20231115014.DiskBackupCopySetting, 0)
 	for _, copySetting := range copySettings {
-		backupSetting := admin.DiskBackupCopySetting{
+		backupSetting := admin20231115014.DiskBackupCopySetting{
 			CloudProvider:     copySetting.CloudProvider,
 			RegionName:        copySetting.RegionName,
 			ReplicationSpecId: copySetting.ReplicationSpecId,
@@ -342,7 +344,7 @@ func expandCopySettings(copySettings []ApiAtlasDiskBackupCopySettingView) *[]adm
 	return &cloudCopySettings
 }
 
-func flattenCopySettings(copySettings *[]admin.DiskBackupCopySetting) []ApiAtlasDiskBackupCopySettingView {
+func flattenCopySettings(copySettings *[]admin20231115014.DiskBackupCopySetting) []ApiAtlasDiskBackupCopySettingView {
 	cloudCopySettings := make([]ApiAtlasDiskBackupCopySettingView, 0)
 	for _, copySetting := range *copySettings {
 		cloudCopySettings = append(cloudCopySettings, ApiAtlasDiskBackupCopySettingView{
@@ -356,10 +358,10 @@ func flattenCopySettings(copySettings *[]admin.DiskBackupCopySetting) []ApiAtlas
 	return cloudCopySettings
 }
 
-func expandDeleteCopiedBackups(deleteCopiedBackups []ApiDeleteCopiedBackupsView) *[]admin.DeleteCopiedBackups {
-	cloudDeleteCopiedBackups := make([]admin.DeleteCopiedBackups, 0)
+func expandDeleteCopiedBackups(deleteCopiedBackups []ApiDeleteCopiedBackupsView) *[]admin20231115014.DeleteCopiedBackups {
+	cloudDeleteCopiedBackups := make([]admin20231115014.DeleteCopiedBackups, 0)
 	for _, deleteCopiedBackup := range deleteCopiedBackups {
-		copiedSetting := admin.DeleteCopiedBackups{
+		copiedSetting := admin20231115014.DeleteCopiedBackups{
 			CloudProvider:     deleteCopiedBackup.CloudProvider,
 			RegionName:        deleteCopiedBackup.RegionName,
 			ReplicationSpecId: deleteCopiedBackup.ReplicationSpecId,
@@ -369,7 +371,7 @@ func expandDeleteCopiedBackups(deleteCopiedBackups []ApiDeleteCopiedBackupsView)
 	return &cloudDeleteCopiedBackups
 }
 
-func flattenLinks(linksResult *[]admin.Link) []Link {
+func flattenLinks(linksResult *[]admin20231115014.Link) []Link {
 	links := make([]Link, 0)
 	for _, link := range *linksResult {
 		var lin Link

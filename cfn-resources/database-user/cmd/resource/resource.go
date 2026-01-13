@@ -19,14 +19,14 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20250312005/admin"
+	"go.mongodb.org/atlas-sdk/v20250312010/admin"
 )
 
 var CreateRequiredFields = []string{constants.DatabaseName, constants.ProjectID, constants.Roles, constants.Username}
@@ -63,7 +63,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          fmt.Sprintf("Error Creating resource: %s", err.Error()),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	groupID := *currentModel.ProjectId
@@ -172,7 +172,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          fmt.Sprintf("Error Creating resource: %s", err.Error()),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	groupID := *currentModel.ProjectId

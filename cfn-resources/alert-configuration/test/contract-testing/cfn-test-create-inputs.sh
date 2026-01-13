@@ -10,6 +10,6 @@ set -o nounset
 set -o pipefail
 
 # setting projectName
-projectName="ct-alert-config-$((1 + RANDOM % 10000))"
+projectName="ct-alert-config-$(date +%s)-$RANDOM"
 
-./test/cfn-test-create-inputs.sh $projectName
+./test/cfn-test-create-inputs.sh "$projectName"

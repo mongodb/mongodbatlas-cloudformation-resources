@@ -1,0 +1,45 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template defines dedicated search nodes for a specific cluster, this will be billed to your Atlas account.",
+  "Mappings": {},
+  "Resources": {
+    "AtlasFlexCluster": {
+      "Type": "{{ .ResourceTypeName }}",
+      "Properties": {
+        "Profile": "{{ .Profile }}",
+        "ProjectId": "{{ .ProjectID }}",
+        "Name": "{{ .ClusterName }}",
+        "ProviderSettings": {
+          "BackingProviderName": "AWS",
+          "RegionName": "US_EAST_1"
+        }{{ if .Tags }},
+        "Tags": [{{ range $i, $tag := .Tags }}{{ if $i }},{{ end }}
+          {
+            "Key": "{{ $tag.Key }}",
+            "Value": "{{ $tag.Value }}"
+          }{{ end }}
+        ]{{ end }}
+      }
+    }
+  },
+  "Outputs": {
+    "AtlasFlexClusterId": {
+      "Description": "Flex Cluster ID",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "Id"
+        ]
+      }
+    },
+    "AtlasFlexClusterStateName": {
+      "Description": "Flex Cluster State",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "StateName"
+        ]
+      }
+    }
+  }
+}

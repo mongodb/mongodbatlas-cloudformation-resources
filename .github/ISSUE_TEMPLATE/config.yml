@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: MongoDB Atlas CloudFormation Resources Beta Feature Request
-    url: https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources
+    url: https://feedback.mongodb.com/ideas?category=7548141186718564699
     about: Request a feature or up-vote an existing suggestion!
   - name: MongoDB Atlas 
     url: https://www.mongodb.com/cloud/atlas

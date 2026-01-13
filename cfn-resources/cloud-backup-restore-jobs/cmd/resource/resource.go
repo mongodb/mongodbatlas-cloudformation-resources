@@ -20,14 +20,16 @@ import (
 	"fmt"
 	"time"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType, constants.InstanceType, constants.InstanceName}
@@ -53,7 +55,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 
 	if *model.InstanceType != clusterInstanceType && *model.InstanceType != serverlessInstanceType {
 		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("InstanceType must be %s or %s", clusterInstanceType, serverlessInstanceType),
-			cloudformation.HandlerErrorCodeInvalidRequest)
+			string(types.HandlerErrorCodeInvalidRequest))
 		return &pe
 	}
 
@@ -74,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	err := currentModel.validateAsynchronousProperties()
 	if err != nil {
-		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), err
+		return progressevent.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest)), err
 	}
 
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
@@ -110,7 +112,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Id = server.Id
 	}
 
-	if aws.BoolValue(currentModel.EnableSynchronousCreation) {
+	if aws.ToBool(currentModel.EnableSynchronousCreation) {
 		return progressevent.GetInProgressProgressEvent(
 				"Create in progress",
 				map[string]interface{}{
@@ -146,11 +148,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	if aws.BoolValue(currentModel.Cancelled) {
+	if aws.ToBool(currentModel.Cancelled) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "The job is in status cancelled, Cannot read a cancelled job",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	return handler.ProgressEvent{
@@ -180,14 +182,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	if aws.BoolValue(currentModel.Cancelled) {
+	if aws.ToBool(currentModel.Cancelled) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "The job is in status cancelled, Cannot delete a cancelled job",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
-	if util.IsStringPresent(currentModel.FinishedAt) || aws.BoolValue(currentModel.Failed) || aws.BoolValue(currentModel.Expired) {
+	if util.IsStringPresent(currentModel.FinishedAt) || aws.ToBool(currentModel.Failed) || aws.ToBool(currentModel.Expired) {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         "The resource is finished, failed, or expired",
@@ -242,7 +244,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				InstanceName: currentModel.InstanceName,
 				Profile:      currentModel.Profile,
 			}
-			if !aws.BoolValue(job.Cancelled) && !aws.BoolValue(job.Expired) {
+			if !aws.ToBool(job.Cancelled) && !aws.ToBool(job.Expired) {
 				updateModelServerless(model, job)
 				models = append(models, model)
 			}
@@ -262,7 +264,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				InstanceName: currentModel.InstanceName,
 				Profile:      currentModel.Profile,
 			}
-			if !aws.BoolValue(job.Cancelled) && !aws.BoolValue(job.Expired) {
+			if !aws.ToBool(job.Cancelled) && !aws.ToBool(job.Expired) {
 				updateModelServer(model, job)
 				models = append(models, model)
 			}
@@ -283,11 +285,11 @@ func (model *Model) validateAsynchronousProperties() error {
 		}
 
 		if model.SynchronousCreationOptions.CallbackDelaySeconds == nil {
-			model.SynchronousCreationOptions.CallbackDelaySeconds = aws.Int(defaultBackSeconds)
+			model.SynchronousCreationOptions.CallbackDelaySeconds = util.IntPtr(defaultBackSeconds)
 		}
 
 		if model.SynchronousCreationOptions.TimeOutInSeconds == nil {
-			model.SynchronousCreationOptions.TimeOutInSeconds = aws.Int(defaultTimeOutInSeconds)
+			model.SynchronousCreationOptions.TimeOutInSeconds = util.IntPtr(defaultTimeOutInSeconds)
 		}
 
 		if model.SynchronousCreationOptions.ReturnSuccessIfTimeOut == nil {
@@ -321,7 +323,7 @@ func createCallback(client *util.MongoDBClient, currentModel *Model, jobID, star
 			}
 		}
 
-		return progressevent.GetFailedEventByCode("Create failed with Timout", cloudformation.HandlerErrorCodeInternalFailure)
+		return progressevent.GetFailedEventByCode("Create failed with Timout", string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	return progressevent.GetInProgressProgressEvent(
@@ -370,7 +372,7 @@ func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *ha
 	return nil
 }
 
-func updateModelServerless(model *Model, job *admin.ServerlessBackupRestoreJob) {
+func updateModelServerless(model *Model, job *admin20231115014.ServerlessBackupRestoreJob) {
 	model.TargetClusterName = &job.TargetClusterName
 	model.DeliveryType = &job.DeliveryType
 	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
@@ -385,7 +387,7 @@ func updateModelServerless(model *Model, job *admin.ServerlessBackupRestoreJob) 
 	model.Links = flattenLinks(job.GetLinks())
 }
 
-func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
+func updateModelServer(model *Model, job *admin20231115014.DiskBackupSnapshotRestoreJob) {
 	model.TargetClusterName = job.TargetClusterName
 	model.DeliveryType = &job.DeliveryType
 	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
@@ -401,7 +403,7 @@ func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
 	model.Links = flattenLinks(job.GetLinks())
 }
 
-func flattenLinks(linksResult []admin.Link) []Links {
+func flattenLinks(linksResult []admin20231115014.Link) []Links {
 	links := make([]Links, 0)
 	for _, link := range linksResult {
 		var lin Links
@@ -412,8 +414,8 @@ func flattenLinks(linksResult []admin.Link) []Links {
 	return links
 }
 
-func paramsServer(model *Model) *admin.DiskBackupSnapshotRestoreJob {
-	return &admin.DiskBackupSnapshotRestoreJob{
+func paramsServer(model *Model) *admin20231115014.DiskBackupSnapshotRestoreJob {
+	return &admin20231115014.DiskBackupSnapshotRestoreJob{
 		SnapshotId:            model.SnapshotId,
 		DeliveryType:          *model.DeliveryType,
 		TargetClusterName:     model.TargetClusterName,
@@ -424,8 +426,8 @@ func paramsServer(model *Model) *admin.DiskBackupSnapshotRestoreJob {
 	}
 }
 
-func paramsServerless(model *Model) *admin.ServerlessBackupRestoreJob {
-	return &admin.ServerlessBackupRestoreJob{
+func paramsServerless(model *Model) *admin20231115014.ServerlessBackupRestoreJob {
+	return &admin20231115014.ServerlessBackupRestoreJob{
 		SnapshotId:            model.SnapshotId,
 		DeliveryType:          *model.DeliveryType,
 		TargetClusterName:     *model.TargetClusterName,

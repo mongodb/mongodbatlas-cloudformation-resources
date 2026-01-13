@@ -20,8 +20,8 @@ projectId="${1}"
 username="${2}"
 password="${3}"
 
-jq --arg ProjectId "$projectId" \
+jq --arg projectId "$projectId" \
 	--arg username "$username" \
 	--arg password "$password" \
-	'.desiredResourceState.properties.Username?|=$username | .desiredResourceState.properties.Password?|=$password | .desiredResourceState.properties.ProjectId?|=$projectId' \
+	'.desiredResourceState.Username?|=$username | .desiredResourceState.Password?|=$password | .desiredResourceState.ProjectId?|=$projectId' \
 	"$(dirname "$0")/databaseuser.sample-cfn-request.json"

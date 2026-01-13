@@ -10,16 +10,16 @@ After the above 2 steps are completed and we've agreed on a path forward:
 2. Create a branch with a name that briefly describes your submission
 3. Add comments around your new code that explain what's happening
 4. Commit and push your changes to your branch then submit a pull request against the current release branch, not master. The naming scheme of the branch is `release-staging-v#.#.#`. **Note**: There will only be one release branch at a time.  
-5. A repo maintainer will review the your pull request, and may either request additional changes or merge the pull request.
+5. A repo maintainer will review your pull request, and may either request additional changes or merge the pull request.
 
 ## Requirements
 
-- Resources configurations, specifcally `.rpdk-config` and `Makefile` build commands, are compatible with cloudformation-cli (`cfn`) versions 0.2.34 and above.
+- Resources configurations, specifically `.rpdk-config` and `Makefile` build commands, are compatible with cloudformation-cli (`cfn`) versions 0.2.34 and above.
 
 
 ## Code and Test Best Practices
 
-- Each resource is implemented in a seperate directory within `./cfn-resources`. Under each resource directory operations will be implemented in `./cmd/resource/resource.go`, having a separate file `./cmd/resource/mappings.go` for defining conversion logic with respective SDK and CFN models. 
+- Each resource is implemented in a separate directory within `./cfn-resources`. Under each resource directory operations will be implemented in `./cmd/resource/resource.go`, having a separate file `./cmd/resource/mappings.go` for defining conversion logic with respective SDK and CFN models. 
 - Associated unit testing files must be defined for conversion logic, and can also exist for other business logic such as handling state transitions. Unit tests are defined under `resource_test` package to minimize coupling.
 - [Testify Mock](https://pkg.go.dev/github.com/stretchr/testify/mock) and [Mockery](https://github.com/vektra/mockery) are used for test doubles in unit tests. Mocked interfaces are generated in folder `cfn-resources/testutil/mocksvc`.
 - We have a `/test/README.md` for every resource in `cfn-resources`. You will also find [TESTING.md](./TESTING.md) which provides testing practices common to all resources.

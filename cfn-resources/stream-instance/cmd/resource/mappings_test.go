@@ -19,7 +19,7 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-instance/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var (
@@ -38,7 +38,7 @@ var (
 func TestNewStreamsTenant(t *testing.T) {
 	testCases := []struct {
 		input    *resource.Model
-		expected *admin.StreamsTenant
+		expected *admin20231115014.StreamsTenant
 		name     string
 	}{
 		{
@@ -54,14 +54,14 @@ func TestNewStreamsTenant(t *testing.T) {
 					Tier: &tier,
 				},
 			},
-			expected: &admin.StreamsTenant{
+			expected: &admin20231115014.StreamsTenant{
 				Name:    &instanceName,
 				GroupId: &projectID,
-				DataProcessRegion: &admin.StreamsDataProcessRegion{
+				DataProcessRegion: &admin20231115014.StreamsDataProcessRegion{
 					CloudProvider: cloudProvider,
 					Region:        region,
 				},
-				StreamConfig: &admin.StreamConfig{
+				StreamConfig: &admin20231115014.StreamConfig{
 					Tier: &tier,
 				},
 			},
@@ -76,10 +76,10 @@ func TestNewStreamsTenant(t *testing.T) {
 					Region:        &region,
 				},
 			},
-			expected: &admin.StreamsTenant{
+			expected: &admin20231115014.StreamsTenant{
 				Name:    &instanceName,
 				GroupId: &projectID,
-				DataProcessRegion: &admin.StreamsDataProcessRegion{
+				DataProcessRegion: &admin20231115014.StreamsDataProcessRegion{
 					CloudProvider: cloudProvider,
 					Region:        region,
 				},
@@ -98,7 +98,7 @@ func TestNewStreamsTenant(t *testing.T) {
 func TestNewModelConnections(t *testing.T) {
 	testCases := []struct {
 		name     string
-		input    *[]admin.StreamsConnection
+		input    *[]admin20231115014.StreamsConnection
 		expected []resource.StreamsConnection
 	}{
 		{
@@ -108,18 +108,18 @@ func TestNewModelConnections(t *testing.T) {
 		},
 		{
 			name:     "StreamConfig is empty",
-			input:    &[]admin.StreamsConnection{},
+			input:    &[]admin20231115014.StreamsConnection{},
 			expected: nil,
 		},
 		{
 			name: "Connection type Kafka",
-			input: &[]admin.StreamsConnection{
+			input: &[]admin20231115014.StreamsConnection{
 				{
 					Name:             &name,
 					Type:             &kafkaType,
 					BootstrapServers: &bootstrapServers,
-					Authentication:   &admin.StreamsKafkaAuthentication{},
-					Security:         &admin.StreamsKafkaSecurity{},
+					Authentication:   &admin20231115014.StreamsKafkaAuthentication{},
+					Security:         &admin20231115014.StreamsKafkaSecurity{},
 				},
 			},
 			expected: []resource.StreamsConnection{
@@ -134,12 +134,12 @@ func TestNewModelConnections(t *testing.T) {
 		},
 		{
 			name: "Connection type Cluster",
-			input: &[]admin.StreamsConnection{
+			input: &[]admin20231115014.StreamsConnection{
 				{
 					Name:            &name,
 					Type:            &clusterType,
 					ClusterName:     &clusterName,
-					DbRoleToExecute: &admin.DBRoleToExecute{},
+					DbRoleToExecute: &admin20231115014.DBRoleToExecute{},
 				},
 			},
 			expected: []resource.StreamsConnection{

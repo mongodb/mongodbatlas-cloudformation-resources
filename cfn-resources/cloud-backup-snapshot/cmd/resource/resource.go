@@ -19,14 +19,16 @@ import (
 	"errors"
 	"fmt"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -61,7 +63,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if *currentModel.InstanceType == clusterInstanceType {
-		params := admin.DiskBackupOnDemandSnapshotRequest{
+		params := admin20231115002.DiskBackupOnDemandSnapshotRequest{
 			Description:     currentModel.Description,
 			RetentionInDays: currentModel.RetentionInDays,
 		}
@@ -171,7 +173,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	models := make([]interface{}, 0)
 
 	if *currentModel.InstanceType == clusterInstanceType {
-		server, resp, err := client.Atlas20231115002.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		server, resp, err := client.Atlas20231115002.CloudBackupsApi.ListReplicaSetBackups(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -186,7 +188,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			models = append(models, &model)
 		}
 	} else {
-		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackups(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -211,7 +213,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEvent {
 	if *model.InstanceType == clusterInstanceType {
-		server, resp, err := client.Atlas20231115002.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *model.ProjectId, *model.InstanceName).Execute()
+		server, resp, err := client.Atlas20231115002.CloudBackupsApi.ListReplicaSetBackups(context.Background(), *model.ProjectId, *model.InstanceName).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
@@ -222,7 +224,7 @@ func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEv
 			}
 		}
 	} else {
-		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *model.ProjectId, *model.InstanceName).Execute()
+		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackups(context.Background(), *model.ProjectId, *model.InstanceName).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
@@ -237,7 +239,7 @@ func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEv
 	return &handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          "Resource Not Found",
-		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+		HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 }
 
 func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
@@ -271,7 +273,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 	return p, nil
 }
 
-func (m *Model) updateModelServer(snapShot *admin.DiskBackupReplicaSet) {
+func (m *Model) updateModelServer(snapShot *admin20231115002.DiskBackupReplicaSet) {
 	m.SnapshotId = snapShot.Id
 	m.Description = snapShot.Description
 	m.Status = snapShot.Status
@@ -285,7 +287,7 @@ func (m *Model) updateModelServer(snapShot *admin.DiskBackupReplicaSet) {
 	m.CloudProvider = snapShot.CloudProvider
 }
 
-func (m *Model) updateModelServerless(snapShot *admin.ServerlessBackupSnapshot) {
+func (m *Model) updateModelServerless(snapShot *admin20231115002.ServerlessBackupSnapshot) {
 	m.SnapshotId = snapShot.Id
 	m.Status = snapShot.Status
 	m.CreatedAt = util.TimePtrToStringPtr(snapShot.CreatedAt)

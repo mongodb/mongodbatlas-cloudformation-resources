@@ -20,15 +20,15 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.TenantName}
@@ -70,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	dataLakeTenant, response, err := client.Atlas20231115014.DataFederationApi.CreateFederatedDatabaseWithParams(
 		context.Background(),
-		&admin.CreateFederatedDatabaseApiParams{
+		&admin20231115014.CreateFederatedDatabaseApiParams{
 			GroupId:        *currentModel.ProjectId,
 			DataLakeTenant: &dataLakeTenantInput,
 		}).Execute()
@@ -231,29 +231,29 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          fmt.Sprintf("%s:%s", method, err.Error()),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 	if response.StatusCode == http.StatusNotFound {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          fmt.Sprintf("%s:%s", method, err.Error()),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error during execution : %s", err.Error()),
 		response), nil
 }
 
-func (model *Model) setDataLakeTenant() (dataLakeTenant admin.DataLakeTenant) {
-	dataLakeTenant = admin.DataLakeTenant{
+func (model *Model) setDataLakeTenant() (dataLakeTenant admin20231115014.DataLakeTenant) {
+	dataLakeTenant = admin20231115014.DataLakeTenant{
 		Name:    model.TenantName,
 		Storage: model.newDataFederationDataStorage(),
 	}
 
 	cloudProviderConfig := model.CloudProviderConfig
 	if cloudProviderConfig != nil && cloudProviderConfig.TestS3Bucket != nil && cloudProviderConfig.RoleId != nil {
-		dataLakeTenant.CloudProviderConfig = &admin.DataLakeCloudProviderConfig{
-			Aws: admin.DataLakeAWSCloudProviderConfig{
+		dataLakeTenant.CloudProviderConfig = &admin20231115014.DataLakeCloudProviderConfig{
+			Aws: admin20231115014.DataLakeAWSCloudProviderConfig{
 				TestS3Bucket: *cloudProviderConfig.TestS3Bucket,
 				RoleId:       *cloudProviderConfig.RoleId,
 			},
@@ -262,14 +262,14 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant admin.DataLakeTenant) {
 
 	dataProcessRegion := model.DataProcessRegion
 	if dataProcessRegion != nil && dataProcessRegion.CloudProvider != nil && dataProcessRegion.Region != nil {
-		dataLakeTenant.DataProcessRegion = &admin.DataLakeDataProcessRegion{
+		dataLakeTenant.DataProcessRegion = &admin20231115014.DataLakeDataProcessRegion{
 			CloudProvider: *dataProcessRegion.CloudProvider,
 			Region:        *dataProcessRegion.Region,
 		}
 	}
 
 	if dataProcessRegion != nil && dataProcessRegion.Region != nil {
-		dataLakeTenant.DataProcessRegion = &admin.DataLakeDataProcessRegion{
+		dataLakeTenant.DataProcessRegion = &admin20231115014.DataLakeDataProcessRegion{
 			CloudProvider: constants.AWS,
 			Region:        *dataProcessRegion.Region,
 		}
@@ -278,14 +278,14 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant admin.DataLakeTenant) {
 	return dataLakeTenant
 }
 
-func (model *Model) newDataFederationDataStorage() *admin.DataLakeStorage {
-	return &admin.DataLakeStorage{
+func (model *Model) newDataFederationDataStorage() *admin20231115014.DataLakeStorage {
+	return &admin20231115014.DataLakeStorage{
 		Databases: model.newDataFederationDatabase(),
 		Stores:    model.newStores(),
 	}
 }
 
-func (model *Model) newDataFederationDatabase() *[]admin.DataLakeDatabaseInstance {
+func (model *Model) newDataFederationDatabase() *[]admin20231115014.DataLakeDatabaseInstance {
 	if model.Storage == nil {
 		return nil
 	}
@@ -294,9 +294,9 @@ func (model *Model) newDataFederationDatabase() *[]admin.DataLakeDatabaseInstanc
 		return nil
 	}
 
-	dbs := make([]admin.DataLakeDatabaseInstance, len(storageDBs))
+	dbs := make([]admin20231115014.DataLakeDatabaseInstance, len(storageDBs))
 	for i := range storageDBs {
-		dbs[i] = admin.DataLakeDatabaseInstance{
+		dbs[i] = admin20231115014.DataLakeDatabaseInstance{
 			Name:        storageDBs[i].Name,
 			Collections: newDataFederationCollections(storageDBs[i].Collections),
 		}
@@ -308,14 +308,14 @@ func (model *Model) newDataFederationDatabase() *[]admin.DataLakeDatabaseInstanc
 	return &dbs
 }
 
-func newDataFederationCollections(storageDBCollections []Collection) *[]admin.DataLakeDatabaseCollection {
+func newDataFederationCollections(storageDBCollections []Collection) *[]admin20231115014.DataLakeDatabaseCollection {
 	if len(storageDBCollections) == 0 {
 		return nil
 	}
 
-	collections := make([]admin.DataLakeDatabaseCollection, len(storageDBCollections))
+	collections := make([]admin20231115014.DataLakeDatabaseCollection, len(storageDBCollections))
 	for i := range storageDBCollections {
-		collections[i] = admin.DataLakeDatabaseCollection{
+		collections[i] = admin20231115014.DataLakeDatabaseCollection{
 			Name:        storageDBCollections[i].Name,
 			DataSources: newDataFederationDataSource(storageDBCollections[i].DataSources),
 		}
@@ -324,13 +324,13 @@ func newDataFederationCollections(storageDBCollections []Collection) *[]admin.Da
 	return &collections
 }
 
-func newDataFederationDataSource(dataSources []DataSource) *[]admin.DataLakeDatabaseDataSourceSettings {
+func newDataFederationDataSource(dataSources []DataSource) *[]admin20231115014.DataLakeDatabaseDataSourceSettings {
 	if len(dataSources) == 0 {
 		return nil
 	}
-	dataSourceSettings := make([]admin.DataLakeDatabaseDataSourceSettings, len(dataSources))
+	dataSourceSettings := make([]admin20231115014.DataLakeDatabaseDataSourceSettings, len(dataSources))
 	for i := range dataSources {
-		dataSourceSettings[i] = admin.DataLakeDatabaseDataSourceSettings{
+		dataSourceSettings[i] = admin20231115014.DataLakeDatabaseDataSourceSettings{
 			AllowInsecure:       dataSources[i].AllowInsecure,
 			Database:            dataSources[i].Database,
 			Collection:          dataSources[i].Collection,
@@ -345,7 +345,7 @@ func newDataFederationDataSource(dataSources []DataSource) *[]admin.DataLakeData
 	return &dataSourceSettings
 }
 
-func (model *Model) newStores() *[]admin.DataLakeStoreSettings {
+func (model *Model) newStores() *[]admin20231115014.DataLakeStoreSettings {
 	if model.Storage == nil {
 		return nil
 	}
@@ -354,9 +354,9 @@ func (model *Model) newStores() *[]admin.DataLakeStoreSettings {
 		return nil
 	}
 
-	dataLakeStores := make([]admin.DataLakeStoreSettings, len(stores))
+	dataLakeStores := make([]admin20231115014.DataLakeStoreSettings, len(stores))
 	for i := range stores {
-		dataLakeStores[i] = admin.DataLakeStoreSettings{
+		dataLakeStores[i] = admin20231115014.DataLakeStoreSettings{
 			Name:        stores[i].Name,
 			ProjectId:   stores[i].ProjectId,
 			ClusterName: stores[i].ClusterName,
@@ -369,7 +369,7 @@ func (model *Model) newStores() *[]admin.DataLakeStoreSettings {
 	return &dataLakeStores
 }
 
-func (model *Model) getDataLakeTenant(dataLakeTenant admin.DataLakeTenant) {
+func (model *Model) getDataLakeTenant(dataLakeTenant admin20231115014.DataLakeTenant) {
 	model.Storage = getDataLakeStorage(dataLakeTenant.Storage)
 	model.TenantName = dataLakeTenant.Name
 	model.ProjectId = dataLakeTenant.GroupId
@@ -387,7 +387,7 @@ func (model *Model) getDataLakeTenant(dataLakeTenant admin.DataLakeTenant) {
 	model.HostNames = dataLakeTenant.GetHostnames()
 }
 
-func getDataLakeStorage(storage *admin.DataLakeStorage) *Storage {
+func getDataLakeStorage(storage *admin20231115014.DataLakeStorage) *Storage {
 	atlasDataLakeStorage := &Storage{
 		Databases: getDataLakeDatabases(storage.GetDatabases()),
 		Stores:    getDataLakeStores(storage.GetStores()),
@@ -395,7 +395,7 @@ func getDataLakeStorage(storage *admin.DataLakeStorage) *Storage {
 	return atlasDataLakeStorage
 }
 
-func getDataLakeDatabases(dbs []admin.DataLakeDatabaseInstance) []Database {
+func getDataLakeDatabases(dbs []admin20231115014.DataLakeDatabaseInstance) []Database {
 	dataLakeDbs := make([]Database, len(dbs))
 	for i := range dbs {
 		dataLakeDbs[i] = getDataLakeDatabase(dbs[i])
@@ -403,7 +403,7 @@ func getDataLakeDatabases(dbs []admin.DataLakeDatabaseInstance) []Database {
 	return dataLakeDbs
 }
 
-func getDataLakeDatabase(db admin.DataLakeDatabaseInstance) Database {
+func getDataLakeDatabase(db admin20231115014.DataLakeDatabaseInstance) Database {
 	atlasDataLakeDatabase := Database{
 		Collections: getCollections(db.GetCollections()),
 		Name:        db.Name,
@@ -416,7 +416,7 @@ func getDataLakeDatabase(db admin.DataLakeDatabaseInstance) Database {
 	return atlasDataLakeDatabase
 }
 
-func getCollections(dbCollections []admin.DataLakeDatabaseCollection) []Collection {
+func getCollections(dbCollections []admin20231115014.DataLakeDatabaseCollection) []Collection {
 	collections := make([]Collection, len(dbCollections))
 
 	for i := range dbCollections {
@@ -428,7 +428,7 @@ func getCollections(dbCollections []admin.DataLakeDatabaseCollection) []Collecti
 	return collections
 }
 
-func getDataSources(dss []admin.DataLakeDatabaseDataSourceSettings) []DataSource {
+func getDataSources(dss []admin20231115014.DataLakeDatabaseDataSourceSettings) []DataSource {
 	dataSources := make([]DataSource, len(dss))
 
 	for i := range dss {
@@ -448,7 +448,7 @@ func getDataSources(dss []admin.DataLakeDatabaseDataSourceSettings) []DataSource
 	return dataSources
 }
 
-func getViews(dlAPIBases []admin.DataLakeApiBase) []View {
+func getViews(dlAPIBases []admin20231115014.DataLakeApiBase) []View {
 	views := make([]View, len(dlAPIBases))
 	for i := range dlAPIBases {
 		views[i] = View{
@@ -460,7 +460,7 @@ func getViews(dlAPIBases []admin.DataLakeApiBase) []View {
 	return views
 }
 
-func getDataLakeStores(storeSettings []admin.DataLakeStoreSettings) []Store {
+func getDataLakeStores(storeSettings []admin20231115014.DataLakeStoreSettings) []Store {
 	var settings []Store
 	if storeSettings == nil {
 		return settings
@@ -478,7 +478,7 @@ func getDataLakeStores(storeSettings []admin.DataLakeStoreSettings) []Store {
 	return settings
 }
 
-func getReadPreference(storeReadPreference *admin.DataLakeAtlasStoreReadPreference) *ReadPreference {
+func getReadPreference(storeReadPreference *admin20231115014.DataLakeAtlasStoreReadPreference) *ReadPreference {
 	if storeReadPreference == nil {
 		return nil
 	}
@@ -492,7 +492,7 @@ func getReadPreference(storeReadPreference *admin.DataLakeAtlasStoreReadPreferen
 	return readPreference
 }
 
-func getTagSets(readRefTagSets [][]admin.DataLakeAtlasStoreReadPreferenceTag) [][]TagSet {
+func getTagSets(readRefTagSets [][]admin20231115014.DataLakeAtlasStoreReadPreferenceTag) [][]TagSet {
 	tagSets := make([][]TagSet, len(readRefTagSets))
 	for i := range readRefTagSets {
 		tagSet := make([]TagSet, len(readRefTagSets[i]))

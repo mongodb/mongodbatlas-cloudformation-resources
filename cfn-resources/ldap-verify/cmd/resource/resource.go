@@ -24,7 +24,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -127,7 +127,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()), resp), nil
 	}
 
-	params := &admin.LDAPVerifyConnectivityJobRequestParams{
+	params := &admin20231115002.LDAPVerifyConnectivityJobRequestParams{
 		Hostname:     "-",
 		Port:         1111,
 		BindPassword: "-",
@@ -147,8 +147,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func (m *Model) GetAtlasParams() *admin.LDAPVerifyConnectivityJobRequestParams {
-	ldap := admin.LDAPVerifyConnectivityJobRequestParams{
+func (m *Model) GetAtlasParams() *admin20231115002.LDAPVerifyConnectivityJobRequestParams {
+	ldap := admin20231115002.LDAPVerifyConnectivityJobRequestParams{
 		Hostname:     *m.HostName,
 		Port:         *m.Port,
 		BindPassword: *m.BindPassword,
@@ -166,7 +166,7 @@ func (m *Model) GetAtlasParams() *admin.LDAPVerifyConnectivityJobRequestParams {
 	return &ldap
 }
 
-func (m *Model) CompleteByResponse(resp *admin.LDAPVerifyConnectivityJobRequest) {
+func (m *Model) CompleteByResponse(resp *admin20231115002.LDAPVerifyConnectivityJobRequest) {
 	m.RequestId = resp.RequestId
 
 	mapping := make([]Validation, len(resp.Validations))
@@ -216,7 +216,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, req handler.Requ
 	}
 }
 
-func getFailedMessage(configuration *admin.LDAPVerifyConnectivityJobRequest) string {
+func getFailedMessage(configuration *admin20231115002.LDAPVerifyConnectivityJobRequest) string {
 	for _, i := range configuration.Validations {
 		if *i.Status == "FAIL" {
 			return fmt.Sprintf("Validation fail: %s", *i.ValidationType)

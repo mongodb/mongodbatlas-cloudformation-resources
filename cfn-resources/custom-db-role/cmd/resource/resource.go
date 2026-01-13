@@ -19,13 +19,15 @@ import (
 	"fmt"
 	"net/http"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func setup() {
@@ -56,9 +58,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	atlasCustomDBRole := currentModel.ToCustomDBRole()
 	customDBRole, response, err := client.Atlas20231115002.CustomDatabaseRolesApi.CreateCustomDatabaseRole(context.Background(), *currentModel.ProjectId, atlasCustomDBRole).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
+		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusConflict {
 			return progress_events.GetFailedEventByCode("Resource already exists",
-				cloudformation.HandlerErrorCodeAlreadyExists), nil
+				string(types.HandlerErrorCodeAlreadyExists)), nil
 		}
 
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
@@ -115,17 +117,17 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	var actions []admin.DatabasePrivilegeAction
+	var actions []admin20231115002.DatabasePrivilegeAction
 	for _, a := range currentModel.Actions {
 		actions = append(actions, a.toAtlasAction())
 	}
 
-	var inheritedRoles []admin.DatabaseInheritedRole
+	var inheritedRoles []admin20231115002.DatabaseInheritedRole
 	for _, ir := range currentModel.InheritedRoles {
 		inheritedRoles = append(inheritedRoles, ir.toAtlasInheritedRole())
 	}
 
-	inputCustomDBRole := admin.UpdateCustomDBRole{
+	inputCustomDBRole := admin20231115002.UpdateCustomDBRole{
 		Actions:        actions,
 		InheritedRoles: inheritedRoles,
 	}
@@ -208,45 +210,45 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  mm}, nil
 }
 
-func (m *Model) ToCustomDBRole() *admin.UserCustomDBRole {
-	var actions []admin.DatabasePrivilegeAction
+func (m *Model) ToCustomDBRole() *admin20231115002.UserCustomDBRole {
+	var actions []admin20231115002.DatabasePrivilegeAction
 	for _, a := range m.Actions {
 		actions = append(actions, a.toAtlasAction())
 	}
 
-	var inheritedRoles []admin.DatabaseInheritedRole
+	var inheritedRoles []admin20231115002.DatabaseInheritedRole
 	for _, ir := range m.InheritedRoles {
 		inheritedRoles = append(inheritedRoles, ir.toAtlasInheritedRole())
 	}
 
-	return &admin.UserCustomDBRole{
+	return &admin20231115002.UserCustomDBRole{
 		Actions:        actions,
 		InheritedRoles: inheritedRoles,
 		RoleName:       *m.RoleName,
 	}
 }
 
-func (a InheritedRole) toAtlasInheritedRole() admin.DatabaseInheritedRole {
-	return admin.DatabaseInheritedRole{
+func (a InheritedRole) toAtlasInheritedRole() admin20231115002.DatabaseInheritedRole {
+	return admin20231115002.DatabaseInheritedRole{
 		Db:   *a.Db,
 		Role: *a.Role,
 	}
 }
 
-func (a Action) toAtlasAction() admin.DatabasePrivilegeAction {
-	var resources []admin.DatabasePermittedNamespaceResource
+func (a Action) toAtlasAction() admin20231115002.DatabasePrivilegeAction {
+	var resources []admin20231115002.DatabasePermittedNamespaceResource
 	for _, r := range a.Resources {
 		resources = append(resources, r.toAtlasResource())
 	}
 
-	return admin.DatabasePrivilegeAction{
+	return admin20231115002.DatabasePrivilegeAction{
 		Action:    *a.Action,
 		Resources: resources,
 	}
 }
 
-func (r Resource) toAtlasResource() admin.DatabasePermittedNamespaceResource {
-	out := admin.DatabasePermittedNamespaceResource{
+func (r Resource) toAtlasResource() admin20231115002.DatabasePermittedNamespaceResource {
+	out := admin20231115002.DatabasePermittedNamespaceResource{
 		Cluster: false,
 	}
 	if r.Collection != nil {
@@ -264,7 +266,7 @@ func (r Resource) toAtlasResource() admin.DatabasePermittedNamespaceResource {
 	return out
 }
 
-func (m *Model) completeByAtlasRole(role admin.UserCustomDBRole) {
+func (m *Model) completeByAtlasRole(role admin20231115002.UserCustomDBRole) {
 	var actions []Action
 	for _, a := range role.Actions {
 		actions = append(actions, atlasActionToModel(a))
@@ -280,7 +282,7 @@ func (m *Model) completeByAtlasRole(role admin.UserCustomDBRole) {
 	m.RoleName = &role.RoleName
 }
 
-func atlasActionToModel(action admin.DatabasePrivilegeAction) Action {
+func atlasActionToModel(action admin20231115002.DatabasePrivilegeAction) Action {
 	var resources []Resource
 	for _, r := range action.Resources {
 		resources = append(resources, atlasResourceToModel(r))
@@ -292,7 +294,7 @@ func atlasActionToModel(action admin.DatabasePrivilegeAction) Action {
 	}
 }
 
-func atlasResourceToModel(resource admin.DatabasePermittedNamespaceResource) Resource {
+func atlasResourceToModel(resource admin20231115002.DatabasePermittedNamespaceResource) Resource {
 	return Resource{
 		Collection: &resource.Collection,
 		DB:         &resource.Db,
@@ -300,7 +302,7 @@ func atlasResourceToModel(resource admin.DatabasePermittedNamespaceResource) Res
 	}
 }
 
-func atlasInheritedRoleToModel(inheritedRole admin.DatabaseInheritedRole) InheritedRole {
+func atlasInheritedRoleToModel(inheritedRole admin20231115002.DatabaseInheritedRole) InheritedRole {
 	return InheritedRole{
 		Db:   &inheritedRole.Db,
 		Role: &inheritedRole.Role,

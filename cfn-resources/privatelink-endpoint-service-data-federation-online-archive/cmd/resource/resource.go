@@ -20,14 +20,14 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	Atlas20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.EndpointID}
@@ -69,7 +69,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          AlreadyExists,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 
 	response, err := createOrUpdate(currentModel, atlas)
@@ -92,7 +92,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func createOrUpdate(currentModel *Model, client *util.MongoDBClient) (*http.Response, error) {
 	provider := constants.AWS
-	privateNetworkEndpointIDEntry := Atlas20231115014.PrivateNetworkEndpointIdEntry{
+	privateNetworkEndpointIDEntry := admin20231115014.PrivateNetworkEndpointIdEntry{
 		EndpointId: *currentModel.EndpointId,
 		Comment:    currentModel.Comment,
 		Type:       currentModel.Type,
@@ -273,7 +273,7 @@ func (model *Model) getPrivateEndpoint(client *util.MongoDBClient) (*http.Respon
 	return response, err
 }
 
-func (model *Model) readPrivateEndpoint(pe *Atlas20231115014.PrivateNetworkEndpointIdEntry) *Model {
+func (model *Model) readPrivateEndpoint(pe *admin20231115014.PrivateNetworkEndpointIdEntry) *Model {
 	if pe == nil {
 		return model
 	}
@@ -288,7 +288,7 @@ func handleError(response *http.Response, err error) (handler.ProgressEvent, err
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 	return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error during execution : %s", err.Error()), response), nil
 }

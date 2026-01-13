@@ -20,9 +20,12 @@ import (
 	"net/http"
 	"sort"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -30,8 +33,6 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Description, constants.AwsSecretName}
@@ -67,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	apiKeyInput := admin.CreateAtlasOrganizationApiKey{
+	apiKeyInput := admin20231115014.CreateAtlasOrganizationApiKey{
 		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
 	}
@@ -159,7 +160,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	apiKeyInput := admin.UpdateAtlasOrganizationApiKey{
+	apiKeyInput := admin20231115014.UpdateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
 		Roles: &currentModel.Roles,
 	}
@@ -285,13 +286,13 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 	if response.StatusCode == http.StatusBadRequest {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
@@ -304,7 +305,7 @@ func assignProjects(client *util.MongoDBClient, project ProjectAssignment, apiUs
 	return handler.ProgressEvent{}, err
 }
 
-func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentModel *Model) (*admin.ApiKeyUserDetails, *string, *http.Response, error) {
+func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentModel *Model) (*admin20231115014.ApiKeyUserDetails, *string, *http.Response, error) {
 	apiKeyRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.GetApiKey(
 		context.Background(),
 		*currentModel.OrgId,
@@ -319,8 +320,8 @@ func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentM
 	return apiKeyUserDetails, arn, response, err
 }
 
-func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (*admin.ApiKeyUserDetails, *http.Response, error) {
-	projectAPIKeyInput := admin.UpdateAtlasProjectApiKey{
+func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (*admin20231115014.ApiKeyUserDetails, *http.Response, error) {
+	projectAPIKeyInput := admin20231115014.UpdateAtlasProjectApiKey{
 		Roles: &projectAssignment.Roles,
 	}
 	assignAPIRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
@@ -446,7 +447,7 @@ func areStringArraysEqualIgnoreOrder(arr1, arr2 []string) bool {
 	return true
 }
 
-func (model *Model) readAPIKeyDetails(apikey admin.ApiKeyUserDetails) Model {
+func (model *Model) readAPIKeyDetails(apikey admin20231115014.ApiKeyUserDetails) Model {
 	model.APIUserId = apikey.Id
 	model.Description = apikey.Desc
 	model.PublicKey = apikey.PublicKey

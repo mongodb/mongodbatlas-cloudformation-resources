@@ -21,7 +21,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	resource_constats "github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpoint"
@@ -30,7 +30,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -216,7 +216,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if privateEndpointResponse == nil {
 		return progressevent.GetFailedEventByCode("Error deleting resource, private Endpoint Response is null",
-			cloudformation.HandlerErrorCodeNotFound), nil
+			string(types.HandlerErrorCodeNotFound)), nil
 	}
 
 	privateEndpoint := *privateEndpointResponse
@@ -301,11 +301,11 @@ func isDeleting(req handler.Request) bool {
 	return callbackValue == "DELETING"
 }
 
-func hasInterfaceEndpoints(p admin.EndpointService) bool {
+func hasInterfaceEndpoints(p admin20231115002.EndpointService) bool {
 	return len(p.InterfaceEndpoints) != 0
 }
 
-func (m *Model) completeByConnection(c *admin.EndpointService) {
+func (m *Model) completeByConnection(c *admin20231115002.EndpointService) {
 	m.Id = c.Id
 	m.EndpointServiceName = c.EndpointServiceName
 	m.ErrorMessage = c.ErrorMessage
@@ -323,7 +323,7 @@ func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *hand
 	eventStatus, err := resource_constats.ParseEventStatus(fmt.Sprintf("%v", callback))
 	if err != nil {
 		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error parsing callback status : %s", err.Error()),
-			cloudformation.HandlerErrorCodeServiceInternalError)
+			string(types.HandlerErrorCodeServiceInternalError))
 		return "", &pe
 	}
 

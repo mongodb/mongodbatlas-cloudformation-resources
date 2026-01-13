@@ -21,14 +21,14 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 func setup() {
@@ -118,7 +118,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	updateRequest := &admin.StreamsDataProcessRegion{
+	updateRequest := &admin20231115014.StreamsDataProcessRegion{
 		CloudProvider: *currentModel.DataProcessRegion.CloudProvider,
 		Region:        *currentModel.DataProcessRegion.Region,
 	}
@@ -195,9 +195,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func getAllStreamInstances(ctx context.Context, conn *admin.APIClient, projectID string) ([]admin.StreamsTenant, *http.Response, error) {
+func getAllStreamInstances(ctx context.Context, conn *admin20231115014.APIClient, projectID string) ([]admin20231115014.StreamsTenant, *http.Response, error) {
 	pageNum := 1
-	accumulatedStreamInstances := make([]admin.StreamsTenant, 0)
+	accumulatedStreamInstances := make([]admin20231115014.StreamsTenant, 0)
 	for allStreamInstancesRetrieved := false; !allStreamInstancesRetrieved; {
 		listStreamInstancesRequest := conn.StreamsApi.ListStreamInstances(ctx, projectID)
 		listStreamInstancesRequest.PageNum(pageNum)
@@ -220,7 +220,7 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 	return progressevent.GetFailedEventByResponse(errMsg, response), nil
 }

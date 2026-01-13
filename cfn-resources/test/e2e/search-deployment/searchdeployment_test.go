@@ -21,12 +21,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 type localTestContext struct {
 	cfnClient    *cloudformation.Client
-	atlasClient  *admin.APIClient
+	atlasClient  *admin20231115014.APIClient
 	resourceCtx  utility.ResourceContext
 	template     string
 	templateData testData
@@ -91,7 +91,7 @@ func setupSuite(t *testing.T) *localTestContext {
 func (c *localTestContext) setUp(t *testing.T) {
 	t.Helper()
 	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory)
-	c.cfnClient, c.atlasClient = utility.NewClients(t)
+	c.cfnClient, c.atlasClient = utility.NewClients20231115014(t)
 	utility.PublishToPrivateRegistry(t, c.resourceCtx)
 	c.setupPrerequisites(t)
 }

@@ -28,14 +28,12 @@ import (
 
 	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-	"go.mongodb.org/atlas-sdk/v20250312005/admin"
+	"go.mongodb.org/atlas-sdk/v20250312010/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb-forks/digest"
 	"github.com/mongodb-labs/go-client-mongodb-atlas-app-services/appservices"
 	appServicesAuth "github.com/mongodb-labs/go-client-mongodb-atlas-app-services/auth"
@@ -140,7 +138,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
 	}
 
 	// setup a transport to handle digest
@@ -152,7 +150,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
 	c := Config{BaseURL: prof.BaseURL, DebugClient: prof.UseDebug()}
@@ -163,7 +161,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
 	// new V2 version 20231115014 instance
@@ -172,7 +170,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
 	// latest V2 instance
@@ -181,7 +179,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
 	clients := &MongoDBClient{
@@ -281,34 +279,8 @@ func ToStringMapE(ep any) (map[string]any, error) {
 	return eMap, nil
 }
 
-func CreateSSManagerClient(curSession *session.Session) (*ssm.SSM, error) {
-	ssmCli := ssm.New(curSession)
-	return ssmCli, nil
-}
-
-func Get(keyID, prefix string, curSession *session.Session) string {
-	ssmClient, err := CreateSSManagerClient(curSession)
-	if err != nil {
-		return ""
-	}
-	parameterName := buildKey(keyID, prefix)
-	decrypt := true
-	getParamOutput, err := ssmClient.GetParameter(&ssm.GetParameterInput{Name: &parameterName, WithDecryption: &decrypt})
-	if err != nil {
-		return ""
-	}
-
-	return *getParamOutput.Parameter.Value
-}
-
 func Pointer[T any](x T) *T {
 	return &x
-}
-
-func buildKey(keyID, storePrefix string) string {
-	// this is strictly coupled with permissions for handlers, changing this means changing permissions in handler
-	// moreover changing this might cause pollution in parameter store -  be sure you know what you are doing
-	return fmt.Sprintf("%s-%s", storePrefix, keyID)
 }
 
 // Contains checks if a string is present in a slice

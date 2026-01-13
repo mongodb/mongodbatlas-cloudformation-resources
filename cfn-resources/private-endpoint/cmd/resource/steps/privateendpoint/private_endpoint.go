@@ -22,11 +22,11 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -137,7 +137,7 @@ func getMapFromCallBackContext(callBackContext privateEndpointCreationCallBackCo
 
 func Create(client *util.MongoDBClient, groupID string, privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string) handler.ProgressEvent {
 	for _, endpoint := range privateEndpointInput {
-		interfaceEndpointRequest := &admin.CreateEndpointRequest{
+		interfaceEndpointRequest := &admin20231115002.CreateEndpointRequest{
 			Id: &endpoint.InterfaceEndpointID,
 		}
 
@@ -160,7 +160,7 @@ func Create(client *util.MongoDBClient, groupID string, privateEndpointInput []A
 	callBackMap, err := GetCallback(privateEndpointInput, endpointServiceID, constants.CreatingPrivateEndpoint)
 	if err != nil {
 		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest)
+			string(types.HandlerErrorCodeInvalidRequest))
 	}
 
 	return progressevent.GetInProgressProgressEvent("Adding private endpoint", callBackMap, nil, 20)
@@ -171,7 +171,7 @@ func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req 
 
 	err := callBackContext.FillStruct(req.CallbackContext)
 	if err != nil {
-		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error parsing PrivateEndpointCallBackContext : %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
+		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error parsing PrivateEndpointCallBackContext : %s", err.Error()), string(types.HandlerErrorCodeServiceInternalError))
 		return nil, &pe
 	}
 
@@ -199,7 +199,7 @@ func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req 
 				continue
 			default:
 				pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Resource is in status : %s", *privateEndpointResponse.Status),
-					cloudformation.HandlerErrorCodeInternalFailure)
+					string(types.HandlerErrorCodeInternalFailure))
 				return nil, &pe
 			}
 		}

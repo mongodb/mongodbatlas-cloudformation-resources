@@ -24,7 +24,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -53,7 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	params := &admin.DiskBackupSnapshotAWSExportBucket{
+	params := &admin20231115002.DiskBackupSnapshotAWSExportBucket{
 		BucketName:    currentModel.BucketName,
 		CloudProvider: aws.String(constants.AWS),
 		IamRoleId:     currentModel.IamRoleID,
@@ -160,7 +160,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func (m *Model) updateModel(bucket *admin.DiskBackupSnapshotAWSExportBucket) {
+func (m *Model) updateModel(bucket *admin20231115002.DiskBackupSnapshotAWSExportBucket) {
 	m.BucketName = bucket.BucketName
 	m.IamRoleID = bucket.IamRoleId
 	m.Id = bucket.Id

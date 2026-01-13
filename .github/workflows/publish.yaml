@@ -39,21 +39,21 @@ jobs:
     name: publish-${{ matrix.region }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
-      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+      - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a
+      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PUBLISHING }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING }}
           aws-region: ${{ matrix.region }}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -67,7 +67,7 @@ jobs:
         run: |
           cd cfn-resources
           ./cfn-publish.sh "${{ github.event.inputs.resourceName }}"
-          echo "published_version=$(cat published_version.txt)" >> "$GITHUB_OUTPUT"
+          echo "published_version=$(cat ${{ github.event.inputs.resourceName }}/published_version.txt)" >> "$GITHUB_OUTPUT"
         env:
           RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
           MCLI_OPS_MANAGER_URL: ${{ env.MONGODB_ATLAS_BASE_URL }}
@@ -107,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: terraform-provider-mongodbatlas-checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           repository: mongodb/terraform-provider-mongodbatlas
           ref: master
@@ -125,7 +125,7 @@ jobs:
           file_to_commit: 'cfn-resources/${{ github.event.inputs.resourceName }}/compliance/v*/*'
           commit_message:
             "chore: Update SSDLC report for ${{ needs.publish.outputs.published_version }}"
-          repo-path: "cfn-resources/"
+          go-mod-path: "cfn-resources/go.mod"
         env:
           KONDUKTO_TOKEN: ${{ secrets.KONDUKTO_TOKEN }}
           SILKBOMB_IMG: ${{ vars.SILKBOMB_IMG }}

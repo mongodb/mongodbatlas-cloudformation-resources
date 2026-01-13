@@ -21,16 +21,17 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 func setup() {
@@ -114,7 +115,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}}, nil
 	}
 
-	endpointRequest := admin.CreateEndpointRequest{
+	endpointRequest := admin20231115014.CreateEndpointRequest{
 		Id: currentModel.Id,
 	}
 
@@ -125,9 +126,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	defer response.Body.Close()
 	if err != nil {
 		if response.StatusCode == http.StatusConflict {
-			return progress_events.GetFailedEventByCode(fmt.Sprintf("error creating Serverless Private Endpoint %s",
-					err.Error()), cloudformation.HandlerErrorCodeAlreadyExists),
-				nil
+			return progress_events.GetFailedEventByCode(
+				fmt.Sprintf("error creating Serverless Private Endpoint %s", err.Error()),
+				string(types.HandlerErrorCodeAlreadyExists),
+			), nil
 		}
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
 				err.Error()), response),
@@ -144,7 +146,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}}, nil
 }
 
-func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
+func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin20231115014.PrivateLinkEndpoint, *http.Response, error) {
 	privateEndpointRequest := client.Atlas20231115014.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
 		CloudProvider, *model.Id, *model.EndpointServiceId)
 	privateEndpoint, response, err := privateEndpointRequest.Execute()
@@ -182,7 +184,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func (m *Model) completeByAtlasModel(privateEndpoint admin.PrivateLinkEndpoint) {
+func (m *Model) completeByAtlasModel(privateEndpoint admin20231115014.PrivateLinkEndpoint) {
 	m.ErrorMessage = privateEndpoint.ErrorMessage
 	m.ConnectionStatus = privateEndpoint.ConnectionStatus
 }

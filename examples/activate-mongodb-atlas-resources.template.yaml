@@ -92,14 +92,6 @@ Resources:
       TypeName: MongoDB::Atlas::CustomDnsConfigurationClusterAws
       ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
     DependsOn: "ActivateCustomDBRoleType"
-  ActivateDataLakesType:
-    Type: AWS::CloudFormation::TypeActivation
-    Properties:
-      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-DataLakes' ] ]
-      Type: RESOURCE
-      TypeName: MongoDB::Atlas::DataLakes
-      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-    DependsOn: "ActivateCustomDnsConfigurationClusterAwsType"
   ActivateEncryptionAtRestType:
     Type: AWS::CloudFormation::TypeActivation
     Properties:
@@ -107,7 +99,7 @@ Resources:
       Type: RESOURCE
       TypeName: MongoDB::Atlas::EncryptionAtRest
       ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-    DependsOn: "ActivateDataLakesType"
+    DependsOn: "ActivateCustomDnsConfigurationClusterAwsType"
   ActivateFederatedSettingsOrgRoleMappingType:
     Type: AWS::CloudFormation::TypeActivation
     Properties:
@@ -172,14 +164,6 @@ Resources:
       TypeName: MongoDB::Atlas::PrivateEndPointRegionalMode
       ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
     DependsOn: "ActivateOrgInvitationType"
-  ActivatePrivateEndpointADLType:
-    Type: AWS::CloudFormation::TypeActivation
-    Properties:
-      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-PrivateEndpointADL' ] ]
-      Type: RESOURCE
-      TypeName: MongoDB::Atlas::PrivateEndpointADL
-      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-    DependsOn: "ActivatePrivateEndPointRegionalModeType"
   ActivateProjectInvitationType:
     Type: AWS::CloudFormation::TypeActivation
     Properties:
@@ -187,7 +171,7 @@ Resources:
       Type: RESOURCE
       TypeName: MongoDB::Atlas::ProjectInvitation
       ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-    DependsOn: "ActivatePrivateEndpointADLType"
+    DependsOn: "ActivatePrivateEndPointRegionalModeType"
   ActivateSearchIndexType:
     Type: AWS::CloudFormation::TypeActivation
     Properties:
@@ -324,14 +308,6 @@ Resources:
       TypeName: MongoDB::Atlas::ClusterOutageSimulation
       ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
     DependsOn: "ActivateCloudBackupSchedule"
-  ActivateDataLakePipeline:
-    Type: AWS::CloudFormation::TypeActivation
-    Properties:
-      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-DataLakePipeline' ] ]
-      Type: RESOURCE
-      TypeName: MongoDB::Atlas::DataLakePipeline
-      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-    DependsOn: "ActivateClusterOutageSimulation"
   ActivateFederatedDatabaseInstance:
     Type: AWS::CloudFormation::TypeActivation
     Properties:
@@ -339,7 +315,7 @@ Resources:
       Type: RESOURCE
       TypeName: MongoDB::Atlas::FederatedDatabaseInstance
       ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-    DependsOn: "ActivateDataLakePipeline"
+    DependsOn: "ActivateClusterOutageSimulation"
   ActivateFederatedQueryLimit:
     Type: AWS::CloudFormation::TypeActivation
     Properties:

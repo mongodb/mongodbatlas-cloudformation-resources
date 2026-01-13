@@ -15,12 +15,12 @@
 package resource
 
 import (
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel *Model) *Model {
+func GetStreamConnectionModel(streamsConn *admin20231115014.StreamsConnection, currentModel *Model) *Model {
 	model := new(Model)
 
 	if currentModel != nil {
@@ -45,7 +45,7 @@ func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 	return model
 }
 
-func NewModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
+func NewModelDBRoleToExecute(dbRole *admin20231115014.DBRoleToExecute) *DBRoleToExecute {
 	if dbRole == nil {
 		return nil
 	}
@@ -56,7 +56,7 @@ func NewModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
 	}
 }
 
-func NewModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
+func NewModelAuthentication(authentication *admin20231115014.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
 	if authentication == nil {
 		return nil
 	}
@@ -68,7 +68,7 @@ func NewModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *S
 	}
 }
 
-func NewModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurity {
+func NewModelSecurity(security *admin20231115014.StreamsKafkaSecurity) *StreamsKafkaSecurity {
 	if security == nil {
 		return nil
 	}
@@ -79,8 +79,8 @@ func NewModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurit
 	}
 }
 
-func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
-	streamConnReq := admin.StreamsConnection{
+func newStreamConnectionReq(model *Model) *admin20231115014.StreamsConnection {
+	streamConnReq := admin20231115014.StreamsConnection{
 		Name: model.ConnectionName,
 		Type: model.Type,
 	}
@@ -103,34 +103,34 @@ func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
 	return &streamConnReq
 }
 
-func NewDBRoleToExecute(dbRoleToExecuteModel *DBRoleToExecute) *admin.DBRoleToExecute {
+func NewDBRoleToExecute(dbRoleToExecuteModel *DBRoleToExecute) *admin20231115014.DBRoleToExecute {
 	if dbRoleToExecuteModel == nil {
 		return nil
 	}
 
-	return &admin.DBRoleToExecute{
+	return &admin20231115014.DBRoleToExecute{
 		Role: dbRoleToExecuteModel.Role,
 		Type: dbRoleToExecuteModel.Type,
 	}
 }
 
-func newStreamsKafkaSecurity(securityModel *StreamsKafkaSecurity) *admin.StreamsKafkaSecurity {
+func newStreamsKafkaSecurity(securityModel *StreamsKafkaSecurity) *admin20231115014.StreamsKafkaSecurity {
 	if securityModel == nil {
 		return nil
 	}
 
-	return &admin.StreamsKafkaSecurity{
+	return &admin20231115014.StreamsKafkaSecurity{
 		BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
 		Protocol:                securityModel.Protocol,
 	}
 }
 
-func newStreamsKafkaAuthentication(authenticationModel *StreamsKafkaAuthentication) *admin.StreamsKafkaAuthentication {
+func newStreamsKafkaAuthentication(authenticationModel *StreamsKafkaAuthentication) *admin20231115014.StreamsKafkaAuthentication {
 	if authenticationModel == nil {
 		return nil
 	}
 
-	return &admin.StreamsKafkaAuthentication{
+	return &admin20231115014.StreamsKafkaAuthentication{
 		Mechanism: authenticationModel.Mechanism,
 		Password:  authenticationModel.Password,
 		Username:  authenticationModel.Username,

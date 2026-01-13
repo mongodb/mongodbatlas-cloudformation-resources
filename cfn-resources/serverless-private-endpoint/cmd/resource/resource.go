@@ -22,8 +22,8 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/serverless-private-endpoint/cmd/resource/enums"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -31,7 +31,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.InstanceName}
@@ -149,7 +149,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	defer response.Body.Close()
 	if err != nil {
 		if isTenantPrivateEndpointNotFound(response) {
-			return progressevents.GetFailedEventByCode(fmt.Sprintf("error getting Serverless Private Endpoint %s", err.Error()), cloudformation.HandlerErrorCodeNotFound), nil
+			return progressevents.GetFailedEventByCode(fmt.Sprintf("error getting Serverless Private Endpoint %s", err.Error()), string(types.HandlerErrorCodeNotFound)), nil
 		}
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("error getting Serverless Private Endpoint %s",
 			err.Error()), response), nil
@@ -157,7 +157,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	if serverlessPrivateEndpoint == nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error while trying to make api call, CreateServerlessPrivateEndpoint returned status %d, and the response is NULL", response.StatusCode),
-			cloudformation.HandlerErrorCodeInternalFailure), nil
+			string(types.HandlerErrorCodeInternalFailure)), nil
 	}
 
 	currentModel.completeWithAtlasModel(*serverlessPrivateEndpoint)
@@ -193,7 +193,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateCompletion(req, currentModel, client, enums.Available, constants.UPDATE), nil
 	}
 
-	serverlessPrivateEndpointInput := admin.ServerlessTenantEndpointUpdate{
+	serverlessPrivateEndpointInput := admin20231115014.ServerlessTenantEndpointUpdate{
 		Comment:                  currentModel.Comment,
 		ProviderName:             *currentModel.ProviderName,
 		CloudProviderEndpointId:  currentModel.CloudProviderEndpointId,
@@ -206,7 +206,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	defer response.Body.Close()
 	if err != nil {
 		if isTenantPrivateEndpointNotFound(response) {
-			return progressevents.GetFailedEventByCode(fmt.Sprintf("error updating Serverless Private Endpoint %s", err.Error()), cloudformation.HandlerErrorCodeNotFound), nil
+			return progressevents.GetFailedEventByCode(fmt.Sprintf("error updating Serverless Private Endpoint %s", err.Error()), string(types.HandlerErrorCodeNotFound)), nil
 		}
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("error updating Serverless Private Endpoint %s",
 			err.Error()), response), nil
@@ -214,7 +214,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if serverlessPrivateEndpoint == nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error while trying to make api call, CreateServerlessPrivateEndpoint returned status %d, and the response is NULL", response.StatusCode),
-			cloudformation.HandlerErrorCodeInternalFailure), nil
+			string(types.HandlerErrorCodeInternalFailure)), nil
 	}
 	currentModel.completeWithAtlasModel(*serverlessPrivateEndpoint)
 
@@ -255,7 +255,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	createAndAssignAWSPrivateEndpoint, region := unmarshallAwsMetadata(*currentModel.AwsPrivateEndpointMetaData)
 	if !isRequestInProgress(req) && createAndAssignAWSPrivateEndpoint {
 		if region == nil {
-			return progressevents.GetFailedEventByCode("Error deleting aws private Endpoint region is null", cloudformation.HandlerErrorCodeServiceInternalError), nil
+			return progressevents.GetFailedEventByCode("Error deleting aws private Endpoint region is null", string(types.HandlerErrorCodeServiceInternalError)), nil
 		}
 		errPe := deleteAwsPrivateEndpoint(currentModel, *region, client, req)
 		if errPe != nil {
@@ -275,7 +275,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 					Message:         fmt.Sprintf("%s Completed", string(constants.DELETE)),
 				}, nil
 			}
-			return progressevents.GetFailedEventByCode(fmt.Sprintf("error deleting Serverless Private Endpoint %s", err.Error()), cloudformation.HandlerErrorCodeNotFound), nil
+			return progressevents.GetFailedEventByCode(fmt.Sprintf("error deleting Serverless Private Endpoint %s", err.Error()), string(types.HandlerErrorCodeNotFound)), nil
 		}
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("error deleting Serverless Private Endpoint %s", err.Error()), response), nil
 	}
@@ -338,7 +338,7 @@ func deleteAwsPrivateEndpoint(currentModel *Model, region string, client *util.M
 	defer response.Body.Close()
 	if err != nil {
 		if isTenantPrivateEndpointNotFound(response) {
-			pe := progressevents.GetFailedEventByCode(fmt.Sprintf("error getting Serverless Private Endpoint %s", err.Error()), cloudformation.HandlerErrorCodeNotFound)
+			pe := progressevents.GetFailedEventByCode(fmt.Sprintf("error getting Serverless Private Endpoint %s", err.Error()), string(types.HandlerErrorCodeNotFound))
 			return &pe
 		}
 		pe := progressevents.GetFailedEventByResponse(fmt.Sprintf("error getting Serverless Private Endpoint %s",
@@ -359,8 +359,8 @@ func deleteAwsPrivateEndpoint(currentModel *Model, region string, client *util.M
 	return nil
 }
 
-func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient) (*admin.ServerlessTenantEndpoint, *handler.ProgressEvent) {
-	serverlessPrivateEndpointInput := admin.ServerlessTenantCreateRequest{Comment: currentModel.Comment}
+func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient) (*admin20231115014.ServerlessTenantEndpoint, *handler.ProgressEvent) {
+	serverlessPrivateEndpointInput := admin20231115014.ServerlessTenantCreateRequest{Comment: currentModel.Comment}
 
 	createServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.CreateServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, &serverlessPrivateEndpointInput)
@@ -376,7 +376,7 @@ func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient)
 		errPe := progressevents.GetFailedEventByCode(
 			fmt.Sprintf("Error while trying to make api call, CreateServerlessPrivateEndpoint returned status %d, and the response is NULL",
 				response.StatusCode),
-			cloudformation.HandlerErrorCodeInternalFailure)
+			string(types.HandlerErrorCodeInternalFailure))
 		return nil, &errPe
 	}
 
@@ -384,7 +384,7 @@ func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient)
 }
 
 func assignAwsPrivateEndpoint(req handler.Request, client *util.MongoDBClient, awsPrivateEndpoint aws_utils.PrivateEndpointOutput, currentModel *Model) handler.ProgressEvent {
-	serverlessPrivateEndpointInput := admin.ServerlessTenantEndpointUpdate{
+	serverlessPrivateEndpointInput := admin20231115014.ServerlessTenantEndpointUpdate{
 		Comment:                 currentModel.Comment,
 		ProviderName:            *currentModel.ProviderName,
 		CloudProviderEndpointId: &awsPrivateEndpoint.InterfaceEndpointID,
@@ -397,7 +397,7 @@ func assignAwsPrivateEndpoint(req handler.Request, client *util.MongoDBClient, a
 
 	if err != nil {
 		if isTenantPrivateEndpointNotFound(response) {
-			return progressevents.GetFailedEventByCode(fmt.Sprintf("error updating Serverless Private Endpoint %s", err.Error()), cloudformation.HandlerErrorCodeNotFound)
+			return progressevents.GetFailedEventByCode(fmt.Sprintf("error updating Serverless Private Endpoint %s", err.Error()), string(types.HandlerErrorCodeNotFound))
 		}
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("error updating Serverless Private Endpoint %s",
 			err.Error()), response)
@@ -405,7 +405,7 @@ func assignAwsPrivateEndpoint(req handler.Request, client *util.MongoDBClient, a
 
 	if serverlessPrivateEndpoint == nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error while trying to make api call, CreateServerlessPrivateEndpoint returned status %d, and the response is NULL", response.StatusCode),
-			cloudformation.HandlerErrorCodeInternalFailure)
+			string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	callbackContext := req.CallbackContext
@@ -429,7 +429,7 @@ func isTenantPrivateEndpointNotFound(response *http.Response) bool {
 	return errResponse.ErrorCode == "TENANT_PRIVATE_ENDPOINT_NOT_FOUND"
 }
 
-func ConvertListToModelList(endpoints []admin.ServerlessTenantEndpoint, profileName, projectID, instanceName *string) []interface{} {
+func ConvertListToModelList(endpoints []admin20231115014.ServerlessTenantEndpoint, profileName, projectID, instanceName *string) []interface{} {
 	models := make([]interface{}, 0)
 
 	for _, endpoint := range endpoints {
@@ -467,12 +467,12 @@ func validateCompletion(req handler.Request, currentModel *Model, client *util.M
 	if serverlessPrivateEndpoint == nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("%s: Error while trying to make api call, CreateServerlessPrivateEndpoint returned status %d, and the response is NULL",
 			string(cfnFunction), response.StatusCode),
-			cloudformation.HandlerErrorCodeInternalFailure)
+			string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	if serverlessPrivateEndpoint.Status == nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("%s: Error while trying to get Serverless Private Endpoint, Private endpoint AtlasPrivateEndpointStatus is null", string(cfnFunction)),
-			cloudformation.HandlerErrorCodeServiceInternalError)
+			string(types.HandlerErrorCodeServiceInternalError))
 	}
 
 	switch *serverlessPrivateEndpoint.Status {
@@ -484,7 +484,7 @@ func validateCompletion(req handler.Request, currentModel *Model, client *util.M
 			ResourceModel:   currentModel}
 	case string(enums.Failed):
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("%s : the serverless private endpoint is in a Failed AtlasPrivateEndpointStatus, error: %s", string(cfnFunction),
-			*serverlessPrivateEndpoint.ErrorMessage), cloudformation.HandlerErrorCodeServiceInternalError)
+			*serverlessPrivateEndpoint.ErrorMessage), string(types.HandlerErrorCodeServiceInternalError))
 	default:
 		return progressevents.GetInProgressProgressEvent(fmt.Sprintf("%s in progress", string(cfnFunction)),
 			getCallbackContext(privateEndpointID, serverlessPrivateEndpoint.EndpointServiceName), currentModel, callbackDelayInSeconds)
@@ -502,7 +502,7 @@ func getCallbackContext(privateEndpointID string, serviceName *string) map[strin
 	return callbackContext
 }
 
-func (currentModel *Model) completeWithAtlasModel(atlasModel admin.ServerlessTenantEndpoint) {
+func (currentModel *Model) completeWithAtlasModel(atlasModel admin20231115014.ServerlessTenantEndpoint) {
 	currentModel.Id = atlasModel.Id
 	currentModel.Status = atlasModel.Status
 	currentModel.ProviderName = atlasModel.ProviderName
@@ -521,22 +521,22 @@ func (currentModel *Model) validateAwsPrivateEndpointProperties() *handler.Progr
 		if currentModel.AwsPrivateEndpointConfigurationProperties == nil {
 			pe := progressevents.GetFailedEventByCode(
 				"Validation failed: AwsPrivateEndpointConfigurationProperties must be present when CreateAndAssignAWSPrivateEndpoint is true",
-				cloudformation.HandlerErrorCodeInvalidRequest)
+				string(types.HandlerErrorCodeInvalidRequest))
 			return &pe
 		}
 
 		if currentModel.AwsPrivateEndpointConfigurationProperties.VpcId == nil {
-			pe := progressevents.GetFailedEventByCode("Validation failed: VpcId must be present when CreateAndAssignAWSPrivateEndpoint is true", cloudformation.HandlerErrorCodeInvalidRequest)
+			pe := progressevents.GetFailedEventByCode("Validation failed: VpcId must be present when CreateAndAssignAWSPrivateEndpoint is true", string(types.HandlerErrorCodeInvalidRequest))
 			return &pe
 		}
 
 		if currentModel.AwsPrivateEndpointConfigurationProperties.Region == nil {
-			pe := progressevents.GetFailedEventByCode("Validation failed: REgion must be present when CreateAndAssignAWSPrivateEndpoint is true", cloudformation.HandlerErrorCodeInvalidRequest)
+			pe := progressevents.GetFailedEventByCode("Validation failed: Region must be present when CreateAndAssignAWSPrivateEndpoint is true", string(types.HandlerErrorCodeInvalidRequest))
 			return &pe
 		}
 
 		if len(currentModel.AwsPrivateEndpointConfigurationProperties.SubnetIds) == 0 {
-			pe := progressevents.GetFailedEventByCode("Validation failed: SubnetIds must be present when CreateAndAssignAWSPrivateEndpoint is true", cloudformation.HandlerErrorCodeInvalidRequest)
+			pe := progressevents.GetFailedEventByCode("Validation failed: SubnetIds must be present when CreateAndAssignAWSPrivateEndpoint is true", string(types.HandlerErrorCodeInvalidRequest))
 			return &pe
 		}
 	}
@@ -554,7 +554,7 @@ func getProcessStatus(req handler.Request) (enums.EventStatus, *handler.Progress
 
 	if err != nil {
 		pe := progressevents.GetFailedEventByCode(fmt.Sprintf("Error parsing callback status : %s", err.Error()),
-			cloudformation.HandlerErrorCodeServiceInternalError)
+			string(types.HandlerErrorCodeServiceInternalError))
 		return "", &pe
 	}
 

@@ -19,15 +19,15 @@ import (
 	"errors"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -53,7 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	maintenanceWindow, _ := get(client, *currentModel)
 	if maintenanceWindow != nil {
-		return progress_events.GetFailedEventByCode("resource already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
+		return progress_events.GetFailedEventByCode("resource already exists", string(types.HandlerErrorCodeAlreadyExists)), nil
 	}
 
 	atlasModel := currentModel.toAtlasModel()
@@ -169,8 +169,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func (m Model) toAtlasModel() admin.GroupMaintenanceWindow {
-	return admin.GroupMaintenanceWindow{
+func (m Model) toAtlasModel() admin20231115002.GroupMaintenanceWindow {
+	return admin20231115002.GroupMaintenanceWindow{
 		DayOfWeek:            *m.DayOfWeek,
 		HourOfDay:            *m.HourOfDay,
 		StartASAP:            m.StartASAP,
@@ -178,7 +178,7 @@ func (m Model) toAtlasModel() admin.GroupMaintenanceWindow {
 	}
 }
 
-func get(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanceWindow, *handler.ProgressEvent) {
+func get(client *util.MongoDBClient, currentModel Model) (*admin20231115002.GroupMaintenanceWindow, *handler.ProgressEvent) {
 	maintenanceWindow, resp, err := client.Atlas20231115002.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
@@ -188,13 +188,13 @@ func get(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanc
 
 	if isResponseEmpty(maintenanceWindow) {
 		_, _ = logger.Warnf("Read - resource is empty: %+v", err)
-		ev := progress_events.GetFailedEventByCode("resource not found", cloudformation.HandlerErrorCodeNotFound)
+		ev := progress_events.GetFailedEventByCode("resource not found", string(types.HandlerErrorCodeNotFound))
 		return nil, &ev
 	}
 
 	return maintenanceWindow, nil
 }
 
-func isResponseEmpty(maintenanceWindow *admin.GroupMaintenanceWindow) bool {
+func isResponseEmpty(maintenanceWindow *admin20231115002.GroupMaintenanceWindow) bool {
 	return maintenanceWindow != nil && maintenanceWindow.DayOfWeek == 0
 }

@@ -24,7 +24,7 @@ See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/
 CloudFormation import is supported for MongoDB Atlas resources. This allows you to bring existing resources under CloudFormation management. For more details, please see [Resource Import Operations](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/README.md#resource-import-operations) section.
 
 ## Support, Bugs, Feature Requests
-Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) - just select "Atlas CloudFormation Resources" as the category or vote for an already suggested feature.
+Feature requests can be submitted at the [MongoDB feedback portal](https://feedback.mongodb.com/ideas?category=7548141186718564699) - select Atlas -> infra-as-code as the category or vote for an already suggested feature.
 
 Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions via the [Support Portal](https://support.mongodb.com/). Support questions submitted under the Issues section of this repo are monitored but have no SLA and are best effort. Bugs should be filed under the Issues section of this repo.
 

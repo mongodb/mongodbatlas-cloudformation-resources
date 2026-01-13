@@ -20,11 +20,11 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 // make test deterministic
-func sortResourceTags(tags []admin.ResourceTag) []admin.ResourceTag {
+func sortResourceTags(tags []admin20231115014.ResourceTag) []admin20231115014.ResourceTag {
 	sort.Slice(tags, func(i, j int) bool {
 		return tags[i].Key < tags[j].Key
 	})
@@ -34,11 +34,11 @@ func sortResourceTags(tags []admin.ResourceTag) []admin.ResourceTag {
 func TestNewResourceTags(t *testing.T) {
 	testCases := map[string]struct {
 		input  map[string]string
-		output []admin.ResourceTag
+		output []admin20231115014.ResourceTag
 	}{
-		"empty":    {map[string]string{}, []admin.ResourceTag{}},
-		"single":   {map[string]string{"key": "value"}, []admin.ResourceTag{*admin.NewResourceTag("key", "value")}},
-		"multiple": {map[string]string{"k1": "v1", "k2": "v2"}, []admin.ResourceTag{*admin.NewResourceTag("k1", "v1"), *admin.NewResourceTag("k2", "v2")}},
+		"empty":    {map[string]string{}, []admin20231115014.ResourceTag{}},
+		"single":   {map[string]string{"key": "value"}, []admin20231115014.ResourceTag{*admin20231115014.NewResourceTag("key", "value")}},
+		"multiple": {map[string]string{"k1": "v1", "k2": "v2"}, []admin20231115014.ResourceTag{*admin20231115014.NewResourceTag("k1", "v1"), *admin20231115014.NewResourceTag("k2", "v2")}},
 	}
 
 	for name, tc := range testCases {

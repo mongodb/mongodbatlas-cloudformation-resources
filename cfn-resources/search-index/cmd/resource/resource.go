@@ -21,14 +21,14 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func setup() {
@@ -67,7 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
 			ResourceModel:    currentModel,
 		}, nil
 	}
@@ -76,8 +76,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{
 			Message:          err.Error(),
-			OperationStatus:  cloudformation.OperationStatusFailed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
 	}
 
 	currentModel.Status = newSearchIndex.Status
@@ -100,9 +100,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.IndexId == nil {
 		err := errors.New("no Id found in currentModel")
 		return handler.ProgressEvent{
-			OperationStatus:  cloudformation.OperationStatusFailed,
+			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 	if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
@@ -121,13 +121,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 		}
 	}
 	currentModel.Status = searchIndex.Status
 	currentModel.Type = searchIndex.Type
 	return handler.ProgressEvent{
-		OperationStatus: cloudformation.OperationStatusSuccess,
+		OperationStatus: handler.Success,
 		Message:         "Read Complete",
 		ResourceModel:   currentModel,
 	}, nil
@@ -141,7 +141,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	if errEvent := validator.ValidateModel(UpdateRequiredFields, currentModel); errEvent != nil {
@@ -167,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
 			ResourceModel:    currentModel,
 		}, nil
 	}
@@ -180,12 +180,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 		}
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
 	currentModel.Status = updatedSearchIndex.Status
 	return handler.ProgressEvent{
@@ -206,9 +206,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.IndexId == nil {
 		err := errors.New("no Id found in currentModel")
 		return handler.ProgressEvent{
-			OperationStatus:  cloudformation.OperationStatusFailed,
+			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
 	if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
@@ -235,17 +235,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		if resp != nil && (resp.StatusCode == http.StatusInternalServerError || resp.StatusCode == http.StatusNotFound) {
 			return handler.ProgressEvent{
-				OperationStatus:  cloudformation.OperationStatusFailed,
-				Message:          cloudformation.HandlerErrorCodeNotFound,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+				OperationStatus:  handler.Failed,
+				Message:          string(types.HandlerErrorCodeNotFound),
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 		}
 		return handler.ProgressEvent{
-			OperationStatus:  cloudformation.OperationStatusFailed,
+			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 	return handler.ProgressEvent{
-		OperationStatus: cloudformation.OperationStatusInProgress,
+		OperationStatus: handler.InProgress,
 		Message:         "Delete in progress",
 		CallbackContext: map[string]any{
 			"stateName": handler.InProgress,
@@ -282,7 +282,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
 	response := make([]any, 0, len(indices))
 	for i := range indices {
@@ -295,13 +295,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
-	searchIndex := &admin.ClusterSearchIndex{
+func newSearchIndex(currentModel *Model) (*admin20231115002.ClusterSearchIndex, error) {
+	searchIndex := &admin20231115002.ClusterSearchIndex{
 		Analyzer:       currentModel.Analyzer,
-		CollectionName: aws.StringValue(currentModel.CollectionName),
-		Database:       aws.StringValue(currentModel.Database),
+		CollectionName: aws.ToString(currentModel.CollectionName),
+		Database:       aws.ToString(currentModel.Database),
 		IndexID:        currentModel.IndexId,
-		Name:           aws.StringValue(currentModel.Name),
+		Name:           aws.ToString(currentModel.Name),
 		SearchAnalyzer: currentModel.SearchAnalyzer,
 		Status:         currentModel.Status,
 		Type:           currentModel.Type,
@@ -318,7 +318,7 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 		}
 		searchIndex.Mappings = mapping
 	}
-	analyzers := make([]admin.ApiAtlasFTSAnalyzers, 0, len(currentModel.Analyzers))
+	analyzers := make([]admin20231115002.ApiAtlasFTSAnalyzers, 0, len(currentModel.Analyzers))
 	for i := range currentModel.Analyzers {
 		charFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].CharFilters)
 		if err != nil {
@@ -330,7 +330,7 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 			return nil, err
 		}
 
-		s := admin.ApiAtlasFTSAnalyzers{
+		s := admin20231115002.ApiAtlasFTSAnalyzers{
 			CharFilters:  charFilters,
 			Name:         *currentModel.Analyzers[i].Name,
 			TokenFilters: tokenFilters,
@@ -342,12 +342,12 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 		searchIndex.Analyzers = analyzers
 	}
 
-	synonyms := make([]admin.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
+	synonyms := make([]admin20231115002.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
 	for i := range currentModel.Synonyms {
-		s := admin.SearchSynonymMappingDefinition{
+		s := admin20231115002.SearchSynonymMappingDefinition{
 			Analyzer: *currentModel.Synonyms[i].Analyzer,
 			Name:     *currentModel.Synonyms[i].Name,
-			Source: admin.SynonymSource{
+			Source: admin20231115002.SynonymSource{
 				Collection: *currentModel.Synonyms[i].Source.Collection,
 			},
 		}
@@ -374,11 +374,11 @@ func ConvertToAnySlice(input []string) ([]any, error) {
 	return result, nil
 }
 
-func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin.ApiAtlasFTSAnalyzersTokenizer {
+func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin20231115002.ApiAtlasFTSAnalyzersTokenizer {
 	if tokenizer == nil {
-		return admin.ApiAtlasFTSAnalyzersTokenizer{}
+		return admin20231115002.ApiAtlasFTSAnalyzersTokenizer{}
 	}
-	return admin.ApiAtlasFTSAnalyzersTokenizer{
+	return admin20231115002.ApiAtlasFTSAnalyzersTokenizer{
 		MaxGram:        tokenizer.MaxGram,
 		MinGram:        tokenizer.MinGram,
 		Type:           tokenizer.Type,
@@ -388,7 +388,7 @@ func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin.ApiAtlasF
 	}
 }
 
-func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
+func newMappings(currentModel *Model) (*admin20231115002.ApiAtlasFTSMappings, error) {
 	if currentModel.Mappings == nil {
 		return nil, nil
 	}
@@ -397,7 +397,7 @@ func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &admin.ApiAtlasFTSMappings{
+	return &admin20231115002.ApiAtlasFTSMappings{
 		Dynamic: currentModel.Mappings.Dynamic,
 		Fields:  fields,
 	}, nil
@@ -428,28 +428,28 @@ func convertStringToInterfaceMap(fields *string) ([]map[string]any, error) {
 func status(currentModel *Model) handler.Status {
 	switch *currentModel.Status {
 	case string(handler.Success):
-		return cloudformation.OperationStatusSuccess
+		return handler.Success
 	case string(handler.Failed):
-		return cloudformation.OperationStatusFailed
+		return handler.Failed
 	case string(handler.InProgress):
-		return cloudformation.OperationStatusInProgress
+		return handler.InProgress
 	}
-	return cloudformation.OperationStatusPending
+	return handler.InProgress
 }
 
-func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
+func validateProgress(ctx context.Context, client *admin20231115002.APIClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
 	index, err := SearchIndexExists(ctx, client, currentModel)
 	if err != nil {
 		_, _ = logger.Debugf("Error Cluster validate progress() err: %+v", err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
 	if util.AreStringPtrEqual(index.Status, &targetState) {
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
-		p.OperationStatus = cloudformation.OperationStatusInProgress
+		p.OperationStatus = handler.InProgress
 		p.CallbackDelaySeconds = 120
 		p.Message = "Pending"
 		p.CallbackContext = map[string]any{
@@ -459,14 +459,14 @@ func validateProgress(ctx context.Context, client *admin.APIClient, currentModel
 		return p, nil
 	}
 	p := handler.NewProgressEvent()
-	if util.AreStringPtrEqual(index.Status, admin.PtrString(cloudformation.OperationStatusFailed)) {
-		p.OperationStatus = cloudformation.OperationStatusFailed
+	if util.AreStringPtrEqual(index.Status, admin20231115002.PtrString(string(handler.Failed))) {
+		p.OperationStatus = handler.Failed
 		p.Message = "Failed"
-		p.HandlerErrorCode = cloudformation.HandlerErrorCodeInvalidRequest
+		p.HandlerErrorCode = string(types.HandlerErrorCodeInvalidRequest)
 		p.ResourceModel = currentModel
 		return p, nil
 	}
-	p.OperationStatus = cloudformation.OperationStatusSuccess
+	p.OperationStatus = handler.Success
 	p.Message = "Complete"
 	if util.IsStringPresent(index.Status) && *index.Status != "DELETED" {
 		p.ResourceModel = currentModel
@@ -474,11 +474,11 @@ func validateProgress(ctx context.Context, client *admin.APIClient, currentModel
 	return p, nil
 }
 
-func SearchIndexExists(ctx context.Context, atlasV2 *admin.APIClient, currentModel *Model) (*admin.ClusterSearchIndex, error) {
+func SearchIndexExists(ctx context.Context, atlasV2 *admin20231115002.APIClient, currentModel *Model) (*admin20231115002.ClusterSearchIndex, error) {
 	index, resp, err := atlasV2.AtlasSearchApi.GetAtlasSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return &admin.ClusterSearchIndex{Status: admin.PtrString("DELETED")}, nil
+			return &admin20231115002.ClusterSearchIndex{Status: admin20231115002.PtrString("DELETED")}, nil
 		}
 	}
 	return index, err

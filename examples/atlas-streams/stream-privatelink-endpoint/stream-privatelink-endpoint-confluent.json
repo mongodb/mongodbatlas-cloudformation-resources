@@ -1,0 +1,108 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Stream Processing Private Link Endpoint for Confluent Cloud. This enables secure, private connectivity between Atlas Stream Processing and Confluent Cloud Kafka clusters over AWS PrivateLink.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your Atlas project"
+    },
+    "Region": {
+      "Type": "String",
+      "Description": "AWS region where the Confluent Cloud network is located (e.g., us-east-1, eu-west-1)",
+      "Default": "us-east-1"
+    },
+    "DnsDomain": {
+      "Type": "String",
+      "Description": "DNS domain from Confluent Cloud network (e.g., dom4gllez7g.us-east-1.aws.confluent.cloud). This is obtained from the Confluent Cloud network configuration.",
+      "Default": "dom4gllez7g.us-east-1.aws.confluent.cloud"
+    },
+    "ServiceEndpointId": {
+      "Type": "String",
+      "Description": "VPC endpoint service name from Confluent Cloud network in the format 'com.amazonaws.vpce.<region>.vpce-svc-<id>' (e.g., 'com.amazonaws.vpce.us-east-1.vpce-svc-09f77bf9637bb0090'). This is obtained from the Confluent Cloud network AWS configuration.",
+      "Default": "com.amazonaws.vpce.us-east-1.vpce-svc-09f77bf9637bb0090"
+    },
+    "DnsSubDomain": {
+      "Type": "CommaDelimitedList",
+      "Description": "Optional: Zonal subdomains from Confluent Cloud network. If provided, should be a comma-separated list (e.g., 'use1-az1.dom4gllez7g.us-east-1.aws.confluent.cloud,use1-az2.dom4gllez7g.us-east-1.aws.confluent.cloud,use1-az4.dom4gllez7g.us-east-1.aws.confluent.cloud'). Leave empty if not using zonal subdomains.",
+      "Default": ""
+    }
+  },
+  "Resources": {
+    "StreamPrivatelinkEndpoint": {
+      "Type": "MongoDB::Atlas::StreamPrivatelinkEndpoint",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ProviderName": "AWS",
+        "Vendor": "CONFLUENT",
+        "Region": {
+          "Ref": "Region"
+        },
+        "DnsDomain": {
+          "Ref": "DnsDomain"
+        },
+        "ServiceEndpointId": {
+          "Ref": "ServiceEndpointId"
+        },
+        "DnsSubDomain": {
+          "Fn::If": [
+            "HasDnsSubDomain",
+            {
+              "Ref": "DnsSubDomain"
+            },
+            []
+          ]
+        }
+      }
+    }
+  },
+  "Conditions": {
+    "HasDnsSubDomain": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "DnsSubDomain"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "PrivateLinkEndpointId": {
+      "Description": "The ID of the Private Link connection",
+      "Value": {
+        "Ref": "StreamPrivatelinkEndpoint"
+      }
+    },
+    "State": {
+      "Description": "Status of the connection",
+      "Value": {
+        "Fn::GetAtt": ["StreamPrivatelinkEndpoint", "State"]
+      }
+    },
+    "InterfaceEndpointId": {
+      "Description": "The AWS VPC interface endpoint ID",
+      "Value": {
+        "Fn::GetAtt": ["StreamPrivatelinkEndpoint", "InterfaceEndpointId"]
+      }
+    },
+    "InterfaceEndpointName": {
+      "Description": "The AWS VPC interface endpoint name",
+      "Value": {
+        "Fn::GetAtt": ["StreamPrivatelinkEndpoint", "InterfaceEndpointName"]
+      }
+    }
+  }
+}

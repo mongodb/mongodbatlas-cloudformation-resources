@@ -85,11 +85,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resModel), nil
 	}
 
-	if integrations == nil || len(integrations.GetResults()) == 0 {
+	results := integrations.GetResults()
+
+	if len(results) == 0 {
 		return progressevent.GetFailedEventByResponse("No integration returned from create", resModel), nil
 	}
 
-	results := integrations.GetResults()
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   integrationToModel(*currentModel, &results[0]),
@@ -155,11 +156,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if integrations == nil || len(integrations.GetResults()) == 0 {
+	results := integrations.GetResults()
+	if len(results) == 0 {
 		return progressevent.GetFailedEventByResponse("No integration returned from update", res), nil
 	}
 
-	results := integrations.GetResults()
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   integrationToModel(*currentModel, &results[0]),

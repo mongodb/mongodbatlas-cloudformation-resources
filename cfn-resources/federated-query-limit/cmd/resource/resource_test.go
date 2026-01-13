@@ -199,6 +199,7 @@ func setupMockClient(t *testing.T, mockSetup func(*mockadmin.DataFederationApi))
 			DataFederationApi: mockAPI,
 		},
 	}
+	// Override the variable to inject mock client for testing
 	resource.NewAtlasClientFunc = func(req *handler.Request, profile *string) (*util.MongoDBClient, *handler.ProgressEvent) {
 		return mockClient, nil
 	}

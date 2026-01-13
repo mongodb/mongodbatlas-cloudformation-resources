@@ -48,6 +48,8 @@ const (
 	LIST          = "LIST"
 )
 
+// NewAtlasClientFunc is used for injection in resource_test.go to enable mocking
+// Production code uses util.NewAtlasClient directly and does not reference this variable
 var NewAtlasClientFunc = util.NewAtlasClient
 
 func setup() {
@@ -66,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := NewAtlasClientFunc(&req, currentModel.Profile)
+	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -95,7 +97,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := NewAtlasClientFunc(&req, currentModel.Profile)
+	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -128,7 +130,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := NewAtlasClientFunc(&req, currentModel.Profile)
+	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -156,7 +158,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := NewAtlasClientFunc(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -190,7 +192,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := NewAtlasClientFunc(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}

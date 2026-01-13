@@ -229,13 +229,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	var res *http.Response
-	var err error
-
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	res, err = client.AtlasSDK.ThirdPartyIntegrationsApi.DeleteGroupIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
+	res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.DeleteGroupIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -261,7 +258,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	var res *http.Response
 	ProjectID := currentModel.ProjectId
 	integrations, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.ListGroupIntegrations(context.Background(), *ProjectID).Execute()
 	if err != nil {

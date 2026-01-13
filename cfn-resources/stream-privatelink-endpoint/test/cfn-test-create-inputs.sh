@@ -45,40 +45,52 @@ if [ -z "$region" ]; then
 	region="${AWS_REGION:-eu-west-1}"
 fi
 echo "Using region: ${region}"
+echo "Note: S3 bucket creation is not required. Using standard AWS S3 service endpoint format: com.amazonaws.${region}.s3"
 
-# Create S3 bucket for testing
-bucketName="mongodb-atlas-stream-test-${region}"
-echo -e "--------------------------------create aws s3 bucket starts ----------------------------\n"
+# Confluent Cloud configuration (from environment variables, similar to Terraform)
+confluentRegion="${CONFLUENT_CLOUD_REGION:-us-east-1}"
+confluentDnsDomain="${CONFLUENT_CLOUD_DNS_DOMAIN:-dom4gllez7g.us-east-1.aws.confluent.cloud}"
+confluentServiceEndpointId="${CONFLUENT_CLOUD_SERVICE_ENDPOINT_ID:-com.amazonaws.vpce.us-east-1.vpce-svc-09f77bf9637bb0090}"
+confluentDnsSubDomain="${CONFLUENT_CLOUD_DNS_SUB_DOMAIN:-use1-az1.dom4gllez7g.us-east-1.aws.confluent.cloud,use1-az2.dom4gllez7g.us-east-1.aws.confluent.cloud,use1-az4.dom4gllez7g.us-east-1.aws.confluent.cloud}"
 
-# Try to remove bucket if it exists (ignore errors)
-aws s3 rb "s3://${bucketName}" --force 2>/dev/null || true
-
-# Create bucket
-if [ "$region" = "us-east-1" ]; then
-	# us-east-1 doesn't need LocationConstraint
-	aws s3api create-bucket --bucket "$bucketName" --region "$region" --output json
-else
-	aws s3api create-bucket --bucket "$bucketName" --region "$region" --create-bucket-configuration LocationConstraint="$region" --output json
+if [ -n "$confluentDnsDomain" ]; then
+	echo "Confluent Cloud configuration found:"
+	echo "  Region: $confluentRegion"
+	echo "  DNS Domain: $confluentDnsDomain"
+	echo "  Service Endpoint ID: $confluentServiceEndpointId"
+	echo "  DNS Sub Domain: $confluentDnsSubDomain"
 fi
-
-# Enable versioning
-aws s3api put-bucket-versioning --bucket "$bucketName" --versioning-configuration Status=Enabled
-
-# Enable encryption
-aws s3api put-bucket-encryption --bucket "$bucketName" --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
-
-echo -e "✅ Created S3 bucket: ${bucketName}\n"
-echo -e "--------------------------------create aws s3 bucket ends ----------------------------\n"
 
 WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
-	jq --arg projectId "$projectId" \
-		--arg profile "$profile" \
-		--arg region "$region" \
-		'.Profile?|=$profile | .ProjectId?|=$projectId | .Region?|=$region | .ServiceEndpointId?|="com.amazonaws." + $region + ".s3"' \
-		"$inputFile" >"../inputs/$outputFile"
+
+	# Check if this is a Confluent template
+	if [[ "$inputFile" == *"confluent"* ]]; then
+		# Convert comma-separated DNS subdomains to JSON array
+		if [ -n "$confluentDnsSubDomain" ]; then
+			dnsSubDomainArray=$(echo -n "$confluentDnsSubDomain" | tr ',' '\n' | jq -R . | jq -s .)
+		else
+			dnsSubDomainArray="[]"
+		fi
+
+		jq --arg projectId "$projectId" \
+			--arg profile "$profile" \
+			--arg region "$confluentRegion" \
+			--arg dnsDomain "$confluentDnsDomain" \
+			--arg serviceEndpointId "$confluentServiceEndpointId" \
+			--argjson dnsSubDomain "$dnsSubDomainArray" \
+			'.Profile?|=$profile | .ProjectId?|=$projectId | .Region?|=$region | .DnsDomain?|=$dnsDomain | .ServiceEndpointId?|=$serviceEndpointId | .DnsSubDomain?|=$dnsSubDomain' \
+			"$inputFile" >"../inputs/$outputFile"
+	else
+		# S3 template
+		jq --arg projectId "$projectId" \
+			--arg profile "$profile" \
+			--arg region "$region" \
+			'.Profile?|=$profile | .ProjectId?|=$projectId | .Region?|=$region | .ServiceEndpointId?|="com.amazonaws." + $region + ".s3"' \
+			"$inputFile" >"../inputs/$outputFile"
+	fi
 done
 cd ..
 ls -l inputs

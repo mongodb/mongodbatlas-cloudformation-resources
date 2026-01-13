@@ -273,7 +273,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 	}
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List successful",

@@ -20,7 +20,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-workspace/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 )
 
 var (
@@ -190,9 +190,10 @@ func TestNewModelConnections(t *testing.T) {
 
 func TestNewStreamWorkspaceUpdateReq(t *testing.T) {
 	newRegion := "OREGON_USA"
+	awsProvider := "AWS"
 	testCases := []struct {
 		input    *resource.Model
-		expected *admin.StreamsDataProcessRegion
+		expected *admin.StreamsTenantUpdateRequest
 		name     string
 	}{
 		{
@@ -203,9 +204,9 @@ func TestNewStreamWorkspaceUpdateReq(t *testing.T) {
 					Region:        &newRegion,
 				},
 			},
-			expected: &admin.StreamsDataProcessRegion{
-				CloudProvider: "AWS",
-				Region:        newRegion,
+			expected: &admin.StreamsTenantUpdateRequest{
+				CloudProvider: &awsProvider,
+				Region:        &newRegion,
 			},
 		},
 		{
@@ -215,9 +216,9 @@ func TestNewStreamWorkspaceUpdateReq(t *testing.T) {
 					Region: &newRegion,
 				},
 			},
-			expected: &admin.StreamsDataProcessRegion{
-				CloudProvider: "AWS",
-				Region:        newRegion,
+			expected: &admin.StreamsTenantUpdateRequest{
+				CloudProvider: &awsProvider,
+				Region:        &newRegion,
 			},
 		},
 		{

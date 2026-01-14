@@ -14,7 +14,7 @@
 
 package resource
 
-import "go.mongodb.org/atlas-sdk/v20250312010/admin"
+import "go.mongodb.org/atlas-sdk/v20250312012/admin"
 
 func NewStreamWorkspaceCreateReq(model *Model) *admin.StreamsTenant {
 	if model == nil {
@@ -41,7 +41,7 @@ func NewStreamWorkspaceCreateReq(model *Model) *admin.StreamsTenant {
 	return streamTenant
 }
 
-func NewStreamWorkspaceUpdateReq(model *Model) *admin.StreamsDataProcessRegion {
+func NewStreamWorkspaceUpdateReq(model *Model) *admin.StreamsTenantUpdateRequest {
 	if model == nil || model.DataProcessRegion == nil {
 		return nil
 	}
@@ -50,9 +50,10 @@ func NewStreamWorkspaceUpdateReq(model *Model) *admin.StreamsDataProcessRegion {
 		return nil
 	}
 	// CloudFormation is AWS-only, so CloudProvider is always AWS
-	return &admin.StreamsDataProcessRegion{
-		CloudProvider: "AWS",
-		Region:        *dataProcessRegion.Region,
+	cloudProvider := "AWS"
+	return &admin.StreamsTenantUpdateRequest{
+		CloudProvider: &cloudProvider,
+		Region:        dataProcessRegion.Region,
 	}
 }
 

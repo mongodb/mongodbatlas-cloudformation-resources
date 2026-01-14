@@ -157,14 +157,9 @@ done
 echo "Step 4/4: cleaning up 'cfn test' inputs "
 SAM_LOG=$(mktemp)
 for resource in ${resources}; do
-	cd "${resource}"
-	if [ -f ./test/cfn-test-delete-inputs.sh ]; then
+	cd "${res}"
 	chmod +x ./test/cfn-test-delete-inputs.sh
-		./test/cfn-test-delete-inputs.sh "${PROJECT_NAME}-${resource}" && echo "resource:${resource} inputs delete OK" || echo "resource:${resource} input delete FAILED"
-	else
-		echo "resource:${resource} - delete script not found, skipping cleanup"
-	fi
-	cd -
+	./test/cfn-test-delete-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs delete OK" || echo "resource:${res} input delete FAILED"
 done
 
 echo "Clean up project"

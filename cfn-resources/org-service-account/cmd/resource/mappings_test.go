@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 
 	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/org-service-account/cmd/resource"

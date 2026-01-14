@@ -28,7 +28,7 @@ var (
 	ListRequiredFields   = []string{"OrgId"}
 )
 
-var SetupRequest = func(req handler.Request, model *Model, requiredFields []string) (*util.MongoDBClient, *handler.ProgressEvent) {
+func setupRequest(req handler.Request, model *Model, requiredFields []string) (*util.MongoDBClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-org-service-account")
 	if modelValidation := validator.ValidateModel(requiredFields, model); modelValidation != nil {
 		return nil, modelValidation
@@ -42,41 +42,41 @@ var SetupRequest = func(req handler.Request, model *Model, requiredFields []stri
 }
 
 func Create(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := SetupRequest(req, model, CreateRequiredFields)
+	client, setupErr := setupRequest(req, model, CreateRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	return HandleCreate(&req, client, model), nil
+	return handleCreate(client, model), nil
 }
 
 func Read(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := SetupRequest(req, model, ReadRequiredFields)
+	client, setupErr := setupRequest(req, model, ReadRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	return HandleRead(&req, client, model), nil
+	return handleRead(client, model), nil
 }
 
 func Update(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := SetupRequest(req, model, UpdateRequiredFields)
+	client, setupErr := setupRequest(req, model, UpdateRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	return HandleUpdate(&req, client, model), nil
+	return handleUpdate(client, model), nil
 }
 
 func Delete(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := SetupRequest(req, model, DeleteRequiredFields)
+	client, setupErr := setupRequest(req, model, DeleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	return HandleDelete(&req, client, model), nil
+	return handleDelete(client, model), nil
 }
 
 func List(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := SetupRequest(req, model, ListRequiredFields)
+	client, setupErr := setupRequest(req, model, ListRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	return HandleList(&req, client, model), nil
+	return handleList(client, model), nil
 }

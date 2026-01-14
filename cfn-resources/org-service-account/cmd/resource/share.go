@@ -26,14 +26,14 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
+func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 	orgID := model.OrgId
 	serviceAccountReq := NewOrgServiceAccountCreateReq(model)
 
 	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.CreateOrgServiceAccount(ctx, *orgID, serviceAccountReq).Execute()
 	if err != nil {
-		return HandleError(apiResp, constants.CREATE, err)
+		return handleError(apiResp, constants.CREATE, err)
 	}
 
 	resourceModel := GetOrgServiceAccountModel(serviceAccountResp, model)
@@ -45,14 +45,14 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 	}
 }
 
-func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
+func handleRead(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 	orgID := model.OrgId
 	clientID := model.ClientId
 
 	serviceAccount, apiResp, err := client.AtlasSDK.ServiceAccountsApi.GetOrgServiceAccount(ctx, *orgID, *clientID).Execute()
 	if err != nil {
-		return HandleError(apiResp, constants.READ, err)
+		return handleError(apiResp, constants.READ, err)
 	}
 
 	resourceModel := GetOrgServiceAccountModel(serviceAccount, model)
@@ -69,7 +69,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 	}
 }
 
-func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
+func handleUpdate(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 	orgID := model.OrgId
 	clientID := model.ClientId
@@ -83,13 +83,13 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			}
 		}
-		return HandleError(apiResp, constants.UPDATE, err)
+		return handleError(apiResp, constants.UPDATE, err)
 	}
 
 	serviceAccountReq := NewOrgServiceAccountUpdateReq(model)
 	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.UpdateOrgServiceAccount(ctx, *clientID, *orgID, serviceAccountReq).Execute()
 	if err != nil {
-		return HandleError(apiResp, constants.UPDATE, err)
+		return handleError(apiResp, constants.UPDATE, err)
 	}
 
 	resourceModel := GetOrgServiceAccountModel(serviceAccountResp, model)
@@ -106,7 +106,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 	}
 }
 
-func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
+func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 	orgID := model.OrgId
 	clientID := model.ClientId
@@ -120,12 +120,12 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			}
 		}
-		return HandleError(resp, constants.DELETE, err)
+		return handleError(resp, constants.DELETE, err)
 	}
 
 	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteOrgServiceAccount(ctx, *clientID, *orgID).Execute()
 	if err != nil {
-		return HandleError(apiResp, constants.DELETE, err)
+		return handleError(apiResp, constants.DELETE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -134,13 +134,13 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 	}
 }
 
-func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
+func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 	orgID := model.OrgId
 
 	serviceAccounts, apiResp, err := client.AtlasSDK.ServiceAccountsApi.ListOrgServiceAccounts(ctx, *orgID).Execute()
 	if err != nil {
-		return HandleError(apiResp, constants.LIST, err)
+		return handleError(apiResp, constants.LIST, err)
 	}
 
 	response := make([]interface{}, 0)
@@ -166,7 +166,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 	}
 }
 
-func HandleError(response *http.Response, method constants.CfnFunctions, err error) handler.ProgressEvent {
+func handleError(response *http.Response, method constants.CfnFunctions, err error) handler.ProgressEvent {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
 	return progress_events.GetFailedEventByResponse(errMsg, response)
 }

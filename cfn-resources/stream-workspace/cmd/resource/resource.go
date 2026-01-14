@@ -35,8 +35,6 @@ var UpdateRequiredFields = []string{"WorkspaceName", constants.ProjectID, consta
 var DeleteRequiredFields = []string{"WorkspaceName", constants.ProjectID}
 var ListRequiredFields = []string{constants.ProjectID}
 
-const Kafka = "Kafka"
-const Cluster = "Cluster"
 const DefaultItemsPerPage = 100
 
 var InitEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {

@@ -43,85 +43,6 @@
       },
       "required": ["Tier"],
       "additionalProperties": false
-    },
-    "StreamsKafkaAuthentication": {
-      "type": "object",
-      "description": "User credentials required to connect to a Kafka Cluster. Includes the authentication type, as well as the parameters for that authentication mode.",
-      "properties": {
-        "Mechanism": {
-          "type": "string",
-          "description": "Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512."
-        },
-        "Username": {
-          "type": "string",
-          "description": "Username of the account to connect to the Kafka cluster."
-        }
-      },
-      "additionalProperties": false
-    },
-    "DBRoleToExecute": {
-      "type": "object",
-      "description": "The name of a Built in or Custom DB Role to connect to an Atlas Cluster.",
-      "properties": {
-        "Role": {
-          "type": "string",
-          "description": "The name of the role to use. Can be a built in role or a custom role."
-        },
-        "Type": {
-          "type": "string",
-          "description": "Type of the DB role. Can be either BuiltIn or Custom.",
-          "enum": ["BUILT_IN", "CUSTOM"]
-        }
-      },
-      "additionalProperties": false
-    },
-    "StreamsKafkaSecurity": {
-      "type": "object",
-      "description": "Properties for the secure transport connection to Kafka. For SSL, this can include the trusted certificate to use.",
-      "properties": {
-        "BrokerPublicCertificate": {
-          "type": "string",
-          "description": "A trusted, public x509 certificate for connecting to Kafka over SSL."
-        },
-        "Protocol": {
-          "type": "string",
-          "description": "Describes the transport type. Can be either PLAINTEXT or SSL."
-        }
-      },
-      "additionalProperties": false
-    },
-    "StreamsConnection": {
-      "type": "object",
-      "description": "Settings that define a connection to an external data store.",
-      "properties": {
-        "Name": {
-          "type": "string",
-          "description": "Human-readable label that identifies the stream connection."
-        },
-        "Type": {
-          "type": "string",
-          "description": "Type of the connection. Can be either Cluster or Kafka.",
-          "enum": ["Kafka", "Cluster", "Sample"]
-        },
-        "Authentication": {
-          "$ref": "#/definitions/StreamsKafkaAuthentication"
-        },
-        "BootstrapServers": {
-          "type": "string",
-          "description": "Comma separated list of server addresses."
-        },
-        "Security": {
-          "$ref": "#/definitions/StreamsKafkaSecurity"
-        },
-        "ClusterName": {
-          "type": "string",
-          "description": "Name of the cluster configured for this connection."
-        },
-        "DbRoleToExecute": {
-          "$ref": "#/definitions/DBRoleToExecute"
-        }
-      },
-      "additionalProperties": false
     }
   },
   "properties": {
@@ -144,13 +65,6 @@
       "description": "Unique 24-hexadecimal character string that identifies the stream workspace.",
       "type": "string"
     },
-    "Connections": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/StreamsConnection"
-      },
-      "insertionOrder": false
-    },
     "ProjectId": {
       "description": "Unique 24-hexadecimal character string that identifies the project.",
       "type": "string"
@@ -168,7 +82,6 @@
   "required": ["ProjectId", "WorkspaceName", "DataProcessRegion"],
   "readOnlyProperties": [
     "/properties/Id",
-    "/properties/Connections",
     "/properties/Hostnames"
   ],
   "primaryIdentifier": [

@@ -78,51 +78,6 @@ func newModelStreamConfig(streamConfig *admin.StreamConfig) *StreamConfig {
 	return modelConfig
 }
 
-func newModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
-	return &DBRoleToExecute{
-		Role: dbRole.Role,
-		Type: dbRole.Type,
-	}
-}
-
-func newModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
-	return &StreamsKafkaAuthentication{
-		Mechanism: authentication.Mechanism,
-		Username:  authentication.Username,
-	}
-}
-
-func newModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurity {
-	return &StreamsKafkaSecurity{
-		BrokerPublicCertificate: security.BrokerPublicCertificate,
-		Protocol:                security.Protocol,
-	}
-}
-
-func NewModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConnection {
-	if streamConfig == nil || len(*streamConfig) == 0 {
-		return nil
-	}
-
-	connections := make([]StreamsConnection, 0)
-	for _, connection := range *streamConfig {
-		modelConnection := StreamsConnection{
-			Name: connection.Name,
-			Type: connection.Type,
-		}
-		if connection.GetType() == Kafka {
-			modelConnection.BootstrapServers = connection.BootstrapServers
-			modelConnection.Authentication = newModelAuthentication(connection.Authentication)
-			modelConnection.Security = newModelSecurity(connection.Security)
-		} else if connection.GetType() == Cluster {
-			modelConnection.ClusterName = connection.ClusterName
-			modelConnection.DbRoleToExecute = newModelDBRoleToExecute(connection.DbRoleToExecute)
-		}
-		connections = append(connections, modelConnection)
-	}
-	return connections
-}
-
 func GetStreamWorkspaceModel(streamTenant *admin.StreamsTenant, currentModel *Model) *Model {
 	model := new(Model)
 
@@ -137,7 +92,6 @@ func GetStreamWorkspaceModel(streamTenant *admin.StreamsTenant, currentModel *Mo
 		model.ProjectId = streamTenant.GroupId
 		model.Id = streamTenant.Id
 		model.Hostnames = streamTenant.GetHostnames()
-		model.Connections = NewModelConnections(streamTenant.Connections)
 	}
 
 	return model

@@ -18,21 +18,17 @@ import (
 	"testing"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-workspace/cmd/resource"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 )
 
 var (
-	workspaceName    = "name"
-	projectID        = "projectId"
-	cloudProvider    = "AWS"
-	region           = "VIRGINIA_USA"
-	tier             = "SP30"
-	maxTierSize      = "SP50"
-	name             = "name"
-	bootstrapServers = "bootstrapServers"
-	clusterName      = "clusterName"
+	workspaceName = "name"
+	projectID     = "projectId"
+	cloudProvider = "AWS"
+	region        = "VIRGINIA_USA"
+	tier          = "SP30"
+	maxTierSize   = "SP50"
 )
 
 func TestNewStreamWorkspaceCreateReq(t *testing.T) {
@@ -117,72 +113,6 @@ func TestNewStreamWorkspaceCreateReq(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			result := resource.NewStreamWorkspaceCreateReq(tc.input)
-			assert.Equal(t, tc.expected, result, "created model did not match expected output")
-		})
-	}
-}
-
-func TestNewModelConnections(t *testing.T) {
-	testCases := []struct {
-		name     string
-		input    *[]admin.StreamsConnection
-		expected []resource.StreamsConnection
-	}{
-		{
-			name:     "StreamConfig is nil",
-			input:    nil,
-			expected: nil,
-		},
-		{
-			name:     "StreamConfig is empty",
-			input:    &[]admin.StreamsConnection{},
-			expected: nil,
-		},
-		{
-			name: "Connection type Kafka",
-			input: &[]admin.StreamsConnection{
-				{
-					Name:             &name,
-					Type:             util.Pointer(resource.Kafka),
-					BootstrapServers: &bootstrapServers,
-					Authentication:   &admin.StreamsKafkaAuthentication{},
-					Security:         &admin.StreamsKafkaSecurity{},
-				},
-			},
-			expected: []resource.StreamsConnection{
-				{
-					Name:             &name,
-					Type:             util.Pointer(resource.Kafka),
-					BootstrapServers: &bootstrapServers,
-					Authentication:   &resource.StreamsKafkaAuthentication{},
-					Security:         &resource.StreamsKafkaSecurity{},
-				},
-			},
-		},
-		{
-			name: "Connection type Cluster",
-			input: &[]admin.StreamsConnection{
-				{
-					Name:            &name,
-					Type:            util.Pointer(resource.Cluster),
-					ClusterName:     &clusterName,
-					DbRoleToExecute: &admin.DBRoleToExecute{},
-				},
-			},
-			expected: []resource.StreamsConnection{
-				{
-					Name:            &name,
-					Type:            util.Pointer(resource.Cluster),
-					ClusterName:     &clusterName,
-					DbRoleToExecute: &resource.DBRoleToExecute{},
-				},
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			result := resource.NewModelConnections(tc.input)
 			assert.Equal(t, tc.expected, result, "created model did not match expected output")
 		})
 	}

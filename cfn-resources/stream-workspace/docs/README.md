@@ -97,10 +97,6 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 Unique 24-hexadecimal character string that identifies the stream workspace.
 
-#### Connections
-
-Returns the <code>Connections</code> value.
-
 #### Hostnames
 
 List that contains the hostnames assigned to the stream workspace.

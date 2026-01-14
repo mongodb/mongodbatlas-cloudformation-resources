@@ -36,7 +36,7 @@ var DeleteRequiredFields = []string{"WorkspaceName", constants.ProjectID}
 var ListRequiredFields = []string{constants.ProjectID}
 
 const (
-	CloudProvider     = "AWS"
+	CloudProvider       = "AWS"
 	DefaultItemsPerPage = 100
 )
 

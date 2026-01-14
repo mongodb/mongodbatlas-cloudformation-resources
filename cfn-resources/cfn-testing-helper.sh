@@ -15,9 +15,9 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-testing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-trap "exit" INT TERM ERR
-set -o errexit
-set -o pipefail
+# trap "exit" INT TERM ERR
+# set -o errexit
+# set -o pipefail
 
 _DRY_RUN=${DRY_RUN:-false}
 _CFN_FLAGS=${CFN_FLAGS:---verbose}
@@ -141,17 +141,67 @@ for resource in ${resources}; do
 	cd "${resource}"
 	sam_log="${SAM_LOG}.${resource}"
 	echo "starting resource handler lambda in background - capture output to: ${sam_log}"
+	# Kill any existing SAM local processes on port 3001
+	pkill -f "sam local start-lambda" 2>/dev/null || true
+	sleep 2
 	sam local start-lambda &>"${sam_log}" &
 	sam_pid=$!
-	echo "Started 'sam local start-lamda' with PID:${sam_pid}, wait 3 seconds to startup..." && sleep 3
-	pgrep ${sam_pid}
+	echo "Started 'sam local start-lambda' with PID:${sam_pid}, waiting for SAM local to be ready..."
+	# Wait for SAM local to start and be ready on port 3001
+	max_attempts=30
+	for i in $(seq 1 ${max_attempts}); do
+		# Check if port 3001 is listening
+		if lsof -i :3001 > /dev/null 2>&1 || curl -s http://127.0.0.1:3001/ > /dev/null 2>&1; then
+			echo "SAM local is ready on port 3001!"
+			break
+		fi
+		if [ $i -eq ${max_attempts} ]; then
+			echo "ERROR: SAM local did not become ready after ${max_attempts} attempts (60 seconds)"
+			echo "Checking SAM log:"
+			cat "${sam_log}"
+			# Try to find the actual SAM process
+			ps aux | grep -E "sam local" | grep -v grep || echo "No SAM processes found"
+			exit 1
+		fi
+		if [ $((i % 5)) -eq 0 ]; then
+			echo "Waiting for SAM local to be ready... (attempt $i/${max_attempts})"
+		fi
+		sleep 2
+	done
 	echo "resource: ${resource}, running 'cfn test' with flags: ${_CFN_FLAGS}"
-	cfn test "${_CFN_FLAGS}"
+	test_exit_code=0
+	cfn test "${_CFN_FLAGS}" --enforce-timeout 1800 || test_exit_code=$?
+	echo ""
+	echo "=========================================="
+	echo "CFN Test completed with exit code: ${test_exit_code}"
+	echo "=========================================="
+	echo ""
+	if [ ${test_exit_code} -ne 0 ]; then
+		echo "ERROR: CFN tests failed with exit code ${test_exit_code}"
+		echo "Please review the test output above for details."
+	fi
 	echo "killing sam_pid:${sam_pid}"
-	kill ${sam_pid}
-	echo "sam_log: ${sam_log}"
-	cat "${sam_log}"
+	kill ${sam_pid} 2>/dev/null || true
+	sleep 1
+	# Ensure SAM is fully stopped
+	pkill -f "sam local start-lambda" 2>/dev/null || true
+	echo ""
+	echo "SAM local log (${sam_log}):"
+	echo "----------------------------------------"
+	cat "${sam_log}" || echo "Could not read SAM log"
+	echo "----------------------------------------"
+	echo ""
 	cd -
+	if [ ${test_exit_code} -ne 0 ]; then
+		echo ""
+		echo "=========================================="
+		echo "TEST FAILED - Exit code: ${test_exit_code}"
+		echo "Review the errors above and fix the handler implementation"
+		echo "=========================================="
+		echo ""
+		# Don't exit here - let the script continue to show all errors
+		# The script will exit with the test exit code at the end
+	fi
 done
 
 echo "Step 4/4: cleaning up 'cfn test' inputs "

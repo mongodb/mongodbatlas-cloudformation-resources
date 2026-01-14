@@ -342,9 +342,10 @@ func integrationToModel(currentModel Model, integration *admin.ThirdPartyIntegra
 	   The variables from the thirdparty integration are not returned back in reposnse because most of the variables are sensitive variables.
 	*/
 	out := Model{
-		Type:      integration.Type,
-		ProjectId: currentModel.ProjectId,
-		Profile:   currentModel.Profile,
+		Type:                         integration.Type,
+		ProjectId:                    currentModel.ProjectId,
+		Profile:                      currentModel.Profile,
+		SendUserProvidedResourceTags: currentModel.SendUserProvidedResourceTags,
 	}
 
 	if !enabled {

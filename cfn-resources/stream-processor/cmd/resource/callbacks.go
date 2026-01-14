@@ -147,15 +147,15 @@ func handleCreateCallback(ctx context.Context, client *util.MongoDBClient, curre
 			if peErr := startStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName); peErr != nil {
 				return *peErr
 			}
-			return createInProgressEvent("Starting stream processor", currentModel, callbackContext)
+			return createInProgressEvent(constants.Pending, currentModel, callbackContext)
 		}
-		return finalizeModel(streamProcessor, currentModel, "Create Completed")
+		return finalizeModel(streamProcessor, currentModel, constants.Complete)
 
 	case StartedState:
-		return finalizeModel(streamProcessor, currentModel, "Create Completed")
+		return finalizeModel(streamProcessor, currentModel, constants.Complete)
 
 	case InitiatingState, CreatingState:
-		return createInProgressEvent(fmt.Sprintf("Creating stream processor (current state: %s)", currentState), currentModel, callbackContext)
+		return createInProgressEvent(constants.Pending, currentModel, callbackContext)
 
 	case FailedState:
 		return handler.ProgressEvent{
@@ -214,14 +214,14 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 			if peErr := startStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName); peErr != nil {
 				return *peErr
 			}
-			return createInProgressEvent("Starting stream processor", currentModel, callbackContext)
+			return createInProgressEvent(constants.Pending, currentModel, callbackContext)
 		}
 
-		return finalizeModel(streamProcessorResp, currentModel, "Update Completed")
+		return finalizeModel(streamProcessorResp, currentModel, constants.Complete)
 
 	case StartedState:
 		if desiredState == StartedState {
-			return finalizeModel(streamProcessor, currentModel, "Update Completed")
+			return finalizeModel(streamProcessor, currentModel, constants.Complete)
 		}
 
 		_, err := client.AtlasSDK.StreamsApi.StopStreamProcessorWithParams(ctx,
@@ -237,7 +237,7 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 				Message:         fmt.Sprintf("Error stopping stream processor: %s", err.Error()),
 			}
 		}
-		return createInProgressEvent("Stopping stream processor", currentModel, callbackContext)
+		return createInProgressEvent(constants.Pending, currentModel, callbackContext)
 
 	case FailedState:
 		return handler.ProgressEvent{
@@ -246,6 +246,6 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 		}
 
 	default:
-		return createInProgressEvent(fmt.Sprintf("Updating stream processor (current state: %s)", currentState), currentModel, callbackContext)
+		return createInProgressEvent(constants.Pending, currentModel, callbackContext)
 	}
 }

@@ -28,13 +28,13 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 )
 
-func isCallback(req *handler.Request) bool {
+func IsCallback(req *handler.Request) bool {
 	_, found := req.CallbackContext["callbackStreamProcessor"]
 	return found
 }
 
 func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	if isCallback(req) {
+	if IsCallback(req) {
 		callbackCtx := getCallbackData(*req)
 		if peErr := validateCallbackData(callbackCtx); peErr != nil {
 			return *peErr
@@ -107,7 +107,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              "Creating stream processor",
+		Message:              constants.Pending,
 		ResourceModel:        inProgressModel,
 		CallbackDelaySeconds: defaultCallbackDelaySeconds,
 		CallbackContext: buildCallbackContext(projectID, workspaceOrInstanceName, processorName, map[string]any{
@@ -160,13 +160,13 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Read Completed",
+		Message:         constants.ReadComplete,
 		ResourceModel:   resourceModel,
 	}
 }
 
 func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *Model, model *Model) handler.ProgressEvent {
-	if isCallback(req) {
+	if IsCallback(req) {
 		callbackCtx := getCallbackData(*req)
 		if peErr := validateCallbackData(callbackCtx); peErr != nil {
 			return *peErr
@@ -249,7 +249,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
-			Message:              "Stopping stream processor",
+			Message:              constants.Pending,
 			ResourceModel:        inProgressModel,
 			CallbackDelaySeconds: defaultCallbackDelaySeconds,
 			CallbackContext: buildCallbackContext(projectID, workspaceOrInstanceName, processorName, map[string]any{
@@ -295,7 +295,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
-			Message:              "Starting stream processor",
+			Message:              constants.Pending,
 			ResourceModel:        inProgressModel,
 			CallbackDelaySeconds: defaultCallbackDelaySeconds,
 			CallbackContext: buildCallbackContext(projectID, workspaceOrInstanceName, processorName, map[string]any{
@@ -304,7 +304,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 		}
 	}
 
-	return finalizeModel(streamProcessorResp, model, "Update Completed")
+	return finalizeModel(streamProcessorResp, model, constants.Complete)
 }
 
 func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
@@ -337,7 +337,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Delete Completed",
+		Message:         constants.Complete,
 	}
 }
 
@@ -374,7 +374,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "List Completed",
+		Message:         constants.Complete,
 		ResourceModels:  response,
 	}
 }

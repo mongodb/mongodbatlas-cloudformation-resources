@@ -3,7 +3,7 @@
   "ProjectId": "",
   "DataProcessRegion": {
     "CloudProvider": "AWS",
-    "Region": "OREGON_USA"
+    "Region": "DUBLIN_IRL"
   },
   "StreamConfig": {
     "Tier": "SP30",

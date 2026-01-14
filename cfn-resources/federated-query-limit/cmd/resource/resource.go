@@ -133,7 +133,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Check already exists or not
 	_, response, err := getFederatedQueryLimit(atlas, currentModel)
 
-	if err != nil && response.StatusCode == http.StatusNotFound {
+	if err != nil && util.StatusNotFound(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          DoesntExists,
@@ -221,7 +221,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
 	_, _ = logger.Warn(errMsg)
-	if response != nil && response.StatusCode == http.StatusConflict {
+	if util.StatusConflict(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,

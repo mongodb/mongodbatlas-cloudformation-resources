@@ -339,7 +339,7 @@ func integrationToModel(currentModel Model, integration *admin.ThirdPartyIntegra
 	enabled := currentModel.Enabled != nil
 
 	/*
-	   The variables from the thirdparty integration are not returned back in reposnse because most of the variables are sensitive variables.
+	   The variables from the thirdparty integration are not returned back in response because most of the variables are sensitive variables.
 	*/
 	out := Model{
 		Type:                         integration.Type,

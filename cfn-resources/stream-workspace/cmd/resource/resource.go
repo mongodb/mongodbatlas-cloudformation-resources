@@ -35,7 +35,10 @@ var UpdateRequiredFields = []string{"WorkspaceName", constants.ProjectID, consta
 var DeleteRequiredFields = []string{"WorkspaceName", constants.ProjectID}
 var ListRequiredFields = []string{constants.ProjectID}
 
-const DefaultItemsPerPage = 100
+const (
+	CloudProvider     = "AWS"
+	DefaultItemsPerPage = 100
+)
 
 var InitEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-stream-workspace")

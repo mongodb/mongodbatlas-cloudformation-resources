@@ -25,7 +25,7 @@ import (
 var (
 	workspaceName = "name"
 	projectID     = "projectId"
-	cloudProvider = "AWS"
+	cloudProvider = resource.CloudProvider
 	region        = "VIRGINIA_USA"
 	tier          = "SP30"
 	maxTierSize   = "SP50"
@@ -120,7 +120,7 @@ func TestNewStreamWorkspaceCreateReq(t *testing.T) {
 
 func TestNewStreamWorkspaceUpdateReq(t *testing.T) {
 	newRegion := "OREGON_USA"
-	awsProvider := "AWS"
+	awsProvider := resource.CloudProvider
 	testCases := []struct {
 		input    *resource.Model
 		expected *admin.StreamsTenantUpdateRequest

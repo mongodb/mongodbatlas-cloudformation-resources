@@ -50,7 +50,7 @@ func NewStreamWorkspaceUpdateReq(model *Model) *admin.StreamsTenantUpdateRequest
 		return nil
 	}
 	// CloudFormation is AWS-only, so CloudProvider is always AWS
-	cloudProvider := "AWS"
+	cloudProvider := CloudProvider
 	return &admin.StreamsTenantUpdateRequest{
 		CloudProvider: &cloudProvider,
 		Region:        dataProcessRegion.Region,

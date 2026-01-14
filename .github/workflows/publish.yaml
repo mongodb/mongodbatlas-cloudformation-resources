@@ -45,7 +45,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@c71dd89d980e49367c70391e8ada4353f52f2800
+      - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -125,7 +125,7 @@ jobs:
           file_to_commit: 'cfn-resources/${{ github.event.inputs.resourceName }}/compliance/v*/*'
           commit_message:
             "chore: Update SSDLC report for ${{ needs.publish.outputs.published_version }}"
-          repo-path: "cfn-resources/"
+          go-mod-path: "cfn-resources/go.mod"
         env:
           KONDUKTO_TOKEN: ${{ secrets.KONDUKTO_TOKEN }}
           SILKBOMB_IMG: ${{ vars.SILKBOMB_IMG }}

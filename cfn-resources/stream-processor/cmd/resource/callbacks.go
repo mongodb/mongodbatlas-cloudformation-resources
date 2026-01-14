@@ -23,6 +23,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 )
@@ -38,12 +39,7 @@ type CallbackData struct {
 	DeleteOnCreateTimeout   bool
 }
 
-func IsCallback(req *handler.Request) bool {
-	_, found := req.CallbackContext["callbackStreamProcessor"]
-	return found
-}
-
-func GetCallbackData(req handler.Request) *CallbackData {
+func getCallbackData(req handler.Request) *CallbackData {
 	ctx := &CallbackData{}
 
 	if val, ok := req.CallbackContext["projectID"].(string); ok {
@@ -74,7 +70,7 @@ func GetCallbackData(req handler.Request) *CallbackData {
 	return ctx
 }
 
-func ValidateCallbackData(ctx *CallbackData) *handler.ProgressEvent {
+func validateCallbackData(ctx *CallbackData) *handler.ProgressEvent {
 	if ctx.ProjectID == "" || ctx.WorkspaceOrInstanceName == "" || ctx.ProcessorName == "" {
 		return &handler.ProgressEvent{
 			OperationStatus: handler.Failed,
@@ -84,7 +80,7 @@ func ValidateCallbackData(ctx *CallbackData) *handler.ProgressEvent {
 	return nil
 }
 
-func BuildCallbackContext(projectID, workspaceOrInstanceName, processorName string, additionalFields map[string]any) map[string]any {
+func buildCallbackContext(projectID, workspaceOrInstanceName, processorName string, additionalFields map[string]any) map[string]any {
 	ctx := map[string]any{
 		"callbackStreamProcessor": true,
 		"projectID":               projectID,
@@ -97,27 +93,27 @@ func BuildCallbackContext(projectID, workspaceOrInstanceName, processorName stri
 	return ctx
 }
 
-func cleanupOnCreateTimeout(ctx context.Context, atlasClient *admin.APIClient, callbackCtx *CallbackData) error {
+func cleanupOnCreateTimeout(ctx context.Context, client *util.MongoDBClient, callbackCtx *CallbackData) error {
 	if !callbackCtx.DeleteOnCreateTimeout {
 		return nil
 	}
 
-	_, err := atlasClient.StreamsApi.DeleteStreamProcessor(ctx, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName).Execute()
+	_, err := client.AtlasSDK.StreamsApi.DeleteStreamProcessor(ctx, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Cleanup delete failed: %v", err)
 	}
 	return nil
 }
 
-func HandleCreateCallback(ctx context.Context, atlasClient *admin.APIClient, currentModel *Model, callbackCtx *CallbackData) (handler.ProgressEvent, error) {
+func handleCreateCallback(ctx context.Context, client *util.MongoDBClient, currentModel *Model, callbackCtx *CallbackData) handler.ProgressEvent {
 	needsStarting := callbackCtx.NeedsStarting
 
-	if IsTimeoutExceeded(callbackCtx.StartTime, callbackCtx.TimeoutDuration) {
-		if err := cleanupOnCreateTimeout(context.Background(), atlasClient, callbackCtx); err != nil {
+	if isTimeoutExceeded(callbackCtx.StartTime, callbackCtx.TimeoutDuration) {
+		if err := cleanupOnCreateTimeout(context.Background(), client, callbackCtx); err != nil {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
 				Message:         fmt.Sprintf("Timeout reached and cleanup failed: %s", err.Error()),
-			}, nil
+			}
 		}
 		cleanupMsg := "Timeout reached when waiting for stream processor creation"
 		if callbackCtx.DeleteOnCreateTimeout {
@@ -128,17 +124,17 @@ func HandleCreateCallback(ctx context.Context, atlasClient *admin.APIClient, cur
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         cleanupMsg,
-		}, nil
+		}
 	}
 
-	streamProcessor, peErr := getStreamProcessor(ctx, atlasClient, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName)
+	streamProcessor, peErr := getStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName)
 	if peErr != nil {
-		return *peErr, nil
+		return *peErr
 	}
 
 	currentState := streamProcessor.GetState()
 
-	callbackContext := BuildCallbackContext(callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName, map[string]any{
+	callbackContext := buildCallbackContext(callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName, map[string]any{
 		"needsStarting":         callbackCtx.NeedsStarting,
 		"startTime":             callbackCtx.StartTime,
 		"timeoutDuration":       callbackCtx.TimeoutDuration,
@@ -148,37 +144,37 @@ func HandleCreateCallback(ctx context.Context, atlasClient *admin.APIClient, cur
 	switch currentState {
 	case CreatedState:
 		if needsStarting {
-			if peErr := startStreamProcessor(ctx, atlasClient, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName); peErr != nil {
-				return *peErr, nil
+			if peErr := startStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName); peErr != nil {
+				return *peErr
 			}
-			return createInProgressEvent("Starting stream processor", currentModel, callbackContext), nil
+			return createInProgressEvent("Starting stream processor", currentModel, callbackContext)
 		}
-		return FinalizeModel(streamProcessor, currentModel, "Create Completed")
+		return finalizeModel(streamProcessor, currentModel, "Create Completed")
 
 	case StartedState:
-		return FinalizeModel(streamProcessor, currentModel, "Create Completed")
+		return finalizeModel(streamProcessor, currentModel, "Create Completed")
 
 	case InitiatingState, CreatingState:
-		return createInProgressEvent(fmt.Sprintf("Creating stream processor (current state: %s)", currentState), currentModel, callbackContext), nil
+		return createInProgressEvent(fmt.Sprintf("Creating stream processor (current state: %s)", currentState), currentModel, callbackContext)
 
 	case FailedState:
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         "Stream processor entered FAILED state",
-		}, nil
+		}
 
 	default:
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         fmt.Sprintf("Unexpected state during creation: %s", currentState),
-		}, nil
+		}
 	}
 }
 
-func HandleUpdateCallback(ctx context.Context, atlasClient *admin.APIClient, currentModel *Model, callbackCtx *CallbackData) (handler.ProgressEvent, error) {
-	streamProcessor, peErr := getStreamProcessor(ctx, atlasClient, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName)
+func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, currentModel *Model, callbackCtx *CallbackData) handler.ProgressEvent {
+	streamProcessor, peErr := getStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName)
 	if peErr != nil {
-		return *peErr, nil
+		return *peErr
 	}
 
 	desiredState := callbackCtx.DesiredState
@@ -195,7 +191,7 @@ func HandleUpdateCallback(ctx context.Context, atlasClient *admin.APIClient, cur
 
 	currentState := streamProcessor.GetState()
 
-	callbackContext := BuildCallbackContext(callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName, map[string]any{
+	callbackContext := buildCallbackContext(callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName, map[string]any{
 		"desiredState": desiredState,
 	})
 
@@ -206,29 +202,29 @@ func HandleUpdateCallback(ctx context.Context, atlasClient *admin.APIClient, cur
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
 				Message:         fmt.Sprintf("Error creating update request: %s", err.Error()),
-			}, nil
+			}
 		}
 
-		streamProcessorResp, apiResp, err := atlasClient.StreamsApi.UpdateStreamProcessorWithParams(ctx, modifyAPIRequestParams).Execute()
+		streamProcessorResp, apiResp, err := client.AtlasSDK.StreamsApi.UpdateStreamProcessorWithParams(ctx, modifyAPIRequestParams).Execute()
 		if err != nil {
-			return HandleError(apiResp, constants.UPDATE, err)
+			return handleError(apiResp, constants.UPDATE, err)
 		}
 
 		if desiredState == StartedState {
-			if peErr := startStreamProcessor(ctx, atlasClient, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName); peErr != nil {
-				return *peErr, nil
+			if peErr := startStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName); peErr != nil {
+				return *peErr
 			}
-			return createInProgressEvent("Starting stream processor", currentModel, callbackContext), nil
+			return createInProgressEvent("Starting stream processor", currentModel, callbackContext)
 		}
 
-		return FinalizeModel(streamProcessorResp, currentModel, "Update Completed")
+		return finalizeModel(streamProcessorResp, currentModel, "Update Completed")
 
 	case StartedState:
 		if desiredState == StartedState {
-			return FinalizeModel(streamProcessor, currentModel, "Update Completed")
+			return finalizeModel(streamProcessor, currentModel, "Update Completed")
 		}
 
-		_, err := atlasClient.StreamsApi.StopStreamProcessorWithParams(ctx,
+		_, err := client.AtlasSDK.StreamsApi.StopStreamProcessorWithParams(ctx,
 			&admin.StopStreamProcessorApiParams{
 				GroupId:       callbackCtx.ProjectID,
 				TenantName:    callbackCtx.WorkspaceOrInstanceName,
@@ -239,17 +235,17 @@ func HandleUpdateCallback(ctx context.Context, atlasClient *admin.APIClient, cur
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
 				Message:         fmt.Sprintf("Error stopping stream processor: %s", err.Error()),
-			}, nil
+			}
 		}
-		return createInProgressEvent("Stopping stream processor", currentModel, callbackContext), nil
+		return createInProgressEvent("Stopping stream processor", currentModel, callbackContext)
 
 	case FailedState:
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         "Stream processor entered FAILED state",
-		}, nil
+		}
 
 	default:
-		return createInProgressEvent(fmt.Sprintf("Updating stream processor (current state: %s)", currentState), currentModel, callbackContext), nil
+		return createInProgressEvent(fmt.Sprintf("Updating stream processor (current state: %s)", currentState), currentModel, callbackContext)
 	}
 }

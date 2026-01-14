@@ -30,7 +30,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-func CopyIdentifyingFields(resourceModel, currentModel *Model) {
+func copyIdentifyingFields(resourceModel, currentModel *Model) {
 	resourceModel.Profile = currentModel.Profile
 	resourceModel.ProjectId = currentModel.ProjectId
 	resourceModel.ProcessorName = currentModel.ProcessorName
@@ -48,7 +48,7 @@ func CopyIdentifyingFields(resourceModel, currentModel *Model) {
 	}
 }
 
-func ParseTimeout(timeoutStr string) time.Duration {
+func parseTimeout(timeoutStr string) time.Duration {
 	if timeoutStr == "" {
 		return DefaultCreateTimeout
 	}
@@ -60,7 +60,7 @@ func ParseTimeout(timeoutStr string) time.Duration {
 	return duration
 }
 
-func IsTimeoutExceeded(startTimeStr, timeoutDurationStr string) bool {
+func isTimeoutExceeded(startTimeStr, timeoutDurationStr string) bool {
 	if startTimeStr == "" || timeoutDurationStr == "" {
 		return false
 	}
@@ -71,28 +71,28 @@ func IsTimeoutExceeded(startTimeStr, timeoutDurationStr string) bool {
 		return false
 	}
 
-	timeoutDuration := ParseTimeout(timeoutDurationStr)
+	timeoutDuration := parseTimeout(timeoutDurationStr)
 	elapsed := time.Since(startTime)
 
 	return elapsed >= timeoutDuration
 }
 
-func FinalizeModel(streamProcessor *admin.StreamsProcessorWithStats, currentModel *Model, message string) (handler.ProgressEvent, error) {
+func finalizeModel(streamProcessor *admin.StreamsProcessorWithStats, currentModel *Model, message string) handler.ProgressEvent {
 	resourceModel, err := GetStreamProcessorModel(streamProcessor, currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         fmt.Sprintf("Error converting stream processor model: %s", err.Error()),
-		}, nil
+		}
 	}
 
-	CopyIdentifyingFields(resourceModel, currentModel)
+	copyIdentifyingFields(resourceModel, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         message,
 		ResourceModel:   resourceModel,
-	}, nil
+	}
 }
 
 func getAllStreamProcessors(ctx context.Context, atlasClient *admin.APIClient, projectID, workspaceOrInstanceName string) ([]admin.StreamsProcessorWithStats, *http.Response, error) {
@@ -169,7 +169,7 @@ func createInProgressEvent(message string, currentModel *Model, callbackContext 
 		*inProgressModel = *currentModel
 		inProgressModel.DeleteOnCreateTimeout = nil
 	}
-	CopyIdentifyingFields(inProgressModel, currentModel)
+	copyIdentifyingFields(inProgressModel, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -180,7 +180,7 @@ func createInProgressEvent(message string, currentModel *Model, callbackContext 
 	}
 }
 
-func ValidateUpdateStateTransition(currentState, desiredState string) (errMsg string, isValidTransition bool) {
+func validateUpdateStateTransition(currentState, desiredState string) (errMsg string, isValidTransition bool) {
 	if currentState == desiredState {
 		return "", true
 	}
@@ -196,7 +196,7 @@ func ValidateUpdateStateTransition(currentState, desiredState string) (errMsg st
 	return "", true
 }
 
-func HandleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
+func handleError(response *http.Response, method constants.CfnFunctions, err error) handler.ProgressEvent {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
 
 	if response != nil && response.StatusCode == http.StatusConflict {
@@ -204,8 +204,8 @@ func HandleError(response *http.Response, method constants.CfnFunctions, err err
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
 			HandlerErrorCode: "AlreadyExists",
-		}, nil
+		}
 	}
 
-	return progressevent.GetFailedEventByResponse(errMsg, response), nil
+	return progressevent.GetFailedEventByResponse(errMsg, response)
 }

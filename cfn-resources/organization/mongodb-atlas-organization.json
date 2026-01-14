@@ -83,6 +83,10 @@
     "RestrictEmployeeAccess": {
       "type": "boolean",
       "description": "Flag that indicates whether to block MongoDB Support from accessing Atlas infrastructure for any deployment in the specified organization without explicit permission. Once this setting is turned on, you can grant MongoDB Support a 24-hour bypass access to the Atlas deployment to resolve support issues. To learn more, see: https://www.mongodb.com/docs/atlas/security-restrict-support-access/."
+    },
+    "SecurityContact": {
+      "type": "string",
+      "description": "Email address of the security contact for the organization."
     }
   },
   "additionalProperties": false,

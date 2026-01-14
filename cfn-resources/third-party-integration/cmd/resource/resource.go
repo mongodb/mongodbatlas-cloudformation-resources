@@ -19,7 +19,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -79,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	integrations, resModel, err := client.AtlasSDK.ThirdPartyIntegrationsApi.CreateGroupIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusConflict {
-			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
+			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", string(types.HandlerErrorCodeAlreadyExists)), nil
 		}
 
 		return progressevent.GetFailedEventByResponse(err.Error(), resModel), nil

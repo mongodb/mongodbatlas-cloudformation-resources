@@ -14,9 +14,9 @@
 
 package resource
 
-import admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+import "go.mongodb.org/atlas-sdk/v20250312012/admin"
 
-func NewCFNSearchDeployment(prevModel *Model, apiResp *admin20231115014.ApiSearchDeploymentResponse) Model {
+func NewCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeploymentResponse) Model {
 	respSpecs := apiResp.GetSpecs()
 	resultSpecs := make([]ApiSearchDeploymentSpec, len(respSpecs))
 	for i := range respSpecs {
@@ -25,25 +25,33 @@ func NewCFNSearchDeployment(prevModel *Model, apiResp *admin20231115014.ApiSearc
 			NodeCount:    &respSpecs[i].NodeCount,
 		}
 	}
+
+	// Preserve Id from prevModel if apiResp doesn't have it
+	id := apiResp.Id
+	if id == nil && prevModel != nil {
+		id = prevModel.Id
+	}
+
 	return Model{
-		Profile:     prevModel.Profile,
-		ClusterName: prevModel.ClusterName,
-		ProjectId:   prevModel.ProjectId,
-		Id:          apiResp.Id,
-		Specs:       resultSpecs,
-		StateName:   apiResp.StateName,
+		Profile:                  prevModel.Profile,
+		ClusterName:              prevModel.ClusterName,
+		ProjectId:                prevModel.ProjectId,
+		Id:                       id,
+		Specs:                    resultSpecs,
+		StateName:                apiResp.StateName,
+		EncryptionAtRestProvider: apiResp.EncryptionAtRestProvider,
 	}
 }
 
-func NewSearchDeploymentReq(model *Model) admin20231115014.ApiSearchDeploymentRequest {
+func NewSearchDeploymentReq(model *Model) admin.ApiSearchDeploymentRequest {
 	modelSpecs := model.Specs
-	requestSpecs := make([]admin20231115014.ApiSearchDeploymentSpec, len(modelSpecs))
+	requestSpecs := make([]admin.ApiSearchDeploymentSpec, len(modelSpecs))
 	for i, spec := range modelSpecs {
 		// Both spec fields are required in CFN model and will be defined
-		requestSpecs[i] = admin20231115014.ApiSearchDeploymentSpec{
+		requestSpecs[i] = admin.ApiSearchDeploymentSpec{
 			InstanceSize: *spec.InstanceSize,
 			NodeCount:    *spec.NodeCount,
 		}
 	}
-	return admin20231115014.ApiSearchDeploymentRequest{Specs: requestSpecs}
+	return admin.ApiSearchDeploymentRequest{Specs: requestSpecs}
 }

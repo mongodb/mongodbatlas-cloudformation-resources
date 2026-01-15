@@ -79,11 +79,9 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 Action to take when the usage limit is exceeded. If limit span is set to QUERY, this is ignored because MongoDB Cloud stops the query when it exceeds the usage limit.
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
-
-_Allowed Values_: <code>BLOCK</code> | <code>BLOCK_AND_KILL</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

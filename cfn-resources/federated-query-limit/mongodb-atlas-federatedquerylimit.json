@@ -60,7 +60,6 @@
     "ProjectId",
     "TenantName",
     "LimitName",
-    "OverrunPolicy",
     "Value"
   ],
   "readOnlyProperties": [

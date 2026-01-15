@@ -33,7 +33,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-var CreateOrUpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.LimitName, constants.OverrunPolicy, constants.Value}
+var CreateOrUpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.LimitName, constants.Value}
 var ReadRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.LimitName}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.LimitName}
 var ListRequiredFields = []string{constants.ProjectID, constants.TenantName}

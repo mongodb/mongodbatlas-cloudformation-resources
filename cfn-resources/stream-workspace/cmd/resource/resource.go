@@ -90,7 +90,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	streamWorkspace, resp, err := conn.StreamsApi.GetStreamWorkspace(ctx, *currentModel.ProjectId, *currentModel.WorkspaceName).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(resp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "StreamWorkspace not found",
@@ -120,7 +120,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	streamWorkspaceUpdateReq := NewStreamWorkspaceUpdateReq(currentModel)
 	updatedStreamWorkspace, resp, err := conn.StreamsApi.UpdateStreamWorkspace(ctx, *currentModel.ProjectId, *currentModel.WorkspaceName, streamWorkspaceUpdateReq).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(resp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "StreamWorkspace not found",

@@ -5,7 +5,7 @@
     "WorkspaceName": "",
     "ProcessorName": "sample-processor",
     "Pipeline": "[{\"$match\": {\"status\": \"active\"}}]",
-    "State": "CREATED"
+    "DesiredState": "CREATED"
   },
   "previousResourceState": {}
 }

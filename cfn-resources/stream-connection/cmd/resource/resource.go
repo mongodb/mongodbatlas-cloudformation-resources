@@ -222,9 +222,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range accumulatedStreamConns {
 		model := GetStreamConnectionModel(&accumulatedStreamConns[i], nil)
 		model.ProjectId = currentModel.ProjectId
+		// Set both WorkspaceName and InstanceName for consistency and backward compatibility
+		// InstanceName is deprecated but we maintain it for backward compatibility
 		if currentModel.WorkspaceName != nil {
 			model.WorkspaceName = currentModel.WorkspaceName
-		} else {
+			model.InstanceName = currentModel.WorkspaceName
+		} else if currentModel.InstanceName != nil {
+			model.WorkspaceName = currentModel.InstanceName
 			model.InstanceName = currentModel.InstanceName
 		}
 		model.Profile = currentModel.Profile

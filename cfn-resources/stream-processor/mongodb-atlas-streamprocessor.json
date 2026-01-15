@@ -138,6 +138,9 @@
     },
     "delete": {
       "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "list": {
+      "permissions": ["secretsmanager:GetSecretValue"]
     }
   },
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/stream-processor/README.md",

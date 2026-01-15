@@ -5,5 +5,5 @@
   "InstanceName": "",
   "ProcessorName": "test-processor-5-cluster-to-kafka",
   "Pipeline": "[{\"$source\": {\"connectionName\": \"CLUSTER_SOURCE_CONNECTION_PLACEHOLDER\"}}, {\"$emit\": {\"connectionName\": \"KAFKA_SINK_CONNECTION_PLACEHOLDER\", \"topic\": \"random_topic\"}}]",
-  "State": "CREATED"
+  "DesiredState": "CREATED"
 }

@@ -30,15 +30,13 @@
       "properties": {
         "Tier": {
           "type": "string",
-          "description": "Selected tier for the Stream Workspace. Configures Memory / VCPU allowances.",
-          "title": "Stream Workspace Tier",
-          "enum": ["SP2", "SP5", "SP10", "SP30", "SP50"]
+          "description": "Selected tier for the Stream Workspace. Configures Memory / VCPU allowances. Valid values: SP2, SP5, SP10, SP30, SP50.",
+          "title": "Stream Workspace Tier"
         },
         "MaxTierSize": {
           "type": "string",
-          "description": "Max tier size for the Stream Workspace. Configures Memory / VCPU allowances.",
-          "title": "Stream Workspace Max Tier Size",
-          "enum": ["SP2", "SP5", "SP10", "SP30", "SP50"]
+          "description": "Max tier size for the Stream Workspace. Configures Memory / VCPU allowances. Valid values: SP2, SP5, SP10, SP30, SP50.",
+          "title": "Stream Workspace Max Tier Size"
         }
       },
       "required": ["Tier"],

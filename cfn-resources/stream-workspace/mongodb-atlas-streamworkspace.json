@@ -1,0 +1,117 @@
+{
+  "typeName": "MongoDB::Atlas::StreamWorkspace",
+  "description": "Returns, adds, updates, and removes Atlas Stream Processing Workspaces. The DataProcessRegion.Region property can be updated after creation. Other properties (WorkspaceName, ProjectId, Profile, StreamConfig, DataProcessRegion.CloudProvider) are create-only and require resource replacement to change.",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git",
+  "definitions": {
+    "BaseStreamsRegion": {
+      "type": "string",
+      "description": "Name of the cloud provider region hosting Atlas Stream Processing."
+    },
+    "StreamsDataProcessRegion": {
+      "type": "object",
+      "description": "Information about the cloud provider region in which MongoDB Cloud processes the stream.",
+      "properties": {
+        "CloudProvider": {
+          "type": "string",
+          "description": "Label that identifies the cloud service provider where MongoDB Cloud performs stream processing. For CloudFormation, this is restricted to AWS only.",
+          "enum": ["AWS"],
+          "default": "AWS"
+        },
+        "Region": {
+          "$ref": "#/definitions/BaseStreamsRegion"
+        }
+      },
+      "required": ["CloudProvider", "Region"],
+      "additionalProperties": false
+    },
+    "StreamConfig": {
+      "type": "object",
+      "description": "Configuration options for an Atlas Stream Processing Workspace.",
+      "properties": {
+        "Tier": {
+          "type": "string",
+          "description": "Selected tier for the Stream Workspace. Configures Memory / VCPU allowances. Valid values: SP2, SP5, SP10, SP30, SP50.",
+          "title": "Stream Workspace Tier"
+        },
+        "MaxTierSize": {
+          "type": "string",
+          "description": "Max tier size for the Stream Workspace. Configures Memory / VCPU allowances. Valid values: SP2, SP5, SP10, SP30, SP50.",
+          "title": "Stream Workspace Max Tier Size"
+        }
+      },
+      "required": ["Tier"],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
+    },
+    "WorkspaceName": {
+      "description": "Human-readable label that identifies the stream workspace.",
+      "type": "string"
+    },
+    "DataProcessRegion": {
+      "$ref": "#/definitions/StreamsDataProcessRegion"
+    },
+    "StreamConfig": {
+      "$ref": "#/definitions/StreamConfig"
+    },
+    "Id": {
+      "description": "Unique 24-hexadecimal character string that identifies the stream workspace.",
+      "type": "string"
+    },
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal character string that identifies the project.",
+      "type": "string"
+    },
+    "Hostnames": {
+      "description": "List that contains the hostnames assigned to the stream workspace.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "insertionOrder": false
+    }
+  },
+  "additionalProperties": false,
+  "required": ["ProjectId", "WorkspaceName", "DataProcessRegion"],
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/Hostnames"
+  ],
+  "primaryIdentifier": [
+    "/properties/WorkspaceName",
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "createOnlyProperties": [
+    "/properties/WorkspaceName",
+    "/properties/ProjectId",
+    "/properties/Profile",
+    "/properties/StreamConfig"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "read": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "update": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "delete": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "list": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/stream-workspace/README.md",
+  "tagging": {
+    "taggable": false
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "WorkspaceName": "",
+  "ProjectId": "",
+  "DataProcessRegion": {
+    "CloudProvider": "AWS",
+    "Region": "DUBLIN_IRL"
+  },
+  "StreamConfig": {
+    "Tier": "SP30",
+    "MaxTierSize": "SP50"
+  },
+  "Profile": "default"
+}

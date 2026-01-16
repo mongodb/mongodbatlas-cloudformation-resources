@@ -1,0 +1,151 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::StreamWorkspace",
+  "Parameters": {
+    "ProjectId": {
+      "Description": "Your MongoDB Cloud Project ID",
+      "Type": "String"
+    },
+    "WorkspaceName": {
+      "Description": "Name for the Stream Workspace",
+      "Type": "String",
+      "Default": ""
+    },
+    "CloudProvider": {
+      "Description": "Cloud provider for data processing region (AWS only for CloudFormation)",
+      "Type": "String",
+      "Default": "AWS",
+      "AllowedValues": ["AWS"]
+    },
+    "Region": {
+      "Description": "Region for data processing",
+      "Type": "String",
+      "Default": "VIRGINIA_USA"
+    },
+    "Tier": {
+      "Description": "Stream Workspace Tier (SP2, SP5, SP10, SP30, SP50)",
+      "Type": "String",
+      "Default": "SP30",
+      "AllowedValues": ["SP2", "SP5", "SP10", "SP30", "SP50"]
+    },
+    "MaxTierSize": {
+      "Description": "Max tier size for the Stream Workspace (optional)",
+      "Type": "String",
+      "Default": "SP50",
+      "AllowedValues": ["SP2", "SP5", "SP10", "SP30", "SP50"]
+    },
+    "Profile": {
+      "Description": "AWS Secrets Manager profile name",
+      "Type": "String",
+      "Default": "default"
+    }
+  },
+  "Conditions": {
+    "HasWorkspaceName": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "WorkspaceName"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "StreamWorkspace": {
+      "Type": "MongoDB::Atlas::StreamWorkspace",
+      "Properties": {
+        "WorkspaceName": {
+          "Fn::If": [
+            "HasWorkspaceName",
+            {
+              "Ref": "WorkspaceName"
+            },
+            {
+              "Fn::Sub": "stream-workspace-${AWS::StackName}"
+            }
+          ]
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DataProcessRegion": {
+          "CloudProvider": {
+            "Ref": "CloudProvider"
+          },
+          "Region": {
+            "Ref": "Region"
+          }
+        },
+        "StreamConfig": {
+          "Tier": {
+            "Ref": "Tier"
+          },
+          "MaxTierSize": {
+            "Ref": "MaxTierSize"
+          }
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "StreamWorkspaceId": {
+      "Description": "The unique identifier for the Stream Workspace",
+      "Value": {
+        "Fn::GetAtt": [
+          "StreamWorkspace",
+          "Id"
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-StreamWorkspaceId"
+        }
+      }
+    },
+    "StreamWorkspaceName": {
+      "Description": "The name of the Stream Workspace",
+      "Value": {
+        "Fn::If": [
+          "HasWorkspaceName",
+          {
+            "Ref": "WorkspaceName"
+          },
+          {
+            "Fn::Sub": "stream-workspace-${AWS::StackName}"
+          }
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-StreamWorkspaceName"
+        }
+      }
+    },
+    "StreamWorkspaceHostnames": {
+      "Description": "List of hostnames assigned to the stream workspace",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          {
+            "Fn::GetAtt": [
+              "StreamWorkspace",
+              "Hostnames"
+            ]
+          }
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-StreamWorkspaceHostnames"
+        }
+      }
+    }
+  }
+}

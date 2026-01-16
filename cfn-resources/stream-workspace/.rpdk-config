@@ -1,0 +1,22 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "MongoDB::Atlas::StreamWorkspace",
+    "language": "go",
+    "runtime": "provided.al2",
+    "entrypoint": "bootstrap",
+    "testEntrypoint": "bootstrap",
+    "settings": {
+        "version": false,
+        "subparser_name": null,
+        "verbose": 0,
+        "force": false,
+        "type_name": "MongoDB::Atlas::StreamWorkspace",
+        "artifact_type": null,
+        "endpoint_url": null,
+        "region": null,
+        "target_schemas": [],
+        "profile": null,
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/stream-workspace",
+        "protocolVersion": "2.0.0"
+    }
+}

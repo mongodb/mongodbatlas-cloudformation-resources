@@ -18,7 +18,6 @@
         "ProjectId": "636ca5b9ac99222b0ba4de80",
         "Type": "PROMETHEUS",
         "Enabled": "true",
-        "Scheme": "https",
         "ServiceDiscovery": "file",
         "UserName": "PromUser12345578",
         "Password": "Hello@1234"

@@ -25,6 +25,9 @@ This file contains the steps to follow to test any changes to the CFN resources.
 ```bash
    ./../../cfn-testing-helper.sh <resource-folder>
 ```
+
+   > **Note:** When creating or modifying test input files, non-string values (booleans, integers) must be defined as strings. For example, use `"Enabled": "true"` instead of `"Enabled": true`.
+
    - Run cfn test
 ```bash
     cd cfn-resources/[resource-folder]

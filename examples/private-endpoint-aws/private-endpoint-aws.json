@@ -1,0 +1,87 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Test template for MongoDB::Atlas::PrivateEndpointAWS resource. Links an existing AWS VPC Endpoint to an existing Atlas Private Endpoint Service.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "Atlas Profile name for credential management. See profile-secret.yaml for setup instructions.",
+      "Default": "default"
+    },
+    "MongoDBAtlasProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your MongoDB Atlas project.",
+      "AllowedPattern": "^([a-f0-9]{24})$",
+      "ConstraintDescription": "Must be a valid 24-character hexadecimal MongoDB Atlas project ID."
+    },
+    "AtlasPrivateEndpointServiceId": {
+      "Type": "String",
+      "Description": "The Atlas Private Endpoint Service ID (24-character hexadecimal). Get this from MongoDB::Atlas::PrivateEndpointService.Id or Atlas CLI.",
+      "AllowedPattern": "^([a-f0-9]{24})$",
+      "ConstraintDescription": "Must be a valid 24-character hexadecimal Atlas Private Endpoint Service ID."
+    },
+    "AWSVPCEndpointId": {
+      "Type": "String",
+      "Description": "The AWS VPC Endpoint ID that you want to link to Atlas (e.g., vpce-0123456789abcdef0).",
+      "AllowedPattern": "^vpce-[a-z0-9]{8,17}$",
+      "ConstraintDescription": "Must be a valid AWS VPC Endpoint ID starting with 'vpce-'."
+    },
+    "EnforceConnectionSuccess": {
+      "Type": "String",
+      "Description": "If true, CloudFormation will fail if the connection is REJECTED. If false, it succeeds even if REJECTED.",
+      "Default": "true",
+      "AllowedValues": ["true", "false"]
+    }
+  },
+  "Resources": {
+    "AtlasPrivateEndpointConnection": {
+      "Type": "MongoDB::Atlas::PrivateEndpointAWS",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "MongoDBAtlasProjectId"
+        },
+        "EndpointServiceId": {
+          "Ref": "AtlasPrivateEndpointServiceId"
+        },
+        "Id": {
+          "Ref": "AWSVPCEndpointId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "EnforceConnectionSuccess": {
+          "Ref": "EnforceConnectionSuccess"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ConnectionStatus": {
+      "Description": "Status of the AWS PrivateLink connection. Returns one of: NONE, PENDING_ACCEPTANCE, PENDING, AVAILABLE, REJECTED, DELETING.",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasPrivateEndpointConnection",
+          "ConnectionStatus"
+        ]
+      }
+    },
+    "InterfaceEndpointId": {
+      "Description": "Unique identifier of the interface endpoint.",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasPrivateEndpointConnection",
+          "InterfaceEndpointId"
+        ]
+      }
+    },
+    "DeleteRequested": {
+      "Description": "Indicates if Atlas received a request to remove the interface endpoint from the private endpoint connection.",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasPrivateEndpointConnection",
+          "DeleteRequested"
+        ]
+      }
+    }
+  }
+}
+

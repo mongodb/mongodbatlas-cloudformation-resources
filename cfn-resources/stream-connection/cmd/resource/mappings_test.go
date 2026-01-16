@@ -1,4 +1,4 @@
-// Copyright 2026 MongoDB Inc
+// Copyright 2024 MongoDB Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ const (
 	testBootstrap     = "local.example.com:9192"
 	testUser          = "user1"
 	testSampleName    = "sample_stream_solar"
+	testRoleArn       = "arn:aws:iam::123456789012:role/test-lambda-role"
+	testUrl           = "https://api.example.com/stream"
 )
 
 func TestMappings(t *testing.T) {
@@ -131,6 +133,43 @@ func TestMappings(t *testing.T) {
 				assert.Equal(t, testSampleName, *result.ConnectionName)
 				assert.Equal(t, "Sample", *result.Type)
 				assert.Nil(t, result.DbRoleToExecute)
+			},
+		},
+		"GetStreamConnectionModel_awsLambda": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				streamsConn := &admin.StreamsConnection{
+					Name: ptr.String(testConnection), Type: ptr.String(resource.AWSLambdaType),
+					Aws: &admin.StreamsAWSConnectionConfig{
+						RoleArn: ptr.String(testRoleArn),
+					},
+				}
+				result := resource.GetStreamConnectionModel(streamsConn, nil)
+				assert.Equal(t, testConnection, *result.ConnectionName)
+				assert.Equal(t, resource.AWSLambdaType, *result.Type)
+				assert.NotNil(t, result.Aws)
+				assert.Equal(t, testRoleArn, *result.Aws.RoleArn)
+			},
+		},
+		"GetStreamConnectionModel_https": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				testHeaders := map[string]string{
+					"Authorization": "Bearer token123",
+					"Content-Type":  "application/json",
+				}
+				streamsConn := &admin.StreamsConnection{
+					Name: ptr.String(testConnection), Type: ptr.String(resource.HTTPSType),
+					Url:     ptr.String(testUrl),
+					Headers: &testHeaders,
+				}
+				result := resource.GetStreamConnectionModel(streamsConn, nil)
+				assert.Equal(t, testConnection, *result.ConnectionName)
+				assert.Equal(t, resource.HTTPSType, *result.Type)
+				assert.Equal(t, testUrl, *result.Url)
+				assert.NotNil(t, result.Headers)
+				assert.Equal(t, "Bearer token123", result.Headers["Authorization"])
+				assert.Equal(t, "application/json", result.Headers["Content-Type"])
 			},
 		},
 	}

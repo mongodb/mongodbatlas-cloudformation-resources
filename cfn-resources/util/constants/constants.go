@@ -157,4 +157,8 @@ const (
 	ConnectionName = "ConnectionName"
 	Type           = "Type"
 	StreamConfig   = "StreamConfig"
+
+	AuthorizedEmail         = "AuthorizedEmail"
+	AuthorizedUserFirstName = "AuthorizedUserFirstName"
+	AuthorizedUserLastName  = "AuthorizedUserLastName"
 )

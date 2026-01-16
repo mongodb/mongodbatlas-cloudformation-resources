@@ -1,0 +1,165 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Backup Compliance Policy on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project"
+    },
+    "AuthorizedEmail": {
+      "Type": "String",
+      "Description": "Email address of the user authorized to update the Backup Compliance Policy settings"
+    },
+    "AuthorizedUserFirstName": {
+      "Type": "String",
+      "Description": "First name of the user authorized to update the Backup Compliance Policy settings"
+    },
+    "AuthorizedUserLastName": {
+      "Type": "String",
+      "Description": "Last name of the user authorized to update the Backup Compliance Policy settings"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys",
+      "Default": "default"
+    },
+    "CopyProtectionEnabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether to enable additional copy protection for the cluster",
+      "Default": "false",
+      "AllowedValues": ["true", "false"]
+    },
+    "EncryptionAtRestEnabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether Encryption at Rest using Customer Key Management is required",
+      "Default": "false",
+      "AllowedValues": ["true", "false"]
+    },
+    "PitEnabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether the cluster uses Continuous Cloud Backup",
+      "Default": "false",
+      "AllowedValues": ["true", "false"]
+    },
+    "RestoreWindowDays": {
+      "Type": "Number",
+      "Description": "Number of days back in time you can restore to with Continuous Cloud Backup accuracy",
+      "Default": 7
+    }
+  },
+  "Conditions": {
+    "IsCopyProtectionEnabled": {
+      "Fn::Equals": [
+        {
+          "Ref": "CopyProtectionEnabled"
+        },
+        "true"
+      ]
+    },
+    "IsEncryptionAtRestEnabled": {
+      "Fn::Equals": [
+        {
+          "Ref": "EncryptionAtRestEnabled"
+        },
+        "true"
+      ]
+    },
+    "IsPitEnabled": {
+      "Fn::Equals": [
+        {
+          "Ref": "PitEnabled"
+        },
+        "true"
+      ]
+    }
+  },
+  "Resources": {
+    "BackupCompliancePolicy": {
+      "Type": "MongoDB::Atlas::BackupCompliancePolicy",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "AuthorizedEmail": {
+          "Ref": "AuthorizedEmail"
+        },
+        "AuthorizedUserFirstName": {
+          "Ref": "AuthorizedUserFirstName"
+        },
+        "AuthorizedUserLastName": {
+          "Ref": "AuthorizedUserLastName"
+        },
+        "CopyProtectionEnabled": {
+          "Fn::If": ["IsCopyProtectionEnabled", true, false]
+        },
+        "EncryptionAtRestEnabled": {
+          "Fn::If": ["IsEncryptionAtRestEnabled", true, false]
+        },
+        "PitEnabled": {
+          "Fn::If": ["IsPitEnabled", true, false]
+        },
+        "RestoreWindowDays": {
+          "Ref": "RestoreWindowDays"
+        },
+        "PolicyItemHourly": {
+          "FrequencyInterval": 6,
+          "RetentionUnit": "days",
+          "RetentionValue": 7
+        },
+        "PolicyItemDaily": {
+          "FrequencyInterval": 1,
+          "RetentionUnit": "days",
+          "RetentionValue": 14
+        },
+        "PolicyItemWeekly": [
+          {
+            "FrequencyInterval": 1,
+            "RetentionUnit": "weeks",
+            "RetentionValue": 4
+          }
+        ],
+        "PolicyItemMonthly": [
+          {
+            "FrequencyInterval": 1,
+            "RetentionUnit": "months",
+            "RetentionValue": 12
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "PolicyProjectId": {
+      "Description": "Unique identifier of the project for the Backup Compliance Policy",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ProjectId"
+        }
+      },
+      "Value": {
+        "Ref": "BackupCompliancePolicy"
+      }
+    },
+    "PolicyState": {
+      "Description": "Current state of the Backup Compliance Policy settings",
+      "Value": {
+        "Fn::GetAtt": ["BackupCompliancePolicy", "State"]
+      }
+    },
+    "UpdatedDate": {
+      "Description": "Date and time when the Backup Compliance Policy settings were last updated",
+      "Value": {
+        "Fn::GetAtt": ["BackupCompliancePolicy", "UpdatedDate"]
+      }
+    },
+    "UpdatedUser": {
+      "Description": "Email address of the user who last updated the Backup Compliance Policy settings",
+      "Value": {
+        "Fn::GetAtt": ["BackupCompliancePolicy", "UpdatedUser"]
+      }
+    }
+  }
+}

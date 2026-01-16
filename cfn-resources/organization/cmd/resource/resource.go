@@ -315,6 +315,7 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	model.MultiFactorAuthRequired = settings.MultiFactorAuthRequired
 	model.RestrictEmployeeAccess = settings.RestrictEmployeeAccess
 	model.GenAIFeaturesEnabled = settings.GenAIFeaturesEnabled
+	model.SecurityContact = settings.SecurityContact
 
 	return model, response, nil
 }
@@ -359,6 +360,7 @@ func newOrganizationSettings(model *Model) *admin.OrganizationSettings {
 		MultiFactorAuthRequired: model.MultiFactorAuthRequired,
 		RestrictEmployeeAccess:  model.RestrictEmployeeAccess,
 		GenAIFeaturesEnabled:    model.GenAIFeaturesEnabled,
+		SecurityContact:         model.SecurityContact,
 	}
 }
 

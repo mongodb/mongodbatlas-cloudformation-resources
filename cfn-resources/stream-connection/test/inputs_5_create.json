@@ -1,0 +1,13 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ConnectionName": "ConnectionNameHttps",
+  "Type": "Https",
+  "Url": "https://api.example.com/webhook",
+  "Headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer token123"
+  }
+}
+

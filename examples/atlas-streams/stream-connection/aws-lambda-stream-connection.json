@@ -1,0 +1,77 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates one connection of type 'AWSLambda' for a given stream instance in the specified project",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id",
+      "MinLength": 24,
+      "MaxLength": 24,
+      "AllowedPattern": "^([a-f0-9]{24})$"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream workspace"
+    },
+    "ConnectionName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream connection",
+      "Default": "AWSLambdaConnection"
+    },
+    "LambdaRoleArn": {
+      "Type": "String",
+      "Description": "Amazon Resource Name (ARN) of the IAM role that Stream Processing will assume to access AWS Lambda. The role must have permissions to invoke Lambda functions.",
+      "AllowedPattern": "^arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9+=,.@_-]+$"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "StreamConnection": {
+      "Type": "MongoDB::Atlas::StreamConnection",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ConnectionName": {
+          "Ref": "ConnectionName"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "Type": "AWSLambda",
+        "Aws": {
+          "RoleArn": {
+            "Ref": "LambdaRoleArn"
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ConnectionName": {
+      "Description": "Name of the created stream connection",
+      "Value": {
+        "Ref": "ConnectionName"
+      }
+    },
+    "ConnectionType": {
+      "Description": "Type of the stream connection",
+      "Value": "AWSLambda"
+    },
+    "LambdaRoleArn": {
+      "Description": "IAM Role ARN used for Lambda connection",
+      "Value": {
+        "Ref": "LambdaRoleArn"
+      }
+    }
+  }
+}
+

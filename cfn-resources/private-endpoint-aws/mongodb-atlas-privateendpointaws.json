@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::PrivateEndpointAWS",
-  "description": "Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported",
+  "description": "Creates one private endpoint connection for AWS PrivateLink. This resource links an AWS VPC endpoint to a MongoDB Atlas private endpoint service.",
   "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint-aws",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint-aws/README.md",
   "tagging": {
@@ -8,7 +8,8 @@
   },
   "required": [
     "ProjectId",
-    "EndpointServiceId"
+    "EndpointServiceId",
+    "Id"
   ],
   "properties": {
     "Profile": {
@@ -18,26 +19,52 @@
     },
     "ProjectId": {
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
-      "type": "string"
+      "type": "string",
+      "pattern": "^([a-f0-9]{24})$"
     },
     "EndpointServiceId": {
-      "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
-      "type": "string"
+      "description": "Unique 24-hexadecimal digit string that identifies the Atlas private endpoint service (created with MongoDB::Atlas::PrivateEndpointService) to which you want to connect this VPC endpoint.",
+      "type": "string",
+      "pattern": "^([a-f0-9]{24})$"
     },
     "Id": {
-      "description": "Unique string that identifies the private endpoint. for AWS is the VPC endpoint ID, example: vpce-xxxxxxxx",
+      "description": "Unique string that identifies the AWS VPC endpoint (interface endpoint) that you created in your VPC. Example: vpce-0d00c26273372c6ef",
       "type": "string"
     },
     "EnforceConnectionSuccess": {
-      "description": "If this proper is set to TRUE, the cloud formation resource will return success Only if the private connection is Succeeded",
+      "description": "If set to true, CloudFormation will only return success when the private endpoint connection status is AVAILABLE. If set to false, it returns success once the connection is created regardless of status.",
+      "type": "boolean"
+    },
+    "InterfaceEndpointId": {
+      "description": "Unique identifier of the interface endpoint.",
+      "type": "string"
+    },
+    "PrivateEndpointConnectionName": {
+      "description": "Name of the connection for this private endpoint that Atlas generates.",
+      "type": "string"
+    },
+    "PrivateEndpointResourceId": {
+      "description": "Unique identifier of the private endpoint resource.",
+      "type": "string"
+    },
+    "DeleteRequested": {
+      "description": "Indicates if Atlas received a request to remove the interface endpoint from the private endpoint connection.",
       "type": "boolean"
     },
     "ConnectionStatus": {
-      "description": "State of the Amazon Web Service PrivateLink connection when MongoDB Cloud received this request.",
-      "type": "string"
+      "description": "Status of the AWS PrivateLink connection. Returns one of: NONE, PENDING_ACCEPTANCE, PENDING, AVAILABLE, REJECTED, DELETING.",
+      "type": "string",
+      "enum": [
+        "NONE",
+        "PENDING_ACCEPTANCE",
+        "PENDING",
+        "AVAILABLE",
+        "REJECTED",
+        "DELETING"
+      ]
     },
     "ErrorMessage": {
-      "description": "Error message returned when requesting private connection resource. The resource returns null if the request succeeded.",
+      "description": "Error message pertaining to the interface endpoint. Returns null if there are no errors.",
       "type": "string"
     }
   },
@@ -53,6 +80,14 @@
     "/properties/EndpointServiceId",
     "/properties/Profile",
     "/properties/Id"
+  ],
+  "readOnlyProperties": [
+    "/properties/InterfaceEndpointId",
+    "/properties/PrivateEndpointConnectionName",
+    "/properties/PrivateEndpointResourceId",
+    "/properties/DeleteRequested",
+    "/properties/ConnectionStatus",
+    "/properties/ErrorMessage"
   ],
   "handlers": {
     "create": {

@@ -39,7 +39,7 @@ const (
 	testUser          = "user1"
 	testSampleName    = "sample_stream_solar"
 	testRoleArn       = "arn:aws:iam::123456789012:role/test-lambda-role"
-	testUrl           = "https://api.example.com/stream"
+	testURL           = "https://api.example.com/stream"
 )
 
 func TestMappings(t *testing.T) {
@@ -160,13 +160,13 @@ func TestMappings(t *testing.T) {
 				}
 				streamsConn := &admin.StreamsConnection{
 					Name: ptr.String(testConnection), Type: ptr.String(resource.HTTPSType),
-					Url:     ptr.String(testUrl),
+					Url:     ptr.String(testURL),
 					Headers: &testHeaders,
 				}
 				result := resource.GetStreamConnectionModel(streamsConn, nil)
 				assert.Equal(t, testConnection, *result.ConnectionName)
 				assert.Equal(t, resource.HTTPSType, *result.Type)
-				assert.Equal(t, testUrl, *result.Url)
+				assert.Equal(t, testURL, *result.Url)
 				assert.NotNil(t, result.Headers)
 				assert.Equal(t, "Bearer token123", result.Headers["Authorization"])
 				assert.Equal(t, "application/json", result.Headers["Content-Type"])

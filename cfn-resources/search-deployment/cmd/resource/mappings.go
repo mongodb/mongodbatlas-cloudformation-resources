@@ -26,17 +26,11 @@ func NewCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeployment
 		}
 	}
 
-	// Preserve Id from prevModel if apiResp doesn't have it
-	id := apiResp.Id
-	if id == nil && prevModel != nil {
-		id = prevModel.Id
-	}
-
 	return Model{
 		Profile:                  prevModel.Profile,
 		ClusterName:              prevModel.ClusterName,
 		ProjectId:                prevModel.ProjectId,
-		Id:                       id,
+		Id:                       apiResp.Id,
 		Specs:                    resultSpecs,
 		StateName:                apiResp.StateName,
 		EncryptionAtRestProvider: apiResp.EncryptionAtRestProvider,

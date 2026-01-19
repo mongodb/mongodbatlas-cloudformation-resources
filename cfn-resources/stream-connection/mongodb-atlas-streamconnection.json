@@ -160,7 +160,7 @@
     },
     "InstanceName": {
       "type": "string",
-      "description": "Human-readable label that identifies the stream instance. Deprecated: Use WorkspaceName instead."
+      "description": "Human-readable label that identifies the stream instance. WARNING: This field is deprecated and will be removed in the next major release. Please use WorkspaceName instead."
     },
     "WorkspaceName": {
       "type": "string",

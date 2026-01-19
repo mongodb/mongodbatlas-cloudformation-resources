@@ -49,90 +49,52 @@ echo -e "Created Cluster \"${clusterName}\""
 # AWS IAM role creation and authorization for Lambda connections
 echo "--------------------------------AWS Lambda IAM Role creation starts ----------------------------"
 
-# Role names for CREATE and UPDATE scenarios
-iamRoleNameCreate="mongodb-atlas-streams-lambda-$(date +%s)-${RANDOM}"
-iamRoleNameUpdate="mongodb-atlas-streams-lambda-$(date +%s)-${RANDOM}-updated"
-policyName="atlas-lambda-invoke-policy"
+# Single IAM role for both CREATE and UPDATE scenarios (following Terraform pattern)
+iamRoleName="mongodb-atlas-streams-lambda-$(date +%s)-${RANDOM}"
 
-echo "Creating IAM roles: ${iamRoleNameCreate} and ${iamRoleNameUpdate}"
+echo "Creating IAM role: ${iamRoleName}"
 
-# Create first cloud provider access entry (for CREATE role)
-roleIdCreate=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
-echo "Created Atlas cloud provider access entry for CREATE role: ${roleIdCreate}"
+# Create cloud provider access entry
+roleId=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
+echo "Created Atlas cloud provider access entry: ${roleId}"
 
-# Create second cloud provider access entry (for UPDATE role)
-roleIdUpdate=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
-echo "Created Atlas cloud provider access entry for UPDATE role: ${roleIdUpdate}"
+# Get Atlas AWS Account ARN and External ID
+atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleId}" -r '.awsIamRoles[] | select(.roleId | test($roleID)) | .atlasAWSAccountArn')
+atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleId}" -r '.awsIamRoles[] | select(.roleId | test($roleID)) | .atlasAssumedRoleExternalId')
 
-# Get Atlas AWS Account ARN and External ID for CREATE role
-atlasAWSAccountArnCreate=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleIdCreate}" -r '.awsIamRoles[] | select(.roleId | test($roleID)) | .atlasAWSAccountArn')
-atlasAssumedRoleExternalIdCreate=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleIdCreate}" -r '.awsIamRoles[] | select(.roleId | test($roleID)) | .atlasAssumedRoleExternalId')
-
-# Get Atlas AWS Account ARN and External ID for UPDATE role
-atlasAWSAccountArnUpdate=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleIdUpdate}" -r '.awsIamRoles[] | select(.roleId | test($roleID)) | .atlasAWSAccountArn')
-atlasAssumedRoleExternalIdUpdate=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleIdUpdate}" -r '.awsIamRoles[] | select(.roleId | test($roleID)) | .atlasAssumedRoleExternalId')
-
-# Create trust policy for CREATE role
-jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalIdCreate" \
-	--arg atlasAWSAccountArn "$atlasAWSAccountArnCreate" \
+# Create trust policy
+jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
+	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
 	'.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' \
-	"$(dirname "$0")/lambda-role-policy-template.json" >"$(dirname "$0")/lambda-trust-policy-create.json"
-
-# Create trust policy for UPDATE role
-jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalIdUpdate" \
-	--arg atlasAWSAccountArn "$atlasAWSAccountArnUpdate" \
-	'.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' \
-	"$(dirname "$0")/lambda-role-policy-template.json" >"$(dirname "$0")/lambda-trust-policy-update.json"
+	"$(dirname "$0")/lambda-role-policy-template.json" >"$(dirname "$0")/lambda-trust-policy.json"
 
 echo "--------------------------------AWS IAM Role creation starts ----------------------------"
 
-# Check if CREATE role exists, delete if found
-awsRoleIdCreate=$(aws iam get-role --role-name "${iamRoleNameCreate}" 2>/dev/null | jq --arg roleName "${iamRoleNameCreate}" -r '.Role | select(.RoleName==$roleName) | .RoleId' || echo "")
-if [ -n "$awsRoleIdCreate" ]; then
-	aws iam delete-role-policy --role-name "${iamRoleNameCreate}" --policy-name "${policyName}" 2>/dev/null || true
-	aws iam delete-role --role-name "${iamRoleNameCreate}"
-	echo "Deleted existing CREATE role"
+# Check if role exists, delete if found
+awsRoleId=$(aws iam get-role --role-name "${iamRoleName}" 2>/dev/null | jq --arg roleName "${iamRoleName}" -r '.Role | select(.RoleName==$roleName) | .RoleId' || echo "")
+if [ -n "$awsRoleId" ]; then
+	aws iam delete-role --role-name "${iamRoleName}"
+	echo "Deleted existing role"
 fi
 
-# Create CREATE role
-awsRoleIdCreate=$(aws iam create-role --role-name "${iamRoleNameCreate}" --assume-role-policy-document file://"$(dirname "$0")"/lambda-trust-policy-create.json | jq --arg roleName "${iamRoleNameCreate}" -r '.Role | select(.RoleName==$roleName) | .RoleId')
-echo "Created AWS IAM role for CREATE: ${awsRoleIdCreate}"
+# Create IAM role
+awsRoleId=$(aws iam create-role --role-name "${iamRoleName}" --assume-role-policy-document file://"$(dirname "$0")"/lambda-trust-policy.json | jq --arg roleName "${iamRoleName}" -r '.Role | select(.RoleName==$roleName) | .RoleId')
+echo "Created AWS IAM role: ${awsRoleId}"
 
-# Check if UPDATE role exists, delete if found
-awsRoleIdUpdate=$(aws iam get-role --role-name "${iamRoleNameUpdate}" 2>/dev/null | jq --arg roleName "${iamRoleNameUpdate}" -r '.Role | select(.RoleName==$roleName) | .RoleId' || echo "")
-if [ -n "$awsRoleIdUpdate" ]; then
-	aws iam delete-role-policy --role-name "${iamRoleNameUpdate}" --policy-name "${policyName}" 2>/dev/null || true
-	aws iam delete-role --role-name "${iamRoleNameUpdate}"
-	echo "Deleted existing UPDATE role"
-fi
-
-# Create UPDATE role
-awsRoleIdUpdate=$(aws iam create-role --role-name "${iamRoleNameUpdate}" --assume-role-policy-document file://"$(dirname "$0")"/lambda-trust-policy-update.json | jq --arg roleName "${iamRoleNameUpdate}" -r '.Role | select(.RoleName==$roleName) | .RoleId')
-echo "Created AWS IAM role for UPDATE: ${awsRoleIdUpdate}"
-
-# Get role ARNs
-awsArnCreate=$(aws iam get-role --role-name "${iamRoleNameCreate}" | jq --arg roleName "${iamRoleNameCreate}" -r '.Role | select(.RoleName==$roleName) | .Arn')
-awsArnUpdate=$(aws iam get-role --role-name "${iamRoleNameUpdate}" | jq --arg roleName "${iamRoleNameUpdate}" -r '.Role | select(.RoleName==$roleName) | .Arn')
-
-# Attach Lambda permissions to both roles
-aws iam put-role-policy --role-name "${iamRoleNameCreate}" --policy-name "${policyName}" --policy-document file://"$(dirname "$0")"/lambda-permissions-template.json
-aws iam put-role-policy --role-name "${iamRoleNameUpdate}" --policy-name "${policyName}" --policy-document file://"$(dirname "$0")"/lambda-permissions-template.json
-echo "Attached Lambda invoke permissions to both roles"
+# Get role ARN
+awsArn=$(aws iam get-role --role-name "${iamRoleName}" | jq --arg roleName "${iamRoleName}" -r '.Role | select(.RoleName==$roleName) | .Arn')
 
 echo "--------------------------------AWS IAM Role creation ends ----------------------------"
 
 # Wait for AWS IAM role to propagate (similar to encryption-at-rest pattern)
-echo "Waiting for IAM roles to propagate..."
+echo "Waiting for IAM role to propagate..."
 sleep 65
 
-# Authorize the roles in Atlas
-echo "--------------------------------Authorize MongoDB Atlas Roles starts ----------------------------"
-atlas cloudProviders accessRoles aws authorize "${roleIdCreate}" --iamAssumedRoleArn "${awsArnCreate}" --projectId "${projectId}"
-echo "Authorized CREATE role: ${iamRoleNameCreate}"
-
-atlas cloudProviders accessRoles aws authorize "${roleIdUpdate}" --iamAssumedRoleArn "${awsArnUpdate}" --projectId "${projectId}"
-echo "Authorized UPDATE role: ${iamRoleNameUpdate}"
-echo "--------------------------------Authorize MongoDB Atlas Roles ends ----------------------------"
+# Authorize the role in Atlas
+echo "--------------------------------Authorize MongoDB Atlas Role starts ----------------------------"
+atlas cloudProviders accessRoles aws authorize "${roleId}" --iamAssumedRoleArn "${awsArn}" --projectId "${projectId}"
+echo "Authorized role: ${iamRoleName}"
+echo "--------------------------------Authorize MongoDB Atlas Role ends ----------------------------"
 
 jq --arg cluster_name "$clusterName" \
 	--arg workspace_name "$workspaceName" \
@@ -187,7 +149,7 @@ jq --arg workspace_name "$workspaceName" \
 jq --arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
-	--arg role_arn "$awsArnCreate" \
+	--arg role_arn "$awsArn" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
@@ -197,7 +159,7 @@ jq --arg workspace_name "$workspaceName" \
 jq --arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
-	--arg role_arn "$awsArnUpdate" \
+	--arg role_arn "$awsArn" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name

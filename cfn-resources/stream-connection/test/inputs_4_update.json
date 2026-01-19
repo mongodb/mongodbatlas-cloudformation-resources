@@ -5,7 +5,7 @@
   "ConnectionName": "ConnectionNameAWSLambda",
   "Type": "AWSLambda",
   "Aws": {
-    "RoleArn": "arn:aws:iam::263641576157:role/mongodb-atlas-streams-lambda-new-updated"
+    "RoleArn": ""
   }
 }
 

@@ -81,13 +81,7 @@
     },
     "EncryptionAtRestProvider": {
       "type": "string",
-      "description": "Cloud service provider that manages your customer keys to provide an additional layer of Encryption At Rest for the cluster.",
-      "enum": [
-        "AWS",
-        "GCP",
-        "AZURE",
-        "NONE"
-      ]
+      "description": "Cloud service provider that manages your customer keys to provide an additional layer of Encryption At Rest for the cluster."
     }
   },
   "primaryIdentifier": [

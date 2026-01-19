@@ -6,7 +6,6 @@ package resource
 type Model struct {
 	Profile               *string         `json:",omitempty"`
 	ProjectId             *string         `json:",omitempty"`
-	InstanceName          *string         `json:",omitempty"`
 	WorkspaceName         *string         `json:",omitempty"`
 	ProcessorName         *string         `json:",omitempty"`
 	Pipeline              *string         `json:",omitempty"`

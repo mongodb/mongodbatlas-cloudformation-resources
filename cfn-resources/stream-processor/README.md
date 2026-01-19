@@ -138,7 +138,7 @@ For processors with DLQ:
 ## Notes
 
 - **AWS Only**: This CloudFormation resource is designed for AWS deployments. The provider is effectively AWS.
-- **WorkspaceName vs InstanceName**: Use `WorkspaceName` (preferred). `InstanceName` is supported for backward compatibility but is deprecated.
+- **WorkspaceName**: This field is the same as 'InstanceName' used in other stream resources.
 - **State Management**: When creating a processor, specify `State: STARTED` to automatically start processing, or `State: CREATED` to create it in a stopped state.
 - **Long-Running Operations**: Creating and starting stream processors can take several minutes. The resource uses callback-based state management to handle these operations asynchronously.
 - **Timeout Configuration**: Use `Timeouts.Create` to configure how long to wait for processor creation/startup (default: 20 minutes).

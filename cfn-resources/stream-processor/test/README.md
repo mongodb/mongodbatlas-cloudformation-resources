@@ -1,12 +1,15 @@
 # MongoDB::Atlas::StreamProcessor
 
 ## Impact
-The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
- - Stream Processor L1 CDK constructor
 
+The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
+
+- Stream Processor L1 CDK constructor
 
 ## Prerequisites
+
 ### Resources needed to run the manual QA
+
 All resources are created as part of `cfn-testing-helper.sh`:
 
 - Atlas Project
@@ -17,8 +20,8 @@ All resources are created as part of `cfn-testing-helper.sh`:
 **IMPORTANT**: Stream Instance/Workspace creation is a LONG-RUNNING operation that can take 10-30+ minutes. The `cfn-test-create-inputs.sh` script will create the workspace and wait for it to be ready before proceeding.
 
 ## Manual QA
-Please follow the steps in [TESTING.md](../../../TESTING.md).
 
+Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 ### Success criteria when testing the resource
 
@@ -27,6 +30,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md).
 A Stream Processor should be created in the specified test project for the specified Atlas Stream workspace/instance:
 
 **Atlas UI Verification:**
+
 - Navigate to Atlas UI → Your Project → Stream Processing
 - Select the stream workspace/instance used in the test
 - Go to the **Processors** tab
@@ -39,11 +43,13 @@ A Stream Processor should be created in the specified test project for the speci
     - Merge target connection, database, and collection are correct
 
 **Atlas CLI Verification:**
+
 ```bash
 atlas streams processors describe <PROCESSOR_NAME> \
   --instance <WORKSPACE_NAME> \
   --projectId <PROJECT_ID>
 ```
+
 - Verify `id` field is present (matches CloudFormation `Id` attribute)
 - Verify `name` matches `ProcessorName`
 - Verify `state` matches `State` parameter
@@ -52,6 +58,7 @@ atlas streams processors describe <PROCESSOR_NAME> \
 #### 2. DLQ Configuration Verification (inputs_3)
 
 For processors with DLQ configuration:
+
 - In Atlas UI: Verify DLQ settings are displayed in processor details
 - Via Atlas CLI: Verify `options.dlq` object contains:
   - `connectionName`: Matches `Options.Dlq.ConnectionName`
@@ -61,19 +68,16 @@ For processors with DLQ configuration:
 #### 3. Backward Compatibility Testing
 
 Test both field names work correctly:
+
 - **Test with `WorkspaceName`** (preferred field):
   - Create processor using `WorkspaceName` parameter
   - Verify processor is created successfully
-  - Verify both `WorkspaceName` and `InstanceName` are set in returned model (for primary identifier)
-- **Test with `InstanceName`** (deprecated field):
-  - Create processor using `InstanceName` parameter
-  - Verify processor is created successfully
-  - Verify both `WorkspaceName` and `InstanceName` are set in returned model
-  - Verify `WorkspaceName` is automatically set from `InstanceName` for forward compatibility
+  - Verify `WorkspaceName` is set in returned model (for primary identifier)
 
 #### 4. State Transition Testing
 
 Test all valid state transitions:
+
 - **Create with `State: CREATED`**:
   - Verify processor is created in CREATED state
   - Verify processor does not start processing automatically
@@ -106,9 +110,9 @@ Test all valid state transitions:
 #### 6. Primary Identifier Verification
 
 Verify all primary identifier fields are present in returned models:
+
 - `ProjectId`: Always present
-- `WorkspaceName`: Always present (set from `InstanceName` if needed)
-- `InstanceName`: Always present (set from `WorkspaceName` if needed)
+- `WorkspaceName`: Always present
 - `ProcessorName`: Always present
 - `Profile`: Always present
 
@@ -117,14 +121,15 @@ This is critical for CloudFormation to properly track the resource.
 #### 7. General CFN Resource Success Criteria
 
 Ensure general [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) for this resource is met:
+
 - All CRUD operations work correctly
 - Read-after-Create returns correct values
 - Update operations preserve primary identifier
 - Delete operations clean up resources
 - Error handling is appropriate
 
-
 ## Important Links
+
 - [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-streams)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/atlas-sp/overview/)
 
@@ -135,7 +140,9 @@ The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling
 ```
 sam local start-lambda --skip-pull-image
 ```
+
 then in another shell:
+
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 cd ${repo_root}/cfn-resources/stream-processor
@@ -152,10 +159,10 @@ The test directory contains the following input files:
 
 - `inputs_1_create.template.json` / `inputs_1_update.template.json`: Basic stream processor with WorkspaceName, CREATED state
 - `inputs_2_create.template.json` / `inputs_2_update.template.json`: Stream processor with STARTED state, timeout configuration, and DeleteOnCreateTimeout
-- `inputs_3_create.template.json` / `inputs_3_update.template.json`: Stream processor with InstanceName (backward compatibility) and DLQ options
+- `inputs_3_create.template.json` / `inputs_3_update.template.json`: Stream processor with DLQ options
 
 All input files respect:
+
 - AWS-only behavior (no Azure/GCP-only parameters)
-- Required fields: ProjectId, ProcessorName, Pipeline
-- Backward compatibility: Supports both WorkspaceName and InstanceName
+- Required fields: ProjectId, WorkspaceName, ProcessorName, Pipeline
 - Schema validation: All fields match the final CFN schema

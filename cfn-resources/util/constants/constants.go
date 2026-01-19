@@ -160,4 +160,5 @@ const (
 
 	ProcessorName = "ProcessorName"
 	Pipeline      = "Pipeline"
+	WorkspaceName = "WorkspaceName"
 )

@@ -39,9 +39,9 @@ const (
 )
 
 var (
-	createRequiredFields           = []string{constants.ProjectID, constants.ProcessorName, constants.Pipeline}
-	readUpdateDeleteRequiredFields = []string{constants.ProjectID, constants.ProcessorName}
-	listRequiredFields             = []string{constants.ProjectID}
+	createRequiredFields           = []string{constants.ProjectID, constants.WorkspaceName, constants.ProcessorName, constants.Pipeline}
+	readUpdateDeleteRequiredFields = []string{constants.ProjectID, constants.WorkspaceName, constants.ProcessorName}
+	listRequiredFields             = []string{constants.ProjectID, constants.WorkspaceName}
 )
 
 func Create(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {

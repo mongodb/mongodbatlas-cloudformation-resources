@@ -34,18 +34,7 @@ func copyIdentifyingFields(resourceModel, currentModel *Model) {
 	resourceModel.Profile = currentModel.Profile
 	resourceModel.ProjectId = currentModel.ProjectId
 	resourceModel.ProcessorName = currentModel.ProcessorName
-
-	switch {
-	case currentModel.WorkspaceName != nil && *currentModel.WorkspaceName != "":
-		resourceModel.WorkspaceName = currentModel.WorkspaceName
-		resourceModel.InstanceName = util.Pointer(*currentModel.WorkspaceName)
-	case currentModel.InstanceName != nil && *currentModel.InstanceName != "":
-		resourceModel.InstanceName = currentModel.InstanceName
-		resourceModel.WorkspaceName = util.Pointer(*currentModel.InstanceName)
-	default:
-		resourceModel.WorkspaceName = currentModel.WorkspaceName
-		resourceModel.InstanceName = currentModel.InstanceName
-	}
+	resourceModel.WorkspaceName = currentModel.WorkspaceName
 }
 
 func parseTimeout(timeoutStr string) time.Duration {
@@ -95,14 +84,14 @@ func finalizeModel(streamProcessor *admin.StreamsProcessorWithStats, currentMode
 	}
 }
 
-func getAllStreamProcessors(ctx context.Context, atlasClient *admin.APIClient, projectID, workspaceOrInstanceName string) ([]admin.StreamsProcessorWithStats, *http.Response, error) {
+func getAllStreamProcessors(ctx context.Context, atlasClient *admin.APIClient, projectID, workspaceName string) ([]admin.StreamsProcessorWithStats, *http.Response, error) {
 	pageNum := 1
 	accumulatedProcessors := make([]admin.StreamsProcessorWithStats, 0)
 
 	for allRecordsRetrieved := false; !allRecordsRetrieved; {
 		processorsResp, apiResp, err := atlasClient.StreamsApi.GetStreamProcessorsWithParams(ctx, &admin.GetStreamProcessorsApiParams{
 			GroupId:      projectID,
-			TenantName:   workspaceOrInstanceName,
+			TenantName:   workspaceName,
 			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),
 			PageNum:      util.Pointer(pageNum),
 		}).Execute()
@@ -122,10 +111,10 @@ func getAllStreamProcessors(ctx context.Context, atlasClient *admin.APIClient, p
 	return accumulatedProcessors, nil, nil
 }
 
-func getStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, projectID, workspaceOrInstanceName, processorName string) (*admin.StreamsProcessorWithStats, *handler.ProgressEvent) {
+func getStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, projectID, workspaceName, processorName string) (*admin.StreamsProcessorWithStats, *handler.ProgressEvent) {
 	requestParams := &admin.GetStreamProcessorApiParams{
 		GroupId:       projectID,
-		TenantName:    workspaceOrInstanceName,
+		TenantName:    workspaceName,
 		ProcessorName: processorName,
 	}
 
@@ -146,11 +135,11 @@ func getStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, proje
 	return streamProcessor, nil
 }
 
-func startStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, projectID, workspaceOrInstanceName, processorName string) *handler.ProgressEvent {
+func startStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, projectID, workspaceName, processorName string) *handler.ProgressEvent {
 	_, err := atlasClient.StreamsApi.StartStreamProcessorWithParams(ctx,
 		&admin.StartStreamProcessorApiParams{
 			GroupId:       projectID,
-			TenantName:    workspaceOrInstanceName,
+			TenantName:    workspaceName,
 			ProcessorName: processorName,
 		},
 	).Execute()

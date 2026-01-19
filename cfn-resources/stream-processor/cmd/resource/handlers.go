@@ -47,13 +47,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		)
 	}
 
-	workspaceOrInstanceName, err := GetWorkspaceOrInstanceName(model)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         err.Error(),
-		}
-	}
+	workspaceName := util.SafeString(model.WorkspaceName)
 
 	ctx := context.Background()
 	projectID := util.SafeString(model.ProjectId)
@@ -83,7 +77,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		}
 	}
 
-	_, apiResp, err := client.AtlasSDK.StreamsApi.CreateStreamProcessor(ctx, projectID, workspaceOrInstanceName, streamProcessorReq).Execute()
+	_, apiResp, err := client.AtlasSDK.StreamsApi.CreateStreamProcessor(ctx, projectID, workspaceName, streamProcessorReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -110,7 +104,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		Message:              constants.Pending,
 		ResourceModel:        inProgressModel,
 		CallbackDelaySeconds: defaultCallbackDelaySeconds,
-		CallbackContext: buildCallbackContext(projectID, workspaceOrInstanceName, processorName, map[string]any{
+		CallbackContext: buildCallbackContext(projectID, workspaceName, processorName, map[string]any{
 			"needsStarting":         needsStarting,
 			"startTime":             time.Now().Format(time.RFC3339),
 			"timeoutDuration":       timeoutStr,
@@ -120,21 +114,14 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 }
 
 func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	workspaceOrInstanceName, err := GetWorkspaceOrInstanceName(model)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         err.Error(),
-		}
-	}
-
+	workspaceName := util.SafeString(model.WorkspaceName)
 	projectID := util.SafeString(model.ProjectId)
 	processorName := util.SafeString(model.ProcessorName)
 
 	streamProcessor, apiResp, err := client.AtlasSDK.StreamsApi.GetStreamProcessorWithParams(context.Background(),
 		&admin.GetStreamProcessorApiParams{
 			GroupId:       projectID,
-			TenantName:    workspaceOrInstanceName,
+			TenantName:    workspaceName,
 			ProcessorName: processorName,
 		}).Execute()
 	if err != nil {
@@ -179,13 +166,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 		)
 	}
 
-	workspaceOrInstanceName, err := GetWorkspaceOrInstanceName(model)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         err.Error(),
-		}
-	}
+	workspaceName := util.SafeString(model.WorkspaceName)
 
 	ctx := context.Background()
 	projectID := util.SafeString(model.ProjectId)
@@ -193,7 +174,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 
 	requestParams := &admin.GetStreamProcessorApiParams{
 		GroupId:       projectID,
-		TenantName:    workspaceOrInstanceName,
+		TenantName:    workspaceName,
 		ProcessorName: processorName,
 	}
 
@@ -229,7 +210,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 		_, err := client.AtlasSDK.StreamsApi.StopStreamProcessorWithParams(ctx,
 			&admin.StopStreamProcessorApiParams{
 				GroupId:       projectID,
-				TenantName:    workspaceOrInstanceName,
+				TenantName:    workspaceName,
 				ProcessorName: processorName,
 			},
 		).Execute()
@@ -252,7 +233,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 			Message:              constants.Pending,
 			ResourceModel:        inProgressModel,
 			CallbackDelaySeconds: defaultCallbackDelaySeconds,
-			CallbackContext: buildCallbackContext(projectID, workspaceOrInstanceName, processorName, map[string]any{
+			CallbackContext: buildCallbackContext(projectID, workspaceName, processorName, map[string]any{
 				"desiredState": desiredState,
 			}),
 		}
@@ -275,7 +256,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 		_, err := client.AtlasSDK.StreamsApi.StartStreamProcessorWithParams(ctx,
 			&admin.StartStreamProcessorApiParams{
 				GroupId:       projectID,
-				TenantName:    workspaceOrInstanceName,
+				TenantName:    workspaceName,
 				ProcessorName: processorName,
 			},
 		).Execute()
@@ -298,7 +279,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 			Message:              constants.Pending,
 			ResourceModel:        inProgressModel,
 			CallbackDelaySeconds: defaultCallbackDelaySeconds,
-			CallbackContext: buildCallbackContext(projectID, workspaceOrInstanceName, processorName, map[string]any{
+			CallbackContext: buildCallbackContext(projectID, workspaceName, processorName, map[string]any{
 				"desiredState": desiredState,
 			}),
 		}
@@ -308,19 +289,13 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 }
 
 func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	workspaceOrInstanceName, err := GetWorkspaceOrInstanceName(model)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         err.Error(),
-		}
-	}
+	workspaceName := util.SafeString(model.WorkspaceName)
 
 	ctx := context.Background()
 	projectID := util.SafeString(model.ProjectId)
 	processorName := util.SafeString(model.ProcessorName)
 
-	apiResp, err := client.AtlasSDK.StreamsApi.DeleteStreamProcessor(ctx, projectID, workspaceOrInstanceName, processorName).Execute()
+	apiResp, err := client.AtlasSDK.StreamsApi.DeleteStreamProcessor(ctx, projectID, workspaceName, processorName).Execute()
 	if err != nil {
 		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
@@ -342,18 +317,12 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 }
 
 func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	workspaceOrInstanceName, err := GetWorkspaceOrInstanceName(model)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         err.Error(),
-		}
-	}
+	workspaceName := util.SafeString(model.WorkspaceName)
 
 	ctx := context.Background()
 	projectID := util.SafeString(model.ProjectId)
 
-	accumulatedProcessors, apiResp, err := getAllStreamProcessors(ctx, client.AtlasSDK, projectID, workspaceOrInstanceName)
+	accumulatedProcessors, apiResp, err := getAllStreamProcessors(ctx, client.AtlasSDK, projectID, workspaceName)
 	if err != nil {
 		return handleError(apiResp, constants.LIST, err)
 	}

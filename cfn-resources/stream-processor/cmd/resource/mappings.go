@@ -23,16 +23,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func GetWorkspaceOrInstanceName(model *Model) (string, error) {
-	if model.WorkspaceName != nil && *model.WorkspaceName != "" {
-		return *model.WorkspaceName, nil
-	}
-	if model.InstanceName != nil && *model.InstanceName != "" {
-		return *model.InstanceName, nil
-	}
-	return "", fmt.Errorf("either WorkspaceName or InstanceName must be provided")
-}
-
 func ConvertPipelineToSdk(pipeline string) ([]any, error) {
 	var pipelineSliceOfMaps []any
 	err := json.Unmarshal([]byte(pipeline), &pipelineSliceOfMaps)
@@ -96,14 +86,11 @@ func NewStreamProcessorUpdateReq(model *Model) (*admin.UpdateStreamProcessorApiP
 		return nil, err
 	}
 
-	workspaceOrInstanceName, err := GetWorkspaceOrInstanceName(model)
-	if err != nil {
-		return nil, err
-	}
+	workspaceName := util.SafeString(model.WorkspaceName)
 
 	streamProcessorAPIParams := &admin.UpdateStreamProcessorApiParams{
 		GroupId:       util.SafeString(model.ProjectId),
-		TenantName:    workspaceOrInstanceName,
+		TenantName:    workspaceName,
 		ProcessorName: util.SafeString(model.ProcessorName),
 		StreamsModifyStreamProcessor: &admin.StreamsModifyStreamProcessor{
 			Name:     model.ProcessorName,

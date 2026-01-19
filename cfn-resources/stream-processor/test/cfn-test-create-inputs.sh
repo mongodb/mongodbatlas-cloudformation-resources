@@ -185,7 +185,6 @@ echo -e "Created Kafka Sink Connection \"${kafkaSinkConnectionName}\"\n"
 
 # Generate input files
 # Reuse connectionName from inputs_3 for inputs_1 and inputs_2 sink (saves creating another cluster)
-# Also set InstanceName from WorkspaceName for primary identifier (both fields required)
 jq --arg workspace_name "$workspaceName" \
 	--arg project_id "$projectId" \
 	--arg profile "$profile" \
@@ -193,7 +192,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Pipeline?|=gsub("SINK_CONNECTION_PLACEHOLDER"; $sink_connection_name)' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
@@ -204,7 +202,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Pipeline?|=gsub("SINK_CONNECTION_PLACEHOLDER"; $sink_connection_name)' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
@@ -215,7 +212,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Pipeline?|=gsub("SINK_CONNECTION_PLACEHOLDER"; $sink_connection_name)' \
 	"$(dirname "$0")/inputs_2_create.template.json" >"inputs/inputs_2_create.json"
 
@@ -226,7 +222,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Pipeline?|=gsub("SINK_CONNECTION_PLACEHOLDER"; $sink_connection_name)' \
 	"$(dirname "$0")/inputs_2_update.template.json" >"inputs/inputs_2_update.json"
 
@@ -237,7 +232,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Options.Dlq.ConnectionName?|=$connection_name
    | .Pipeline?|=gsub("CONNECTION_NAME_PLACEHOLDER"; $connection_name)' \
 	"$(dirname "$0")/inputs_3_create.template.json" >"inputs/inputs_3_create.json"
@@ -249,7 +243,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Options.Dlq.ConnectionName?|=$connection_name
    | .Pipeline?|=gsub("CONNECTION_NAME_PLACEHOLDER"; $connection_name)' \
 	"$(dirname "$0")/inputs_3_update.template.json" >"inputs/inputs_3_update.json"
@@ -263,7 +256,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Pipeline?|=gsub("KAFKA_SOURCE_CONNECTION_PLACEHOLDER"; $kafka_source)
    | .Pipeline?|=gsub("CLUSTER_SINK_CONNECTION_PLACEHOLDER"; $cluster_sink)' \
 	"$(dirname "$0")/inputs_4_create.template.json" >"inputs/inputs_4_create.json"
@@ -276,7 +268,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Pipeline?|=gsub("KAFKA_SOURCE_CONNECTION_PLACEHOLDER"; $kafka_source)
    | .Pipeline?|=gsub("CLUSTER_SINK_CONNECTION_PLACEHOLDER"; $cluster_sink)' \
 	"$(dirname "$0")/inputs_4_update.template.json" >"inputs/inputs_4_update.json"
@@ -290,7 +281,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Pipeline?|=gsub("CLUSTER_SOURCE_CONNECTION_PLACEHOLDER"; $cluster_source)
    | .Pipeline?|=gsub("KAFKA_SINK_CONNECTION_PLACEHOLDER"; $kafka_sink)' \
 	"$(dirname "$0")/inputs_5_create.template.json" >"inputs/inputs_5_create.json"
@@ -303,7 +293,6 @@ jq --arg workspace_name "$workspaceName" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name
-   | .InstanceName?|=$workspace_name
    | .Pipeline?|=gsub("CLUSTER_SOURCE_CONNECTION_PLACEHOLDER"; $cluster_source)
    | .Pipeline?|=gsub("KAFKA_SINK_CONNECTION_PLACEHOLDER"; $kafka_sink)' \
 	"$(dirname "$0")/inputs_5_update.template.json" >"inputs/inputs_5_update.json"

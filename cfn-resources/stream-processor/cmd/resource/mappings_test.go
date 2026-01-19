@@ -33,40 +33,6 @@ func assertJSONEqual(t *testing.T, expected, actual string) {
 	assert.Equal(t, expectedJSON, actualJSON)
 }
 
-func TestGetWorkspaceOrInstanceName(t *testing.T) {
-	testCases := map[string]struct {
-		model          *resource.Model
-		expectedResult string
-		expectedError  string
-	}{
-		"workspaceName": {
-			model:          &resource.Model{WorkspaceName: util.StringPtr("workspace-1")},
-			expectedResult: "workspace-1",
-		},
-		"instanceName": {
-			model:          &resource.Model{InstanceName: util.StringPtr("instance-1")},
-			expectedResult: "instance-1",
-		},
-		"neitherSet": {
-			model:         &resource.Model{},
-			expectedError: "either WorkspaceName or InstanceName must be provided",
-		},
-	}
-
-	for name, tc := range testCases {
-		t.Run(name, func(t *testing.T) {
-			result, err := resource.GetWorkspaceOrInstanceName(tc.model)
-			if tc.expectedError != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tc.expectedError)
-			} else {
-				require.NoError(t, err)
-				assert.Equal(t, tc.expectedResult, result)
-			}
-		})
-	}
-}
-
 func TestConvertPipelineToSdk(t *testing.T) {
 	testCases := map[string]struct {
 		pipeline      string

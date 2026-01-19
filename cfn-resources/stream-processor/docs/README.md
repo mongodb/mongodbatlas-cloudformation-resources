@@ -14,7 +14,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#instancename" title="InstanceName">InstanceName</a>" : <i>String</i>,
         "<a href="#workspacename" title="WorkspaceName">WorkspaceName</a>" : <i>String</i>,
         "<a href="#processorname" title="ProcessorName">ProcessorName</a>" : <i>String</i>,
         "<a href="#pipeline" title="Pipeline">Pipeline</a>" : <i>String</i>,
@@ -33,7 +32,6 @@ Type: MongoDB::Atlas::StreamProcessor
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
-    <a href="#instancename" title="InstanceName">InstanceName</a>: <i>String</i>
     <a href="#workspacename" title="WorkspaceName">WorkspaceName</a>: <i>String</i>
     <a href="#processorname" title="ProcessorName">ProcessorName</a>: <i>String</i>
     <a href="#pipeline" title="Pipeline">Pipeline</a>: <i>String</i>
@@ -73,21 +71,11 @@ _Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### InstanceName
-
-Label that identifies the stream processing workspace. This field is deprecated in favor of WorkspaceName. Exactly one of InstanceName or WorkspaceName must be provided.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
 #### WorkspaceName
 
-Label that identifies the stream processing workspace. This is the preferred field name. Exactly one of InstanceName or WorkspaceName must be provided.
+Label that identifies the stream processing workspace.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 

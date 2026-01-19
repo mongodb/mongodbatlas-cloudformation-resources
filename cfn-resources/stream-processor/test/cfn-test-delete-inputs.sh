@@ -11,7 +11,7 @@ function usage {
 }
 
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
-workspaceName=$(jq -r '.WorkspaceName // .InstanceName' ./inputs/inputs_1_create.json)
+workspaceName=$(jq -r '.WorkspaceName' ./inputs/inputs_1_create.json)
 processorName1=$(jq -r '.ProcessorName' ./inputs/inputs_1_create.json)
 processorName2=$(jq -r '.ProcessorName' ./inputs/inputs_2_create.json)
 processorName3=$(jq -r '.ProcessorName' ./inputs/inputs_3_create.json)

@@ -59,13 +59,9 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
-    "InstanceName": {
-      "type": "string",
-      "description": "Label that identifies the stream processing workspace. This field is deprecated in favor of WorkspaceName. Exactly one of InstanceName or WorkspaceName must be provided."
-    },
     "WorkspaceName": {
       "type": "string",
-      "description": "Label that identifies the stream processing workspace. This is the preferred field name. Exactly one of InstanceName or WorkspaceName must be provided."
+      "description": "Label that identifies the stream processing workspace."
     },
     "ProcessorName": {
       "type": "string",
@@ -105,7 +101,7 @@
     }
   },
   "additionalProperties": false,
-  "required": ["ProjectId", "ProcessorName", "Pipeline"],
+  "required": ["ProjectId", "WorkspaceName", "ProcessorName", "Pipeline"],
   "readOnlyProperties": [
     "/properties/Id",
     "/properties/Stats",
@@ -114,14 +110,12 @@
   "writeOnlyProperties": ["/properties/DeleteOnCreateTimeout"],
   "primaryIdentifier": [
     "/properties/ProjectId",
-    "/properties/InstanceName",
     "/properties/WorkspaceName",
     "/properties/ProcessorName",
     "/properties/Profile"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/InstanceName",
     "/properties/WorkspaceName",
     "/properties/ProcessorName",
     "/properties/Profile"

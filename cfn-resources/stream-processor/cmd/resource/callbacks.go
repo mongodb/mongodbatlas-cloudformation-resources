@@ -29,14 +29,14 @@ import (
 )
 
 type CallbackData struct {
-	ProjectID               string
-	WorkspaceOrInstanceName string
-	ProcessorName           string
-	DesiredState            string
-	StartTime               string
-	TimeoutDuration         string
-	NeedsStarting           bool
-	DeleteOnCreateTimeout   bool
+	ProjectID             string
+	WorkspaceName         string
+	ProcessorName         string
+	DesiredState          string
+	StartTime             string
+	TimeoutDuration       string
+	NeedsStarting         bool
+	DeleteOnCreateTimeout bool
 }
 
 func getCallbackData(req handler.Request) *CallbackData {
@@ -46,7 +46,7 @@ func getCallbackData(req handler.Request) *CallbackData {
 		ctx.ProjectID = val
 	}
 	if val, ok := req.CallbackContext["workspaceName"].(string); ok {
-		ctx.WorkspaceOrInstanceName = val
+		ctx.WorkspaceName = val
 	}
 	if val, ok := req.CallbackContext["processorName"].(string); ok {
 		ctx.ProcessorName = val
@@ -71,7 +71,7 @@ func getCallbackData(req handler.Request) *CallbackData {
 }
 
 func validateCallbackData(ctx *CallbackData) *handler.ProgressEvent {
-	if ctx.ProjectID == "" || ctx.WorkspaceOrInstanceName == "" || ctx.ProcessorName == "" {
+	if ctx.ProjectID == "" || ctx.WorkspaceName == "" || ctx.ProcessorName == "" {
 		return &handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         "Missing required values in callback context",
@@ -80,11 +80,11 @@ func validateCallbackData(ctx *CallbackData) *handler.ProgressEvent {
 	return nil
 }
 
-func buildCallbackContext(projectID, workspaceOrInstanceName, processorName string, additionalFields map[string]any) map[string]any {
+func buildCallbackContext(projectID, workspaceName, processorName string, additionalFields map[string]any) map[string]any {
 	ctx := map[string]any{
 		"callbackStreamProcessor": true,
 		"projectID":               projectID,
-		"workspaceName":           workspaceOrInstanceName,
+		"workspaceName":           workspaceName,
 		"processorName":           processorName,
 	}
 
@@ -98,9 +98,10 @@ func cleanupOnCreateTimeout(ctx context.Context, client *util.MongoDBClient, cal
 		return nil
 	}
 
-	_, err := client.AtlasSDK.StreamsApi.DeleteStreamProcessor(ctx, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName).Execute()
+	_, err := client.AtlasSDK.StreamsApi.DeleteStreamProcessor(ctx, callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Cleanup delete failed: %v", err)
+		return err
 	}
 	return nil
 }
@@ -127,14 +128,14 @@ func handleCreateCallback(ctx context.Context, client *util.MongoDBClient, curre
 		}
 	}
 
-	streamProcessor, peErr := getStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName)
+	streamProcessor, peErr := getStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName)
 	if peErr != nil {
 		return *peErr
 	}
 
 	currentState := streamProcessor.GetState()
 
-	callbackContext := buildCallbackContext(callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName, map[string]any{
+	callbackContext := buildCallbackContext(callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName, map[string]any{
 		"needsStarting":         callbackCtx.NeedsStarting,
 		"startTime":             callbackCtx.StartTime,
 		"timeoutDuration":       callbackCtx.TimeoutDuration,
@@ -144,7 +145,7 @@ func handleCreateCallback(ctx context.Context, client *util.MongoDBClient, curre
 	switch currentState {
 	case CreatedState:
 		if needsStarting {
-			if peErr := startStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName); peErr != nil {
+			if peErr := startStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName); peErr != nil {
 				return *peErr
 			}
 			return createInProgressEvent(constants.Pending, currentModel, callbackContext)
@@ -172,7 +173,7 @@ func handleCreateCallback(ctx context.Context, client *util.MongoDBClient, curre
 }
 
 func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, currentModel *Model, callbackCtx *CallbackData) handler.ProgressEvent {
-	streamProcessor, peErr := getStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName)
+	streamProcessor, peErr := getStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName)
 	if peErr != nil {
 		return *peErr
 	}
@@ -191,7 +192,7 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 
 	currentState := streamProcessor.GetState()
 
-	callbackContext := buildCallbackContext(callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName, map[string]any{
+	callbackContext := buildCallbackContext(callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName, map[string]any{
 		"desiredState": desiredState,
 	})
 
@@ -211,7 +212,7 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 		}
 
 		if desiredState == StartedState {
-			if peErr := startStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceOrInstanceName, callbackCtx.ProcessorName); peErr != nil {
+			if peErr := startStreamProcessor(ctx, client.AtlasSDK, callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName); peErr != nil {
 				return *peErr
 			}
 			return createInProgressEvent(constants.Pending, currentModel, callbackContext)
@@ -227,7 +228,7 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 		_, err := client.AtlasSDK.StreamsApi.StopStreamProcessorWithParams(ctx,
 			&admin.StopStreamProcessorApiParams{
 				GroupId:       callbackCtx.ProjectID,
-				TenantName:    callbackCtx.WorkspaceOrInstanceName,
+				TenantName:    callbackCtx.WorkspaceName,
 				ProcessorName: callbackCtx.ProcessorName,
 			},
 		).Execute()

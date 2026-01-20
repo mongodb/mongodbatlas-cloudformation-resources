@@ -2,8 +2,7 @@
   "ProjectId": "$ATLAS_PROJECT_ID",
   "Profile": "default",
   "Type": "PROMETHEUS",
-  "Enabled": true,
-  "Scheme": "http",
+  "Enabled": "true",
   "ServiceDiscovery": "http",
   "UserName": "",
   "Password": ""

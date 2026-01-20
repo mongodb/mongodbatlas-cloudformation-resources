@@ -217,7 +217,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// If exists
 	_, response, err = currentModel.getOrgDetails(ctx, conn, currentModel)
-	if err != nil && response.StatusCode == http.StatusUnauthorized {
+	if err != nil && util.StatusUnauthorized(response) {
 		return handleError(response, constants.DELETE, err)
 	}
 
@@ -265,7 +265,7 @@ func deleteCallback(ctx context.Context, conn *admin.APIClient, currentModel *Mo
 	// Read before delete
 	org, response, err := currentModel.getOrgDetails(ctx, conn, currentModel)
 	if err != nil {
-		if response.StatusCode == http.StatusUnauthorized {
+		if util.StatusUnauthorized(response) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				Message:         DeleteCompleted,
@@ -323,21 +323,21 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
 	_, _ = logger.Warn(errMsg)
-	if response.StatusCode == http.StatusConflict {
+	if util.StatusConflict(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
 			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 
-	if response.StatusCode == http.StatusUnauthorized {
+	if util.StatusUnauthorized(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Not found",
 			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
-	if response.StatusCode == http.StatusBadRequest {
+	if util.StatusBadRequest(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,

@@ -31,3 +31,7 @@ func StatusBadRequest(resp *http.Response) bool {
 func StatusServiceUnavailable(resp *http.Response) bool {
 	return resp != nil && resp.StatusCode == http.StatusServiceUnavailable
 }
+
+func StatusUnauthorized(resp *http.Response) bool {
+	return resp != nil && resp.StatusCode == http.StatusUnauthorized
+}

@@ -223,6 +223,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	deleteRequest := conn.OrganizationsApi.DeleteOrg(ctx, *currentModel.OrgId)
 
+	// TODO delete
+
 	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
 	// we need to make the call in a goroutine and return a progress event
 	// after 10 Seconds. Reason for wait is that the Delete API

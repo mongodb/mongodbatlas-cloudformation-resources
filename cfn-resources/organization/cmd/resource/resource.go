@@ -223,46 +223,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.IsDeleted = util.Pointer(false)
 
-	// Encapsulate the delete+wait logic so the same flow can be used on retry.
-	runDelete := func() (*DeleteResponse, *handler.ProgressEvent) {
-		deleteRequest := conn.OrganizationsApi.DeleteOrg(ctx, *currentModel.OrgId)
-
-		// Since the Delete API is synchronous and takes more than 1 minute most of the time,
-		// we need to make the call in a goroutine and return a progress event
-		// after 10 Seconds. Reason for wait is that the Delete API
-		// may throw error immediately if the resource is not found.
-
-		responseChan := make(chan DeleteResponse, 1)
-		go func() {
-			response, err := deleteRequest.Execute()
-			responseChan <- DeleteResponse{Error: err, Response: response}
-		}()
-
-		select {
-		case responseMsg := <-responseChan:
-			return &responseMsg, nil
-		case <-time.After(30 * time.Second):
-			// If the Delete is not completed in the above time,
-			// we return a progress event with inProgress status and callback context
-			return nil, &handler.ProgressEvent{
-				OperationStatus:      handler.InProgress,
-				Message:              DeleteInProgress,
-				ResourceModel:        currentModel,
-				CallbackDelaySeconds: CallBackSeconds,
-				CallbackContext: map[string]interface{}{
-					constants.StateName: DeletingState,
-				},
-			}
-		}
-	}
-
-	responseMsg, progressEvent := runDelete()
+	responseMsg, progressEvent := runDelete(ctx, conn, currentModel)
 	if responseMsg.Error != nil {
 		// Retry once on transient server error, waiting 20 seconds before retrying request
 		// This covers case of contract tests which create and delete an org within seconds, encountering an error while deleting the org
 		if responseMsg.Response != nil && responseMsg.Response.StatusCode == http.StatusInternalServerError {
 			time.Sleep(20 * time.Second)
-			responseMsg, progressEvent = runDelete()
+			responseMsg, progressEvent = runDelete(ctx, conn, currentModel)
 		}
 	}
 	if progressEvent != nil {
@@ -276,6 +243,39 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		Message:         DeleteCompleted,
 		ResourceModel:   nil}, nil
+}
+
+// Encapsulate the delete+wait logic so the same flow can be used on retry.
+func runDelete(ctx context.Context, conn *admin.APIClient, currentModel *Model) (*DeleteResponse, *handler.ProgressEvent) {
+	deleteRequest := conn.OrganizationsApi.DeleteOrg(ctx, *currentModel.OrgId)
+
+	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
+	// we need to make the call in a goroutine and return a progress event
+	// after 10 Seconds. Reason for wait is that the Delete API
+	// may throw error immediately if the resource is not found.
+
+	responseChan := make(chan DeleteResponse, 1)
+	go func() {
+		response, err := deleteRequest.Execute()
+		responseChan <- DeleteResponse{Error: err, Response: response}
+	}()
+
+	select {
+	case responseMsg := <-responseChan:
+		return &responseMsg, nil
+	case <-time.After(30 * time.Second):
+		// If the Delete is not completed in the above time,
+		// we return a progress event with inProgress status and callback context
+		return nil, &handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              DeleteInProgress,
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: CallBackSeconds,
+			CallbackContext: map[string]interface{}{
+				constants.StateName: DeletingState,
+			},
+		}
+	}
 }
 
 func deleteCallback(ctx context.Context, conn *admin.APIClient, currentModel *Model) (handler.ProgressEvent, error) {

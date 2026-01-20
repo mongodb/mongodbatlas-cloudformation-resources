@@ -3,5 +3,6 @@
   "Profile": "default",
   "Type": "DATADOG",
   "ApiKey": "",
-  "Region": "US"
+  "Region": "US",
+  "SendUserProvidedResourceTags": true
 }

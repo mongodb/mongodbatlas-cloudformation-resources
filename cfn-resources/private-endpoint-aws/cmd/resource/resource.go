@@ -127,7 +127,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, response, err := privateEndpointRequest.Execute()
 	defer response.Body.Close()
 	if err != nil {
-		if response.StatusCode == http.StatusConflict {
+		if util.StatusConflict(response) {
 			return progress_events.GetFailedEventByCode(
 				fmt.Sprintf("error creating Serverless Private Endpoint %s", err.Error()),
 				string(types.HandlerErrorCodeAlreadyExists),
@@ -219,7 +219,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, response, peError := getPrivateEndpoint(client, currentModel)
 		defer response.Body.Close()
 		if peError != nil {
-			if response.StatusCode == http.StatusNotFound {
+			if util.StatusNotFound(response) {
 				return handler.ProgressEvent{
 					OperationStatus: handler.Success,
 					Message:         "Delete Success",

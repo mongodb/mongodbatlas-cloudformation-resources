@@ -20,7 +20,11 @@ clean:
 
 create-test-resources:
 	@echo "==> Creating test files for contract testing"
-	./test/contract-testing/cfn-test-create-inputs.sh
+	./test/contract-testing/cfn-test-create.sh
+
+delete-test-resources:
+	@echo "==> Delete test resources used for contract testing"
+	./test/contract-testing/cfn-test-delete.sh
 
 run-contract-testing:
 	@echo "==> Run contract testing"

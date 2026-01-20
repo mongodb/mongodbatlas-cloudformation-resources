@@ -60,7 +60,7 @@ func handlePendingAction(ctx context.Context, client *util.MongoDBClient, model 
 
 func checkPolicyNotFound(policy *admin.DataProtectionSettings20231001, apiResp *http.Response, err error, projectID string, operation constants.CfnFunctions) *handler.ProgressEvent {
 	if err != nil {
-		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(apiResp) {
 			pe := progress_events.GetFailedEventByCode(
 				"Backup Compliance Policy not found for project: "+projectID,
 				string(types.HandlerErrorCodeNotFound))
@@ -90,7 +90,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 
 	existingPolicy, apiResp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
 	if err != nil {
-		if apiResp == nil || apiResp.StatusCode != http.StatusNotFound {
+		if !util.StatusNotFound(apiResp) {
 			return handleError(apiResp, constants.CREATE, err)
 		}
 	} else if existingPolicy != nil && existingPolicy.GetState() == policyStateActive {
@@ -210,7 +210,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 		return handlePendingAction(ctx, client, model, projectID)
 	}
 
-	if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+	if util.StatusNotFound(apiResp) {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         constants.Complete,
@@ -227,7 +227,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 
 	policy, apiResp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
 	if err != nil {
-		if apiResp == nil || apiResp.StatusCode != http.StatusNotFound {
+		if !util.StatusNotFound(apiResp) {
 			return handleError(apiResp, constants.LIST, err)
 		}
 		return handler.ProgressEvent{
@@ -274,7 +274,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) h
 	projectID := *model.ProjectId
 
 	policy, resp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
-	notFound := resp != nil && resp.StatusCode == http.StatusNotFound
+	notFound := util.StatusNotFound(resp)
 	policyDeleted := notFound || (policy != nil && policy.GetProjectId() == "")
 
 	if err != nil && !notFound {

@@ -23,15 +23,15 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 )
 
-func HandleStateTransition(connV2 admin20231115014.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
+func HandleStateTransition(connV2 admin.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
+		if targetState == constants.DeletedState && resp != nil && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				ResourceModel:   nil,
@@ -42,6 +42,17 @@ func HandleStateTransition(connV2 admin20231115014.APIClient, currentModel *Mode
 	}
 
 	newModel := NewCFNSearchDeployment(currentModel, apiResp)
+
+	// For delete operations, check if Specs is empty - this indicates deletion is complete
+	// The Atlas API returns 200 with only basic fields (no Specs) when deployment is deleted
+	if targetState == constants.DeletedState && len(newModel.Specs) == 0 {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			ResourceModel:   nil,
+			Message:         constants.Complete,
+		}
+	}
+
 	if util.SafeString(newModel.StateName) == targetState {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,

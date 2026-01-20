@@ -49,6 +49,8 @@ func parseTimeout(timeoutStr string) time.Duration {
 	return duration
 }
 
+// isTimeoutExceeded checks if the elapsed time since startTimeStr exceeds the timeoutDurationStr.
+// If this function needs to be used by other resources in the future, it should be moved to the util package.
 func isTimeoutExceeded(startTimeStr, timeoutDurationStr string) bool {
 	if startTimeStr == "" || timeoutDurationStr == "" {
 		return false

@@ -896,16 +896,7 @@ jobs:
           cd cfn-resources/stream-processor
           make create-test-resources
 
-          cat inputs/inputs_1_create.json
-          cat inputs/inputs_1_update.json
-          cat inputs/inputs_2_create.json
-          cat inputs/inputs_2_update.json
-          cat inputs/inputs_3_create.json
-          cat inputs/inputs_3_update.json
-          cat inputs/inputs_4_create.json
-          cat inputs/inputs_4_update.json
-          cat inputs/inputs_5_create.json
-          cat inputs/inputs_5_update.json
+          cat inputs/*
 
           make run-contract-testing
           make delete-test-resources

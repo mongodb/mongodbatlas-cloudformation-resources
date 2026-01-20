@@ -118,7 +118,7 @@ func handleCreateCallback(ctx context.Context, client *util.MongoDBClient, curre
 		}
 		cleanupMsg := "Timeout reached when waiting for stream processor creation"
 		if callbackCtx.DeleteOnCreateTimeout {
-			cleanupMsg += ". Resource has been deleted because delete_on_create_timeout is true. If you suspect a transient error, wait before retrying to allow resource deletion to finish."
+			cleanupMsg += ". Deletion of resource has been triggered because delete_on_create_timeout is true. If you suspect a transient error, wait before retrying to allow resource deletion to finish."
 		} else {
 			cleanupMsg += ". Cleanup was not performed because delete_on_create_timeout is false."
 		}
@@ -181,13 +181,12 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 	desiredState := callbackCtx.DesiredState
 	if desiredState == "" {
 		desiredState = streamProcessor.GetState()
-		if desiredState == "" {
-			if currentModel != nil && currentModel.DesiredState != nil && *currentModel.DesiredState != "" {
-				desiredState = *currentModel.DesiredState
-			} else {
-				desiredState = CreatedState
-			}
-		}
+	}
+	if desiredState == "" && currentModel != nil && currentModel.DesiredState != nil && *currentModel.DesiredState != "" {
+		desiredState = *currentModel.DesiredState
+	}
+	if desiredState == "" {
+		desiredState = CreatedState
 	}
 
 	currentState := streamProcessor.GetState()
@@ -223,6 +222,15 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 	case StartedState:
 		if desiredState == StartedState {
 			return finalizeModel(streamProcessor, currentModel, constants.Complete)
+		}
+
+		// Only StoppedState is a valid transition from StartedState
+		// (CreatedState transitions are not allowed per validateUpdateStateTransition)
+		if desiredState != StoppedState {
+			return handler.ProgressEvent{
+				OperationStatus: handler.Failed,
+				Message:         fmt.Sprintf("Unexpected desired state %s when current state is %s. Only %s is allowed.", desiredState, StartedState, StoppedState),
+			}
 		}
 
 		_, err := client.AtlasSDK.StreamsApi.StopStreamProcessorWithParams(ctx,

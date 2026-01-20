@@ -252,18 +252,8 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 	}
 
 	if desiredState == StartedState {
-		_, err := client.AtlasSDK.StreamsApi.StartStreamProcessorWithParams(ctx,
-			&admin.StartStreamProcessorApiParams{
-				GroupId:       projectID,
-				TenantName:    workspaceName,
-				ProcessorName: processorName,
-			},
-		).Execute()
-		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus: handler.Failed,
-				Message:         fmt.Sprintf("Error starting stream processor: %s", err.Error()),
-			}
+		if peErr := startStreamProcessor(ctx, client.AtlasSDK, projectID, workspaceName, processorName); peErr != nil {
+			return *peErr
 		}
 
 		inProgressModel := &Model{}

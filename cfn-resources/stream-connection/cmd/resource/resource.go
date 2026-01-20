@@ -43,29 +43,26 @@ var UpdateRequiredFields = []string{constants.ProjectID, constants.ConnectionNam
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ConnectionName}
 var ListRequiredFields = []string{constants.ProjectID}
 
-func getWorkspaceOrInstanceName(model *Model) (*string, *handler.ProgressEvent) {
-	if model.WorkspaceName != nil && *model.WorkspaceName != "" {
-		return model.WorkspaceName, nil
-	}
-	if model.InstanceName != nil && *model.InstanceName != "" {
-		return model.InstanceName, nil
-	}
-	return nil, &handler.ProgressEvent{
-		OperationStatus:  handler.Failed,
-		Message:          "Either WorkspaceName or InstanceName must be provided",
-		HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
-	}
-}
+func normalizeWorkspaceName(model *Model) *handler.ProgressEvent {
+	var workspaceOrInstanceName *string
 
-func normalizeWorkspaceName(model *Model) {
-	if model != nil {
-		if model.WorkspaceName != nil && *model.WorkspaceName != "" {
-			return
-		}
-		if model.InstanceName != nil && *model.InstanceName != "" {
-			model.WorkspaceName = model.InstanceName
+	// Validate that at least one of WorkspaceName or InstanceName is provided
+	if model.WorkspaceName != nil && *model.WorkspaceName != "" {
+		workspaceOrInstanceName = model.WorkspaceName
+	} else if model.InstanceName != nil && *model.InstanceName != "" {
+		workspaceOrInstanceName = model.InstanceName
+	} else {
+		return &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Either WorkspaceName or InstanceName must be provided",
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
 		}
 	}
+
+	// Ensure both WorkspaceName and InstanceName are set for backward compatibility
+	model.WorkspaceName = workspaceOrInstanceName
+	model.InstanceName = workspaceOrInstanceName
+	return nil
 }
 
 var InitEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
@@ -77,7 +74,9 @@ var InitEnvWithLatestClient = func(req handler.Request, currentModel *Model, req
 		return nil, errEvent
 	}
 
-	normalizeWorkspaceName(currentModel)
+	if peErr := normalizeWorkspaceName(currentModel); peErr != nil {
+		return nil, peErr
+	}
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
@@ -92,10 +91,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
-	if peErr != nil {
-		return *peErr, nil
-	}
+	workspaceOrInstanceName := currentModel.WorkspaceName
 
 	ctx := context.Background()
 
@@ -122,10 +118,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
-	if peErr != nil {
-		return *peErr, nil
-	}
+	workspaceOrInstanceName := currentModel.WorkspaceName
 
 	projectID := currentModel.ProjectId
 	connectionName := currentModel.ConnectionName
@@ -148,10 +141,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
-	if peErr != nil {
-		return *peErr, nil
-	}
+	workspaceOrInstanceName := currentModel.WorkspaceName
 
 	ctx := context.Background()
 
@@ -178,10 +168,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
-	if peErr != nil {
-		return *peErr, nil
-	}
+	workspaceOrInstanceName := currentModel.WorkspaceName
 
 	ctx := context.Background()
 
@@ -204,10 +191,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	workspaceOrInstanceName, peErr := getWorkspaceOrInstanceName(currentModel)
-	if peErr != nil {
-		return *peErr, nil
-	}
+	workspaceOrInstanceName := currentModel.WorkspaceName
 
 	ctx := context.Background()
 
@@ -222,15 +206,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range accumulatedStreamConns {
 		model := GetStreamConnectionModel(&accumulatedStreamConns[i], nil)
 		model.ProjectId = currentModel.ProjectId
-		// Set both WorkspaceName and InstanceName for consistency and backward compatibility
 		// InstanceName is deprecated but we maintain it for backward compatibility
-		if currentModel.WorkspaceName != nil {
-			model.WorkspaceName = currentModel.WorkspaceName
-			model.InstanceName = currentModel.WorkspaceName
-		} else if currentModel.InstanceName != nil {
-			model.WorkspaceName = currentModel.InstanceName
-			model.InstanceName = currentModel.InstanceName
-		}
+		model.WorkspaceName = workspaceOrInstanceName
+		model.InstanceName = workspaceOrInstanceName
 		model.Profile = currentModel.Profile
 
 		response = append(response, model)

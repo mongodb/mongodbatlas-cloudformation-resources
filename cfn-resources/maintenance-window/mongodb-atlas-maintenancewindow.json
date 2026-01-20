@@ -55,13 +55,51 @@
     "StartASAP": {
       "type": "boolean",
       "description": "Flag that indicates whether MongoDB Cloud starts the maintenance window immediately upon receiving this request. To start the maintenance window immediately for your project, MongoDB Cloud must have maintenance scheduled and you must set a maintenance window. This flag resets to `false` after MongoDB Cloud completes maintenance."
+    },
+    "Defer": {
+      "type": "boolean",
+      "description": "Flag that indicates whether to defer the maintenance window. When set to true, the next scheduled maintenance will be deferred."
+    },
+    "AutoDefer": {
+      "type": "boolean",
+      "description": "Flag that indicates whether MongoDB Cloud should automatically defer maintenance windows for one week when they occur during the defined maintenance window."
+    },
+    "NumberOfDeferrals": {
+      "type": "integer",
+      "description": "Number of times this project has deferred the maintenance window."
+    },
+    "TimeZoneId": {
+      "type": "string",
+      "description": "Time zone ID that identifies the timezone for the maintenance window."
+    },
+    "ProtectedHours": {
+      "type": "object",
+      "description": "Protected hours during which MongoDB Cloud cannot start maintenance.",
+      "properties": {
+        "StartHourOfDay": {
+          "type": "integer",
+          "description": "Hour of the day when protected hours start (0-23)."
+        },
+        "EndHourOfDay": {
+          "type": "integer",
+          "description": "Hour of the day when protected hours end (0-23)."
+        }
+      },
+      "additionalProperties": false
     }
   },
   "createOnlyProperties": [
     "/properties/ProjectId",
     "/properties/Profile"
   ],
+  "readOnlyProperties": [
+    "/properties/StartASAP",
+    "/properties/NumberOfDeferrals",
+    "/properties/TimeZoneId"
+  ],
   "required": [
+    "ProjectId",
+    "DayOfWeek",
     "HourOfDay"
   ],
   "typeName": "MongoDB::Atlas::MaintenanceWindow",

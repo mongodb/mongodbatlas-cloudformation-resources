@@ -31,7 +31,7 @@ func HandleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
+		if targetState == constants.DeletedState && resp != nil && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				ResourceModel:   nil,

@@ -71,6 +71,15 @@
           "StateName"
         ]
       }
+    },
+    "SearchDeploymentEncryptionAtRestProvider": {
+      "Description": "Search Deployment Encryption At Rest Provider",
+      "Value": {
+        "Fn::GetAtt": [
+          "SearchDeployment",
+          "EncryptionAtRestProvider"
+        ]
+      }
     }
   }
 }

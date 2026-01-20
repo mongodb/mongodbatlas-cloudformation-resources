@@ -20,7 +20,7 @@ import (
 	"net/http"
 	"strings"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -58,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if progressErr != nil {
 		return *progressErr, nil
 	}
-	connV2 := client.Atlas20231115014
+	connV2 := client.AtlasSDK
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {
@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiReq := NewSearchDeploymentReq(currentModel)
-	apiResp, resp, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
+	apiResp, resp, err := connV2.AtlasSearchApi.CreateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
 		return handleError(resp, err)
 	}
@@ -89,18 +89,29 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if progressErr != nil {
 		return *progressErr, nil
 	}
-	connV2 := client.Atlas20231115014
+	connV2 := client.AtlasSDK
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		return handleError(resp, err)
 	}
 
+	newModel := NewCFNSearchDeployment(currentModel, apiResp)
+
+	// If Specs is empty, the search deployment has been deleted
+	// Return NotFound instead of Success
+	if len(newModel.Specs) == 0 {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Resource not found",
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   NewCFNSearchDeployment(currentModel, apiResp),
+		ResourceModel:   newModel,
 	}, nil
 }
 
@@ -116,7 +127,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if progressErr != nil {
 		return *progressErr, nil
 	}
-	connV2 := client.Atlas20231115014
+	connV2 := client.AtlasSDK
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {
@@ -126,12 +137,22 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiReq := NewSearchDeploymentReq(currentModel)
-	apiResp, res, err := connV2.AtlasSearchApi.UpdateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
+	apiResp, res, err := connV2.AtlasSearchApi.UpdateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
+		// Update should return NotFound if resource doesn't exist - this is already handled by handleError
 		return handleError(res, err)
 	}
 
 	newModel := NewCFNSearchDeployment(currentModel, apiResp)
+
+	// If Specs is empty, the search deployment has been deleted - return NotFound
+	if len(newModel.Specs) == 0 {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Resource not found",
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
+	}
+
 	return inProgressEvent("Updating Search Deployment", &newModel), nil
 }
 
@@ -147,7 +168,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if progressErr != nil {
 		return *progressErr, nil
 	}
-	connV2 := client.Atlas20231115014
+	connV2 := client.AtlasSDK
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {
@@ -156,7 +177,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	if resp, err := connV2.AtlasSearchApi.DeleteAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute(); err != nil {
+	if resp, err := connV2.AtlasSearchApi.DeleteClusterSearchDeployment(context.Background(), projectID, clusterName).Execute(); err != nil {
 		return handleError(resp, err)
 	}
 
@@ -169,13 +190,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // specific handling for search deployment API where 400 status code can include AlreadyExists or DoesNotExist that need specific mapping to CFN error codes
 func handleError(res *http.Response, err error) (handler.ProgressEvent, error) {
-	if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
+	if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
 			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
-	if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
+	if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),

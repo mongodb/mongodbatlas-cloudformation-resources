@@ -1,14 +1,14 @@
 {
   "Profile": "default",
   "ProjectId": "",
-  "InstanceName": "",
+  "WorkspaceName": "",
   "ConnectionName": "ConnectionNameKafka",
   "Type": "Kafka",
   "BootstrapServers": "localhost:9092,localhost:9092",
   "Authentication": {
     "Mechanism": "PLAIN",
     "Username": "user1",
-    "Password": "rawpassword"
+    "Password": "<PASSWORD>"
   },
   "Security": {
     "Protocol": "PLAINTEXT"

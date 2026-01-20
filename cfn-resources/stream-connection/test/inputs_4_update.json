@@ -1,0 +1,11 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ConnectionName": "ConnectionNameAWSLambda",
+  "Type": "AWSLambda",
+  "Aws": {
+    "RoleArn": ""
+  }
+}
+

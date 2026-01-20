@@ -67,6 +67,8 @@
     "Specs": {
       "insertionOrder": false,
       "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
       "items": {
         "$ref": "#/definitions/ApiSearchDeploymentSpec",
         "type": "object"
@@ -76,6 +78,10 @@
     "StateName": {
       "type": "string",
       "description": "Human-readable label that indicates the current operating condition of this search deployment."
+    },
+    "EncryptionAtRestProvider": {
+      "type": "string",
+      "description": "Cloud service provider that manages your customer keys to provide an additional layer of Encryption At Rest for the cluster."
     }
   },
   "primaryIdentifier": [
@@ -96,7 +102,8 @@
   ],
   "readOnlyProperties": [
     "/properties/Id",
-    "/properties/StateName"
+    "/properties/StateName",
+    "/properties/EncryptionAtRestProvider"
   ],
   "typeName": "MongoDB::Atlas::SearchDeployment",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/search-deployment/README.md",

@@ -47,11 +47,12 @@ func normalizeWorkspaceName(model *Model) *handler.ProgressEvent {
 	var workspaceOrInstanceName *string
 
 	// Validate that at least one of WorkspaceName or InstanceName is provided
-	if model.WorkspaceName != nil && *model.WorkspaceName != "" {
+	switch {
+	case model.WorkspaceName != nil && *model.WorkspaceName != "":
 		workspaceOrInstanceName = model.WorkspaceName
-	} else if model.InstanceName != nil && *model.InstanceName != "" {
+	case model.InstanceName != nil && *model.InstanceName != "":
 		workspaceOrInstanceName = model.InstanceName
-	} else {
+	default:
 		return &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Either WorkspaceName or InstanceName must be provided",

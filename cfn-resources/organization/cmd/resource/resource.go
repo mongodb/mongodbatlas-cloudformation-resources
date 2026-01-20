@@ -221,40 +221,55 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, constants.DELETE, err)
 	}
 
-	deleteRequest := conn.OrganizationsApi.DeleteOrg(ctx, *currentModel.OrgId)
-
-	// TODO delete
-
-	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
-	// we need to make the call in a goroutine and return a progress event
-	// after 10 Seconds. Reason for wait is that the Delete API
-	// may throw error immediately if the resource is not found.
-
-	responseChan := make(chan DeleteResponse, 1)
-	go func() {
-		response, err := deleteRequest.Execute()
-		responseChan <- DeleteResponse{Error: err, Response: response}
-	}()
-
 	currentModel.IsDeleted = util.Pointer(false)
-	select {
-	case responseMsg := <-responseChan:
-		if responseMsg.Error != nil {
-			return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
-		}
 
-	case <-time.After(30 * time.Second):
-		// If the Delete is not completed in the above time,
-		// we return a progress event with inProgress status and callback context
-		return handler.ProgressEvent{
-			OperationStatus:      handler.InProgress,
-			Message:              DeleteInProgress,
-			ResourceModel:        currentModel,
-			CallbackDelaySeconds: CallBackSeconds,
-			CallbackContext: map[string]interface{}{
-				constants.StateName: DeletingState,
-			},
-		}, nil
+	// Encapsulate the delete+wait logic so the same flow can be used on retry.
+	runDelete := func() (*DeleteResponse, *handler.ProgressEvent) {
+		deleteRequest := conn.OrganizationsApi.DeleteOrg(ctx, *currentModel.OrgId)
+
+		// Since the Delete API is synchronous and takes more than 1 minute most of the time,
+		// we need to make the call in a goroutine and return a progress event
+		// after 10 Seconds. Reason for wait is that the Delete API
+		// may throw error immediately if the resource is not found.
+
+		responseChan := make(chan DeleteResponse, 1)
+		go func() {
+			response, err := deleteRequest.Execute()
+			responseChan <- DeleteResponse{Error: err, Response: response}
+		}()
+
+		select {
+		case responseMsg := <-responseChan:
+			return &responseMsg, nil
+		case <-time.After(30 * time.Second):
+			// If the Delete is not completed in the above time,
+			// we return a progress event with inProgress status and callback context
+			return nil, &handler.ProgressEvent{
+				OperationStatus:      handler.InProgress,
+				Message:              DeleteInProgress,
+				ResourceModel:        currentModel,
+				CallbackDelaySeconds: CallBackSeconds,
+				CallbackContext: map[string]interface{}{
+					constants.StateName: DeletingState,
+				},
+			}
+		}
+	}
+
+	responseMsg, progressEvent := runDelete()
+	if responseMsg.Error != nil {
+		// Retry once on transient server error, waiting 20 seconds before retrying request
+		// This covers case of contract tests which create and delete an org within seconds, encountering an error while deleting the org
+		if responseMsg.Response != nil && responseMsg.Response.StatusCode == http.StatusInternalServerError {
+			time.Sleep(20 * time.Second)
+			responseMsg, progressEvent = runDelete()
+		}
+	}
+	if progressEvent != nil {
+		return *progressEvent, nil
+	}
+	if responseMsg.Error != nil {
+		return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
 	}
 
 	return handler.ProgressEvent{

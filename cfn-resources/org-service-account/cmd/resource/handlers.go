@@ -76,7 +76,7 @@ func handleUpdate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 
 	_, apiResp, err := client.AtlasSDK.ServiceAccountsApi.GetOrgServiceAccount(ctx, *orgID, *clientID).Execute()
 	if err != nil {
-		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Resource not found",
@@ -113,7 +113,7 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 
 	_, resp, err := client.AtlasSDK.ServiceAccountsApi.GetOrgServiceAccount(ctx, *orgID, *clientID).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(resp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Resource not found",

@@ -120,7 +120,7 @@ func getStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, proje
 
 	streamProcessor, resp, err := atlasClient.StreamsApi.GetStreamProcessorWithParams(ctx, requestParams).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(resp) {
 			return nil, &handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Stream processor not found",
@@ -188,7 +188,7 @@ func validateUpdateStateTransition(currentState, desiredState string) (errMsg st
 func handleError(response *http.Response, method constants.CfnFunctions, err error) handler.ProgressEvent {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
 
-	if response != nil && response.StatusCode == http.StatusConflict {
+	if util.StatusConflict(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,

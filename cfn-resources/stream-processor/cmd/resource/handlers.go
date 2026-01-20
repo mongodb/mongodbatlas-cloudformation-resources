@@ -17,7 +17,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	"go.mongodb.org/atlas-sdk/v20250312012/admin"
@@ -125,7 +124,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 			ProcessorName: processorName,
 		}).Execute()
 	if err != nil {
-		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Resource not found",
@@ -180,7 +179,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 
 	currentStreamProcessor, apiResp, err := client.AtlasSDK.StreamsApi.GetStreamProcessorWithParams(ctx, requestParams).Execute()
 	if err != nil {
-		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Resource not found",
@@ -297,7 +296,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 
 	apiResp, err := client.AtlasSDK.StreamsApi.DeleteStreamProcessor(ctx, projectID, workspaceName, processorName).Execute()
 	if err != nil {
-		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Resource not found",

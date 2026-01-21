@@ -1,0 +1,109 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a stream processor that reads from a Kafka connection and writes to a cluster connection. Note: This processor is created in CREATED state and cannot be started without a working Kafka cluster.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id (24 hexadecimal characters)"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processing workspace"
+    },
+    "ProcessorName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream processor"
+    },
+    "KafkaSourceConnectionName": {
+      "Type": "String",
+      "Description": "Name of the Kafka source stream connection"
+    },
+    "KafkaTopic": {
+      "Type": "String",
+      "Description": "Name of the Kafka topic to read from"
+    },
+    "SinkConnectionName": {
+      "Type": "String",
+      "Description": "Name of the sink stream connection (must be a cluster connection)"
+    },
+    "SinkDatabase": {
+      "Type": "String",
+      "Default": "kafka",
+      "Description": "Name of the database for the sink connection"
+    },
+    "SinkCollection": {
+      "Type": "String",
+      "Default": "kafka_messages",
+      "Description": "Name of the collection for the sink connection"
+    },
+    "DesiredState": {
+      "Type": "String",
+      "Default": "CREATED",
+      "Description": "Desired state of the stream processor. Must be CREATED (cannot be STARTED without a working Kafka cluster)",
+      "AllowedValues": ["CREATED", "STOPPED"]
+    }
+  },
+  "Resources": {
+    "StreamProcessor": {
+      "Type": "MongoDB::Atlas::StreamProcessor",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "ProcessorName": {
+          "Ref": "ProcessorName"
+        },
+        "Pipeline": {
+          "Fn::Sub": [
+            "[{\"$source\": {\"connectionName\": \"${KafkaSource}\", \"topic\": \"${KafkaTopic}\"}}, {\"$emit\": {\"connectionName\": \"${SinkConnection}\", \"db\": \"${SinkDb}\", \"coll\": \"${SinkColl}\", \"timeseries\": {\"timeField\": \"ts\"}}}]",
+            {
+              "KafkaSource": {
+                "Ref": "KafkaSourceConnectionName"
+              },
+              "KafkaTopic": {
+                "Ref": "KafkaTopic"
+              },
+              "SinkConnection": {
+                "Ref": "SinkConnectionName"
+              },
+              "SinkDb": {
+                "Ref": "SinkDatabase"
+              },
+              "SinkColl": {
+                "Ref": "SinkCollection"
+              }
+            }
+          ]
+        },
+        "DesiredState": {
+          "Ref": "DesiredState"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ProcessorId": {
+      "Description": "Unique identifier of the stream processor",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessor", "Id"]
+      }
+    },
+    "ProcessorState": {
+      "Description": "Current state of the stream processor from Atlas API",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessor", "State"]
+      }
+    }
+  }
+}

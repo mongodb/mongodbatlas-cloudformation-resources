@@ -50,6 +50,8 @@ func setup() {
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
+	// ignore
+
 	validationError := validateRequest(CreateRequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil

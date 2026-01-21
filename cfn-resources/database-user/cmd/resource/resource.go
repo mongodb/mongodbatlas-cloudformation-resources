@@ -110,6 +110,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.LdapAuthType = databaseUser.LdapAuthType
 	currentModel.AWSIAMType = databaseUser.AwsIAMType
 	currentModel.X509Type = databaseUser.X509Type
+	currentModel.OIDCAuthType = databaseUser.OidcAuthType
 	currentModel.Username = &databaseUser.Username
 	var roles []RoleDefinition
 
@@ -252,7 +253,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			DatabaseName: &databaseUser.DatabaseName,
 			Description:  databaseUser.Description,
 			LdapAuthType: databaseUser.LdapAuthType,
+			AWSIAMType:   databaseUser.AwsIAMType,
 			X509Type:     databaseUser.X509Type,
+			OIDCAuthType: databaseUser.OidcAuthType,
 			Username:     &databaseUser.Username,
 			ProjectId:    currentModel.ProjectId,
 		}
@@ -341,10 +344,13 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 	if currentModel.X509Type == nil {
 		currentModel.X509Type = &none
 	}
+	if currentModel.OIDCAuthType == nil {
+		currentModel.OIDCAuthType = &none
+	}
 
 	if currentModel.Password == nil {
-		if (*currentModel.LdapAuthType == none) && (*currentModel.AWSIAMType == none) && (*currentModel.X509Type == none) {
-			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509 is not provided")
+		if (*currentModel.LdapAuthType == none) && (*currentModel.AWSIAMType == none) && (*currentModel.X509Type == none) && (*currentModel.OIDCAuthType == none) {
+			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509 or OIDC is not provided")
 			return nil, err
 		}
 		currentModel.Password = aws.String("")
@@ -364,6 +370,7 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 		LdapAuthType:    currentModel.LdapAuthType,
 		AwsIAMType:      currentModel.AWSIAMType,
 		X509Type:        currentModel.X509Type,
+		OidcAuthType:    currentModel.OIDCAuthType,
 		DeleteAfterDate: util.StringPtrToTimePtr(currentModel.DeleteAfterDate),
 		Description:     currentModel.Description,
 	}

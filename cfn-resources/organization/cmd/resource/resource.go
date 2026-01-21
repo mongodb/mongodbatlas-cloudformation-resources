@@ -228,7 +228,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		// Retry once on transient server error, waiting 20 seconds before retrying request
 		// This covers case of contract tests which create and delete an org within seconds, encountering an error while deleting the org
 		if responseMsg.Response != nil && responseMsg.Response.StatusCode == http.StatusInternalServerError {
-			logger.Warnf("Transient server error while deleting organization, retrying in 20 seconds")
+			_, _ = logger.Warnf("Transient server error while deleting organization, retrying in 20 seconds")
 			time.Sleep(20 * time.Second)
 			responseMsg, progressEvent = runDelete(ctx, conn, currentModel)
 		}

@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"strings"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -63,7 +63,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115014
+	atlasV2 := client.AtlasSDK
 
 	if currentModel.Id != nil && *currentModel.Id != "" {
 		_, _ = logger.Warnf("resource already exists for Id: %s", *currentModel.Id)
@@ -78,19 +78,20 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest)), err
 	}
 
-	alertConfigRequest := admin20231115014.GroupAlertsConfig{
-		GroupId:         currentModel.ProjectId,
-		EventTypeName:   currentModel.EventTypeName,
-		Enabled:         currentModel.Enabled,
-		Matchers:        expandAlertConfigurationMatchers(currentModel.Matchers),
-		MetricThreshold: expandAlertConfigurationMetricThresholdConfig(currentModel),
-		Threshold:       expandAlertConfigurationThreshold(currentModel.Threshold),
-		Notifications:   notifications,
+	alertConfigRequest := admin.GroupAlertsConfig{
+		GroupId:          currentModel.ProjectId,
+		EventTypeName:    currentModel.EventTypeName,
+		Enabled:          currentModel.Enabled,
+		Matchers:         expandAlertConfigurationMatchers(currentModel.Matchers),
+		MetricThreshold:  expandAlertConfigurationMetricThresholdConfig(currentModel),
+		Threshold:        expandAlertConfigurationThreshold(currentModel.Threshold),
+		Notifications:    notifications,
+		SeverityOverride: currentModel.SeverityOverride,
 	}
 
 	projectID := *currentModel.ProjectId
 	var res *http.Response
-	alertConfig, res, err := atlasV2.AlertConfigurationsApi.CreateAlertConfiguration(context.Background(), projectID, &alertConfigRequest).Execute()
+	alertConfig, res, err := atlasV2.AlertConfigurationsApi.CreateAlertConfig(context.Background(), projectID, &alertConfigRequest).Execute()
 	defer res.Body.Close()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
@@ -120,7 +121,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115014
+	atlasV2 := client.AtlasSDK
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
@@ -130,7 +131,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
-	alertConfig, resp, err := atlasV2.AlertConfigurationsApi.GetAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	alertConfig, resp, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	defer resp.Body.Close()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
@@ -160,7 +161,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115014
+	atlasV2 := client.AtlasSDK
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
@@ -174,7 +175,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// server returns an error 500
 	projectID := *currentModel.ProjectId
 	id := *currentModel.Id
-	alertReq, res, err := atlasV2.AlertConfigurationsApi.GetAlertConfiguration(context.Background(), projectID, id).Execute()
+	alertReq, res, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), projectID, id).Execute()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -184,15 +185,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Removing the computed attributes to recreate the original request
 	alertReq.Created = nil
 	alertReq.Updated = nil
-	var alertModel *admin20231115014.GroupAlertsConfig
+	var alertModel *admin.GroupAlertsConfig
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
 	// so have to use different method to change enabled.
-	if reflect.DeepEqual(alertReq, &admin20231115014.GroupAlertsConfig{Enabled: aws.Bool(true)}) ||
-		reflect.DeepEqual(alertReq, &admin20231115014.GroupAlertsConfig{Enabled: aws.Bool(false)}) {
-		alertModel, res, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfiguration(context.Background(), projectID, id, &admin20231115014.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
+	if reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(true)}) ||
+		reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(false)}) {
+		alertModel, res, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfig(context.Background(), projectID, id, &admin.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
 	} else {
-		alertModel, res, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfiguration(context.Background(), projectID, id, alertReq).Execute()
+		alertModel, res, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfig(context.Background(), projectID, id, alertReq).Execute()
 	}
 
 	if err != nil {
@@ -224,7 +225,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115014
+	atlasV2 := client.AtlasSDK
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
@@ -234,7 +235,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
-	res, err := atlasV2.AlertConfigurationsApi.DeleteAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	res, err := atlasV2.AlertConfigurationsApi.DeleteAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)
@@ -253,15 +254,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 }
 
-func isExist(currentModel *Model, client *admin20231115014.APIClient) bool {
-	alert, _, err := client.AlertConfigurationsApi.GetAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+func isExist(currentModel *Model, client *admin.APIClient) bool {
+	alert, _, err := client.AlertConfigurationsApi.GetAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	return err == nil && alert != nil
 }
 
-func expandAlertConfigurationMatchers(matchers []Matcher) *[]admin20231115014.StreamsMatcher {
-	mts := make([]admin20231115014.StreamsMatcher, 0)
+func expandAlertConfigurationMatchers(matchers []Matcher) *[]admin.StreamsMatcher {
+	mts := make([]admin.StreamsMatcher, 0)
 	for ind := range matchers {
-		mMatcher := admin20231115014.NewStreamsMatcher(
+		mMatcher := admin.NewStreamsMatcher(
 			cast.ToString(matchers[ind].FieldName),
 			cast.ToString(matchers[ind].Operator),
 			cast.ToString(matchers[ind].Value),
@@ -271,12 +272,12 @@ func expandAlertConfigurationMatchers(matchers []Matcher) *[]admin20231115014.St
 	return &mts
 }
 
-func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin20231115014.ServerlessMetricThreshold {
+func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin.FlexClusterMetricThreshold {
 	threshold := currentModel.MetricThreshold
 	if threshold == nil {
 		return nil
 	}
-	return &admin20231115014.ServerlessMetricThreshold{
+	return &admin.FlexClusterMetricThreshold{
 		MetricName: cast.ToString(threshold.MetricName),
 		Operator:   threshold.Operator,
 		Threshold:  threshold.Threshold,
@@ -285,19 +286,19 @@ func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin20
 	}
 }
 
-func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *admin20231115014.GreaterThanRawThreshold {
+func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *admin.StreamProcessorMetricThreshold {
 	if threshold == nil {
 		return nil
 	}
-	return &admin20231115014.GreaterThanRawThreshold{
+	return &admin.StreamProcessorMetricThreshold{
 		Operator:  threshold.Operator,
-		Threshold: util.Pointer(int(*threshold.Threshold)),
+		Threshold: threshold.Threshold,
 		Units:     threshold.Units,
 	}
 }
 
-func expandAlertConfigurationNotification(notificationList []NotificationView) (*[]admin20231115014.AlertsNotificationRootForGroup, error) {
-	notifications := make([]admin20231115014.AlertsNotificationRootForGroup, 0)
+func expandAlertConfigurationNotification(notificationList []NotificationView) (*[]admin.AlertsNotificationRootForGroup, error) {
+	notifications := make([]admin.AlertsNotificationRootForGroup, 0)
 
 	for ind := range notificationList {
 		if notificationList[ind].IntervalMin != nil && *notificationList[ind].IntervalMin > cast.ToFloat64(0) {
@@ -309,7 +310,7 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 	}
 
 	for ind := range notificationList {
-		notification := admin20231115014.AlertsNotificationRootForGroup{
+		notification := admin.AlertsNotificationRootForGroup{
 			ApiToken:                 notificationList[ind].ApiToken,
 			ChannelName:              notificationList[ind].ChannelName,
 			DatadogApiKey:            notificationList[ind].DatadogApiKey,
@@ -330,15 +331,17 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 			VictorOpsRoutingKey:      notificationList[ind].VictorOpsRoutingKey,
 			Roles:                    &notificationList[ind].Roles,
 			DelayMin:                 notificationList[ind].DelayMin,
+			NotifierId:               notificationList[ind].NotifierId,
+			IntegrationId:            notificationList[ind].IntegrationId,
 		}
 		notifications = append(notifications, notification)
 	}
 	return &notifications, nil
 }
 
-func convertToMongoModel(reqModel *admin20231115014.GroupAlertsConfig, currentModel *Model) *admin20231115014.GroupAlertsConfig {
+func convertToMongoModel(reqModel *admin.GroupAlertsConfig, currentModel *Model) *admin.GroupAlertsConfig {
 	if reqModel == nil {
-		reqModel = &admin20231115014.GroupAlertsConfig{}
+		reqModel = &admin.GroupAlertsConfig{}
 	}
 
 	// Only change the updated fields
@@ -360,10 +363,13 @@ func convertToMongoModel(reqModel *admin20231115014.GroupAlertsConfig, currentMo
 	if currentModel.Notifications != nil {
 		reqModel.Notifications, _ = expandAlertConfigurationNotification(currentModel.Notifications)
 	}
+	if currentModel.SeverityOverride != nil {
+		reqModel.SeverityOverride = currentModel.SeverityOverride
+	}
 	return reqModel
 }
 
-func convertToUIModel(alertConfig *admin20231115014.GroupAlertsConfig, currentModel *Model) *Model {
+func convertToUIModel(alertConfig *admin.GroupAlertsConfig, currentModel *Model) *Model {
 	currentModel.Id = alertConfig.Id
 	if alertConfig.Created != nil {
 		currentModel.Created = util.TimePtrToStringPtr(alertConfig.Created)
@@ -375,6 +381,10 @@ func convertToUIModel(alertConfig *admin20231115014.GroupAlertsConfig, currentMo
 
 	if alertConfig.Enabled != nil {
 		currentModel.Enabled = alertConfig.Enabled
+	}
+
+	if alertConfig.SeverityOverride != nil {
+		currentModel.SeverityOverride = alertConfig.SeverityOverride
 	}
 
 	return currentModel

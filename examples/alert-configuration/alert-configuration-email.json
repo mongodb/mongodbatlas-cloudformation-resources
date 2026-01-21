@@ -24,6 +24,12 @@
       "Description": "",
       "Default": "true",
       "ConstraintDescription": ""
+    },
+    "SeverityOverride": {
+      "Type": "String",
+      "Description": "Override the default severity level for this alert",
+      "Default": "WARNING",
+      "AllowedValues": ["CRITICAL", "ERROR", "WARNING"]
     }
   },
   "Mappings": {},
@@ -41,6 +47,9 @@
           "Ref": "Enabled"
         },
         "EventTypeName": "OUTSIDE_METRIC_THRESHOLD",
+        "SeverityOverride": {
+          "Ref": "SeverityOverride"
+        },
         "Notifications": [
           {
             "TypeName": "EMAIL",
@@ -78,26 +87,17 @@
     },
     "Id": {
       "Value": {
-        "Fn::GetAtt": [
-          "AlertConfiguration",
-          "Id"
-        ]
+        "Fn::GetAtt": ["AlertConfiguration", "Id"]
       }
     },
     "Created": {
       "Value": {
-        "Fn::GetAtt": [
-          "AlertConfiguration",
-          "Created"
-        ]
+        "Fn::GetAtt": ["AlertConfiguration", "Created"]
       }
     },
     "Enabled": {
       "Value": {
-        "Fn::GetAtt": [
-          "AlertConfiguration",
-          "Enabled"
-        ]
+        "Fn::GetAtt": ["AlertConfiguration", "Enabled"]
       }
     }
   }

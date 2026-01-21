@@ -453,6 +453,20 @@
         "WebhookUrl": {
           "type": "string",
           "description": "Your webhook URL."
+        },
+        "NotifierId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the notifier to use for this alert configuration.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "IntegrationId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the third party integration to use for this alert configuration.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
         }
       },
       "additionalProperties": false
@@ -552,6 +566,10 @@
       "type": "string",
       "description": "Date and time when someone last updated this alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
       "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "SeverityOverride": {
+      "type": "string",
+      "description": "Degree of seriousness given to this alert. This value overrides the default severity level for the alert."
     }
   },
   "readOnlyProperties": [
@@ -568,7 +586,8 @@
     "/properties/Notifications",
     "/properties/MetricThreshold",
     "/properties/Threshold",
-    "/properties/TypeName"
+    "/properties/TypeName",
+    "/properties/SeverityOverride"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",

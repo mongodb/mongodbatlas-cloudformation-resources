@@ -221,6 +221,33 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, constants.DELETE, err)
 	}
 
+	currentModel.IsDeleted = util.Pointer(false)
+
+	responseMsg, progressEvent := runDelete(ctx, conn, currentModel)
+	if responseMsg.Error != nil {
+		// Retry once on transient server error, waiting 20 seconds before retrying request
+		// This covers case of contract tests which create and delete an org within seconds, encountering an error while deleting the org
+		if responseMsg.Response != nil && responseMsg.Response.StatusCode == http.StatusInternalServerError {
+			_, _ = logger.Warnf("Transient server error while deleting organization, retrying in 20 seconds")
+			time.Sleep(20 * time.Second)
+			responseMsg, progressEvent = runDelete(ctx, conn, currentModel)
+		}
+	}
+	if progressEvent != nil {
+		return *progressEvent, nil
+	}
+	if responseMsg.Error != nil {
+		return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         DeleteCompleted,
+		ResourceModel:   nil}, nil
+}
+
+// Encapsulate the delete+wait logic so the same flow can be used on retry.
+func runDelete(ctx context.Context, conn *admin.APIClient, currentModel *Model) (*DeleteResponse, *handler.ProgressEvent) {
 	deleteRequest := conn.OrganizationsApi.DeleteOrg(ctx, *currentModel.OrgId)
 
 	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
@@ -234,17 +261,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		responseChan <- DeleteResponse{Error: err, Response: response}
 	}()
 
-	currentModel.IsDeleted = util.Pointer(false)
 	select {
 	case responseMsg := <-responseChan:
-		if responseMsg.Error != nil {
-			return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
-		}
-
+		return &responseMsg, nil
 	case <-time.After(30 * time.Second):
 		// If the Delete is not completed in the above time,
 		// we return a progress event with inProgress status and callback context
-		return handler.ProgressEvent{
+		return nil, &handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
 			Message:              DeleteInProgress,
 			ResourceModel:        currentModel,
@@ -252,13 +275,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			CallbackContext: map[string]interface{}{
 				constants.StateName: DeletingState,
 			},
-		}, nil
+		}
 	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         DeleteCompleted,
-		ResourceModel:   nil}, nil
 }
 
 func deleteCallback(ctx context.Context, conn *admin.APIClient, currentModel *Model) (handler.ProgressEvent, error) {

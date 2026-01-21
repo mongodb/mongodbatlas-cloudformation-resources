@@ -74,7 +74,8 @@ func handleUpdate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	orgID := model.OrgId
 	clientID := model.ClientId
 
-	_, apiResp, err := client.AtlasSDK.ServiceAccountsApi.GetOrgServiceAccount(ctx, *orgID, *clientID).Execute()
+	serviceAccountReq := NewOrgServiceAccountUpdateReq(model)
+	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.UpdateOrgServiceAccount(ctx, *clientID, *orgID, serviceAccountReq).Execute()
 	if err != nil {
 		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
@@ -83,12 +84,6 @@ func handleUpdate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			}
 		}
-		return handleError(apiResp, constants.UPDATE, err)
-	}
-
-	serviceAccountReq := NewOrgServiceAccountUpdateReq(model)
-	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.UpdateOrgServiceAccount(ctx, *clientID, *orgID, serviceAccountReq).Execute()
-	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
@@ -111,20 +106,15 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	orgID := model.OrgId
 	clientID := model.ClientId
 
-	_, resp, err := client.AtlasSDK.ServiceAccountsApi.GetOrgServiceAccount(ctx, *orgID, *clientID).Execute()
+	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteOrgServiceAccount(ctx, *clientID, *orgID).Execute()
 	if err != nil {
-		if util.StatusNotFound(resp) {
+		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Resource not found",
 				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
 			}
 		}
-		return handleError(resp, constants.DELETE, err)
-	}
-
-	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteOrgServiceAccount(ctx, *clientID, *orgID).Execute()
-	if err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}
 

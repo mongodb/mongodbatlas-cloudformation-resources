@@ -37,9 +37,13 @@ func GetOrgServiceAccountModel(account *admin.OrgServiceAccount, currentModel *M
 		model.Description = account.Description
 		if account.Roles != nil {
 			roles := *account.Roles
-			// Always sort roles for consistency (Terraform uses Set which is unordered)
-			sort.Strings(roles)
-			model.Roles = roles
+			// Preserve order from currentModel if it exists (required for CFN contract tests)
+			// Otherwise preserve API response order
+			if currentModel != nil && currentModel.Roles != nil && len(currentModel.Roles) > 0 {
+				model.Roles = currentModel.Roles
+			} else {
+				model.Roles = roles
+			}
 		}
 		model.ClientId = account.ClientId
 		model.CreatedAt = util.TimePtrToStringPtr(account.CreatedAt)

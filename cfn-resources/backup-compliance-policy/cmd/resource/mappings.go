@@ -233,6 +233,11 @@ func ExpandOnDemandPolicyItem(item *OnDemandPolicyItem) *admin.BackupComplianceO
 }
 
 func ExpandScheduledPolicyItem(item *ScheduledPolicyItem, frequencyType string) admin.BackupComplianceScheduledPolicyItem {
+	if item == nil {
+		return admin.BackupComplianceScheduledPolicyItem{
+			FrequencyType: frequencyType,
+		}
+	}
 	frequencyInterval := 0
 	if item.FrequencyInterval != nil {
 		frequencyInterval = *item.FrequencyInterval

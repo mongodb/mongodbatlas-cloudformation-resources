@@ -230,51 +230,51 @@ ISO 8601 timestamp in UTC of when the Backup Compliance Policy settings were las
 
 Email address of the user who last updated the Backup Compliance Policy settings.
 
-#### Id
+#### OnDemandPolicyItem.Id
 
-Returns the <code>Id</code> value.
+Unique identifier of the on-demand backup policy item.
 
-#### FrequencyType
+#### OnDemandPolicyItem.FrequencyType
 
-Returns the <code>FrequencyType</code> value.
+Frequency type of the on-demand backup policy item. Always returns "ondemand".
 
-#### Id
+#### PolicyItemHourly.Id
 
-Returns the <code>Id</code> value.
+Unique identifier of the hourly backup policy item.
 
-#### FrequencyType
+#### PolicyItemHourly.FrequencyType
 
-Returns the <code>FrequencyType</code> value.
+Frequency type of the hourly backup policy item. Always returns "hourly".
 
-#### Id
+#### PolicyItemDaily.Id
 
-Returns the <code>Id</code> value.
+Unique identifier of the daily backup policy item.
 
-#### FrequencyType
+#### PolicyItemDaily.FrequencyType
 
-Returns the <code>FrequencyType</code> value.
+Frequency type of the daily backup policy item. Always returns "daily".
 
-#### Id
+#### PolicyItemWeekly.Id
 
-Returns the <code>Id</code> value.
+Unique identifier of the weekly backup policy item(s). For arrays, use index notation (e.g., PolicyItemWeekly[0].Id).
 
-#### FrequencyType
+#### PolicyItemWeekly.FrequencyType
 
-Returns the <code>FrequencyType</code> value.
+Frequency type of the weekly backup policy item(s). Always returns "weekly". For arrays, use index notation (e.g., PolicyItemWeekly[0].FrequencyType).
 
-#### Id
+#### PolicyItemMonthly.Id
 
-Returns the <code>Id</code> value.
+Unique identifier of the monthly backup policy item(s). For arrays, use index notation (e.g., PolicyItemMonthly[0].Id).
 
-#### FrequencyType
+#### PolicyItemMonthly.FrequencyType
 
-Returns the <code>FrequencyType</code> value.
+Frequency type of the monthly backup policy item(s). Always returns "monthly". For arrays, use index notation (e.g., PolicyItemMonthly[0].FrequencyType).
 
-#### Id
+#### PolicyItemYearly.Id
 
-Returns the <code>Id</code> value.
+Unique identifier of the yearly backup policy item(s). For arrays, use index notation (e.g., PolicyItemYearly[0].Id).
 
-#### FrequencyType
+#### PolicyItemYearly.FrequencyType
 
-Returns the <code>FrequencyType</code> value.
+Frequency type of the yearly backup policy item(s). Always returns "yearly". For arrays, use index notation (e.g., PolicyItemYearly[0].FrequencyType).
 

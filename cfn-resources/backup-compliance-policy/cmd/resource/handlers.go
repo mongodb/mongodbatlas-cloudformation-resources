@@ -82,7 +82,7 @@ func checkPolicyNotFound(policy *admin.DataProtectionSettings20231001, apiResp *
 
 func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	if IsCallback(req) {
-		return validateProgress(client, model, false)
+		return validateProgress(client, model, false, constants.CREATE)
 	}
 
 	ctx := context.Background()
@@ -145,7 +145,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 
 func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	if IsCallback(req) {
-		return validateProgress(client, model, false)
+		return validateProgress(client, model, false, constants.UPDATE)
 	}
 
 	ctx := context.Background()
@@ -179,7 +179,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 
 func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	if IsCallback(req) {
-		return validateProgress(client, model, true)
+		return validateProgress(client, model, true, constants.DELETE)
 	}
 
 	ctx := context.Background()
@@ -269,7 +269,7 @@ func inProgressEvent(model *Model, policy *admin.DataProtectionSettings20231001)
 	}
 }
 
-func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) handler.ProgressEvent {
+func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool, operation constants.CfnFunctions) handler.ProgressEvent {
 	ctx := context.Background()
 	projectID := *model.ProjectId
 
@@ -281,7 +281,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) h
 		if isPendingActionError(err) {
 			return inProgressEvent(model, policy)
 		}
-		return handleError(resp, constants.CREATE, err)
+		return handleError(resp, operation, err)
 	}
 
 	if isDelete && policyDeleted {

@@ -10,7 +10,5 @@
   "UserClaim": "sub",
   "GroupsClaim": "groups",
   "Description": "Test OIDC Identity Provider for CloudFormation",
-  "AssociatedDomains": [
-    "cfn-test-domain.com"
-  ]
+  "AssociatedDomains": ["mdb-aws-cfn-publishing.com"]
 }

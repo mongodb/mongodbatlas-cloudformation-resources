@@ -11,8 +11,6 @@
   "UserClaim": "sub",
   "GroupsClaim": "groups",
   "Description": "Updated Test OIDC Identity Provider",
-  "AssociatedDomains": [
-    "cfn-test-domain.com"
-  ],
+  "AssociatedDomains": ["mdb-aws-cfn-publishing.com"],
   "Status": "ACTIVE"
 }

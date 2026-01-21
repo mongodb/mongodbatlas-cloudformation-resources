@@ -11,9 +11,7 @@
     "UserClaim": "sub",
     "GroupsClaim": "groups",
     "Description": "Example OIDC Identity Provider",
-    "AssociatedDomains": [
-      "cfn-test-domain.com"
-    ]
+    "AssociatedDomains": ["mdb-aws-cfn-publishing.com"]
   },
   "providerLogGroupName": "mongodb-atlas-federatedsettingsidentityprovider-logs",
   "previousResourceState": {}

@@ -37,12 +37,9 @@ func GetOrgServiceAccountModel(account *admin.OrgServiceAccount, currentModel *M
 		model.Description = account.Description
 		if account.Roles != nil {
 			roles := *account.Roles
-			if currentModel != nil && currentModel.Roles != nil && len(currentModel.Roles) > 0 {
-				model.Roles = currentModel.Roles
-			} else {
-				sort.Strings(roles)
-				model.Roles = roles
-			}
+			// Always sort roles for consistency (Terraform uses Set which is unordered)
+			sort.Strings(roles)
+			model.Roles = roles
 		}
 		model.ClientId = account.ClientId
 		model.CreatedAt = util.TimePtrToStringPtr(account.CreatedAt)
@@ -68,6 +65,9 @@ func GetOrgServiceAccountModel(account *admin.OrgServiceAccount, currentModel *M
 
 func NewOrgServiceAccountCreateReq(model *Model) *admin.OrgServiceAccountRequest {
 	if model == nil {
+		return nil
+	}
+	if model.SecretExpiresAfterHours == nil {
 		return nil
 	}
 	secretExpiresAfterHours := *model.SecretExpiresAfterHours

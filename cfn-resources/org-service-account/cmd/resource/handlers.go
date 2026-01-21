@@ -167,6 +167,6 @@ func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 }
 
 func handleError(response *http.Response, method constants.CfnFunctions, err error) handler.ProgressEvent {
-	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
+	errMsg := fmt.Sprintf("%s error: %s", method, err.Error())
 	return progress_events.GetFailedEventByResponse(errMsg, response)
 }

@@ -1,7 +1,7 @@
 {
   "Profile": "default",
   "ProjectId": "",
-  "InstanceName": "",
+  "WorkspaceName": "",
   "ConnectionName": "sample_stream_solar",
   "Type": "Sample"
 }

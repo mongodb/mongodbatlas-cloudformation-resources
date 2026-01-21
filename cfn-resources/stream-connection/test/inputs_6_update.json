@@ -1,0 +1,30 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ConnectionName": "ConnectionNameKafkaOAuth",
+  "Type": "Kafka",
+  "BootstrapServers": "pkc-example.us-east-1.aws.confluent.cloud:9092",
+  "Authentication": {
+    "Mechanism": "OAUTHBEARER",
+    "Method": "OIDC",
+    "TokenEndpointUrl": "https://oauth.example.com/oauth2/token",
+    "ClientId": "test-client-id-updated",
+    "ClientSecret": "<NEW_PASSWORD>",
+    "Scope": "read:messages write:messages delete:messages",
+    "SaslOauthbearerExtensions": "logicalCluster=lkc-updated,identityPoolId=pool-updated"
+  },
+  "Security": {
+    "Protocol": "SASL_SSL",
+    "BrokerPublicCertificate": "-----BEGIN CERTIFICATE-----\nMIIENTCCAx2gAwIBAgIJAPWNjXbYMr7lMA0GCSqGSIb3DQEBCwUAMGwxCzAJBgNV\nBAYTAklFMQowCAYDVQQIDAFEMQ8wDQYDVQQHDAZEdWJsaW4xFTATBgNVBAoMDERP\nIE5PVCBUUlVTVDEVMBMGA1UECwwMRE8gTk9UIFRSVVNUMRIwEAYDVQQDDAlsb2Nh\nbGhvc3QwHhcNMjIwNDE5MTYxNDI5WhcNMjMwOTAxMTYxNDI5WjBsMQswCQYDVQQG\nEwJJRTEKMAgGA1UECAwBRDEPMA0GA1UEBwwGRHVibGluMRUwEwYDVQQKDAxETyBO\nT1QgVFJVU1QxFTATBgNVBAsMDERPIE5PVCBUUlVTVDESMBAGA1UEAwwJbG9jYWxo\nb3N0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv6tWJkTr99TuxWN2\nih7uXVIbjRCd1pLTvmoZxHee4TYbs7zwHCzanbTeqQ2LOZlrqHLwmJ9E+xrkDSsB\nmlDfI3J9f5dIBeEZAZDP9GcZ64KCLq4PgdQV0YLPiuwYyEuIPZrDkNY7weVqBpk9\noEf4HLktxHx+zbsp6/SxAMKCYBTcy8wioccdLI8lBLJeVOl/KsuxfkGILoH+ryl5\nqBdYGeZzGnOjU4cJVFOCvJ7zJDn2ASGghO7JbmKPotr/NeY0MXEKJR4zHIHyYvRh\nKit5V5bq3DJw5kp0TFkVpjhRaMaLkaP8w97bEvaOthV5fJB94WG44eEuYhuO/xyY\nh2SLEwIDAQABo4HZMIHWMIGGBgNVHSMEfzB9oXCkbjBsMQswCQYDVQQGEwJJRTEK\nMAgGA1UECAwBRDEPMA0GA1UEBwwGRHVibGluMRUwEwYDVQQKDAxETyBOT1QgVFJV\nU1QxFTATBgNVBAsMDERPIE5PVCBUUlVTVDESMBAGA1UEAwwJbG9jYWxob3N0ggkA\n2D7GIAQ8CcgwCQYDVR0TBAIwADALBgNVHQ8EBAMCBaAwHQYDVR0lBBYwFAYIKwYB\nBQUHAwEGCCsGAQUFBwMCMBQGA1UdEQQNMAuCCWxvY2FsaG9zdDANBgkqhkiG9w0B\nAQsFAAOCAQEAgKINT8ASLnG/k/+H68iqoPfb49melXKtRiVG5jYlCN8P7v3Yj/AT\nm3Wbq/cGayd2sewh4UgvkmUWEuw6OCBsORT/E9+teq7G/XbWK6YGpc7WCzJT0kJD\n8sOK2LuRegPM7gEoIZ5KBycVBxB3mLkIyiOeFpCK+ZoW8gd9Ug2ZNK4YAyMDFfW9\nyJ7hJThLZmckaMZBY83yrSD3BTevLN22cWphj9Sna7BW+7c5Pqw3W9i4YO4wSmwU\nJ1FPS2VF0Pz5ORDNp5fgz2JVS4b3k2IQ0dEIXQW3OeBO1i7p+frUOroQFu8ZXLac\nromOggcaq3uWOek9yP+3XusUjXWJ3ZPPsA==\n-----END CERTIFICATE-----"
+  },
+  "Config": {
+    "auto.offset.reset": "latest"
+  },
+  "Networking": {
+    "Access": {
+      "Type": "PUBLIC"
+    }
+  }
+}
+

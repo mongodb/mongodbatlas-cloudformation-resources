@@ -17,294 +17,164 @@ package resource_test
 import (
 	"testing"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 
 	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-connection/cmd/resource"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewModelDBRoleToExecute(t *testing.T) {
-	tests := []struct {
-		input    *admin20231115014.DBRoleToExecute
-		expected *resource.DBRoleToExecute
-		name     string
+const (
+	testRoleValue     = "readWrite"
+	testRoleTypeValue = "BUILT_IN"
+	testUsername      = "testuser111"
+	testMechanism     = "PLAIN"
+	testProtocol      = "SSL"
+	testCert          = "testcert"
+	testCustomRole    = "customroleadmin"
+	testCustomType    = "CUSTOM"
+	testConnection    = "TestConnection"
+	testCluster       = "TestCluster"
+	testBootstrap     = "local.example.com:9192"
+	testUser          = "user1"
+	testSampleName    = "sample_stream_solar"
+	testRoleArn       = "arn:aws:iam::123456789012:role/test-lambda-role"
+	testURL           = "https://api.example.com/stream"
+)
+
+func TestMappings(t *testing.T) {
+	testCases := map[string]struct {
+		testFunc func(*testing.T)
 	}{
-		{
-			name:     "Nil Input",
-			input:    nil,
-			expected: nil,
-		},
-		{
-			name: "Valid Input",
-			input: &admin20231115014.DBRoleToExecute{
-				Role: ptr.String("readWrite"),
-				Type: ptr.String("BUILT_IN"),
-			},
-			expected: &resource.DBRoleToExecute{
-				Role: ptr.String("readWrite"),
-				Type: ptr.String("BUILT_IN"),
+		"NewModelDBRoleToExecute": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				input := &admin.DBRoleToExecute{Role: ptr.String(testRoleValue), Type: ptr.String(testRoleTypeValue)}
+				result := resource.NewModelDBRoleToExecute(input)
+				assert.Equal(t, testRoleValue, *result.Role)
+				assert.Equal(t, testRoleTypeValue, *result.Type)
+				assert.Nil(t, resource.NewModelDBRoleToExecute(nil))
 			},
 		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := resource.NewModelDBRoleToExecute(tt.input)
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
-
-func TestNewModelAuthentication(t *testing.T) {
-	tests := []struct {
-		input    *admin20231115014.StreamsKafkaAuthentication
-		expected *resource.StreamsKafkaAuthentication
-		name     string
-	}{
-		{
-			name:     "Nil Input",
-			input:    nil,
-			expected: nil,
-		},
-		{
-			name: "Valid Input",
-			input: &admin20231115014.StreamsKafkaAuthentication{
-				Mechanism: ptr.String("PLAIN"),
-				Username:  ptr.String("testuser111"),
-				Password:  ptr.String("testpassword"),
-			},
-			expected: &resource.StreamsKafkaAuthentication{
-				Mechanism: ptr.String("PLAIN"),
-				Username:  ptr.String("testuser111"),
-				Password:  ptr.String("testpassword"),
+		"NewModelAuthentication": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				input := &admin.StreamsKafkaAuthentication{
+					Mechanism: ptr.String(testMechanism), Username: ptr.String(testUsername),
+					Password: ptr.String("test-password-placeholder"),
+				}
+				result := resource.NewModelAuthentication(input, nil)
+				assert.Equal(t, testMechanism, *result.Mechanism)
+				assert.Equal(t, testUsername, *result.Username)
+				assert.Nil(t, result.Password)
+				assert.Nil(t, resource.NewModelAuthentication(nil, nil))
 			},
 		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := resource.NewModelAuthentication(tt.input)
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
-
-func TestNewModelSecurity(t *testing.T) {
-	tests := []struct {
-		input    *admin20231115014.StreamsKafkaSecurity
-		expected *resource.StreamsKafkaSecurity
-		name     string
-	}{
-		{
-			name:     "Nil Input",
-			input:    nil,
-			expected: nil,
-		},
-		{
-			name: "Valid Input",
-			input: &admin20231115014.StreamsKafkaSecurity{
-				BrokerPublicCertificate: ptr.String("testcert"),
-				Protocol:                ptr.String("SSL"),
-			},
-			expected: &resource.StreamsKafkaSecurity{
-				BrokerPublicCertificate: ptr.String("testcert"),
-				Protocol:                ptr.String("SSL"),
+		"NewModelSecurity": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				input := &admin.StreamsKafkaSecurity{
+					BrokerPublicCertificate: ptr.String(testCert), Protocol: ptr.String(testProtocol),
+				}
+				result := resource.NewModelSecurity(input)
+				assert.Equal(t, testCert, *result.BrokerPublicCertificate)
+				assert.Equal(t, testProtocol, *result.Protocol)
+				assert.Nil(t, resource.NewModelSecurity(nil))
 			},
 		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := resource.NewModelSecurity(tt.input)
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
-
-func TestNewDBRoleToExecute(t *testing.T) {
-	tests := []struct {
-		input    *resource.DBRoleToExecute
-		expected *admin20231115014.DBRoleToExecute
-		name     string
-	}{
-		{
-			name:     "Nil Input",
-			input:    nil,
-			expected: nil,
-		},
-		{
-			name: "Valid Input",
-			input: &resource.DBRoleToExecute{
-				Role: ptr.String("customroleadmin"),
-				Type: ptr.String("CUSTOM"),
-			},
-			expected: &admin20231115014.DBRoleToExecute{
-				Role: ptr.String("customroleadmin"),
-				Type: ptr.String("CUSTOM"),
+		"NewDBRoleToExecute": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				input := &resource.DBRoleToExecute{Role: ptr.String(testCustomRole), Type: ptr.String(testCustomType)}
+				result := resource.NewDBRoleToExecute(input)
+				assert.Equal(t, testCustomRole, *result.Role)
+				assert.Equal(t, testCustomType, *result.Type)
+				assert.Nil(t, resource.NewDBRoleToExecute(nil))
 			},
 		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := resource.NewDBRoleToExecute(tt.input)
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
-
-func TestGetStreamConnectionKafkaTypeModel(t *testing.T) {
-	streamsConnKafka := &admin20231115014.StreamsConnection{
-		Name:             ptr.String("TestConnection"),
-		Type:             ptr.String("Kafka"),
-		BootstrapServers: ptr.String("local.example.com:9192"),
-		Authentication: &admin20231115014.StreamsKafkaAuthentication{
-			Mechanism: ptr.String("PLAIN"),
-			Username:  ptr.String("user1"),
-			Password:  ptr.String("passwrd"),
-		},
-		Security: &admin20231115014.StreamsKafkaSecurity{
-			BrokerPublicCertificate: ptr.String("cert1"),
-			Protocol:                ptr.String("SSL"),
-		},
-		Config: &map[string]string{"retention.test": "60000"},
-	}
-
-	t.Run("With Nil Current Model", func(t *testing.T) {
-		result := resource.GetStreamConnectionModel(streamsConnKafka, nil)
-
-		assert.NotNil(t, result)
-		assert.Equal(t, *streamsConnKafka.Name, *result.ConnectionName)
-		assert.Equal(t, *streamsConnKafka.Type, *result.Type)
-		assert.Equal(t, *streamsConnKafka.BootstrapServers, *result.BootstrapServers)
-		assert.Equal(t, *streamsConnKafka.Authentication.Mechanism, *result.Authentication.Mechanism)
-		assert.Equal(t, *streamsConnKafka.Security.Protocol, *result.Security.Protocol)
-		assert.Equal(t, map[string]string{"retention.test": "60000"}, result.Config)
-	})
-
-	t.Run("With Non-Null Current Model", func(t *testing.T) {
-		currentModel := &resource.Model{
-			Profile:          ptr.String("default"),
-			ProjectId:        ptr.String("testProjectID"),
-			InstanceName:     ptr.String("TestInstance"),
-			ConnectionName:   ptr.String("TestConnection"),
-			Type:             ptr.String("Kafka"),
-			BootstrapServers: ptr.String("local.example.com:9192"),
-			Authentication: &resource.StreamsKafkaAuthentication{
-				Mechanism: ptr.String("PLAIN"),
-				Username:  ptr.String("user1"),
-				Password:  ptr.String("passwrd"),
+		"GetStreamConnectionModel_kafka": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				streamsConn := &admin.StreamsConnection{
+					Name: ptr.String(testConnection), Type: ptr.String(resource.KafkaConnectionType),
+					BootstrapServers: ptr.String(testBootstrap),
+					Authentication: &admin.StreamsKafkaAuthentication{
+						Mechanism: ptr.String(testMechanism), Username: ptr.String(testUser),
+					},
+					Security: &admin.StreamsKafkaSecurity{Protocol: ptr.String(testProtocol)},
+				}
+				result := resource.GetStreamConnectionModel(streamsConn, nil)
+				assert.Equal(t, testConnection, *result.ConnectionName)
+				assert.Equal(t, resource.KafkaConnectionType, *result.Type)
+				assert.Equal(t, testBootstrap, *result.BootstrapServers)
 			},
-			Security: &resource.StreamsKafkaSecurity{
-				BrokerPublicCertificate: ptr.String("cert1"),
-				Protocol:                ptr.String("SSL"),
+		},
+		"GetStreamConnectionModel_cluster": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				streamsConn := &admin.StreamsConnection{
+					Name: ptr.String(testConnection), Type: ptr.String(resource.ClusterConnectionType),
+					ClusterName:     ptr.String(testCluster),
+					DbRoleToExecute: &admin.DBRoleToExecute{Role: ptr.String("admin"), Type: ptr.String("Custom")},
+				}
+				result := resource.GetStreamConnectionModel(streamsConn, nil)
+				assert.Equal(t, testConnection, *result.ConnectionName)
+				assert.Equal(t, resource.ClusterConnectionType, *result.Type)
+				assert.Equal(t, "admin", *result.DbRoleToExecute.Role)
 			},
-			Config: map[string]string{"retention.test": "60000"},
-		}
-		result := resource.GetStreamConnectionModel(streamsConnKafka, currentModel)
-
-		assert.Equal(t, currentModel, result)
-		assert.Equal(t, *streamsConnKafka.Name, *result.ConnectionName)
-		assert.Equal(t, *currentModel.InstanceName, *result.InstanceName)
-		assert.Equal(t, *currentModel.Profile, *result.Profile)
-		assert.Equal(t, *currentModel.ProjectId, *result.ProjectId)
-		assert.Equal(t, *streamsConnKafka.Type, *result.Type)
-		assert.Equal(t, *streamsConnKafka.BootstrapServers, *result.BootstrapServers)
-		assert.Equal(t, *streamsConnKafka.Authentication.Mechanism, *result.Authentication.Mechanism)
-		assert.Equal(t, *streamsConnKafka.Security.Protocol, *result.Security.Protocol)
-	})
-}
-
-func TestGetStreamConnectionClusterTypeModel(t *testing.T) {
-	streamsConnKafka := &admin20231115014.StreamsConnection{
-		Name:        ptr.String("TestConnection"),
-		Type:        ptr.String("Cluster"),
-		ClusterName: ptr.String("TestCluster"),
-		DbRoleToExecute: &admin20231115014.DBRoleToExecute{
-			Role: ptr.String("admin"),
-			Type: ptr.String("Custom"),
+		},
+		"GetStreamConnectionModel_sample": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				streamsConn := &admin.StreamsConnection{
+					Name: ptr.String(testSampleName), Type: ptr.String("Sample"),
+				}
+				result := resource.GetStreamConnectionModel(streamsConn, nil)
+				assert.Equal(t, testSampleName, *result.ConnectionName)
+				assert.Equal(t, "Sample", *result.Type)
+				assert.Nil(t, result.DbRoleToExecute)
+			},
+		},
+		"GetStreamConnectionModel_awsLambda": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				streamsConn := &admin.StreamsConnection{
+					Name: ptr.String(testConnection), Type: ptr.String(resource.AWSLambdaType),
+					Aws: &admin.StreamsAWSConnectionConfig{
+						RoleArn: ptr.String(testRoleArn),
+					},
+				}
+				result := resource.GetStreamConnectionModel(streamsConn, nil)
+				assert.Equal(t, testConnection, *result.ConnectionName)
+				assert.Equal(t, resource.AWSLambdaType, *result.Type)
+				assert.NotNil(t, result.Aws)
+				assert.Equal(t, testRoleArn, *result.Aws.RoleArn)
+			},
+		},
+		"GetStreamConnectionModel_https": {
+			testFunc: func(t *testing.T) {
+				t.Helper()
+				testHeaders := map[string]string{
+					"Authorization": "Bearer token123",
+					"Content-Type":  "application/json",
+				}
+				streamsConn := &admin.StreamsConnection{
+					Name: ptr.String(testConnection), Type: ptr.String(resource.HTTPSType),
+					Url:     ptr.String(testURL),
+					Headers: &testHeaders,
+				}
+				result := resource.GetStreamConnectionModel(streamsConn, nil)
+				assert.Equal(t, testConnection, *result.ConnectionName)
+				assert.Equal(t, resource.HTTPSType, *result.Type)
+				assert.Equal(t, testURL, *result.Url)
+				assert.NotNil(t, result.Headers)
+				assert.Equal(t, "Bearer token123", result.Headers["Authorization"])
+				assert.Equal(t, "application/json", result.Headers["Content-Type"])
+			},
 		},
 	}
 
-	t.Run("With Nil Current Model", func(t *testing.T) {
-		result := resource.GetStreamConnectionModel(streamsConnKafka, nil)
-
-		assert.NotNil(t, result)
-		assert.Equal(t, *streamsConnKafka.Name, *result.ConnectionName)
-		assert.Equal(t, *streamsConnKafka.Type, *result.Type)
-		assert.Equal(t, streamsConnKafka.DbRoleToExecute.GetRole(), *result.DbRoleToExecute.Role)
-		assert.Equal(t, streamsConnKafka.DbRoleToExecute.GetType(), *result.DbRoleToExecute.Type)
-	})
-
-	t.Run("With Non-Null Current Model", func(t *testing.T) {
-		currentModel := &resource.Model{
-			Profile:        ptr.String("default"),
-			ProjectId:      ptr.String("testProjectID"),
-			InstanceName:   ptr.String("TestInstance"),
-			ConnectionName: ptr.String("TestConnection"),
-			Type:           ptr.String("Kafka"),
-			ClusterName:    ptr.String("TestCluster"),
-			DbRoleToExecute: &resource.DBRoleToExecute{
-				Role: ptr.String("admin"),
-				Type: ptr.String("Custom"),
-			},
-		}
-		result := resource.GetStreamConnectionModel(streamsConnKafka, currentModel)
-
-		assert.Equal(t, currentModel, result)
-		assert.Equal(t, *streamsConnKafka.Name, *result.ConnectionName)
-		assert.Equal(t, *currentModel.InstanceName, *result.InstanceName)
-		assert.Equal(t, *currentModel.Profile, *result.Profile)
-		assert.Equal(t, *currentModel.ProjectId, *result.ProjectId)
-		assert.Equal(t, *streamsConnKafka.Type, *result.Type)
-		assert.Equal(t, streamsConnKafka.DbRoleToExecute.GetRole(), *result.DbRoleToExecute.Role)
-		assert.Equal(t, streamsConnKafka.DbRoleToExecute.GetType(), *result.DbRoleToExecute.Type)
-	})
-}
-
-func TestGetStreamConnectionSampleTypeModel(t *testing.T) {
-	streamsConnSample := &admin20231115014.StreamsConnection{
-		Name: ptr.String("sample_stream_solar"),
-		Type: ptr.String("Sample"),
-	}
-	testCases := []struct {
-		model    *resource.Model
-		asserter func(input, result *resource.Model, a *assert.Assertions)
-		name     string
-	}{
-		{
-			name:  "With Nil Current Model",
-			model: nil,
-			asserter: func(_, result *resource.Model, a *assert.Assertions) {
-				a.NotNil(result)
-				a.Equal(*streamsConnSample.Name, *result.ConnectionName)
-				a.Equal(*streamsConnSample.Type, *result.Type)
-				a.Nil(result.DbRoleToExecute)
-			},
-		},
-		{
-			name: "Sample Stream Solar dataset",
-			model: &resource.Model{
-				Profile:        ptr.String("default"),
-				ProjectId:      ptr.String("testProjectID"),
-				InstanceName:   ptr.String("TestInstance"),
-				ConnectionName: ptr.String("sample_stream_solar"),
-				Type:           ptr.String("Sample"),
-			},
-			asserter: func(input, result *resource.Model, a *assert.Assertions) {
-				a.Equal(*input.InstanceName, *result.InstanceName)
-				a.Equal(*input.Profile, *result.Profile)
-				a.Equal(*input.ProjectId, *result.ProjectId)
-				a.Equal(*input.ConnectionName, *result.ConnectionName)
-				a.Equal(*input.Type, *result.Type)
-			},
-		},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			result := resource.GetStreamConnectionModel(streamsConnSample, tc.model)
-			tc.asserter(tc.model, result, assert.New(t))
-		})
+	for name, tc := range testCases {
+		t.Run(name, tc.testFunc)
 	}
 }

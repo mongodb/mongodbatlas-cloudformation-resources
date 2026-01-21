@@ -1,0 +1,14 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ConnectionName": "ConnectionNameHttps",
+  "Type": "Https",
+  "Url": "https://api.example.com/webhook/v2",
+  "Headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer updated-token-456",
+    "X-API-Key": "new-api-key"
+  }
+}
+

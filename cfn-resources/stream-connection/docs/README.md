@@ -1,6 +1,6 @@
 # MongoDB::Atlas::StreamConnection
 
-Returns, adds, edits, and removes one connection for a stream instance in the specified project. To use this resource, the requesting API Key must have the Project Owner roles.
+Returns, adds, edits, and removes one connection for a stream workspace in the specified project. To use this resource, the requesting API Key must have the Project Owner roles.
 
 ## Syntax
 
@@ -16,13 +16,19 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#connectionname" title="ConnectionName">ConnectionName</a>" : <i>String</i>,
         "<a href="#instancename" title="InstanceName">InstanceName</a>" : <i>String</i>,
+        "<a href="#workspacename" title="WorkspaceName">WorkspaceName</a>" : <i>String</i>,
         "<a href="#type" title="Type">Type</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
+        "<a href="#clusterprojectid" title="ClusterProjectId">ClusterProjectId</a>" : <i>String</i>,
         "<a href="#dbroletoexecute" title="DbRoleToExecute">DbRoleToExecute</a>" : <i><a href="dbroletoexecute.md">DBRoleToExecute</a></i>,
         "<a href="#authentication" title="Authentication">Authentication</a>" : <i><a href="streamskafkaauthentication.md">StreamsKafkaAuthentication</a></i>,
         "<a href="#bootstrapservers" title="BootstrapServers">BootstrapServers</a>" : <i>String</i>,
         "<a href="#security" title="Security">Security</a>" : <i><a href="streamskafkasecurity.md">StreamsKafkaSecurity</a></i>,
-        "<a href="#config" title="Config">Config</a>" : <i><a href="config.md">Config</a></i>
+        "<a href="#config" title="Config">Config</a>" : <i><a href="config.md">Config</a></i>,
+        "<a href="#networking" title="Networking">Networking</a>" : <i><a href="networking.md">Networking</a></i>,
+        "<a href="#aws" title="Aws">Aws</a>" : <i><a href="aws.md">Aws</a></i>,
+        "<a href="#url" title="Url">Url</a>" : <i>String</i>,
+        "<a href="#headers" title="Headers">Headers</a>" : <i><a href="headers.md">Headers</a></i>
     }
 }
 </pre>
@@ -36,13 +42,19 @@ Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#connectionname" title="ConnectionName">ConnectionName</a>: <i>String</i>
     <a href="#instancename" title="InstanceName">InstanceName</a>: <i>String</i>
+    <a href="#workspacename" title="WorkspaceName">WorkspaceName</a>: <i>String</i>
     <a href="#type" title="Type">Type</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
+    <a href="#clusterprojectid" title="ClusterProjectId">ClusterProjectId</a>: <i>String</i>
     <a href="#dbroletoexecute" title="DbRoleToExecute">DbRoleToExecute</a>: <i><a href="dbroletoexecute.md">DBRoleToExecute</a></i>
     <a href="#authentication" title="Authentication">Authentication</a>: <i><a href="streamskafkaauthentication.md">StreamsKafkaAuthentication</a></i>
     <a href="#bootstrapservers" title="BootstrapServers">BootstrapServers</a>: <i>String</i>
     <a href="#security" title="Security">Security</a>: <i><a href="streamskafkasecurity.md">StreamsKafkaSecurity</a></i>
     <a href="#config" title="Config">Config</a>: <i><a href="config.md">Config</a></i>
+    <a href="#networking" title="Networking">Networking</a>: <i><a href="networking.md">Networking</a></i>
+    <a href="#aws" title="Aws">Aws</a>: <i><a href="aws.md">Aws</a></i>
+    <a href="#url" title="Url">Url</a>: <i>String</i>
+    <a href="#headers" title="Headers">Headers</a>: <i><a href="headers.md">Headers</a></i>
 </pre>
 
 ## Properties
@@ -87,9 +99,19 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### InstanceName
 
-Human-readable label that identifies the stream instance.
+Human-readable label that identifies the stream instance. Deprecated: Use WorkspaceName instead.
 
-_Required_: Yes
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### WorkspaceName
+
+Human-readable label that identifies the stream workspace.
+
+_Required_: No
 
 _Type_: String
 
@@ -97,15 +119,15 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### Type
 
-Type of the connection. Can be either Cluster, Kafka, or Sample.
+Type of the connection. Can be Cluster, Kafka, Sample, AWSLambda, or Https.
 
 _Required_: Yes
 
 _Type_: String
 
-_Allowed Values_: <code>Kafka</code> | <code>Cluster</code> | <code>Sample</code>
+_Allowed Values_: <code>Kafka</code> | <code>Cluster</code> | <code>Sample</code> | <code>AWSLambda</code> | <code>Https</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ClusterName
 
@@ -114,6 +136,22 @@ Name of the cluster configured for this connection.
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ClusterProjectId
+
+Unique 24-hexadecimal digit string that identifies the project containing the cluster for cross-project cluster connections.
+
+_Required_: No
+
+_Type_: String
+
+_Minimum Length_: <code>24</code>
+
+_Maximum Length_: <code>24</code>
+
+_Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -164,6 +202,46 @@ A map of Kafka key-value pairs for optional configuration. This is a flat object
 _Required_: No
 
 _Type_: <a href="config.md">Config</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Networking
+
+Networking configuration for AWS PrivateLink connections.
+
+_Required_: No
+
+_Type_: <a href="networking.md">Networking</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Aws
+
+AWS Lambda connection configuration.
+
+_Required_: No
+
+_Type_: <a href="aws.md">Aws</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Url
+
+URL endpoint for HTTPS type connections.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Headers
+
+HTTP headers for HTTPS type connections.
+
+_Required_: No
+
+_Type_: <a href="headers.md">Headers</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

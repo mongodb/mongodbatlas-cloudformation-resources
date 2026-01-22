@@ -14,7 +14,13 @@
     },
     "LimitName": {
       "Type": "String",
-      "Default": "bytesProcessed.monthly"
+      "Default": "bytesProcessed.monthly",
+      "AllowedValues": [
+        "bytesProcessed.query",
+        "bytesProcessed.daily",
+        "bytesProcessed.weekly",
+        "bytesProcessed.monthly"
+      ]
     },
     "Value": {
       "Type": "String",
@@ -22,7 +28,11 @@
     },
     "OverrunPolicy": {
       "Type": "String",
-      "Default": "BLOCK"
+      "Default": "BLOCK",
+      "AllowedValues": [
+        "BLOCK",
+        "BLOCK_AND_KILL"
+      ]
     }
   },
   "Mappings": {},

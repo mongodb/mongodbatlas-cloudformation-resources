@@ -146,6 +146,7 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+	OverrunPolicy              = "OverrunPolicy"
 
 	AlreadyExist = "Already Exist"
 	EmptyString  = ""

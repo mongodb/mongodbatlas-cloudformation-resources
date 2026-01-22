@@ -2,12 +2,12 @@ SSDLC Compliance Report: CloudFormation MongoDB::Atlas::cluster 2.6.1
 =================================================================
 
 - Release Creator: AgustinBettati
-- Created On:       2025-12-03
+- Created On:       2026-01-22
 
 Overview:
 
 - **Product and Release Name**
-  - CloudFormation MongoDB::Atlas::cluster 2.6.1, 2025-12-03.
+  - CloudFormation MongoDB::Atlas::cluster 2.6.1, 2026-01-22.
 
 - **Process Document**
   - https://www.mongodb.com/blog/post/how-mongodb-protects-against-supply-chain-vulnerabilities

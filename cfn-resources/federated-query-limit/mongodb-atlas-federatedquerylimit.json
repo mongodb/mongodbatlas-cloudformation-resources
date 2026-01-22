@@ -43,7 +43,7 @@
     },
     "OverrunPolicy": {
       "type": "string",
-      "description": "Only used for Data Federation limits. Action to take when the usage limit is exceeded. If limit span is set to QUERY, this is ignored because MongoDB Cloud stops the query when it exceeds the usage limit. \"enum\" : [ \"BLOCK\", \"BLOCK_AND_KILL\" ]"
+      "description": "Action to take when the usage limit is exceeded. If limit span is set to QUERY, this is ignored because MongoDB Cloud stops the query when it exceeds the usage limit."
     },
     "Value": {
       "type": "string",

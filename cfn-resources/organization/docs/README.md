@@ -23,7 +23,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#isdeleted" title="IsDeleted">IsDeleted</a>" : <i>Boolean</i>,
         "<a href="#apiaccesslistrequired" title="ApiAccessListRequired">ApiAccessListRequired</a>" : <i>Boolean</i>,
         "<a href="#multifactorauthrequired" title="MultiFactorAuthRequired">MultiFactorAuthRequired</a>" : <i>Boolean</i>,
-        "<a href="#restrictemployeeaccess" title="RestrictEmployeeAccess">RestrictEmployeeAccess</a>" : <i>Boolean</i>
+        "<a href="#restrictemployeeaccess" title="RestrictEmployeeAccess">RestrictEmployeeAccess</a>" : <i>Boolean</i>,
+        "<a href="#securitycontact" title="SecurityContact">SecurityContact</a>" : <i>String</i>
     }
 }
 </pre>
@@ -45,6 +46,7 @@ Properties:
     <a href="#apiaccesslistrequired" title="ApiAccessListRequired">ApiAccessListRequired</a>: <i>Boolean</i>
     <a href="#multifactorauthrequired" title="MultiFactorAuthRequired">MultiFactorAuthRequired</a>: <i>Boolean</i>
     <a href="#restrictemployeeaccess" title="RestrictEmployeeAccess">RestrictEmployeeAccess</a>: <i>Boolean</i>
+    <a href="#securitycontact" title="SecurityContact">SecurityContact</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -170,6 +172,16 @@ Flag that indicates whether to block MongoDB Support from accessing Atlas infras
 _Required_: No
 
 _Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SecurityContact
+
+Email address of the security contact for the organization.
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

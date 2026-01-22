@@ -81,6 +81,11 @@
       ],
       "Default": "true",
       "Description": "Flag that indicates whether this organization has access to generative AI features. This setting only applies to Atlas Commercial and defaults to `true`. With this setting on, Project Owners may be able to enable or disable individual AI features at the project level. To learn more, see https://www.mongodb.com/docs/generative-ai-faq/"
+    },
+    "SecurityContact": {
+      "Type": "String",
+      "Description": "Email address of the security contact for the organization.",
+      "Default": ""
     }
   },
   "Mappings": {},
@@ -139,6 +144,9 @@
         },
         "GenAIFeaturesEnabled": {
           "Ref": "GenAIFeaturesEnabled"
+        },
+        "SecurityContact": {
+          "Ref": "SecurityContact"
         }
       }
     }

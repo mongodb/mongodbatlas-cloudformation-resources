@@ -146,6 +146,7 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+	OverrunPolicy              = "OverrunPolicy"
 
 	AlreadyExist = "Already Exist"
 	EmptyString  = ""
@@ -157,4 +158,8 @@ const (
 	ConnectionName = "ConnectionName"
 	Type           = "Type"
 	StreamConfig   = "StreamConfig"
+
+	ProcessorName = "ProcessorName"
+	Pipeline      = "Pipeline"
+	WorkspaceName = "WorkspaceName"
 )

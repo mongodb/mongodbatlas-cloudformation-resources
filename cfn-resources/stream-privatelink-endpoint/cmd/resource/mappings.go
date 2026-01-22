@@ -15,17 +15,14 @@
 package resource
 
 import (
-	"go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func GetStreamPrivatelinkEndpointModel(apiResp *admin.StreamsPrivateLinkConnection, currentModel *Model) *Model {
-	var model *Model
-	if currentModel != nil {
-		model = currentModel
-	} else {
-		model = new(Model)
+func UpdateModel(model *Model, apiResp *admin.StreamsPrivateLinkConnection) {
+	if apiResp == nil {
+		return
 	}
 
 	if apiResp.Id != nil {
@@ -52,6 +49,9 @@ func GetStreamPrivatelinkEndpointModel(apiResp *admin.StreamsPrivateLinkConnecti
 	if apiResp.DnsSubDomain != nil {
 		model.DnsSubDomain = *apiResp.DnsSubDomain
 	}
+	if len(model.DnsSubDomain) == 0 {
+		model.DnsSubDomain = nil
+	}
 	if apiResp.InterfaceEndpointId != nil {
 		model.InterfaceEndpointId = apiResp.InterfaceEndpointId
 	}
@@ -67,16 +67,6 @@ func GetStreamPrivatelinkEndpointModel(apiResp *admin.StreamsPrivateLinkConnecti
 	if apiResp.ErrorMessage != nil {
 		model.ErrorMessage = apiResp.ErrorMessage
 	}
-
-	if model.ProjectId == nil && currentModel != nil {
-		model.ProjectId = currentModel.ProjectId
-	}
-
-	if currentModel != nil && currentModel.Profile != nil {
-		model.Profile = currentModel.Profile
-	}
-
-	return model
 }
 
 func NewStreamPrivatelinkEndpointReq(model *Model) *admin.StreamsPrivateLinkConnection {

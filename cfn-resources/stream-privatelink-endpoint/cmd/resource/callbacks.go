@@ -16,141 +16,88 @@ package resource
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 )
 
-func IsCallback(req *handler.Request) bool {
-	if req.CallbackContext == nil {
-		return false
-	}
-	_, found := req.CallbackContext["callbackStreamPrivatelinkEndpoint"]
+const (
+	stateDone            = "DONE"
+	stateFailed          = "FAILED"
+	stateDeleteRequested = "DELETE_REQUESTED"
+	stateDeleting        = "DELETING"
+	stateDeleted         = "DELETED"
+
+	callbackDelaySeconds = 3
+	callbackKey          = "callbackStreamPrivatelinkEndpoint"
+)
+
+var callbackContext = map[string]any{callbackKey: true}
+
+func isCallback(req *handler.Request) bool {
+	_, found := req.CallbackContext[callbackKey]
 	return found
 }
 
-func BuildCallbackContext(projectID, connectionID string) map[string]interface{} {
-	return map[string]interface{}{
-		"callbackStreamPrivatelinkEndpoint": true,
-		"projectID":                         projectID,
-		"connectionID":                      connectionID,
-	}
-}
+func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) handler.ProgressEvent {
+	ctx := context.Background()
+	projectID := util.SafeString(model.ProjectId)
+	connectionID := util.SafeString(model.Id)
 
-func HandleCreateCallback(ctx context.Context, atlasClient *admin.APIClient, req handler.Request, currentModel *Model) (handler.ProgressEvent, error) {
-	projectID := util.SafeString(currentModel.ProjectId)
-	if projectID == "" {
-		if pid, ok := req.CallbackContext["projectID"].(string); ok {
-			projectID = pid
-			if currentModel.ProjectId == nil {
-				currentModel.ProjectId = &pid
-			}
+	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsApi.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
+	notFound := util.StatusNotFound(apiResp)
+
+	if err != nil && !notFound {
+		if apiResp != nil && apiResp.StatusCode >= http.StatusInternalServerError {
+			return handleError(apiResp, constants.READ, err)
 		}
 	}
 
-	connectionID := util.SafeString(currentModel.Id)
-	if connectionID == "" {
-		if id, ok := req.CallbackContext["connectionID"].(string); ok {
-			connectionID = id
-			currentModel.Id = &id
-		} else {
-			return handler.ProgressEvent{
-				OperationStatus: handler.Failed,
-				Message:         "Missing connection ID in callback context",
-			}, nil
-		}
+	state := stateDeleted
+	if streamsPrivateLinkConnection != nil && streamsPrivateLinkConnection.State != nil {
+		state = *streamsPrivateLinkConnection.State
 	}
 
-	streamsPrivateLinkConnection, apiResp, err := atlasClient.StreamsApi.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
-	if err != nil {
-		if apiResp != nil && apiResp.StatusCode == http.StatusNotFound {
-			return handler.ProgressEvent{
-				OperationStatus:      handler.InProgress,
-				Message:              "Resource not yet available, retrying...",
-				ResourceModel:        currentModel,
-				CallbackDelaySeconds: CallbackDelaySeconds,
-				CallbackContext:      BuildCallbackContext(projectID, connectionID),
-			}, nil
-		}
-		return HandleError(apiResp, constants.CREATE, err)
+	targetState := stateDone
+	if isDelete {
+		targetState = stateDeleted
 	}
 
-	currentState := ""
-	if streamsPrivateLinkConnection.State != nil {
-		currentState = *streamsPrivateLinkConnection.State
+	if state == stateFailed {
+		return handleFailedState(streamsPrivateLinkConnection)
 	}
 
-	switch currentState {
-	case StateDone:
-		resourceModel := GetStreamPrivatelinkEndpointModel(streamsPrivateLinkConnection, currentModel)
-		resourceModel.ProjectId = currentModel.ProjectId
+	if state != targetState {
+		return inProgressEvent(model, streamsPrivateLinkConnection)
+	}
+
+	if isDelete {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
-			Message:         "Create completed",
-			ResourceModel:   resourceModel,
-		}, nil
-
-	case StateFailed:
-		errorMsg := "Private endpoint is in a failed status"
-		if streamsPrivateLinkConnection.ErrorMessage != nil {
-			errorMsg = fmt.Sprintf("%s: %s", errorMsg, *streamsPrivateLinkConnection.ErrorMessage)
+			Message:         constants.Complete,
 		}
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          errorMsg,
-			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
-		}, nil
+	}
 
-	case StateIdle, StateWorking, "":
-		return handler.ProgressEvent{
-			OperationStatus:      handler.InProgress,
-			Message:              fmt.Sprintf("Waiting for state transition. Current state: %s", currentState),
-			ResourceModel:        currentModel,
-			CallbackDelaySeconds: CallbackDelaySeconds,
-			CallbackContext:      BuildCallbackContext(projectID, connectionID),
-		}, nil
-
-	default:
-		return handler.ProgressEvent{
-			OperationStatus:      handler.InProgress,
-			Message:              fmt.Sprintf("Waiting for state transition. Current state: %s", currentState),
-			ResourceModel:        currentModel,
-			CallbackDelaySeconds: CallbackDelaySeconds,
-			CallbackContext:      BuildCallbackContext(projectID, connectionID),
-		}, nil
+	UpdateModel(model, streamsPrivateLinkConnection)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         constants.Complete,
+		ResourceModel:   model,
 	}
 }
 
-func HandleDeleteCallback(ctx context.Context, atlasClient *admin.APIClient, req handler.Request, currentModel *Model) (handler.ProgressEvent, error) {
-	projectID := util.SafeString(currentModel.ProjectId)
-	connectionID := util.SafeString(currentModel.Id)
-
-	if projectID == "" {
-		if pid, ok := req.CallbackContext["projectID"].(string); ok {
-			projectID = pid
-		}
+func inProgressEvent(model *Model, apiResp *admin.StreamsPrivateLinkConnection) handler.ProgressEvent {
+	UpdateModel(model, apiResp)
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              constants.Pending,
+		ResourceModel:        model,
+		CallbackDelaySeconds: callbackDelaySeconds,
+		CallbackContext:      callbackContext,
 	}
-	if connectionID == "" {
-		if id, ok := req.CallbackContext["connectionID"].(string); ok {
-			connectionID = id
-			currentModel.Id = &id
-		}
-	}
-
-	if projectID == "" || connectionID == "" {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          constants.ResourceNotFound,
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
-		}, nil
-	}
-
-	return WaitForStateTransition(ctx, atlasClient, currentModel, []string{StateDeleteRequested, StateDeleting}, []string{StateDeleted, StateFailed}, true)
 }

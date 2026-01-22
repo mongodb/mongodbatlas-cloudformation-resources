@@ -8,10 +8,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# Accept project_name parameter for consistency with cfn-testing-helper.sh
-# (not used, but accepted to avoid errors)
-projectName="${1:-}"
-
 # Get region from inputs file or use default
 region=""
 if [ -f "./inputs/inputs_1_create.json" ]; then

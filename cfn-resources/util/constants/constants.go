@@ -158,4 +158,8 @@ const (
 	ConnectionName = "ConnectionName"
 	Type           = "Type"
 	StreamConfig   = "StreamConfig"
+
+	ProcessorName = "ProcessorName"
+	Pipeline      = "Pipeline"
+	WorkspaceName = "WorkspaceName"
 )

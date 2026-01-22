@@ -30,6 +30,8 @@ jobs:
      search-deployment: ${{ steps.filter.outputs.search-deployment }}
      stream-connection: ${{ steps.filter.outputs.stream-connection }}
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
+     stream-processor: ${{ steps.filter.outputs.stream-processor }}
+     stream-workspace: ${{ steps.filter.outputs.stream-workspace }}
    steps:
    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
      if: ${{ github.event_name == 'push' }}
@@ -75,6 +77,10 @@ jobs:
           - 'cfn-resources/stream-connection/**'
         stream-instance:
           - 'cfn-resources/stream-instance/**'
+        stream-processor:
+          - 'cfn-resources/stream-processor/**'
+        stream-workspace:
+          - 'cfn-resources/stream-workspace/**'
   access-list-api-key:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
@@ -852,5 +858,86 @@ jobs:
           pushd cfn-resources/stream-instance
           make create-test-resources
           cat inputs/inputs_1_create.json
+          make run-contract-testing
+          make delete-test-resources
+  stream-processor:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.stream-processor == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+      - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          cd cfn-resources/stream-processor
+          make create-test-resources
+
+          cat inputs/*
+
+          make run-contract-testing
+          make delete-test-resources
+  stream-workspace:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.stream-workspace == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+      - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          cd cfn-resources/stream-workspace
+          make create-test-resources
+
+          cat inputs/inputs_1_create.json
+          cat inputs/inputs_1_update.json
+
           make run-contract-testing
           make delete-test-resources

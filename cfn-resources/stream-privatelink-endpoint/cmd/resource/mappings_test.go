@@ -20,210 +20,150 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-privatelink-endpoint/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20250312010/admin"
+	"github.com/stretchr/testify/require"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 )
 
-func TestGetStreamPrivatelinkEndpointModel(t *testing.T) {
-	projectID := "507f1f77bcf86cd799439011"
-	connectionID := "507f1f77bcf86cd799439012"
-	providerName := "AWS"
-	vendor := "MSK"
-	region := "us-east-1"
-	arn := "arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster/12345678-1234-1234-1234-123456789012-1"
-	state := "DONE"
-	dnsDomain := "test.example.com"
-	dnsSubDomain := []string{"az1", "az2"}
-
+func TestUpdateModel(t *testing.T) {
 	testCases := map[string]struct {
+		initialModel *resource.Model
 		apiResp      *admin.StreamsPrivateLinkConnection
-		currentModel *resource.Model
-		validateFunc func(t *testing.T, result *resource.Model)
+		expected     *resource.Model
 	}{
-		"withCurrentModel": {
-			apiResp: &admin.StreamsPrivateLinkConnection{
-				Id:       &connectionID,
-				Provider: providerName,
-				Vendor:   &vendor,
-				Region:   &region,
-				Arn:      &arn,
-				State:    &state,
+		"nilApiResp": {
+			initialModel: &resource.Model{
+				ProjectId: util.StringPtr("project-123"),
 			},
-			currentModel: &resource.Model{
-				ProjectId:    &projectID,
-				Profile:      util.StringPtr("default"),
-				ProviderName: &providerName,
-			},
-			validateFunc: func(t *testing.T, result *resource.Model) {
-				t.Helper()
-				assert.Equal(t, connectionID, *result.Id)
-				assert.Equal(t, providerName, *result.ProviderName)
-				assert.Equal(t, vendor, *result.Vendor)
-				assert.Equal(t, region, *result.Region)
-				assert.Equal(t, arn, *result.Arn)
-				assert.Equal(t, state, *result.State)
-				assert.Equal(t, projectID, *result.ProjectId)
-				assert.Equal(t, "default", *result.Profile)
+			apiResp: nil,
+			expected: &resource.Model{
+				ProjectId: util.StringPtr("project-123"),
 			},
 		},
-		"withoutCurrentModel": {
+		"fullApiResp": {
+			initialModel: &resource.Model{
+				ProjectId: util.StringPtr("project-123"),
+			},
 			apiResp: &admin.StreamsPrivateLinkConnection{
-				Id:       &connectionID,
-				Provider: providerName,
-				Vendor:   &vendor,
-				Region:   &region,
-			},
-			currentModel: nil,
-			validateFunc: func(t *testing.T, result *resource.Model) {
-				t.Helper()
-				assert.Equal(t, connectionID, *result.Id)
-				assert.Equal(t, providerName, *result.ProviderName)
-				assert.Equal(t, vendor, *result.Vendor)
-				assert.Equal(t, region, *result.Region)
-				assert.Nil(t, result.ProjectId)
-			},
-		},
-		"withDnsFields": {
-			apiResp: &admin.StreamsPrivateLinkConnection{
-				Id:           &connectionID,
-				Provider:     providerName,
-				Vendor:       util.StringPtr("CONFLUENT"),
-				DnsDomain:    &dnsDomain,
-				DnsSubDomain: &dnsSubDomain,
-			},
-			currentModel: &resource.Model{
-				ProjectId: &projectID,
-			},
-			validateFunc: func(t *testing.T, result *resource.Model) {
-				t.Helper()
-				assert.Equal(t, dnsDomain, *result.DnsDomain)
-				assert.Equal(t, dnsSubDomain, result.DnsSubDomain)
-			},
-		},
-		"withReadOnlyFields": {
-			apiResp: &admin.StreamsPrivateLinkConnection{
-				Id:                    &connectionID,
-				Provider:              providerName,
-				InterfaceEndpointId:   util.StringPtr("vpce-12345678"),
-				InterfaceEndpointName: util.StringPtr("test-endpoint"),
+				Id:                    util.StringPtr("connection-123"),
+				Provider:              "AWS",
+				Vendor:                util.StringPtr("MSK"),
+				Region:                util.StringPtr("us-east-1"),
+				ServiceEndpointId:     util.StringPtr("vpce-123"),
+				Arn:                   util.StringPtr("arn:aws:kafka:us-east-1:123456789012:cluster/msk-cluster/uuid"),
+				DnsDomain:             util.StringPtr("example.com"),
+				DnsSubDomain:          &[]string{"sub1", "sub2"},
+				InterfaceEndpointId:   util.StringPtr("interface-123"),
+				InterfaceEndpointName: util.StringPtr("interface-name"),
 				ProviderAccountId:     util.StringPtr("123456789012"),
-				State:                 &state,
-				ErrorMessage:          util.StringPtr("Test error"),
+				State:                 util.StringPtr("DONE"),
+				ErrorMessage:          util.StringPtr(""),
 			},
-			currentModel: &resource.Model{
-				ProjectId: &projectID,
-			},
-			validateFunc: func(t *testing.T, result *resource.Model) {
-				t.Helper()
-				assert.Equal(t, "vpce-12345678", *result.InterfaceEndpointId)
-				assert.Equal(t, "test-endpoint", *result.InterfaceEndpointName)
-				assert.Equal(t, "123456789012", *result.ProviderAccountId)
-				assert.Equal(t, state, *result.State)
-				assert.Equal(t, "Test error", *result.ErrorMessage)
-			},
-		},
-		"preservesCurrentModelFields": {
-			apiResp: &admin.StreamsPrivateLinkConnection{
-				Id:       &connectionID,
-				Provider: providerName,
-			},
-			currentModel: &resource.Model{
-				ProjectId:    &projectID,
-				Profile:      util.StringPtr("custom-profile"),
-				ProviderName: &providerName,
-				Vendor:       &vendor,
-			},
-			validateFunc: func(t *testing.T, result *resource.Model) {
-				t.Helper()
-				assert.Equal(t, projectID, *result.ProjectId)
-				assert.Equal(t, "custom-profile", *result.Profile)
-				assert.Equal(t, connectionID, *result.Id)
+			expected: &resource.Model{
+				ProjectId:             util.StringPtr("project-123"),
+				Id:                    util.StringPtr("connection-123"),
+				ProviderName:          util.StringPtr("AWS"),
+				Vendor:                util.StringPtr("MSK"),
+				Region:                util.StringPtr("us-east-1"),
+				ServiceEndpointId:     util.StringPtr("vpce-123"),
+				Arn:                   util.StringPtr("arn:aws:kafka:us-east-1:123456789012:cluster/msk-cluster/uuid"),
+				DnsDomain:             util.StringPtr("example.com"),
+				DnsSubDomain:          []string{"sub1", "sub2"},
+				InterfaceEndpointId:   util.StringPtr("interface-123"),
+				InterfaceEndpointName: util.StringPtr("interface-name"),
+				ProviderAccountId:     util.StringPtr("123456789012"),
+				State:                 util.StringPtr("DONE"),
+				ErrorMessage:          util.StringPtr(""),
 			},
 		},
 	}
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			result := resource.GetStreamPrivatelinkEndpointModel(tc.apiResp, tc.currentModel)
-			if tc.validateFunc != nil {
-				tc.validateFunc(t, result)
-			}
+			resource.UpdateModel(tc.initialModel, tc.apiResp)
+			assert.Equal(t, tc.expected.Id, tc.initialModel.Id)
+			assert.Equal(t, tc.expected.ProviderName, tc.initialModel.ProviderName)
+			assert.Equal(t, tc.expected.Vendor, tc.initialModel.Vendor)
+			assert.Equal(t, tc.expected.Region, tc.initialModel.Region)
+			assert.Equal(t, tc.expected.ServiceEndpointId, tc.initialModel.ServiceEndpointId)
+			assert.Equal(t, tc.expected.Arn, tc.initialModel.Arn)
+			assert.Equal(t, tc.expected.DnsDomain, tc.initialModel.DnsDomain)
+			assert.Equal(t, tc.expected.DnsSubDomain, tc.initialModel.DnsSubDomain)
+			assert.Equal(t, tc.expected.InterfaceEndpointId, tc.initialModel.InterfaceEndpointId)
+			assert.Equal(t, tc.expected.InterfaceEndpointName, tc.initialModel.InterfaceEndpointName)
+			assert.Equal(t, tc.expected.ProviderAccountId, tc.initialModel.ProviderAccountId)
+			assert.Equal(t, tc.expected.State, tc.initialModel.State)
+			assert.Equal(t, tc.expected.ErrorMessage, tc.initialModel.ErrorMessage)
 		})
 	}
 }
 
 func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
-	providerName := "AWS"
-	vendorMSK := "MSK"
-	vendorConfluent := "CONFLUENT"
-	vendorS3 := "S3"
-	region := "us-east-1"
-	arn := "arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster/12345678-1234-1234-1234-123456789012-1"
-	serviceEndpointID := "com.amazonaws.vpce.us-east-1.vpce-svc-12345678"
-	dnsDomain := "test.example.com"
-	dnsSubDomain := []string{"az1", "az2"}
-
 	testCases := map[string]struct {
-		model        *resource.Model
-		validateFunc func(t *testing.T, result *admin.StreamsPrivateLinkConnection)
+		model    *resource.Model
+		validate func(t *testing.T, req *admin.StreamsPrivateLinkConnection)
 	}{
-		"MSKVendor": {
+		"minimalRequest": {
 			model: &resource.Model{
-				ProviderName: &providerName,
-				Vendor:       &vendorMSK,
-				Arn:          &arn,
+				ProviderName: util.StringPtr("AWS"),
+				Vendor:       util.StringPtr("MSK"),
 			},
-			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
+			validate: func(t *testing.T, req *admin.StreamsPrivateLinkConnection) {
 				t.Helper()
-				assert.Equal(t, providerName, result.Provider)
-				assert.Equal(t, vendorMSK, *result.Vendor)
-				assert.Equal(t, arn, *result.Arn)
-				assert.Nil(t, result.Region)
-				assert.Nil(t, result.ServiceEndpointId)
+				assert.Equal(t, "AWS", req.Provider)
+				assert.Equal(t, "MSK", *req.Vendor)
+				assert.Nil(t, req.Region)
+				assert.Nil(t, req.ServiceEndpointId)
+				assert.Nil(t, req.Arn)
+				assert.Nil(t, req.DnsDomain)
+				assert.Nil(t, req.DnsSubDomain)
 			},
 		},
-		"ConfluentVendor": {
+		"mskVendor": {
 			model: &resource.Model{
-				ProviderName:      &providerName,
-				Vendor:            &vendorConfluent,
-				Region:            &region,
-				ServiceEndpointId: &serviceEndpointID,
-				DnsDomain:         &dnsDomain,
-				DnsSubDomain:      dnsSubDomain,
+				ProviderName: util.StringPtr("AWS"),
+				Vendor:       util.StringPtr("MSK"),
+				Arn:          util.StringPtr("arn:aws:kafka:us-east-1:123456789012:cluster/msk-cluster/uuid"),
 			},
-			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
+			validate: func(t *testing.T, req *admin.StreamsPrivateLinkConnection) {
 				t.Helper()
-				assert.Equal(t, providerName, result.Provider)
-				assert.Equal(t, vendorConfluent, *result.Vendor)
-				assert.Equal(t, region, *result.Region)
-				assert.Equal(t, serviceEndpointID, *result.ServiceEndpointId)
-				assert.Equal(t, dnsDomain, *result.DnsDomain)
-				assert.Equal(t, dnsSubDomain, *result.DnsSubDomain)
+				assert.Equal(t, "AWS", req.Provider)
+				assert.Equal(t, "MSK", *req.Vendor)
+				assert.Equal(t, "arn:aws:kafka:us-east-1:123456789012:cluster/msk-cluster/uuid", *req.Arn)
 			},
 		},
-		"S3Vendor": {
+		"confluentVendor": {
 			model: &resource.Model{
-				ProviderName:      &providerName,
-				Vendor:            &vendorS3,
-				Region:            &region,
-				ServiceEndpointId: &serviceEndpointID,
+				ProviderName:      util.StringPtr("AWS"),
+				Vendor:            util.StringPtr("CONFLUENT"),
+				Region:            util.StringPtr("us-west-2"),
+				ServiceEndpointId: util.StringPtr("vpce-456"),
+				DnsDomain:         util.StringPtr("confluent.cloud"),
+				DnsSubDomain:      []string{"sub1"},
 			},
-			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
+			validate: func(t *testing.T, req *admin.StreamsPrivateLinkConnection) {
 				t.Helper()
-				assert.Equal(t, providerName, result.Provider)
-				assert.Equal(t, vendorS3, *result.Vendor)
-				assert.Equal(t, region, *result.Region)
-				assert.Equal(t, serviceEndpointID, *result.ServiceEndpointId)
+				assert.Equal(t, "AWS", req.Provider)
+				assert.Equal(t, "CONFLUENT", *req.Vendor)
+				assert.Equal(t, "us-west-2", *req.Region)
+				assert.Equal(t, "vpce-456", *req.ServiceEndpointId)
+				assert.Equal(t, "confluent.cloud", *req.DnsDomain)
+				require.NotNil(t, req.DnsSubDomain)
+				assert.Equal(t, []string{"sub1"}, *req.DnsSubDomain)
 			},
 		},
-		"nilDnsSubDomain": {
+		"s3Vendor": {
 			model: &resource.Model{
-				ProviderName: &providerName,
-				Vendor:       &vendorConfluent,
-				DnsSubDomain: nil,
+				ProviderName:      util.StringPtr("AWS"),
+				Vendor:            util.StringPtr("S3"),
+				Region:            util.StringPtr("eu-west-1"),
+				ServiceEndpointId: util.StringPtr("com.amazonaws.eu-west-1.s3"),
 			},
-			validateFunc: func(t *testing.T, result *admin.StreamsPrivateLinkConnection) {
+			validate: func(t *testing.T, req *admin.StreamsPrivateLinkConnection) {
 				t.Helper()
-				assert.Nil(t, result.DnsSubDomain)
+				assert.Equal(t, "AWS", req.Provider)
+				assert.Equal(t, "S3", *req.Vendor)
+				assert.Equal(t, "eu-west-1", *req.Region)
+				assert.Equal(t, "com.amazonaws.eu-west-1.s3", *req.ServiceEndpointId)
 			},
 		},
 	}
@@ -231,9 +171,8 @@ func TestNewStreamPrivatelinkEndpointReq(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			result := resource.NewStreamPrivatelinkEndpointReq(tc.model)
-			if tc.validateFunc != nil {
-				tc.validateFunc(t, result)
-			}
+			require.NotNil(t, result)
+			tc.validate(t, result)
 		})
 	}
 }

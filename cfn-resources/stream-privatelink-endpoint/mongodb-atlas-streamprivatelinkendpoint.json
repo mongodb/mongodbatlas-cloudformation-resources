@@ -14,13 +14,11 @@
     },
     "ProviderName": {
       "description": "Provider where the endpoint is deployed. For CloudFormation, this is always AWS.",
-      "type": "string",
-      "enum": ["AWS"]
+      "type": "string"
     },
     "Vendor": {
       "description": "Vendor that manages the endpoint. For AWS, valid values are: MSK, CONFLUENT, and S3.",
-      "type": "string",
-      "enum": ["MSK", "CONFLUENT", "S3"]
+      "type": "string"
     },
     "Region": {
       "description": "The region of the Provider's cluster. See [AWS](https://www.mongodb.com/docs/atlas/reference/amazon-aws/#stream-processing-instances) supported regions. When the vendor is CONFLUENT, this is the domain name of Confluent cluster. When the vendor is MSK, this is computed by the API from the provided ARN.",

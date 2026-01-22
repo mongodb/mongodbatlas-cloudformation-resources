@@ -166,6 +166,9 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 
 	_, apiResp, err = client.AtlasSDK.CloudBackupsApi.UpdateCompliancePolicyWithParams(ctx, &params).Execute()
 	if err != nil {
+		if isPendingActionError(err) {
+			return handlePendingAction(ctx, client, model, projectID)
+		}
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
@@ -233,7 +236,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         constants.Complete,
-			ResourceModels:  []interface{}{},
+			ResourceModels:  []any{},
 		}
 	}
 
@@ -241,18 +244,16 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         constants.Complete,
-			ResourceModels:  []interface{}{},
+			ResourceModels:  []any{},
 		}
 	}
 
-	listModel := &Model{ProjectId: &projectID}
-	SetBackupCompliancePolicyData(listModel, policy)
-	model = listModel
+	SetBackupCompliancePolicyData(model, policy)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         constants.Complete,
-		ResourceModels:  []interface{}{model},
+		ResourceModels:  []any{model},
 	}
 }
 

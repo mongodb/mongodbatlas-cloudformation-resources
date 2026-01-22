@@ -35,6 +35,8 @@ const (
 	Name                    = "Name"
 	ID                      = "Id"
 	ProjectID               = "ProjectId"
+	ProviderName            = "ProviderName"
+	Vendor                  = "Vendor"
 	AccepterRegionName      = "AccepterRegionName"
 	AwsAccountID            = "AwsAccountId"
 	RouteTableCIDRBlock     = "RouteTableCIDRBlock"

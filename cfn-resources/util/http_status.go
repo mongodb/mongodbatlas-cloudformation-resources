@@ -20,6 +20,10 @@ func StatusNotFound(resp *http.Response) bool {
 	return resp != nil && resp.StatusCode == http.StatusNotFound
 }
 
+func StatusInternalServerError(resp *http.Response) bool {
+	return resp != nil && resp.StatusCode == http.StatusInternalServerError
+}
+
 func StatusConflict(resp *http.Response) bool {
 	return resp != nil && resp.StatusCode == http.StatusConflict
 }

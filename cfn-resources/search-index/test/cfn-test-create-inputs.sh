@@ -13,11 +13,17 @@ function usage {
 	echo "Creates a new project and an Cluster for testing"
 }
 
-if [ "$#" -ne 2 ]; then usage; fi
+if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
+
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -38,6 +44,8 @@ if [ -z "$clusterId" ]; then
 	echo -e "Created Cluster \"${ClusterName}\""
 
 	atlas clusters loadSampleData "${ClusterName}" --projectId "${projectId}"
+	echo "Waiting for sample data to be available..."
+	sleep 180
 fi
 
 cluster_name=${ClusterName}
@@ -55,7 +63,8 @@ for inputFile in inputs_*; do
 		--arg name "$index_name" \
 		--arg db "$db_name" \
 		--arg coll "$coll_name" \
-		'.CollectionName?|=$coll |.Database?|=$db |.ProjectId?|=$org |.ClusterName?|=$cluster |.Name?|=$name' \
+		--arg profile "$profile" \
+		'.Profile?|=$profile |.CollectionName?|=$coll |.Database?|=$db |.ProjectId?|=$org |.ClusterName?|=$cluster |.Name?|=$name' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

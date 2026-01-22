@@ -217,10 +217,37 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// If exists
 	_, response, err = currentModel.getOrgDetails(ctx, conn, currentModel)
-	if err != nil && response.StatusCode == http.StatusUnauthorized {
+	if err != nil && util.StatusUnauthorized(response) {
 		return handleError(response, constants.DELETE, err)
 	}
 
+	currentModel.IsDeleted = util.Pointer(false)
+
+	responseMsg, progressEvent := runDelete(ctx, conn, currentModel)
+	if responseMsg.Error != nil {
+		// Retry once on transient server error, waiting 20 seconds before retrying request
+		// This covers case of contract tests which create and delete an org within seconds, encountering an error while deleting the org
+		if responseMsg.Response != nil && responseMsg.Response.StatusCode == http.StatusInternalServerError {
+			_, _ = logger.Warnf("Transient server error while deleting organization, retrying in 20 seconds")
+			time.Sleep(20 * time.Second)
+			responseMsg, progressEvent = runDelete(ctx, conn, currentModel)
+		}
+	}
+	if progressEvent != nil {
+		return *progressEvent, nil
+	}
+	if responseMsg.Error != nil {
+		return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         DeleteCompleted,
+		ResourceModel:   nil}, nil
+}
+
+// Encapsulate the delete+wait logic so the same flow can be used on retry.
+func runDelete(ctx context.Context, conn *admin.APIClient, currentModel *Model) (*DeleteResponse, *handler.ProgressEvent) {
 	deleteRequest := conn.OrganizationsApi.DeleteOrg(ctx, *currentModel.OrgId)
 
 	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
@@ -234,17 +261,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		responseChan <- DeleteResponse{Error: err, Response: response}
 	}()
 
-	currentModel.IsDeleted = util.Pointer(false)
 	select {
 	case responseMsg := <-responseChan:
-		if responseMsg.Error != nil {
-			return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
-		}
-
+		return &responseMsg, nil
 	case <-time.After(30 * time.Second):
 		// If the Delete is not completed in the above time,
 		// we return a progress event with inProgress status and callback context
-		return handler.ProgressEvent{
+		return nil, &handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
 			Message:              DeleteInProgress,
 			ResourceModel:        currentModel,
@@ -252,20 +275,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			CallbackContext: map[string]interface{}{
 				constants.StateName: DeletingState,
 			},
-		}, nil
+		}
 	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         DeleteCompleted,
-		ResourceModel:   nil}, nil
 }
 
 func deleteCallback(ctx context.Context, conn *admin.APIClient, currentModel *Model) (handler.ProgressEvent, error) {
 	// Read before delete
 	org, response, err := currentModel.getOrgDetails(ctx, conn, currentModel)
 	if err != nil {
-		if response.StatusCode == http.StatusUnauthorized {
+		if util.StatusUnauthorized(response) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				Message:         DeleteCompleted,
@@ -315,6 +333,7 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	model.MultiFactorAuthRequired = settings.MultiFactorAuthRequired
 	model.RestrictEmployeeAccess = settings.RestrictEmployeeAccess
 	model.GenAIFeaturesEnabled = settings.GenAIFeaturesEnabled
+	model.SecurityContact = settings.SecurityContact
 
 	return model, response, nil
 }
@@ -322,21 +341,21 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
 	_, _ = logger.Warn(errMsg)
-	if response.StatusCode == http.StatusConflict {
+	if util.StatusConflict(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
 			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
 
-	if response.StatusCode == http.StatusUnauthorized {
+	if util.StatusUnauthorized(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Not found",
 			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
-	if response.StatusCode == http.StatusBadRequest {
+	if util.StatusBadRequest(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          errMsg,
@@ -359,6 +378,7 @@ func newOrganizationSettings(model *Model) *admin.OrganizationSettings {
 		MultiFactorAuthRequired: model.MultiFactorAuthRequired,
 		RestrictEmployeeAccess:  model.RestrictEmployeeAccess,
 		GenAIFeaturesEnabled:    model.GenAIFeaturesEnabled,
+		SecurityContact:         model.SecurityContact,
 	}
 }
 

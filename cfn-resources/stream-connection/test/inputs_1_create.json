@@ -1,7 +1,7 @@
 {
   "Profile": "default",
   "ProjectId": "",
-  "InstanceName": "",
+  "WorkspaceName": "",
   "ClusterName": "",
   "ConnectionName": "ConnectionNameCluster",
   "Type": "Cluster",

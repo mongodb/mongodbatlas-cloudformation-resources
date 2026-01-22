@@ -5,19 +5,29 @@
   "Database": "testdb",
   "Name": "abc-123",
   "ProjectId": "$PROJECT_ID",
+  "Analyzer": "lucene.standard",
   "SearchAnalyzer": "lucene.standard",
+  "NumPartitions": "1",
   "Analyzers": [
     {
       "CharFilters": ["{\"type\": \"icuNormalize\"}"],
       "Name": "test",
       "TokenFilters": ["{\"type\": \"asciiFolding\"}"],
       "Tokenizer": {
-        "Type": "standard"
+        "Type": "standard",
+        "MaxTokenLength": "255"
       }
     }
   ],
   "Mappings": {
-    "Dynamic": "false",
+    "DynamicConfig": "{\"typeSet\":\"customTypes\"}",
     "Fields": "{\"address\":{\"fields\":{\"street\":[{\"norms\":\"omit\",\"store\":false,\"type\":\"string\"},{\"type\":\"autocomplete\"}]},\"type\":\"document\"},\"bedrooms\":{\"indexIntegers\":false,\"representation\":\"int64\",\"type\":\"number\"}}"
-  }
+  },
+  "TypeSets": [
+    {
+      "Name": "customTypes",
+      "Types": "[{\"type\":\"string\",\"analyzer\":\"lucene.standard\"},{\"type\":\"number\"},{\"type\":\"date\"}]"
+    }
+  ],
+  "StoredSource": "{\"include\":[\"address\",\"bedrooms\"]}"
 }

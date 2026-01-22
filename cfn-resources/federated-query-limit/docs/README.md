@@ -77,7 +77,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### OverrunPolicy
 
-Only used for Data Federation limits. Action to take when the usage limit is exceeded. If limit span is set to QUERY, this is ignored because MongoDB Cloud stops the query when it exceeds the usage limit. "enum" : [ "BLOCK", "BLOCK_AND_KILL" ]
+Action to take when the usage limit is exceeded. If limit span is set to QUERY, this is ignored because MongoDB Cloud stops the query when it exceeds the usage limit.
 
 _Required_: No
 
@@ -116,10 +116,6 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### CurrentUsage
 
 Amount that indicates the current usage of the limit.
-
-#### DefaultLimit
-
-Default value of the limit.
 
 #### LastModifiedDate
 

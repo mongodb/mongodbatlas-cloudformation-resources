@@ -14,5 +14,6 @@
   "RestrictEmployeeAccess": "false",
   "ApiAccessListRequired": "false",
   "SkipDefaultAlertsSettings": "true",
-  "GenAIFeaturesEnabled": "true"
+  "GenAIFeaturesEnabled": "true",
+  "SecurityContact": "security-test@example.com"
 }

@@ -20,6 +20,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#notifications" title="Notifications">Notifications</a>" : <i>[ <a href="notificationview.md">NotificationView</a>, ... ]</i>,
         "<a href="#threshold" title="Threshold">Threshold</a>" : <i><a href="integerthresholdview.md">IntegerThresholdView</a></i>,
         "<a href="#typename" title="TypeName">TypeName</a>" : <i>String</i>,
+        "<a href="#severityoverride" title="SeverityOverride">SeverityOverride</a>" : <i>String</i>
     }
 }
 </pre>
@@ -39,6 +40,7 @@ Properties:
       - <a href="notificationview.md">NotificationView</a></i>
     <a href="#threshold" title="Threshold">Threshold</a>: <i><a href="integerthresholdview.md">IntegerThresholdView</a></i>
     <a href="#typename" title="TypeName">TypeName</a>: <i>String</i>
+    <a href="#severityoverride" title="SeverityOverride">SeverityOverride</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -118,6 +120,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 #### TypeName
 
 Human-readable label that displays the alert type.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### SeverityOverride
+
+Degree of seriousness given to this alert. This value overrides the default severity level for the alert.
 
 _Required_: No
 

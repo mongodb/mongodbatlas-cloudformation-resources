@@ -6,10 +6,11 @@ Atlas Stream Processing is composed of multiple components, and users can levera
 
 - `MongoDB::Atlas::StreamInstance`: Enables creating, modifying, and deleting Stream Instances. as part of this resource, a computed `hostnames` attribute is available for connecting to the created instance.
 - `MongoDB::Atlas::StreamConnection`: Enables creating, modifying, and deleting Stream Instance Connections, which serve as data sources and sinks for your instance.
+- `MongoDB::Atlas::StreamPrivatelinkEndpoint`: Enables creating and deleting Stream Processing Private Link Endpoints for secure, private connectivity between Atlas Stream Processing and streaming services (AWS MSK, Confluent Cloud, or AWS S3) over AWS PrivateLink.
 
 ### Managing Stream Processors
 
 Once a stream instance and its connections have been defined, `Stream Processors` can be created to define how your data will be processed in your instance. There are currently no resources defined in CloudFormation to provide this configuration. To obtain information on how this can be configured refer to [Manage Stream Processors](https://www.mongodb.com/docs/atlas/atlas-sp/manage-stream-processor/#manage-stream-processors).
 
 Connect to your stream instance defined in CloudFormation using the `hostnames` output attribute.
-This value can then be used to connect to the stream instance using `mongosh`, as described in the [Get Started Tutorial](https://www.mongodb.com/docs/atlas/atlas-sp/tutorial/). 
+This value can then be used to connect to the stream instance using `mongosh`, as described in the [Get Started Tutorial](https://www.mongodb.com/docs/atlas/atlas-sp/tutorial/).

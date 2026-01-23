@@ -1,0 +1,12 @@
+{
+  "desiredResourceState": {
+    "ProjectId": "",
+    "ProviderName": "AWS",
+    "Vendor": "S3",
+    "Region": "",
+    "ServiceEndpointId": "",
+    "Profile": "default"
+  },
+  "providerLogGroupName": "mongodb-atlas-streamprivatelinkendpoint-logs",
+  "previousResourceState": {}
+}

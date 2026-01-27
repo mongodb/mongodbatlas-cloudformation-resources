@@ -24,4 +24,6 @@ type Model struct {
 	ListenAddress                *string `json:",omitempty"`
 	TlsPemPath                   *string `json:",omitempty"`
 	SendUserProvidedResourceTags *bool   `json:",omitempty"`
+	SendCollectionLatencyMetrics *bool   `json:",omitempty"`
+	SendDatabaseMetrics          *bool   `json:",omitempty"`
 }

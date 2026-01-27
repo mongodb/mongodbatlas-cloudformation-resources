@@ -6,5 +6,5 @@
   "Region": "US",
   "SendUserProvidedResourceTags": "true",
   "SendCollectionLatencyMetrics": "true",
-  "SendDatabaseMetrics": "false"
+  "SendDatabaseMetrics": "true"
 }

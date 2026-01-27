@@ -1,4 +1,4 @@
-# MongoDB::Atlas::OrgServiceAccount
+# MongoDB::Atlas::ServiceAccount
 
 ## Description
 
@@ -15,5 +15,5 @@ See the [resource docs](docs/README.md).
 
 ## Cloudformation Examples
 
-See the examples [CFN Template](/examples/org-service-account/README.md) for example resource.
+See the examples [CFN Template](/examples/service-account/README.md) for example resource.
 

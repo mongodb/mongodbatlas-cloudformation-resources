@@ -21,7 +21,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 
 	"github.com/aws/smithy-go/ptr"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/org-service-account/cmd/resource"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/service-account/cmd/resource"
 	"github.com/stretchr/testify/assert"
 )
 

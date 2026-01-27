@@ -1,4 +1,4 @@
-# MongoDB::Atlas::OrgServiceAccount Secret
+# MongoDB::Atlas::ServiceAccount Secret
 
 ## Syntax
 

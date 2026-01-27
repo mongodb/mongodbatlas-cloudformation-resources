@@ -1,6 +1,6 @@
 {
     "artifact_type": "RESOURCE",
-    "typeName": "MongoDB::Atlas::OrgServiceAccount",
+    "typeName": "MongoDB::Atlas::ServiceAccount",
     "language": "go",
     "runtime": "provided.al2",
     "entrypoint": "bootstrap",
@@ -16,7 +16,7 @@
         "region": null,
         "target_schemas": [],
         "profile": null,
-        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/org-service-account",
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/service-account",
         "protocolVersion": "2.0.0"
     },
     "canarySettings": {

@@ -1,4 +1,4 @@
-# MongoDB::Atlas::OrgServiceAccount
+# MongoDB::Atlas::ServiceAccount
 
 Creates and manages a Service Account for an organization.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::OrgServiceAccount",
+    "Type" : "MongoDB::Atlas::ServiceAccount",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
@@ -25,7 +25,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::OrgServiceAccount
+Type: MongoDB::Atlas::ServiceAccount
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>

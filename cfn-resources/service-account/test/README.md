@@ -1,4 +1,4 @@
-# MongoDB::Atlas::OrgServiceAccount
+# MongoDB::Atlas::ServiceAccount
 
 ## Impact
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
@@ -53,7 +53,7 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/org-service-account
+cd ${repo_root}/cfn-resources/service-account
 export MONGODB_ATLAS_ORG_ID="your-org-id"
 ./test/cfn-test-create-inputs.sh cfn-test-service-account > test.request.json 
 echo "Sample request:"

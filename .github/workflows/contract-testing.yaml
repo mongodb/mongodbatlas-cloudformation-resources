@@ -22,7 +22,7 @@ jobs:
      flex-cluster: ${{ steps.filter.outputs.flex-cluster }}
      online-archive: ${{ steps.filter.outputs.online-archive }}
      organization: ${{ steps.filter.outputs.organization }}
-     org-service-account: ${{ steps.filter.outputs.org-service-account }}
+     service-account: ${{ steps.filter.outputs.service-account }}
      private-endpoint-aws: ${{ steps.filter.outputs.private-endpoint-aws }}
      private-endpoint-service: ${{ steps.filter.outputs.private-endpoint-service }}
      privatelink-endpoint-service-data-federation-online-archive: ${{ steps.filter.outputs.privatelink-endpoint-service-data-federation-online-archive }}
@@ -62,8 +62,8 @@ jobs:
           - 'cfn-resources/online-archive/**'
         organization:
           - 'cfn-resources/organization/**'
-        org-service-account:
-          - 'cfn-resources/org-service-account/**'
+        service-account:
+          - 'cfn-resources/service-account/**'
         private-endpoint-aws:
           - 'cfn-resources/private-endpoint-aws/**'
         private-endpoint-service:
@@ -534,9 +534,9 @@ jobs:
 
           make run-contract-testing
           make delete-test-resources
-  org-service-account:
+  service-account:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.org-service-account == 'true' }}
+    if: ${{ needs.change-detection.outputs.service-account == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
@@ -567,7 +567,7 @@ jobs:
           MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
-          cd cfn-resources/org-service-account
+          cd cfn-resources/service-account
           make create-test-resources
 
           cat inputs/inputs_1_create.json

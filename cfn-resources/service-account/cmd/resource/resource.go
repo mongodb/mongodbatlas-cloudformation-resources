@@ -29,7 +29,7 @@ var (
 )
 
 func setupRequest(req handler.Request, model *Model, requiredFields []string) (*util.MongoDBClient, *handler.ProgressEvent) {
-	util.SetupLogger("mongodb-atlas-org-service-account")
+	util.SetupLogger("mongodb-atlas-service-account")
 	if modelValidation := validator.ValidateModel(requiredFields, model); modelValidation != nil {
 		return nil, modelValidation
 	}

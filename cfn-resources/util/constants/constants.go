@@ -173,4 +173,10 @@ const (
 
 	ClientID = "ClientId"
 	SecretID = "SecretId"
+
+	IntegrationID = "IntegrationId"
+	BucketName    = "BucketName"
+	IamRoleID     = "IamRoleId"
+	PrefixPath    = "PrefixPath"
+	LogTypes      = "LogTypes"
 )

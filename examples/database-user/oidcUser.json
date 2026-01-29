@@ -1,0 +1,87 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a database user with OIDC (OpenID Connect) federated authentication. OIDC authentication requires federation settings to be configured in your MongoDB Atlas organization. OIDCAuthType supports USER (individual users) and IDP_GROUP (identity provider groups).",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys",
+      "ConstraintDescription": "",
+      "Default": "default"
+    },
+    "DatabaseName": {
+      "Type": "String",
+      "Description": "Database against which the database user authenticates. For OIDC authentication, this must be $external",
+      "Default": "$external"
+    },
+    "Username": {
+      "Type": "String",
+      "Description": "Username for OIDC authentication. Format: <federation_settings_id>/<username> (e.g., 6489e4f0bebcb4b0dbd8e7b3/john.doe). The federation_settings_id can be found in your Atlas organization's federation settings."
+    },
+    "Description": {
+      "Type": "String",
+      "Description": "Description of this database user.",
+      "Default": "OIDC federated authentication user"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "OidcUser": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Metadata": {
+        "Comment": "Remember to update the \"Roles\" field with a list of roles that you want to assign to the user. OIDC authentication requires federation settings to be configured in your Atlas organization. The username must follow the format: <federation_settings_id>/<username>. For group-based authentication, use OIDCAuthType: IDP_GROUP and format: <federation_settings_id>/<group_name>"
+      },
+      "Properties": {
+        "Username": {
+          "Ref": "Username"
+        },
+        "OIDCAuthType": "USER",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DatabaseName": {
+          "Ref": "DatabaseName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "Description": {
+          "Ref": "Description"
+        },
+        "Roles": [
+          {
+            "RoleName": "readWriteAnyDatabase",
+            "DatabaseName": "admin"
+          }
+        ],
+        "Labels": [
+          {
+            "Key": "authType",
+            "Value": "oidc"
+          },
+          {
+            "Key": "environment",
+            "Value": "production"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "MongoDBOidcUsername": {
+      "Description": "Unique identifier for the OIDC database user",
+      "Value": {
+        "Fn::GetAtt": ["OidcUser", "UserCFNIdentifier"]
+      }
+    },
+    "Username": {
+      "Description": "Username of the OIDC database user",
+      "Value": {
+        "Ref": "Username"
+      }
+    }
+  }
+}

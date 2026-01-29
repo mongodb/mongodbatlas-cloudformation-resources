@@ -11,6 +11,7 @@ type Model struct {
 	Labels            []LabelDefinition `json:",omitempty"`
 	LdapAuthType      *string           `json:",omitempty"`
 	X509Type          *string           `json:",omitempty"`
+	OIDCAuthType      *string           `json:",omitempty"`
 	Password          *string           `json:",omitempty"`
 	ProjectId         *string           `json:",omitempty"`
 	Roles             []RoleDefinition  `json:",omitempty"`

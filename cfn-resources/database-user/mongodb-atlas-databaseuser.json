@@ -120,6 +120,11 @@
       ],
       "type": "string"
     },
+    "OIDCAuthType": {
+      "description": "Human-readable label that indicates whether the new database user or group authenticates with OIDC federated authentication. To create a federated authentication user, specify the value of USER in this field. To create a federated authentication group, specify the value of IDP_GROUP in this field. Default value is `NONE`.",
+      "enum": ["NONE", "USER", "IDP_GROUP"],
+      "type": "string"
+    },
     "Password": {
       "description": "The user’s password. This field is not included in the entity returned from the server.",
       "type": "string"

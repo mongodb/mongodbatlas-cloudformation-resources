@@ -162,4 +162,8 @@ const (
 	ProcessorName = "ProcessorName"
 	Pipeline      = "Pipeline"
 	WorkspaceName = "WorkspaceName"
+
+	AuthorizedEmail         = "AuthorizedEmail"
+	AuthorizedUserFirstName = "AuthorizedUserFirstName"
+	AuthorizedUserLastName  = "AuthorizedUserLastName"
 )

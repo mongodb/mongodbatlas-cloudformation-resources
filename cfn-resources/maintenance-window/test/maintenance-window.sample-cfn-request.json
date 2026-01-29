@@ -2,7 +2,13 @@
   "desiredResourceState": {
     "DayOfWeek": "4",
     "HourOfDay": "15",
-    "ProjectId": "$ProjectId"
+    "AutoDeferOnceEnabled": "true",
+    "ProtectedHours": {
+      "StartHourOfDay": "8",
+      "EndHourOfDay": "18"
+    },
+    "ProjectId": "$ProjectId",
+    "Profile": "default"
   },
   "providerLogGroupName": "mongodb-atlas-maintenance-window",
   "previousResourceState": {}

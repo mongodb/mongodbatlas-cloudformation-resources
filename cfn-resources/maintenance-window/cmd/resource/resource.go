@@ -58,13 +58,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Handle Defer if requested
 	if currentModel.Defer != nil && *currentModel.Defer {
-		_, err := client.AtlasSDK.MaintenanceWindowsApi.DeferMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
-		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: "GeneralServiceException",
-			}, nil
+		if pe := deferMaintenanceWindow(client, *currentModel.ProjectId); pe != nil {
+			return *pe, nil
 		}
 	}
 
@@ -79,13 +74,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Handle AutoDefer if requested
 	if currentModel.AutoDefer != nil && *currentModel.AutoDefer {
-		_, err := client.AtlasSDK.MaintenanceWindowsApi.ToggleMaintenanceAutoDefer(context.Background(), *currentModel.ProjectId).Execute()
-		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: "GeneralServiceException",
-			}, nil
+		if pe := toggleAutoDefer(client, *currentModel.ProjectId); pe != nil {
+			return *pe, nil
 		}
 	}
 
@@ -157,13 +147,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Handle Defer if changed
 	if currentModel.Defer != nil && *currentModel.Defer {
 		if prevModel == nil || prevModel.Defer == nil || !*prevModel.Defer {
-			_, err := client.AtlasSDK.MaintenanceWindowsApi.DeferMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
-			if err != nil {
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          err.Error(),
-					HandlerErrorCode: "GeneralServiceException",
-				}, nil
+			if pe := deferMaintenanceWindow(client, *currentModel.ProjectId); pe != nil {
+				return *pe, nil
 			}
 		}
 	}
@@ -182,13 +167,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		prevAutoDefer := prevModel.AutoDefer != nil && *prevModel.AutoDefer
 		currAutoDefer := currentModel.AutoDefer != nil && *currentModel.AutoDefer
 		if prevAutoDefer != currAutoDefer {
-			_, err := client.AtlasSDK.MaintenanceWindowsApi.ToggleMaintenanceAutoDefer(context.Background(), *currentModel.ProjectId).Execute()
-			if err != nil {
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          err.Error(),
-					HandlerErrorCode: "GeneralServiceException",
-				}, nil
+			if pe := toggleAutoDefer(client, *currentModel.ProjectId); pe != nil {
+				return *pe, nil
 			}
 		}
 	}
@@ -272,4 +252,28 @@ func get(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanc
 
 func isResponseEmpty(maintenanceWindow *admin.GroupMaintenanceWindow) bool {
 	return maintenanceWindow != nil && maintenanceWindow.GetDayOfWeek() == 0
+}
+
+func deferMaintenanceWindow(client *util.MongoDBClient, projectID string) *handler.ProgressEvent {
+	_, err := client.AtlasSDK.MaintenanceWindowsApi.DeferMaintenanceWindow(context.Background(), projectID).Execute()
+	if err != nil {
+		return &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: "GeneralServiceException",
+		}
+	}
+	return nil
+}
+
+func toggleAutoDefer(client *util.MongoDBClient, projectID string) *handler.ProgressEvent {
+	_, err := client.AtlasSDK.MaintenanceWindowsApi.ToggleMaintenanceAutoDefer(context.Background(), projectID).Execute()
+	if err != nil {
+		return &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: "GeneralServiceException",
+		}
+	}
+	return nil
 }

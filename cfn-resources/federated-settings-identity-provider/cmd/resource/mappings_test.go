@@ -22,13 +22,18 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312012/admin"
 )
 
+const (
+	testIdpID  = "test-idp-id"
+	testOktaID = "test-okta-id"
+)
+
 func TestGetFederatedSettingsIdentityProviderModel_SAML(t *testing.T) {
 	protocol := "SAML"
 	displayName := "saml-name"
 	issuerURI := "https://issuer.example.com"
 	api := &admin.FederationIdentityProvider{
-		Id:                         "idp-1",
-		OktaIdpId:                  "okta-1",
+		Id:                         testIdpID,
+		OktaIdpId:                  testOktaID,
 		Protocol:                   &protocol,
 		DisplayName:                &displayName,
 		IssuerUri:                  &issuerURI,
@@ -42,8 +47,8 @@ func TestGetFederatedSettingsIdentityProviderModel_SAML(t *testing.T) {
 
 	model := resource.GetFederatedSettingsIdentityProviderModel(api, &resource.Model{})
 
-	assert.Equal(t, "idp-1", *model.IdpId)
-	assert.Equal(t, "okta-1", *model.OktaIdpId)
+	assert.Equal(t, testIdpID, *model.IdpId)
+	assert.Equal(t, testOktaID, *model.OktaIdpId)
 	assert.Equal(t, "SAML", *model.Protocol)
 	assert.Equal(t, "saml-name", *model.Name)
 	assert.Equal(t, "https://issuer.example.com", *model.IssuerUri)
@@ -63,8 +68,8 @@ func TestGetFederatedSettingsIdentityProviderModel_OIDC(t *testing.T) {
 	displayName := "oidc-name"
 	issuerURI := "https://issuer.oidc.example.com"
 	api := &admin.FederationIdentityProvider{
-		Id:                "idp-2",
-		OktaIdpId:         "okta-2",
+		Id:                testIdpID,
+		OktaIdpId:         testOktaID,
 		Protocol:          &protocol,
 		DisplayName:       &displayName,
 		IssuerUri:         &issuerURI,
@@ -78,8 +83,8 @@ func TestGetFederatedSettingsIdentityProviderModel_OIDC(t *testing.T) {
 
 	model := resource.GetFederatedSettingsIdentityProviderModel(api, &resource.Model{})
 
-	assert.Equal(t, "idp-2", *model.IdpId)
-	assert.Equal(t, "okta-2", *model.OktaIdpId)
+	assert.Equal(t, testIdpID, *model.IdpId)
+	assert.Equal(t, testOktaID, *model.OktaIdpId)
 	assert.Equal(t, "OIDC", *model.Protocol)
 	assert.Equal(t, "oidc-name", *model.Name)
 	assert.Equal(t, "https://issuer.oidc.example.com", *model.IssuerUri)

@@ -33,6 +33,13 @@ var (
 	allIdpTypes  = []string{IdpTypeWorkforce, IdpTypeWorkload}
 )
 
+func getStringSliceOrEmpty(slice []string) []string {
+	if slice != nil {
+		return slice
+	}
+	return []string{}
+}
+
 func GetFederatedSettingsIdentityProviderModel(api *admin.FederationIdentityProvider, currentModel *Model) *Model {
 	var model *Model
 	if currentModel != nil {
@@ -49,34 +56,22 @@ func GetFederatedSettingsIdentityProviderModel(api *admin.FederationIdentityProv
 		model.OktaIdpId = oktaID
 	}
 
-	idpID := api.GetId()
-	model.IdpId = &idpID
+	model.IdpId = util.Pointer(api.GetId())
+	model.Name = util.Pointer(api.GetDisplayName())
+	model.IssuerUri = util.Pointer(api.GetIssuerUri())
+	model.Protocol = util.Pointer(api.GetProtocol())
+	model.Description = util.Pointer(api.GetDescription())
+	model.AuthorizationType = util.Pointer(api.GetAuthorizationType())
+	model.IdpType = util.Pointer(api.GetIdpType())
 
-	displayName := api.GetDisplayName()
-	model.Name = &displayName
-	issuerURI := api.GetIssuerUri()
-	model.IssuerUri = &issuerURI
 	protocol := api.GetProtocol()
-	model.Protocol = &protocol
-
-	description := api.GetDescription()
-	model.Description = &description
-	authorizationType := api.GetAuthorizationType()
-	model.AuthorizationType = &authorizationType
-	idpType := api.GetIdpType()
-	model.IdpType = &idpType
-
 	switch protocol {
 	case ProtocolSAML:
-		requestBinding := api.GetRequestBinding()
-		model.RequestBinding = &requestBinding
-		responseSignatureAlgorithm := api.GetResponseSignatureAlgorithm()
-		model.ResponseSignatureAlgorithm = &responseSignatureAlgorithm
+		model.RequestBinding = util.Pointer(api.GetRequestBinding())
+		model.ResponseSignatureAlgorithm = util.Pointer(api.GetResponseSignatureAlgorithm())
 		model.SsoDebugEnabled = api.SsoDebugEnabled
-		ssoURL := api.GetSsoUrl()
-		model.SsoUrl = &ssoURL
-		status := api.GetStatus()
-		model.Status = &status
+		model.SsoUrl = util.Pointer(api.GetSsoUrl())
+		model.Status = util.Pointer(api.GetStatus())
 
 		associatedDomains := api.GetAssociatedDomains()
 		if len(associatedDomains) == 0 && currentModel != nil && len(currentModel.AssociatedDomains) > 0 {
@@ -84,12 +79,9 @@ func GetFederatedSettingsIdentityProviderModel(api *admin.FederationIdentityProv
 		}
 		model.AssociatedDomains = associatedDomains
 	case ProtocolOIDC:
-		audience := api.GetAudience()
-		model.Audience = &audience
-		clientID := api.GetClientId()
-		model.ClientId = &clientID
-		groupsClaim := api.GetGroupsClaim()
-		model.GroupsClaim = &groupsClaim
+		model.Audience = util.Pointer(api.GetAudience())
+		model.ClientId = util.Pointer(api.GetClientId())
+		model.GroupsClaim = util.Pointer(api.GetGroupsClaim())
 
 		requestedScopes := api.GetRequestedScopes()
 		if len(requestedScopes) == 0 && currentModel != nil && len(currentModel.RequestedScopes) > 0 {
@@ -97,8 +89,7 @@ func GetFederatedSettingsIdentityProviderModel(api *admin.FederationIdentityProv
 		}
 		model.RequestedScopes = requestedScopes
 
-		userClaim := api.GetUserClaim()
-		model.UserClaim = &userClaim
+		model.UserClaim = util.Pointer(api.GetUserClaim())
 
 		associatedDomains := api.GetAssociatedDomains()
 		if len(associatedDomains) == 0 && currentModel != nil && len(currentModel.AssociatedDomains) > 0 {
@@ -113,18 +104,8 @@ func GetFederatedSettingsIdentityProviderModel(api *admin.FederationIdentityProv
 }
 
 func ExpandOIDCCreateRequest(model *Model) *admin.FederationOidcIdentityProviderUpdate {
-	var associatedDomains []string
-	if model.AssociatedDomains != nil {
-		associatedDomains = model.AssociatedDomains
-	} else {
-		associatedDomains = []string{}
-	}
-	var requestedScopes []string
-	if model.RequestedScopes != nil {
-		requestedScopes = model.RequestedScopes
-	} else {
-		requestedScopes = []string{}
-	}
+	associatedDomains := getStringSliceOrEmpty(model.AssociatedDomains)
+	requestedScopes := getStringSliceOrEmpty(model.RequestedScopes)
 
 	return &admin.FederationOidcIdentityProviderUpdate{
 		Audience:          util.Pointer(util.SafeString(model.Audience)),

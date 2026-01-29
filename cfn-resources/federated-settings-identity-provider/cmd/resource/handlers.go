@@ -45,8 +45,8 @@ func HandleCreate(client *util.MongoDBClient, currentModel *Model) handler.Progr
 		)
 	}
 
-	createdID := created.GetId()
-	currentModel.IdpId = &createdID
+	currentModel.IdpId = util.Pointer(created.GetId())
+
 	return HandleRead(client, currentModel)
 }
 
@@ -77,14 +77,8 @@ func HandleUpdate(client *util.MongoDBClient, prevModel *Model, currentModel *Mo
 	federationSettingsID := util.SafeString(currentModel.FederationSettingsId)
 	idpID := util.SafeString(currentModel.IdpId)
 
-	associatedDomains := currentModel.AssociatedDomains
-	if associatedDomains == nil {
-		associatedDomains = []string{}
-	}
-	requestedScopes := currentModel.RequestedScopes
-	if requestedScopes == nil {
-		requestedScopes = []string{}
-	}
+	associatedDomains := getStringSliceOrEmpty(currentModel.AssociatedDomains)
+	requestedScopes := getStringSliceOrEmpty(currentModel.RequestedScopes)
 
 	updateReq := &admin.FederationIdentityProviderUpdate{
 		AssociatedDomains:          &associatedDomains,

@@ -162,4 +162,10 @@ const (
 	ProcessorName = "ProcessorName"
 	Pipeline      = "Pipeline"
 	WorkspaceName = "WorkspaceName"
+
+	IntegrationID = "IntegrationId"
+	BucketName    = "BucketName"
+	IamRoleID     = "IamRoleId"
+	PrefixPath    = "PrefixPath"
+	LogTypes      = "LogTypes"
 )

@@ -5,19 +5,29 @@
   "Database": "testdb",
   "Name": "abc-123",
   "ProjectId": "$PROJECT_ID",
-  "SearchAnalyzer": "lucene.standard",
+  "Analyzer": "lucene.english",
+  "SearchAnalyzer": "lucene.english",
+  "NumPartitions": "1",
   "Analyzers": [
     {
-      "CharFilters": ["{\"type\": \"icuNormalize\"}"],
-      "Name": "test",
-      "TokenFilters": ["{\"type\": \"asciiFolding\"}"],
+      "CharFilters": ["{\"type\": \"htmlStrip\"}"],
+      "Name": "test_updated",
+      "TokenFilters": ["{\"type\": \"lowercase\"}", "{\"type\": \"stopword\"}"],
       "Tokenizer": {
-        "Type": "standard"
+        "Type": "standard",
+        "MaxTokenLength": "300"
       }
     }
   ],
   "Mappings": {
-    "Dynamic": "false",
-    "Fields": "{\"address\":{\"fields\":{\"street\":[{\"norms\":\"omit\",\"store\":false,\"type\":\"string\"},{\"type\":\"autocomplete\"}]},\"type\":\"document\"},\"bedrooms\":{\"indexIntegers\":false,\"representation\":\"int64\",\"type\":\"number\"}}"
-  }
+    "DynamicConfig": "{\"typeSet\":\"updatedTypes\"}",
+    "Fields": "{\"address\":{\"type\":\"string\"},\"price\":{\"type\":\"number\"}}"
+  },
+  "TypeSets": [
+    {
+      "Name": "updatedTypes",
+      "Types": "[{\"type\":\"string\",\"analyzer\":\"lucene.english\"},{\"type\":\"number\"}]"
+    }
+  ],
+  "StoredSource": "{\"exclude\":[\"internal_fields\"]}"
 }

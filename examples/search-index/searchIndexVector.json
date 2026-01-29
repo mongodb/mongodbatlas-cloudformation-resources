@@ -36,6 +36,16 @@
       "Type": "String",
       "Default": "[{\"type\": \"vector\",\"path\": \"plot_embedding\",\"numDimensions\": 2048,\"similarity\": \"cosine\"}]",
       "Description": "Array of fields to configure this vectorSearch index."
+    },
+    "StoredSource": {
+      "Type": "String",
+      "Default": "{\"exclude\": [\"plot_embedding\"]}",
+      "Description": "Stored source configuration - typically exclude vector embeddings"
+    },
+    "NumPartitions": {
+      "Type": "Number",
+      "Default": 1,
+      "Description": "Number of partitions for the index"
     }
   },
   "Resources": {
@@ -65,6 +75,12 @@
         },
         "Name": {
           "Ref": "IndexName"
+        },
+        "StoredSource": {
+          "Ref": "StoredSource"
+        },
+        "NumPartitions": {
+          "Ref": "NumPartitions"
         }
       }
     }

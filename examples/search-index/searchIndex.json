@@ -37,6 +37,41 @@
       "Default": "default",
       "Description": "Secret Manager Profile that contains the Atlas Programmatic keys.",
       "ConstraintDescription": ""
+    },
+    "Analyzer": {
+      "Type": "String",
+      "Default": "lucene.standard",
+      "Description": "Analyzer to use for indexing"
+    },
+    "SearchAnalyzer": {
+      "Type": "String",
+      "Default": "lucene.standard",
+      "Description": "Analyzer to use for querying"
+    },
+    "NumPartitions": {
+      "Type": "Number",
+      "Default": 1,
+      "Description": "Number of partitions for the index"
+    },
+    "StoredSource": {
+      "Type": "String",
+      "Default": "{\"include\": [\"title\", \"description\"]}",
+      "Description": "Stored source configuration (include/exclude fields)"
+    },
+    "SynonymCollection": {
+      "Type": "String",
+      "Default": "synonyms_collection",
+      "Description": "Collection name that stores synonyms"
+    },
+    "SynonymName": {
+      "Type": "String",
+      "Default": "mySynonyms",
+      "Description": "Name for the synonym mapping"
+    },
+    "SynonymAnalyzer": {
+      "Type": "String",
+      "Default": "lucene.standard",
+      "Description": "Analyzer for synonyms"
     }
   },
   "Mappings": {},
@@ -44,7 +79,12 @@
     "SearchIndex": {
       "Type": "MongoDB::Atlas::SearchIndex",
       "Properties": {
-        "Analyzer": "lucene.standard",
+        "Analyzer": {
+          "Ref": "Analyzer"
+        },
+        "SearchAnalyzer": {
+          "Ref": "SearchAnalyzer"
+        },
         "ClusterName": {
           "Ref": "ClusterName"
         },
@@ -65,6 +105,27 @@
         },
         "Mappings": {
           "Dynamic": true
+        },
+        "Synonyms": [
+          {
+            "Analyzer": {
+              "Ref": "SynonymAnalyzer"
+            },
+            "Name": {
+              "Ref": "SynonymName"
+            },
+            "Source": {
+              "Collection": {
+                "Ref": "SynonymCollection"
+              }
+            }
+          }
+        ],
+        "StoredSource": {
+          "Ref": "StoredSource"
+        },
+        "NumPartitions": {
+          "Ref": "NumPartitions"
         }
       }
     }

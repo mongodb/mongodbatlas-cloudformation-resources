@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Search Index with static field mapping on the MongoDB Atlas API",
+  "Description": "This template creates an advanced Search Index with TypeSets, DynamicConfig, custom analyzers, and static field mappings on the MongoDB Atlas API",
   "Parameters": {
     "ProjectId": {
       "Type": "String",
@@ -37,10 +37,40 @@
       "Default": "lucene.standard",
       "Description": "Analyzer to use for querying"
     },
-    "FieldMappings": {
+    "DynamicConfig": {
       "Type": "String",
-      "Default": "{\"property_type\": {\"type\": \"string\"}}",
-      "Description": "Static field mappings as JSON string"
+      "Default": "{\"typeSet\": \"customTypes\"}",
+      "Description": "Dynamic mapping configuration with typeSet reference"
+    },
+    "Fields": {
+      "Type": "String",
+      "Default": "{\"property_type\": {\"type\": \"string\"}, \"bedrooms\": {\"type\": \"number\"}}",
+      "Description": "Static field mappings"
+    },
+    "TypeSetName": {
+      "Type": "String",
+      "Default": "customTypes",
+      "Description": "Name for the custom type set"
+    },
+    "TypeSetTypes": {
+      "Type": "String",
+      "Default": "[{\"type\": \"string\", \"analyzer\": \"lucene.standard\"}, {\"type\": \"number\"}, {\"type\": \"date\"}]",
+      "Description": "Array of types for the type set"
+    },
+    "AnalyzerName": {
+      "Type": "String",
+      "Default": "customAnalyzer",
+      "Description": "Name for custom analyzer"
+    },
+    "TokenizerType": {
+      "Type": "String",
+      "Default": "standard",
+      "Description": "Tokenizer type"
+    },
+    "MaxTokenLength": {
+      "Type": "Number",
+      "Default": 255,
+      "Description": "Maximum token length for tokenizer"
     },
     "StoredSource": {
       "Type": "String",
@@ -82,9 +112,11 @@
           "Ref": "IndexName"
         },
         "Mappings": {
-          "Dynamic": false,
+          "DynamicConfig": {
+            "Ref": "DynamicConfig"
+          },
           "Fields": {
-            "Ref": "FieldMappings"
+            "Ref": "Fields"
           }
         },
         "Analyzers": [
@@ -92,12 +124,30 @@
             "CharFilters": [
               "{\"type\": \"icuNormalize\"}"
             ],
-            "Name": "customAnalyzer",
+            "Name": {
+              "Ref": "AnalyzerName"
+            },
             "TokenFilters": [
-              "{\"type\": \"asciiFolding\"}"
+              "{\"type\": \"asciiFolding\"}",
+              "{\"type\": \"lowercase\"}"
             ],
             "Tokenizer": {
-              "Type": "standard"
+              "Type": {
+                "Ref": "TokenizerType"
+              },
+              "MaxTokenLength": {
+                "Ref": "MaxTokenLength"
+              }
+            }
+          }
+        ],
+        "TypeSets": [
+          {
+            "Name": {
+              "Ref": "TypeSetName"
+            },
+            "Types": {
+              "Ref": "TypeSetTypes"
             }
           }
         ],

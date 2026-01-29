@@ -1,0 +1,334 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates an OIDC identity provider for MongoDB Atlas Federated Settings. This will be billed to your Atlas account.",
+  "Parameters": {
+    "FederationSettingsId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your federation",
+      "MinLength": 24,
+      "MaxLength": 24,
+      "AllowedPattern": "^([a-f0-9]{24})$",
+      "ConstraintDescription": "Must be a 24-character hexadecimal string"
+    },
+    "IdentityProviderName": {
+      "Type": "String",
+      "Description": "Human-readable name (display name) of the identity provider"
+    },
+    "IssuerUri": {
+      "Type": "String",
+      "Description": "Issuer URI of the identity provider (e.g., https://your-idp.com)"
+    },
+    "Audience": {
+      "Type": "String",
+      "Description": "OIDC audience claim value"
+    },
+    "ClientId": {
+      "Type": "String",
+      "Description": "OIDC client ID from your identity provider (optional for WORKLOAD type)",
+      "Default": ""
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys",
+      "Default": "default"
+    },
+    "GroupsClaim": {
+      "Type": "String",
+      "Description": "OIDC groups claim (optional, e.g., 'groups')",
+      "Default": ""
+    },
+    "UserClaim": {
+      "Type": "String",
+      "Description": "OIDC user claim (optional, e.g., 'email')",
+      "Default": ""
+    },
+    "Description": {
+      "Type": "String",
+      "Description": "Description of the identity provider (optional)",
+      "Default": ""
+    },
+    "AuthorizationType": {
+      "Type": "String",
+      "Description": "OIDC authorization type (optional)",
+      "Default": ""
+    },
+    "IdpType": {
+      "Type": "String",
+      "Description": "Identity provider type",
+      "Default": "WORKFORCE",
+      "AllowedValues": ["WORKFORCE", "WORKLOAD"]
+    },
+    "AssociatedDomain1": {
+      "Type": "String",
+      "Description": "First associated domain (optional, e.g., 'example.com')",
+      "Default": ""
+    },
+    "AssociatedDomain2": {
+      "Type": "String",
+      "Description": "Second associated domain (optional)",
+      "Default": ""
+    },
+    "RequestedScope1": {
+      "Type": "String",
+      "Description": "First OIDC requested scope (optional, e.g., 'openid'). Leave empty for WORKLOAD providers.",
+      "Default": ""
+    },
+    "RequestedScope2": {
+      "Type": "String",
+      "Description": "Second OIDC requested scope (optional, e.g., 'email'). Leave empty for WORKLOAD providers.",
+      "Default": ""
+    },
+    "RequestedScope3": {
+      "Type": "String",
+      "Description": "Third OIDC requested scope (optional, e.g., 'profile'). Leave empty for WORKLOAD providers.",
+      "Default": ""
+    }
+  },
+  "Conditions": {
+    "HasGroupsClaim": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "GroupsClaim"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasUserClaim": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "UserClaim"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasDescription": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "Description"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasAuthorizationType": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AuthorizationType"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasAssociatedDomain1": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AssociatedDomain1"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasAssociatedDomain2": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AssociatedDomain2"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasClientId": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "ClientId"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasRequestedScope1": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "RequestedScope1"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "AtlasFederatedSettingsIdentityProvider": {
+      "Type": "MongoDB::Atlas::FederatedSettingsIdentityProvider",
+      "Properties": {
+        "FederationSettingsId": {
+          "Ref": "FederationSettingsId"
+        },
+        "Name": {
+          "Ref": "IdentityProviderName"
+        },
+        "IssuerUri": {
+          "Ref": "IssuerUri"
+        },
+        "Protocol": "OIDC",
+        "Audience": {
+          "Ref": "Audience"
+        },
+        "ClientId": {
+          "Fn::If": [
+            "HasClientId",
+            {
+              "Ref": "ClientId"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "IdpType": {
+          "Ref": "IdpType"
+        },
+        "GroupsClaim": {
+          "Fn::If": [
+            "HasGroupsClaim",
+            {
+              "Ref": "GroupsClaim"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "UserClaim": {
+          "Fn::If": [
+            "HasUserClaim",
+            {
+              "Ref": "UserClaim"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "Description": {
+          "Fn::If": [
+            "HasDescription",
+            {
+              "Ref": "Description"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "AuthorizationType": {
+          "Fn::If": [
+            "HasAuthorizationType",
+            {
+              "Ref": "AuthorizationType"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "AssociatedDomains": {
+          "Fn::If": [
+            "HasAssociatedDomain1",
+            [
+              {
+                "Ref": "AssociatedDomain1"
+              },
+              {
+                "Fn::If": [
+                  "HasAssociatedDomain2",
+                  {
+                    "Ref": "AssociatedDomain2"
+                  },
+                  {
+                    "Ref": "AWS::NoValue"
+                  }
+                ]
+              }
+            ],
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "RequestedScopes": {
+          "Fn::If": [
+            "HasRequestedScope1",
+            [
+              {
+                "Ref": "RequestedScope1"
+              },
+              {
+                "Ref": "RequestedScope2"
+              },
+              {
+                "Ref": "RequestedScope3"
+              }
+            ],
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "IdpId": {
+      "Description": "Unique identifier of the identity provider",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-IdpId"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": ["AtlasFederatedSettingsIdentityProvider", "IdpId"]
+      }
+    },
+    "FederationSettingsId": {
+      "Description": "Federation Settings ID used",
+      "Value": {
+        "Ref": "FederationSettingsId"
+      }
+    },
+    "IdentityProviderName": {
+      "Description": "Display name of the identity provider",
+      "Value": {
+        "Ref": "IdentityProviderName"
+      }
+    }
+  }
+}

@@ -168,4 +168,10 @@ const (
 	AuthorizedEmail         = "AuthorizedEmail"
 	AuthorizedUserFirstName = "AuthorizedUserFirstName"
 	AuthorizedUserLastName  = "AuthorizedUserLastName"
+
+	IntegrationID = "IntegrationId"
+	BucketName    = "BucketName"
+	IamRoleID     = "IamRoleId"
+	PrefixPath    = "PrefixPath"
+	LogTypes      = "LogTypes"
 )

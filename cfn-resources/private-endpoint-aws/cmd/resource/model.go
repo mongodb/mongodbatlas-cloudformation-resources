@@ -9,6 +9,8 @@ type Model struct {
 	EndpointServiceId        *string `json:",omitempty"`
 	Id                       *string `json:",omitempty"`
 	EnforceConnectionSuccess *bool   `json:",omitempty"`
+	InterfaceEndpointId      *string `json:",omitempty"`
+	DeleteRequested          *bool   `json:",omitempty"`
 	ConnectionStatus         *string `json:",omitempty"`
 	ErrorMessage             *string `json:",omitempty"`
 }

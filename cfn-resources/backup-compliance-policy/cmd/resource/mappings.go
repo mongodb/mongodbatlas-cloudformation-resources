@@ -41,14 +41,15 @@ func SetBackupCompliancePolicyData(currentModel *Model, policy *admin.DataProtec
 		return
 	}
 
-	if policy.ProjectId != nil {
-		currentModel.ProjectId = policy.ProjectId
-	}
+	projectID := policy.GetProjectId()
+	currentModel.ProjectId = &projectID
 
 	authorizedEmail := policy.GetAuthorizedEmail()
 	currentModel.AuthorizedEmail = &authorizedEmail
+
 	authorizedUserFirstName := policy.GetAuthorizedUserFirstName()
 	currentModel.AuthorizedUserFirstName = &authorizedUserFirstName
+
 	authorizedUserLastName := policy.GetAuthorizedUserLastName()
 	currentModel.AuthorizedUserLastName = &authorizedUserLastName
 
@@ -211,49 +212,37 @@ func ExpandOnDemandPolicyItem(item *OnDemandPolicyItem) *admin.BackupComplianceO
 	if item == nil {
 		return nil
 	}
-	frequencyInterval := 0
+	onDemandPolicy := &admin.BackupComplianceOnDemandPolicyItem{
+		Id:            item.Id,
+		FrequencyType: "ondemand",
+	}
 	if item.FrequencyInterval != nil {
-		frequencyInterval = *item.FrequencyInterval
+		onDemandPolicy.FrequencyInterval = *item.FrequencyInterval
 	}
-	retentionValue := 0
 	if item.RetentionValue != nil {
-		retentionValue = *item.RetentionValue
+		onDemandPolicy.RetentionValue = *item.RetentionValue
 	}
-	retentionUnit := ""
 	if item.RetentionUnit != nil {
-		retentionUnit = *item.RetentionUnit
+		onDemandPolicy.RetentionUnit = *item.RetentionUnit
 	}
-	return &admin.BackupComplianceOnDemandPolicyItem{
-		Id:                item.Id,
-		FrequencyInterval: frequencyInterval,
-		FrequencyType:     "ondemand",
-		RetentionUnit:     retentionUnit,
-		RetentionValue:    retentionValue,
-	}
+	return onDemandPolicy
 }
 
 func ExpandScheduledPolicyItem(item *ScheduledPolicyItem, frequencyType string) admin.BackupComplianceScheduledPolicyItem {
+	scheduledPolicy := admin.BackupComplianceScheduledPolicyItem{
+		FrequencyType: frequencyType,
+	}
 	if item == nil {
-		return admin.BackupComplianceScheduledPolicyItem{
-			FrequencyType: frequencyType,
-		}
+		return scheduledPolicy
 	}
-	frequencyInterval := 0
 	if item.FrequencyInterval != nil {
-		frequencyInterval = *item.FrequencyInterval
+		scheduledPolicy.FrequencyInterval = *item.FrequencyInterval
 	}
-	retentionValue := 0
 	if item.RetentionValue != nil {
-		retentionValue = *item.RetentionValue
+		scheduledPolicy.RetentionValue = *item.RetentionValue
 	}
-	retentionUnit := ""
 	if item.RetentionUnit != nil {
-		retentionUnit = *item.RetentionUnit
+		scheduledPolicy.RetentionUnit = *item.RetentionUnit
 	}
-	return admin.BackupComplianceScheduledPolicyItem{
-		FrequencyType:     frequencyType,
-		FrequencyInterval: frequencyInterval,
-		RetentionUnit:     retentionUnit,
-		RetentionValue:    retentionValue,
-	}
+	return scheduledPolicy
 }

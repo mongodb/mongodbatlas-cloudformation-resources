@@ -1,6 +1,11 @@
 {
   "DayOfWeek": "1",
   "HourOfDay": "10",
+  "AutoDeferOnceEnabled": "false",
+  "ProtectedHours": {
+    "StartHourOfDay": "10",
+    "EndHourOfDay": "20"
+  },
   "ProjectId": "$ProjectId",
   "Profile": "default"
 }

@@ -17,7 +17,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#dayofweek" title="DayOfWeek">DayOfWeek</a>" : <i>Integer</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#hourofday" title="HourOfDay">HourOfDay</a>" : <i>Integer</i>,
-        "<a href="#startasap" title="StartASAP">StartASAP</a>" : <i>Boolean</i>
+        "<a href="#defer" title="Defer">Defer</a>" : <i>Boolean</i>,
+        "<a href="#autodefer" title="AutoDefer">AutoDefer</a>" : <i>Boolean</i>,
+        "<a href="#protectedhours" title="ProtectedHours">ProtectedHours</a>" : <i><a href="protectedhours.md">ProtectedHours</a></i>
     }
 }
 </pre>
@@ -32,7 +34,9 @@ Properties:
     <a href="#dayofweek" title="DayOfWeek">DayOfWeek</a>: <i>Integer</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#hourofday" title="HourOfDay">HourOfDay</a>: <i>Integer</i>
-    <a href="#startasap" title="StartASAP">StartASAP</a>: <i>Boolean</i>
+    <a href="#defer" title="Defer">Defer</a>: <i>Boolean</i>
+    <a href="#autodefer" title="AutoDefer">AutoDefer</a>: <i>Boolean</i>
+    <a href="#protectedhours" title="ProtectedHours">ProtectedHours</a>: <i><a href="protectedhours.md">ProtectedHours</a></i>
 </pre>
 
 ## Properties
@@ -72,7 +76,7 @@ One-based integer that represents the day of the week that the maintenance windo
 | `7` | Saturday |
 
 
-_Required_: No
+_Required_: Yes
 
 _Type_: Integer
 
@@ -82,7 +86,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique 24-hexadecimal digit string that identifies your project.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -104,13 +108,53 @@ _Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### StartASAP
+#### Defer
 
-Flag that indicates whether MongoDB Cloud starts the maintenance window immediately upon receiving this request. To start the maintenance window immediately for your project, MongoDB Cloud must have maintenance scheduled and you must set a maintenance window. This flag resets to `false` after MongoDB Cloud completes maintenance.
+Flag that indicates whether to defer the maintenance window. When set to true, the next scheduled maintenance will be deferred.
 
 _Required_: No
 
 _Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AutoDefer
+
+Flag that indicates whether MongoDB Cloud should automatically defer maintenance windows for one week when they occur during the defined maintenance window.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ProtectedHours
+
+Protected hours during which MongoDB Cloud cannot start maintenance.
+
+_Required_: No
+
+_Type_: <a href="protectedhours.md">ProtectedHours</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+## Return Values
+
+### Fn::GetAtt
+
+The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
+
+For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
+
+#### StartASAP
+
+Flag that indicates whether MongoDB Cloud starts the maintenance window immediately upon receiving this request. To start the maintenance window immediately for your project, MongoDB Cloud must have maintenance scheduled and you must set a maintenance window. This flag resets to `false` after MongoDB Cloud completes maintenance.
+
+#### NumberOfDeferrals
+
+Number of times this project has deferred the maintenance window.
+
+#### TimeZoneId
+
+Time zone ID that identifies the timezone for the maintenance window.
 

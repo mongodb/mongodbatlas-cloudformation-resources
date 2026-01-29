@@ -1,0 +1,12 @@
+{
+  "typeName": "MongoDB::Atlas::FederatedSettingsIdentityProvider",
+  "language": "go",
+  "runtime": "provided.al2",
+  "entrypoint": "bootstrap",
+  "testEntrypoint": "bootstrap",
+  "settings": {
+    "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/federated-settings-identity-provider",
+    "protocolVersion": "2.0.0",
+    "pluginVersion": "2.0.4"
+  }
+}

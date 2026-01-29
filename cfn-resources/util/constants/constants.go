@@ -130,6 +130,8 @@ const (
 
 	AppID                = "AppId"
 	FederationSettingsID = "FederationSettingsId"
+	IssuerURI            = "IssuerUri"
+	IdpID                = "IdpId"
 
 	ExportBucketID             = "ExportBucketId"
 	ExportID                   = "ExportId"

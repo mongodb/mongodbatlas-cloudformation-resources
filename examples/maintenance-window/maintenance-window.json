@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description": "This template creates a Maintenance Window on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters": {
     "Profile": {
       "Type": "String",
@@ -12,26 +12,82 @@
       "Description": "MongoDB project Id"
     },
     "DayOfWeek": {
-      "Type": "String",
-      "Description": "Day of the week that the maintenance window starts."
+      "Type": "Number",
+      "Description": "Day of the week that the maintenance window starts (1-7, where 1=Sunday)",
+      "Default": 3,
+      "MinValue": 1,
+      "MaxValue": 7
     },
     "HourOfDay": {
-      "Type": "String",
-      "Description": "Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. Use 0 for midnight and 12 for noon."
+      "Type": "Number",
+      "Description": "Zero-based integer that represents the hour of the day that the maintenance window starts according to a 24-hour clock. Use 0 for midnight and 12 for noon.",
+      "Default": 2,
+      "MinValue": 0,
+      "MaxValue": 23
     },
     "AutoDeferOnceEnabled": {
+      "Type": "String",
       "AllowedValues": [
         "true",
         "false"
       ],
       "Default": "false",
-      "Type": "String",
       "Description": "Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them."
+    },
+    "Defer": {
+      "Type": "String",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "false",
+      "Description": "Flag that indicates whether to defer the maintenance window. When set to true, the next scheduled maintenance will be deferred."
+    },
+    "AutoDefer": {
+      "Type": "String",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "false",
+      "Description": "Flag that indicates whether MongoDB Cloud should automatically defer maintenance windows for one week when they occur during the defined maintenance window."
+    },
+    "EnableProtectedHours": {
+      "Type": "String",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "false",
+      "Description": "Enable protected hours during which MongoDB Cloud cannot start maintenance."
+    },
+    "ProtectedHoursStartHour": {
+      "Type": "Number",
+      "Description": "Hour of the day when protected hours start (0-23). Only used if EnableProtectedHours is true.",
+      "Default": 8,
+      "MinValue": 0,
+      "MaxValue": 23
+    },
+    "ProtectedHoursEndHour": {
+      "Type": "Number",
+      "Description": "Hour of the day when protected hours end (0-23). Only used if EnableProtectedHours is true.",
+      "Default": 18,
+      "MinValue": 0,
+      "MaxValue": 23
     }
   },
-  "Mappings": {},
+  "Conditions": {
+    "UseProtectedHours": {
+      "Fn::Equals": [
+        {
+          "Ref": "EnableProtectedHours"
+        },
+        "true"
+      ]
+    }
+  },
   "Resources": {
-    "MaintenenceWindow": {
+    "MaintenanceWindow": {
       "Type": "MongoDB::Atlas::MaintenanceWindow",
       "Properties": {
         "Profile": {
@@ -48,7 +104,58 @@
         },
         "AutoDeferOnceEnabled": {
           "Ref": "AutoDeferOnceEnabled"
+        },
+        "Defer": {
+          "Ref": "Defer"
+        },
+        "AutoDefer": {
+          "Ref": "AutoDefer"
+        },
+        "ProtectedHours": {
+          "Fn::If": [
+            "UseProtectedHours",
+            {
+              "StartHourOfDay": {
+                "Ref": "ProtectedHoursStartHour"
+              },
+              "EndHourOfDay": {
+                "Ref": "ProtectedHoursEndHour"
+              }
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
         }
+      }
+    }
+  },
+  "Outputs": {
+    "NumberOfDeferrals": {
+      "Description": "Number of times this project has deferred the maintenance window",
+      "Value": {
+        "Fn::GetAtt": [
+          "MaintenanceWindow",
+          "NumberOfDeferrals"
+        ]
+      }
+    },
+    "TimeZoneId": {
+      "Description": "Time zone ID for the maintenance window",
+      "Value": {
+        "Fn::GetAtt": [
+          "MaintenanceWindow",
+          "TimeZoneId"
+        ]
+      }
+    },
+    "StartASAP": {
+      "Description": "Flag indicating if maintenance starts immediately",
+      "Value": {
+        "Fn::GetAtt": [
+          "MaintenanceWindow",
+          "StartASAP"
+        ]
       }
     }
   }

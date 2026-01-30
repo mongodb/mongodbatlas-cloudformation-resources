@@ -1,0 +1,14 @@
+{
+  "Profile": "default",
+  "FederationSettingsId": "",
+  "Name": "",
+  "IssuerUri": "https://token.actions.githubusercontent.com",
+  "Protocol": "OIDC",
+  "Audience": "",
+  "AuthorizationType": "GROUP",
+  "IdpType": "WORKLOAD",
+  "UserClaim": "sub",
+  "GroupsClaim": "groups",
+  "Description": "Test OIDC Identity Provider for CloudFormation",
+  "AssociatedDomains": ["mdb-aws-cfn-publishing.com"]
+}

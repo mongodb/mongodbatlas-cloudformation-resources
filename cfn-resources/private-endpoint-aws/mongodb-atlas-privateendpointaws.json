@@ -8,7 +8,8 @@
   },
   "required": [
     "ProjectId",
-    "EndpointServiceId"
+    "EndpointServiceId",
+    "Id"
   ],
   "properties": {
     "Profile": {
@@ -32,6 +33,14 @@
       "description": "If this proper is set to TRUE, the cloud formation resource will return success Only if the private connection is Succeeded",
       "type": "boolean"
     },
+    "InterfaceEndpointId": {
+      "description": "Unique identifier of the AWS VPC interface endpoint (e.g., vpce-0d00c26273372c6ef).",
+      "type": "string"
+    },
+    "DeleteRequested": {
+      "description": "Indicates if Atlas received a request to remove the interface endpoint from the private endpoint connection.",
+      "type": "boolean"
+    },
     "ConnectionStatus": {
       "description": "State of the Amazon Web Service PrivateLink connection when MongoDB Cloud received this request.",
       "type": "string"
@@ -53,6 +62,12 @@
     "/properties/EndpointServiceId",
     "/properties/Profile",
     "/properties/Id"
+  ],
+  "readOnlyProperties": [
+    "/properties/InterfaceEndpointId",
+    "/properties/DeleteRequested",
+    "/properties/ConnectionStatus",
+    "/properties/ErrorMessage"
   ],
   "handlers": {
     "create": {

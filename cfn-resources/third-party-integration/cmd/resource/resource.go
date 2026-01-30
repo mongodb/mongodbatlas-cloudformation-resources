@@ -214,6 +214,12 @@ func updateIntegrationFromSchema(currentModel *Model, integration *admin.ThirdPa
 	if currentModel.SendUserProvidedResourceTags != nil {
 		integration.SendUserProvidedResourceTags = currentModel.SendUserProvidedResourceTags
 	}
+	if currentModel.SendCollectionLatencyMetrics != nil {
+		integration.SendCollectionLatencyMetrics = currentModel.SendCollectionLatencyMetrics
+	}
+	if currentModel.SendDatabaseMetrics != nil {
+		integration.SendDatabaseMetrics = currentModel.SendDatabaseMetrics
+	}
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -331,6 +337,12 @@ func modelToIntegration(currentModel *Model) (out *admin.ThirdPartyIntegration) 
 	if currentModel.SendUserProvidedResourceTags != nil {
 		out.SendUserProvidedResourceTags = currentModel.SendUserProvidedResourceTags
 	}
+	if currentModel.SendCollectionLatencyMetrics != nil {
+		out.SendCollectionLatencyMetrics = currentModel.SendCollectionLatencyMetrics
+	}
+	if currentModel.SendDatabaseMetrics != nil {
+		out.SendDatabaseMetrics = currentModel.SendDatabaseMetrics
+	}
 	return out
 }
 
@@ -346,6 +358,8 @@ func integrationToModel(currentModel Model, integration *admin.ThirdPartyIntegra
 		ProjectId:                    currentModel.ProjectId,
 		Profile:                      currentModel.Profile,
 		SendUserProvidedResourceTags: currentModel.SendUserProvidedResourceTags,
+		SendCollectionLatencyMetrics: currentModel.SendCollectionLatencyMetrics,
+		SendDatabaseMetrics:          currentModel.SendDatabaseMetrics,
 	}
 
 	if !enabled {

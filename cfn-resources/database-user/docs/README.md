@@ -19,6 +19,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ <a href="labeldefinition.md">labelDefinition</a>, ... ]</i>,
         "<a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>" : <i>String</i>,
         "<a href="#x509type" title="X509Type">X509Type</a>" : <i>String</i>,
+        "<a href="#oidcauthtype" title="OIDCAuthType">OIDCAuthType</a>" : <i>String</i>,
         "<a href="#password" title="Password">Password</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ <a href="roledefinition.md">roleDefinition</a>, ... ]</i>,
@@ -42,6 +43,7 @@ Properties:
       - <a href="labeldefinition.md">labelDefinition</a></i>
     <a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>: <i>String</i>
     <a href="#x509type" title="X509Type">X509Type</a>: <i>String</i>
+    <a href="#oidcauthtype" title="OIDCAuthType">OIDCAuthType</a>: <i>String</i>
     <a href="#password" title="Password">Password</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
@@ -127,6 +129,18 @@ _Required_: No
 _Type_: String
 
 _Allowed Values_: <code>NONE</code> | <code>MANAGED</code> | <code>CUSTOMER</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### OIDCAuthType
+
+Human-readable label that indicates whether the new database user or group authenticates with OIDC federated authentication. To create a federated authentication user, specify the value of USER in this field. To create a federated authentication group, specify the value of IDP_GROUP in this field. Default value is `NONE`.
+
+_Required_: No
+
+_Type_: String
+
+_Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>IDP_GROUP</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

@@ -34,7 +34,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#victoropsapikey" title="VictorOpsApiKey">VictorOpsApiKey</a>" : <i>String</i>,
     "<a href="#victoropsroutingkey" title="VictorOpsRoutingKey">VictorOpsRoutingKey</a>" : <i>String</i>,
     "<a href="#webhooksecret" title="WebhookSecret">WebhookSecret</a>" : <i>String</i>,
-    "<a href="#webhookurl" title="WebhookUrl">WebhookUrl</a>" : <i>String</i>
+    "<a href="#webhookurl" title="WebhookUrl">WebhookUrl</a>" : <i>String</i>,
+    "<a href="#notifierid" title="NotifierId">NotifierId</a>" : <i>String</i>,
+    "<a href="#integrationid" title="IntegrationId">IntegrationId</a>" : <i>String</i>
 }
 </pre>
 
@@ -69,6 +71,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#victoropsroutingkey" title="VictorOpsRoutingKey">VictorOpsRoutingKey</a>: <i>String</i>
 <a href="#webhooksecret" title="WebhookSecret">WebhookSecret</a>: <i>String</i>
 <a href="#webhookurl" title="WebhookUrl">WebhookUrl</a>: <i>String</i>
+<a href="#notifierid" title="NotifierId">NotifierId</a>: <i>String</i>
+<a href="#integrationid" title="IntegrationId">IntegrationId</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -387,6 +391,38 @@ Your webhook URL.
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### NotifierId
+
+Unique 24-hexadecimal digit string that identifies the notifier to use for this alert configuration.
+
+_Required_: No
+
+_Type_: String
+
+_Minimum Length_: <code>24</code>
+
+_Maximum Length_: <code>24</code>
+
+_Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### IntegrationId
+
+Unique 24-hexadecimal digit string that identifies the third party integration to use for this alert configuration.
+
+_Required_: No
+
+_Type_: String
+
+_Minimum Length_: <code>24</code>
+
+_Maximum Length_: <code>24</code>
+
+_Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

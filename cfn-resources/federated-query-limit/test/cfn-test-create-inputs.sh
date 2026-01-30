@@ -56,3 +56,15 @@ jq --arg projectId "${projectId}" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile |.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
+
+jq --arg projectId "${projectId}" \
+	--arg tenantName "${tenantName}" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile |.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
+	"$(dirname "$0")/inputs_2_create.template.json" >"inputs/inputs_2_create.json"
+
+jq --arg projectId "${projectId}" \
+	--arg tenantName "${tenantName}" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile |.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
+	"$(dirname "$0")/inputs_2_update.template.json" >"inputs/inputs_2_update.json"

@@ -130,6 +130,8 @@ const (
 
 	AppID                = "AppId"
 	FederationSettingsID = "FederationSettingsId"
+	IssuerURI            = "IssuerUri"
+	IdpID                = "IdpId"
 
 	ExportBucketID             = "ExportBucketId"
 	ExportID                   = "ExportId"
@@ -146,6 +148,7 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+	OverrunPolicy              = "OverrunPolicy"
 
 	AlreadyExist = "Already Exist"
 	EmptyString  = ""
@@ -161,4 +164,8 @@ const (
 	ProcessorName = "ProcessorName"
 	Pipeline      = "Pipeline"
 	WorkspaceName = "WorkspaceName"
+
+	AuthorizedEmail         = "AuthorizedEmail"
+	AuthorizedUserFirstName = "AuthorizedUserFirstName"
+	AuthorizedUserLastName  = "AuthorizedUserLastName"
 )

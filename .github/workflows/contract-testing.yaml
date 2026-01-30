@@ -15,13 +15,16 @@ jobs:
      alert-configuration: ${{ steps.filter.outputs.alert-configuration }}
      api-key: ${{ steps.filter.outputs.api-key }}
      auditing: ${{ steps.filter.outputs.auditing }}
+     backup-compliance-policy: ${{ steps.filter.outputs.backup-compliance-policy }}
      cloud-backup-restore-jobs: ${{ steps.filter.outputs.cloud-backup-restore-jobs }}
      cluster-outage-simulation: ${{ steps.filter.outputs.cluster-outage-simulation }}
      federated-database-instance: ${{ steps.filter.outputs.federated-database-instance }}
      federated-query-limit: ${{ steps.filter.outputs.federated-query-limit }}
+     federated-settings-identity-provider: ${{ steps.filter.outputs.federated-settings-identity-provider }}
      flex-cluster: ${{ steps.filter.outputs.flex-cluster }}
      online-archive: ${{ steps.filter.outputs.online-archive }}
      organization: ${{ steps.filter.outputs.organization }}
+     service-account: ${{ steps.filter.outputs.service-account }}
      private-endpoint-aws: ${{ steps.filter.outputs.private-endpoint-aws }}
      private-endpoint-service: ${{ steps.filter.outputs.private-endpoint-service }}
      privatelink-endpoint-service-data-federation-online-archive: ${{ steps.filter.outputs.privatelink-endpoint-service-data-federation-online-archive }}
@@ -34,7 +37,7 @@ jobs:
      stream-processor: ${{ steps.filter.outputs.stream-processor }}
      stream-workspace: ${{ steps.filter.outputs.stream-workspace }}
    steps:
-   - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+   - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
      if: ${{ github.event_name == 'push' }}
    - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
      id: filter
@@ -48,6 +51,8 @@ jobs:
           - 'cfn-resources/api-key/**'
         auditing:
           - 'cfn-resources/auditing/**'
+        backup-compliance-policy:
+          - 'cfn-resources/backup-compliance-policy/**'
         cloud-backup-restore-jobs:
           - 'cfn-resources/cloud-backup-restore-jobs/**'
         cluster-outage-simulation:
@@ -56,12 +61,16 @@ jobs:
           - 'cfn-resources/federated-database-instance/**'
         federated-query-limit:
           - 'cfn-resources/federated-query-limit/**'
+        federated-settings-identity-provider:
+          - 'cfn-resources/federated-settings-identity-provider/**'
         flex-cluster:
           - 'cfn-resources/flex-cluster/**'
         online-archive:
           - 'cfn-resources/online-archive/**'
         organization:
           - 'cfn-resources/organization/**'
+        service-account:
+          - 'cfn-resources/service-account/**'
         private-endpoint-aws:
           - 'cfn-resources/private-endpoint-aws/**'
         private-endpoint-service:
@@ -89,7 +98,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -103,7 +112,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -127,7 +136,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.alert-configuration == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -141,7 +150,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -167,7 +176,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -181,7 +190,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -208,7 +217,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.auditing == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
     - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -222,7 +231,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
       with:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
@@ -243,7 +252,48 @@ jobs:
        cat inputs/inputs_1_update.json
        cat inputs/inputs_2_create.json
        cat inputs/inputs_2_update.json
-       
+
+       make run-contract-testing
+       make delete-test-resources
+  backup-compliance-policy:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.backup-compliance-policy == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+      with:
+        go-version-file: 'cfn-resources/go.mod'
+    - name: setup Atlas CLI
+      uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+    - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
+      with:
+       use-installer: true
+    - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+        aws-region: eu-west-1
+    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      with:
+        python-version: '3.9'
+        cache: 'pip' # caching pip dependencies
+    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - name: Run the Contract test
+      shell: bash
+      env:
+       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+       MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+      run: |
+       cd cfn-resources/backup-compliance-policy
+       make create-test-resources
+
+       cat inputs/inputs_1_create.json
+       cat inputs/inputs_1_update.json
+
        make run-contract-testing
        make delete-test-resources
   cloud-backup-restore-jobs:
@@ -251,7 +301,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.cloud-backup-restore-jobs == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -265,7 +315,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -292,7 +342,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.cluster-outage-simulation == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -306,7 +356,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -333,7 +383,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -347,7 +397,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -374,7 +424,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-query-limit == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -388,7 +438,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -407,7 +457,50 @@ jobs:
           
           cat inputs/inputs_1_create.json
           cat inputs/inputs_1_update.json
-          
+
+          make run-contract-testing
+          make delete-test-resources
+
+  federated-settings-identity-provider:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.federated-settings-identity-provider == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+      - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+          MONGODB_ATLAS_FEDERATION_SETTINGS_ID: ${{ vars.MONGODB_ATLAS_FEDERATION_SETTINGS_ID }}
+        run: |
+          cd cfn-resources/federated-settings-identity-provider
+          make create-test-resources
+
+          cat inputs/inputs_1_create.json
+          cat inputs/inputs_1_update.json
+
           make run-contract-testing
           make delete-test-resources
 
@@ -416,7 +509,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.flex-cluster == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
     - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -430,7 +523,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
       with:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
@@ -457,7 +550,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -471,7 +564,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -497,7 +590,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.organization == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -511,7 +604,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -528,18 +621,18 @@ jobs:
         run: |
           pushd cfn-resources/organization
           make create-test-resources
-          
+
           cat inputs/inputs_1_create.json
           cat inputs/inputs_1_update.json
-          
+
           make run-contract-testing
           make delete-test-resources
-  private-endpoint-aws:
+  service-account:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
+    if: ${{ needs.change-detection.outputs.service-account == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -553,7 +646,48 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          cd cfn-resources/service-account
+          make create-test-resources
+
+          cat inputs/inputs_1_create.json
+          cat inputs/inputs_1_update.json
+          
+          make run-contract-testing
+          make delete-test-resources
+  private-endpoint-aws:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+      - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -580,7 +714,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-service == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -594,7 +728,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -621,7 +755,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.privatelink-endpoint-service-data-federation-online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -635,7 +769,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -662,7 +796,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
     - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -676,7 +810,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
       with:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
@@ -704,7 +838,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.resource-policy == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -718,7 +852,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -747,7 +881,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.search-deployment == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -761,7 +895,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -827,7 +961,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -841,7 +975,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -870,7 +1004,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -884,7 +1018,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -908,7 +1042,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-processor == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -922,7 +1056,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -948,8 +1082,8 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-workspace == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-      - uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -962,7 +1096,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies

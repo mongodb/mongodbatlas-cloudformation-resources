@@ -17,8 +17,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#endpointserviceid" title="EndpointServiceId">EndpointServiceId</a>" : <i>String</i>,
         "<a href="#id" title="Id">Id</a>" : <i>String</i>,
         "<a href="#enforceconnectionsuccess" title="EnforceConnectionSuccess">EnforceConnectionSuccess</a>" : <i>Boolean</i>,
-        "<a href="#connectionstatus" title="ConnectionStatus">ConnectionStatus</a>" : <i>String</i>,
-        "<a href="#errormessage" title="ErrorMessage">ErrorMessage</a>" : <i>String</i>
     }
 }
 </pre>
@@ -33,8 +31,6 @@ Properties:
     <a href="#endpointserviceid" title="EndpointServiceId">EndpointServiceId</a>: <i>String</i>
     <a href="#id" title="Id">Id</a>: <i>String</i>
     <a href="#enforceconnectionsuccess" title="EnforceConnectionSuccess">EnforceConnectionSuccess</a>: <i>Boolean</i>
-    <a href="#connectionstatus" title="ConnectionStatus">ConnectionStatus</a>: <i>String</i>
-    <a href="#errormessage" title="ErrorMessage">ErrorMessage</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -73,7 +69,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 Unique string that identifies the private endpoint. for AWS is the VPC endpoint ID, example: vpce-xxxxxxxx
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -89,23 +85,27 @@ _Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+## Return Values
+
+### Fn::GetAtt
+
+The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
+
+For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
+
+#### InterfaceEndpointId
+
+Unique identifier of the AWS VPC interface endpoint (e.g., vpce-0d00c26273372c6ef).
+
+#### DeleteRequested
+
+Indicates if Atlas received a request to remove the interface endpoint from the private endpoint connection.
+
 #### ConnectionStatus
 
 State of the Amazon Web Service PrivateLink connection when MongoDB Cloud received this request.
 
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### ErrorMessage
 
 Error message returned when requesting private connection resource. The resource returns null if the request succeeded.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

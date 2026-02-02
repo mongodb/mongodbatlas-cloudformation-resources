@@ -198,11 +198,7 @@
     },
     "Type": {
       "type": "string",
-      "description": "Type of index: **search** or **vectorSearch**. Default type is **search**.",
-      "enum": [
-        "search",
-        "vectorSearch"
-      ]
+      "description": "Type of index: **search** or **vectorSearch**. Default type is **search**."
     },
     "SearchAnalyzer": {
       "type": "string",

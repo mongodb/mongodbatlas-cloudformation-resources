@@ -1,0 +1,11 @@
+{
+  "OrgId": "OrgId",
+  "Name": "cfn-test-service-account",
+  "Description": "Service account created for CFN testing",
+  "Roles": [
+    "ORG_MEMBER"
+  ],
+  "SecretExpiresAfterHours": "720",
+  "Profile": "default"
+}
+

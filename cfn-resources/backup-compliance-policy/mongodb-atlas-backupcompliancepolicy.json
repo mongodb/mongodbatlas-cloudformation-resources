@@ -1,0 +1,203 @@
+{
+  "typeName": "MongoDB::Atlas::BackupCompliancePolicy",
+  "description": "Resource for managing MongoDB Atlas Backup Compliance Policy. Backup Compliance Policy prevents any user, regardless of role, from modifying or deleting specific cluster settings, backups, and backup configurations. When enabled, the Backup Compliance Policy will be applied as the minimum policy for all clusters and backups in the project.",
+  "definitions": {
+    "OnDemandPolicyItem": {
+      "type": "object",
+      "description": "On-demand backup policy item configuration. When provided, FrequencyInterval, RetentionUnit, and RetentionValue are required.",
+      "properties": {
+        "Id": {
+          "description": "Unique identifier of the backup policy item.",
+          "type": "string",
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "FrequencyInterval": {
+          "description": "Number that indicates the frequency interval for a set of snapshots. Required when OnDemandPolicyItem is provided.",
+          "type": "integer"
+        },
+        "FrequencyType": {
+          "description": "Frequency associated with the backup policy item. For on-demand policies, the frequency type is 'ondemand'. This is a read-only value.",
+          "type": "string"
+        },
+        "RetentionUnit": {
+          "description": "Unit of time in which MongoDB Cloud measures snapshot retention. Required when OnDemandPolicyItem is provided.",
+          "type": "string",
+          "enum": ["days", "weeks", "months", "years"]
+        },
+        "RetentionValue": {
+          "description": "Duration in days, weeks, months, or years that MongoDB Cloud retains the snapshot. Required when OnDemandPolicyItem is provided.",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ScheduledPolicyItem": {
+      "type": "object",
+      "description": "Scheduled backup policy item configuration (hourly, daily, weekly, monthly, or yearly). When provided, FrequencyInterval, RetentionUnit, and RetentionValue are required.",
+      "properties": {
+        "Id": {
+          "description": "Unique identifier of the backup policy item.",
+          "type": "string",
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "FrequencyType": {
+          "description": "Frequency associated with the backup policy item. One of the following values: hourly, daily, weekly, monthly, or yearly. This is a read-only value.",
+          "type": "string"
+        },
+        "FrequencyInterval": {
+          "description": "Desired frequency of the new backup policy item specified by frequencyType. Required when the policy item is provided.",
+          "type": "integer"
+        },
+        "RetentionUnit": {
+          "description": "Unit of time in which MongoDB Cloud measures snapshot retention. Required when the policy item is provided.",
+          "type": "string",
+          "enum": ["days", "weeks", "months", "years"]
+        },
+        "RetentionValue": {
+          "description": "Duration in days, weeks, months, or years that MongoDB Cloud retains the snapshot. Required when the policy item is provided. For less frequent policy items, MongoDB Cloud requires that you specify a value greater than or equal to the value specified for more frequent policy items.",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "Profile": {
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "type": "string",
+      "default": "default"
+    },
+    "ProjectId": {
+      "description": "The unique identifier of the project for the Backup Compliance Policy.",
+      "type": "string"
+    },
+    "AuthorizedEmail": {
+      "description": "Email address of the user authorized to update the Backup Compliance Policy settings.",
+      "type": "string"
+    },
+    "AuthorizedUserFirstName": {
+      "description": "First name of the user authorized to update the Backup Compliance Policy settings.",
+      "type": "string"
+    },
+    "AuthorizedUserLastName": {
+      "description": "Last name of the user authorized to update the Backup Compliance Policy settings.",
+      "type": "string"
+    },
+    "CopyProtectionEnabled": {
+      "description": "Flag that indicates whether to enable additional copy protection for the cluster. If enabled, cloud backup snapshots cannot be deleted until the retention period expires. Defaults to false if not specified.",
+      "type": "boolean"
+    },
+    "EncryptionAtRestEnabled": {
+      "description": "Flag that indicates whether Encryption at Rest using Customer Key Management is required for all clusters with a Backup Compliance Policy. Defaults to false if not specified.",
+      "type": "boolean"
+    },
+    "RestoreWindowDays": {
+      "description": "Number of days back in time you can restore to with Continuous Cloud Backup accuracy. Must be a positive, non-zero integer. This field is optional and computed from the API.",
+      "type": "integer"
+    },
+    "OnDemandPolicyItem": {
+      "description": "On-demand backup policy item configuration.",
+      "$ref": "#/definitions/OnDemandPolicyItem",
+      "type": "object"
+    },
+    "PitEnabled": {
+      "description": "Flag that indicates whether the cluster uses Continuous Cloud Backup. If enabled, cloud backup snapshots are taken every 6 hours. Defaults to false if not specified.",
+      "type": "boolean"
+    },
+    "State": {
+      "description": "Current state of the Backup Compliance Policy settings. Possible values are: ACTIVE, INACTIVE.",
+      "type": "string"
+    },
+    "UpdatedDate": {
+      "description": "ISO 8601 timestamp in UTC of when the Backup Compliance Policy settings were last updated.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "UpdatedUser": {
+      "description": "Email address of the user who last updated the Backup Compliance Policy settings.",
+      "type": "string"
+    },
+    "PolicyItemHourly": {
+      "description": "Hourly backup policy item configuration. Only one hourly policy item is allowed.",
+      "$ref": "#/definitions/ScheduledPolicyItem",
+      "type": "object"
+    },
+    "PolicyItemDaily": {
+      "description": "Daily backup policy item configuration. Only one daily policy item is allowed.",
+      "$ref": "#/definitions/ScheduledPolicyItem",
+      "type": "object"
+    },
+    "PolicyItemWeekly": {
+      "description": "Weekly backup policy item configuration. Multiple weekly policy items are allowed.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ScheduledPolicyItem"
+      },
+      "insertionOrder": false
+    },
+    "PolicyItemMonthly": {
+      "description": "Monthly backup policy item configuration. Multiple monthly policy items are allowed.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ScheduledPolicyItem"
+      },
+      "insertionOrder": false
+    },
+    "PolicyItemYearly": {
+      "description": "Yearly backup policy item configuration. Multiple yearly policy items are allowed.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ScheduledPolicyItem"
+      },
+      "insertionOrder": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId",
+    "AuthorizedEmail",
+    "AuthorizedUserFirstName",
+    "AuthorizedUserLastName"
+  ],
+  "readOnlyProperties": [
+    "/properties/State",
+    "/properties/UpdatedDate",
+    "/properties/UpdatedUser",
+    "/properties/OnDemandPolicyItem/Id",
+    "/properties/OnDemandPolicyItem/FrequencyType",
+    "/properties/PolicyItemHourly/Id",
+    "/properties/PolicyItemHourly/FrequencyType",
+    "/properties/PolicyItemDaily/Id",
+    "/properties/PolicyItemDaily/FrequencyType",
+    "/properties/PolicyItemWeekly/*/Id",
+    "/properties/PolicyItemWeekly/*/FrequencyType",
+    "/properties/PolicyItemMonthly/*/Id",
+    "/properties/PolicyItemMonthly/*/FrequencyType",
+    "/properties/PolicyItemYearly/*/Id",
+    "/properties/PolicyItemYearly/*/FrequencyType"
+  ],
+  "createOnlyProperties": ["/properties/ProjectId"],
+  "primaryIdentifier": ["/properties/ProjectId"],
+  "handlers": {
+    "create": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "read": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "update": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "delete": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "list": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/backup-compliance-policy/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/backup-compliance-policy"
+}

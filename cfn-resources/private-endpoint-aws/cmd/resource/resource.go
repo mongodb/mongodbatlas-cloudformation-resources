@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"strings"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -92,10 +92,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				*privateEndpoint.ConnectionStatus == Rejected {
 				return handler.ProgressEvent{
 					OperationStatus: handler.Failed,
-					Message:         fmt.Sprintf("Connection was Rejected : %s", *privateEndpoint.ErrorMessage),
+					Message:         fmt.Sprintf("Connection was Rejected: %s", *privateEndpoint.ErrorMessage),
 					ResourceModel:   currentModel,
 				}, nil
 			}
+
+			currentModel.completeByAtlasModel(*privateEndpoint)
 
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
@@ -115,17 +117,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}}, nil
 	}
 
-	endpointRequest := admin20231115014.CreateEndpointRequest{
+	endpointRequest := admin.CreateEndpointRequest{
 		Id: currentModel.Id,
 	}
 
-	privateEndpointRequest := client.Atlas20231115014.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
 		CloudProvider, *currentModel.EndpointServiceId, &endpointRequest)
 
 	_, response, err := privateEndpointRequest.Execute()
 	defer response.Body.Close()
 	if err != nil {
-		if response.StatusCode == http.StatusConflict {
+		if util.StatusConflict(response) {
 			return progress_events.GetFailedEventByCode(
 				fmt.Sprintf("error creating Serverless Private Endpoint %s", err.Error()),
 				string(types.HandlerErrorCodeAlreadyExists),
@@ -146,8 +148,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}}, nil
 }
 
-func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin20231115014.PrivateLinkEndpoint, *http.Response, error) {
-	privateEndpointRequest := client.Atlas20231115014.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
+func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
 		CloudProvider, *model.Id, *model.EndpointServiceId)
 	privateEndpoint, response, err := privateEndpointRequest.Execute()
 
@@ -184,9 +186,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func (m *Model) completeByAtlasModel(privateEndpoint admin20231115014.PrivateLinkEndpoint) {
-	m.ErrorMessage = privateEndpoint.ErrorMessage
+func (m *Model) completeByAtlasModel(privateEndpoint admin.PrivateLinkEndpoint) {
+	m.InterfaceEndpointId = privateEndpoint.InterfaceEndpointId
+	m.DeleteRequested = privateEndpoint.DeleteRequested
 	m.ConnectionStatus = privateEndpoint.ConnectionStatus
+	m.ErrorMessage = privateEndpoint.ErrorMessage
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -215,10 +219,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, response, peError := getPrivateEndpoint(client, currentModel)
 		defer response.Body.Close()
 		if peError != nil {
-			if response.StatusCode == http.StatusNotFound {
+			if util.StatusNotFound(response) {
 				return handler.ProgressEvent{
 					OperationStatus: handler.Success,
-					Message:         "Create Success",
+					Message:         "Delete Success",
 				}, nil
 			}
 			return progress_events.GetFailedEventByResponse("Error validating Private Endpoint deletion progress", response), nil
@@ -226,26 +230,28 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
-			Message:              "Create in progress",
+			Message:              "Delete in progress",
 			CallbackDelaySeconds: 20,
 			CallbackContext: map[string]interface{}{
 				"state": "deleting",
 			}}, nil
 	}
 
-	privateEndpointRequest := client.Atlas20231115014.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(), *currentModel.ProjectId,
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(), *currentModel.ProjectId,
 		CloudProvider, *currentModel.Id, *currentModel.EndpointServiceId)
-	_, response, err := privateEndpointRequest.Execute()
-	defer response.Body.Close()
+	response, err := privateEndpointRequest.Execute()
+	if response != nil && response.Body != nil {
+		defer response.Body.Close()
+	}
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error deleting Private Endpoint: %s",
 				err.Error()), response),
 			nil
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              "Create in progress",
+		Message:              "Delete in progress",
 		CallbackDelaySeconds: 20,
 		ResourceModel:        currentModel,
 		CallbackContext: map[string]interface{}{

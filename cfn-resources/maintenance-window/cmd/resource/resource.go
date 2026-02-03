@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -56,13 +56,27 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progress_events.GetFailedEventByCode("resource already exists", string(types.HandlerErrorCodeAlreadyExists)), nil
 	}
 
+	// Handle Defer if requested
+	if currentModel.Defer != nil && *currentModel.Defer {
+		if pe := deferMaintenanceWindow(client, *currentModel.ProjectId); pe != nil {
+			return *pe, nil
+		}
+	}
+
 	atlasModel := currentModel.toAtlasModel()
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	_, resp, err := client.Atlas20231115002.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
+	resp, err := client.AtlasSDK.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	// Handle AutoDefer if requested
+	if currentModel.AutoDefer != nil && *currentModel.AutoDefer {
+		if pe := toggleAutoDefer(client, *currentModel.ProjectId); pe != nil {
+			return *pe, nil
+		}
 	}
 
 	return handler.ProgressEvent{
@@ -92,7 +106,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	currentModel.AutoDeferOnceEnabled = maintenanceWindow.AutoDeferOnceEnabled
 	currentModel.DayOfWeek = &maintenanceWindow.DayOfWeek
-	currentModel.HourOfDay = &maintenanceWindow.HourOfDay
+	currentModel.HourOfDay = maintenanceWindow.HourOfDay
+	currentModel.StartASAP = maintenanceWindow.StartASAP
+	currentModel.NumberOfDeferrals = maintenanceWindow.NumberOfDeferrals
+	currentModel.TimeZoneId = maintenanceWindow.TimeZoneId
+
+	if maintenanceWindow.ProtectedHours != nil {
+		currentModel.ProtectedHours = &ProtectedHours{
+			StartHourOfDay: maintenanceWindow.ProtectedHours.StartHourOfDay,
+			EndHourOfDay:   maintenanceWindow.ProtectedHours.EndHourOfDay,
+		}
+	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -120,13 +144,33 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, nil
 	}
 
+	// Handle Defer if changed
+	if currentModel.Defer != nil && *currentModel.Defer {
+		if prevModel == nil || prevModel.Defer == nil || !*prevModel.Defer {
+			if pe := deferMaintenanceWindow(client, *currentModel.ProjectId); pe != nil {
+				return *pe, nil
+			}
+		}
+	}
+
 	atlasModel := currentModel.toAtlasModel()
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	_, resp, err := client.Atlas20231115002.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
+	resp, err := client.AtlasSDK.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	// Handle AutoDefer if changed
+	if prevModel != nil {
+		prevAutoDefer := prevModel.AutoDefer != nil && *prevModel.AutoDefer
+		currAutoDefer := currentModel.AutoDefer != nil && *currentModel.AutoDefer
+		if prevAutoDefer != currAutoDefer {
+			if pe := toggleAutoDefer(client, *currentModel.ProjectId); pe != nil {
+				return *pe, nil
+			}
+		}
 	}
 
 	return handler.ProgressEvent{
@@ -154,7 +198,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, nil
 	}
 
-	resp, err := client.Atlas20231115002.MaintenanceWindowsApi.ResetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
+	resp, err := client.AtlasSDK.MaintenanceWindowsApi.ResetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -169,17 +213,28 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func (m Model) toAtlasModel() admin20231115002.GroupMaintenanceWindow {
-	return admin20231115002.GroupMaintenanceWindow{
+func (m Model) toAtlasModel() admin.GroupMaintenanceWindow {
+	return admin.GroupMaintenanceWindow{
 		DayOfWeek:            *m.DayOfWeek,
-		HourOfDay:            *m.HourOfDay,
+		HourOfDay:            m.HourOfDay,
 		StartASAP:            m.StartASAP,
 		AutoDeferOnceEnabled: m.AutoDeferOnceEnabled,
+		ProtectedHours:       m.toProtectedHours(),
 	}
 }
 
-func get(client *util.MongoDBClient, currentModel Model) (*admin20231115002.GroupMaintenanceWindow, *handler.ProgressEvent) {
-	maintenanceWindow, resp, err := client.Atlas20231115002.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
+func (m Model) toProtectedHours() *admin.ProtectedHours {
+	if m.ProtectedHours == nil {
+		return nil
+	}
+	return &admin.ProtectedHours{
+		StartHourOfDay: m.ProtectedHours.StartHourOfDay,
+		EndHourOfDay:   m.ProtectedHours.EndHourOfDay,
+	}
+}
+
+func get(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanceWindow, *handler.ProgressEvent) {
+	maintenanceWindow, resp, err := client.AtlasSDK.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
 		ev := progress_events.GetFailedEventByResponse(err.Error(), resp)
@@ -195,6 +250,30 @@ func get(client *util.MongoDBClient, currentModel Model) (*admin20231115002.Grou
 	return maintenanceWindow, nil
 }
 
-func isResponseEmpty(maintenanceWindow *admin20231115002.GroupMaintenanceWindow) bool {
-	return maintenanceWindow != nil && maintenanceWindow.DayOfWeek == 0
+func isResponseEmpty(maintenanceWindow *admin.GroupMaintenanceWindow) bool {
+	return maintenanceWindow != nil && maintenanceWindow.GetDayOfWeek() == 0
+}
+
+func deferMaintenanceWindow(client *util.MongoDBClient, projectID string) *handler.ProgressEvent {
+	_, err := client.AtlasSDK.MaintenanceWindowsApi.DeferMaintenanceWindow(context.Background(), projectID).Execute()
+	if err != nil {
+		return &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: "GeneralServiceException",
+		}
+	}
+	return nil
+}
+
+func toggleAutoDefer(client *util.MongoDBClient, projectID string) *handler.ProgressEvent {
+	_, err := client.AtlasSDK.MaintenanceWindowsApi.ToggleMaintenanceAutoDefer(context.Background(), projectID).Execute()
+	if err != nil {
+		return &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: "GeneralServiceException",
+		}
+	}
+	return nil
 }

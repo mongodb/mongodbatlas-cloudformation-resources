@@ -1,0 +1,13 @@
+{
+  "desiredResourceState": {
+    "ProjectId": "<PROJECT_ID>",
+    "AuthorizedEmail": "<AUTHORIZED_EMAIL>",
+    "AuthorizedUserFirstName": "<FIRST_NAME>",
+    "AuthorizedUserLastName": "<LAST_NAME>",
+    "CopyProtectionEnabled": false,
+    "EncryptionAtRestEnabled": false,
+    "PitEnabled": false
+  },
+  "providerLogGroupName": "mongodb-atlas-backup-compliance-policy-logs",
+  "previousResourceState": {}
+}

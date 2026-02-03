@@ -1,0 +1,18 @@
+{
+  "desiredResourceState": {
+    "Profile": "default",
+    "FederationSettingsId": "<FEDERATION_SETTINGS_ID>",
+    "Name": "<IDENTITY_PROVIDER_NAME>",
+    "IssuerUri": "https://token.actions.githubusercontent.com",
+    "Protocol": "OIDC",
+    "Audience": "<UNIQUE_AUDIENCE>",
+    "AuthorizationType": "GROUP",
+    "IdpType": "WORKLOAD",
+    "UserClaim": "sub",
+    "GroupsClaim": "groups",
+    "Description": "Example OIDC Identity Provider",
+    "AssociatedDomains": ["mdb-aws-cfn-publishing.com"]
+  },
+  "providerLogGroupName": "mongodb-atlas-federatedsettingsidentityprovider-logs",
+  "previousResourceState": {}
+}

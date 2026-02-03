@@ -14,7 +14,7 @@
 
 package resource
 
-import "go.mongodb.org/atlas-sdk/v20250312012/admin"
+import "go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 func NewStreamWorkspaceCreateReq(model *Model) *admin.StreamsTenant {
 	if model == nil {

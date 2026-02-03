@@ -24,7 +24,7 @@ require (
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0
 	go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0
-	go.mongodb.org/atlas-sdk/v20250312012 v20250312012.1.0
+	go.mongodb.org/atlas-sdk/v20250312013 v20250312013.1.0
 )
 
 require (

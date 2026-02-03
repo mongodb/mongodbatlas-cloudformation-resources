@@ -14,7 +14,7 @@
 
 package resource
 
-import "go.mongodb.org/atlas-sdk/v20250312012/admin"
+import "go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 func NewCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeploymentResponse) Model {
 	respSpecs := apiResp.GetSpecs()

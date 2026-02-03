@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"strconv"
 
-	"go.mongodb.org/atlas-sdk/v20250312012/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"

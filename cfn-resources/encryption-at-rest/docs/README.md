@@ -13,6 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::EncryptionAtRest",
     "Properties" : {
         "<a href="#awskmsconfig" title="AwsKmsConfig">AwsKmsConfig</a>" : <i><a href="awskmsconfig.md">AwsKmsConfig</a></i>,
+        "<a href="#enabledforsearchnodes" title="EnabledForSearchNodes">EnabledForSearchNodes</a>" : <i>Boolean</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
     }
@@ -25,6 +26,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::EncryptionAtRest
 Properties:
     <a href="#awskmsconfig" title="AwsKmsConfig">AwsKmsConfig</a>: <i><a href="awskmsconfig.md">AwsKmsConfig</a></i>
+    <a href="#enabledforsearchnodes" title="EnabledForSearchNodes">EnabledForSearchNodes</a>: <i>Boolean</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
 </pre>
@@ -41,6 +43,16 @@ _Type_: <a href="awskmsconfig.md">AwsKmsConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### EnabledForSearchNodes
+
+Flag that indicates whether Encryption at Rest for Dedicated Search Nodes is enabled in the specified project.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### Profile
 
 The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
@@ -53,7 +65,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### ProjectId
 
-Unique identifier of the Atlas project to which the user belongs.
+Unique 24-hexadecimal digit string that identifies your project.
 
 _Required_: Yes
 
@@ -72,4 +84,8 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Id
 
 Unique identifier.
+
+#### Valid
+
+Returns the <code>Valid</code> value.
 

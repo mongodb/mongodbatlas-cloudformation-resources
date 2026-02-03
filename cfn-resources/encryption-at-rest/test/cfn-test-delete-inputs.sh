@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# cfn-test-create-inputs.sh
+# cfn-test-delete-inputs.sh
 #
-# This tool generates json files in the inputs/ for `cfn test`.
+# This tool deletes AWS and Atlas resources created for `cfn test`.
 #
 echo "--------------------------------delete key and key policy document policy document starts ----------------------------"
 
@@ -19,12 +19,12 @@ keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
 
-roleName="mongodb-test-enc-role-${keyRegion}"
-policyName="atlas-kms-role-policy-${keyRegion}"
+roleName="mongodb-atlas-enc-role-${keyRegion}"
+policyName="mongodb-atlas-kms-policy-${keyRegion}"
 
 policyContent=$(jq '.Statement[0].Resource[0]' "$(dirname "$0")/policy.json")
 echo "$policyContent"
-keyID=$(${policyContent##*/})
+keyID="${policyContent##*/}"
 # shellcheck disable=SC2001
 cleanedKeyID=$(echo "${keyID}" | sed 's/"//g')
 echo "$cleanedKeyID"
@@ -32,17 +32,17 @@ echo "$cleanedKeyID"
 aws kms schedule-key-deletion --key-id "$cleanedKeyID" --pending-window-in-days 7
 echo "--------------------------------delete key and key policy document policy document ends ----------------------------"
 pwd
-trustPolicy=$(jq '.Statement[0].Condition.StringEquals["sts:ExternalId"]' "add-policy.json")
+trustPolicy=$(jq '.Statement[0].Condition.StringEquals["sts:ExternalId"]' "$(dirname "$0")/add-policy.json")
 echo "$trustPolicy"
-roleExternalID=$(${trustPolicy##*/})
+roleExternalID="${trustPolicy##*/}"
 # shellcheck disable=SC2001
 atlasAssumedRoleExternalID=$(echo "${roleExternalID}" | sed 's/"//g')
 echo "$atlasAssumedRoleExternalID"
 
-roleId=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
+roleId=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
 echo "$roleId"
 
-atlas cloudProviders accessRoles aws deauthorize "${roleId}" --force
+atlas cloudProviders accessRoles aws deauthorize "${roleId}" --projectId "${projectId}" --force
 echo "--------------------------------delete role starts ----------------------------"
 
 aws iam delete-role-policy --role-name "$roleName" --policy-name "$policyName"

@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20250312012/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 )
 
 func setup() {

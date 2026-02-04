@@ -82,7 +82,6 @@ echo "$policyDocument"
 echo "--------------------------------policy document finished ----------------------------"
 
 roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
-echo "roleID: $roleID"
 echo "--------------------------------Mongo CLI Role creation ends ----------------------------"
 
 atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
@@ -93,12 +92,12 @@ jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 echo cat add-policy.json
 echo "--------------------------------AWS Role creation ends ----------------------------"
 
-awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+awsRoleID=$(aws iam get-role --role-name "${roleName}" 2>/dev/null | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId' || true)
 if [ -z "$awsRoleID" ]; then
 	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 	echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
 else
-	aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}"
+	aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}" 2>/dev/null || true
 	aws iam delete-role --role-name "${roleName}"
 	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 	echo -e "FOUND id: ${awsRoleID}\n"

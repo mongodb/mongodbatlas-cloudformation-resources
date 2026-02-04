@@ -39,10 +39,10 @@ roleExternalID="${trustPolicy##*/}"
 atlasAssumedRoleExternalID=$(echo "${roleExternalID}" | sed 's/"//g')
 echo "$atlasAssumedRoleExternalID"
 
-roleId=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
+roleId=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
 echo "$roleId"
 
-atlas cloudProviders accessRoles aws deauthorize "${roleId}" --projectId "${projectId}" --force
+atlas cloudProviders accessRoles aws deauthorize "${roleId}" --force
 echo "--------------------------------delete role starts ----------------------------"
 
 aws iam delete-role-policy --role-name "$roleName" --policy-name "$policyName"

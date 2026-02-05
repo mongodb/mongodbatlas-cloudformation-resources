@@ -48,3 +48,8 @@ CLAUDE.md
 
 # generated markdown file with resource versions, will not be commited until we have mechanism to keep updated
 cfn-resources/resource-versions.md
+
+# dynamically generated test policy files (not templates)
+**/test/trust-policy.json
+**/test/s3-policy.json
+**/test/add-policy.json

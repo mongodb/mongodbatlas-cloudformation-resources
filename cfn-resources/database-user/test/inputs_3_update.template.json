@@ -1,0 +1,31 @@
+{
+  "Username": "DataUser3",
+  "Password": "MongoDB12345%",
+  "ProjectId": "${MONGODB_ATLAS_PROJECT_ID}",
+  "Profile": "${MONGODB_ATLAS_PROFILE}",
+  "DatabaseName": "admin",
+  "Description": "Updated user with modified Labels",
+  "OIDCAuthType": "NONE",
+  "Roles": [
+    {
+      "RoleName": "readWriteAnyDatabase",
+      "DatabaseName": "admin"
+    }
+  ],
+  "Scopes": [
+    {
+      "Type": "CLUSTER",
+      "Name": "testdb2"
+    }
+  ],
+  "Labels": [
+    {
+      "Key": "testType",
+      "Value": "oidc-field-validation"
+    },
+    {
+      "Key": "updated",
+      "Value": "true"
+    }
+  ]
+}

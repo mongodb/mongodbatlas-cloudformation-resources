@@ -1,0 +1,193 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Stream Processing Private Link Endpoint for Confluent Cloud. This enables secure, private connectivity between Atlas Stream Processing and Confluent Cloud Kafka over AWS PrivateLink.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your Atlas project"
+    },
+    "ConfluentRegion": {
+      "Type": "String",
+      "Description": "Domain name of the Confluent cluster (e.g., confluent.cloud)",
+      "Default": "confluent.cloud"
+    },
+    "ServiceEndpointId": {
+      "Type": "String",
+      "Description": "VPC Endpoint service name from Confluent Cloud (e.g., com.amazonaws.vpce.us-west-2.vpce-svc-xxxxx)"
+    },
+    "DnsDomain": {
+      "Type": "String",
+      "Description": "DNS domain for the Confluent cluster (e.g., pkc-xxxxx.us-west-2.aws.confluent.cloud)"
+    },
+    "DnsSubDomain0": {
+      "Type": "String",
+      "Description": "First availability zone sub-domain (e.g., use2-az1)",
+      "Default": ""
+    },
+    "DnsSubDomain1": {
+      "Type": "String",
+      "Description": "Second availability zone sub-domain (e.g., use2-az2)",
+      "Default": ""
+    },
+    "DnsSubDomain2": {
+      "Type": "String",
+      "Description": "Third availability zone sub-domain (e.g., use2-az3)",
+      "Default": ""
+    }
+  },
+  "Conditions": {
+    "HasDnsSubDomain0": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "DnsSubDomain0"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasDnsSubDomain1": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "DnsSubDomain1"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasDnsSubDomain2": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "DnsSubDomain2"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasSubDomains": {
+      "Fn::Or": [
+        {
+          "Condition": "HasDnsSubDomain0"
+        },
+        {
+          "Condition": "HasDnsSubDomain1"
+        },
+        {
+          "Condition": "HasDnsSubDomain2"
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "StreamPrivatelinkEndpoint": {
+      "Type": "MongoDB::Atlas::StreamPrivatelinkEndpoint",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ProviderName": "AWS",
+        "Vendor": "CONFLUENT",
+        "Region": {
+          "Ref": "ConfluentRegion"
+        },
+        "ServiceEndpointId": {
+          "Ref": "ServiceEndpointId"
+        },
+        "DnsDomain": {
+          "Ref": "DnsDomain"
+        },
+        "DnsSubDomain": {
+          "Fn::If": [
+            "HasDnsSubDomain0",
+            {
+              "Fn::If": [
+                "HasDnsSubDomain1",
+                {
+                  "Fn::If": [
+                    "HasDnsSubDomain2",
+                    [
+                      { "Ref": "DnsSubDomain0" },
+                      { "Ref": "DnsSubDomain1" },
+                      { "Ref": "DnsSubDomain2" }
+                    ],
+                    [{ "Ref": "DnsSubDomain0" }, { "Ref": "DnsSubDomain1" }]
+                  ]
+                },
+                {
+                  "Fn::If": [
+                    "HasDnsSubDomain2",
+                    [{ "Ref": "DnsSubDomain0" }, { "Ref": "DnsSubDomain2" }],
+                    [{ "Ref": "DnsSubDomain0" }]
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::If": [
+                "HasDnsSubDomain1",
+                {
+                  "Fn::If": [
+                    "HasDnsSubDomain2",
+                    [{ "Ref": "DnsSubDomain1" }, { "Ref": "DnsSubDomain2" }],
+                    [{ "Ref": "DnsSubDomain1" }]
+                  ]
+                },
+                {
+                  "Fn::If": [
+                    "HasDnsSubDomain2",
+                    [{ "Ref": "DnsSubDomain2" }],
+                    {
+                      "Ref": "AWS::NoValue"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "PrivateLinkEndpointId": {
+      "Description": "The ID of the Private Link connection",
+      "Value": {
+        "Ref": "StreamPrivatelinkEndpoint"
+      }
+    },
+    "State": {
+      "Description": "Status of the connection",
+      "Value": {
+        "Fn::GetAtt": ["StreamPrivatelinkEndpoint", "State"]
+      }
+    },
+    "InterfaceEndpointId": {
+      "Description": "VPC interface endpoint ID created by Atlas",
+      "Value": {
+        "Fn::GetAtt": ["StreamPrivatelinkEndpoint", "InterfaceEndpointId"]
+      }
+    },
+    "ProviderAccountId": {
+      "Description": "AWS account ID of the Atlas Stream Processing infrastructure",
+      "Value": {
+        "Fn::GetAtt": ["StreamPrivatelinkEndpoint", "ProviderAccountId"]
+      }
+    }
+  }
+}

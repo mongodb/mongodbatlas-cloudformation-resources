@@ -1,4 +1,4 @@
-.PHONY: build test clean
+.PHONY: build debug clean create-test-resources delete-test-resources run-contract-testing
 tags=logging callback metrics scheduler
 cgo=0
 goos=linux
@@ -17,3 +17,17 @@ debug:
 
 clean:
 	rm -rf bin
+
+create-test-resources:
+	@echo "==> Creating test files for contract testing"
+	./test/contract-testing/cfn-test-create-inputs.sh
+
+delete-test-resources:
+	@echo "==> Delete test resources used for contract testing"
+	./test/cfn-test-delete-inputs.sh
+
+run-contract-testing:
+	@echo "==> Run contract testing"
+	make build
+	sam local start-lambda &
+	cfn test --function-name TestEntrypoint --verbose

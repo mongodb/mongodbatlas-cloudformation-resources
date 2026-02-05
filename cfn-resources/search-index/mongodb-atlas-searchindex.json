@@ -70,11 +70,15 @@
       "properties": {
         "Dynamic": {
           "type": "boolean",
-          "description": "Flag that indicates whether the index uses dynamic or static mappings. Required for search indexes if **mappings.fields** is omitted."
+          "description": "Flag that indicates whether the index uses dynamic or static mappings. If DynamicConfig is specified, this field is ignored (DynamicConfig takes precedence). Required for search indexes if **mappings.fields** is omitted and **mappings.dynamicConfig** is not specified."
+        },
+        "DynamicConfig": {
+          "type": "string",
+          "description": "Stringify json representation of dynamic mapping configuration object. This allows for more complex dynamic mapping configurations beyond a simple boolean. If both Dynamic and DynamicConfig are specified, DynamicConfig takes precedence."
         },
         "Fields": {
           "type": "string",
-          "description": "One or more field specifications for the Atlas Search index. Stringify json representation of field with types and properties. Required for search indexes if **mappings.dynamic** is omitted or set to **false**."
+          "description": "One or more field specifications for the Atlas Search index. Stringify json representation of field with types and properties. Required for search indexes if **mappings.dynamic** and **mappings.dynamicConfig** are omitted or if **mappings.dynamic** is set to **false**."
         }
       },
       "additionalProperties": false
@@ -113,6 +117,23 @@
       },
       "required": [
         "Collection"
+      ],
+      "additionalProperties": false
+    },
+    "TypeSet": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Human-readable label that identifies this type set."
+        },
+        "Types": {
+          "type": "string",
+          "description": "Stringify json representation of types array. Each type defines a field type for the search index."
+        }
+      },
+      "required": [
+        "Name"
       ],
       "additionalProperties": false
     }
@@ -205,12 +226,30 @@
     "Fields": {
       "type": "string",
       "description": "Array of [Fields](https://www.mongodb.com/docs/atlas/atlas-search/field-types/knn-vector/#std-label-fts-data-types-knn-vector) to configure this vectorSearch index. Stringify json representation of field with types and properties. Required for vector indexes. It must contain at least one **vector** type field."
+    },
+    "StoredSource": {
+      "type": "string",
+      "description": "Flag that indicates whether to store the original document in the index. Can be a boolean (\"true\" or \"false\") or a stringified JSON object specifying which fields to include/exclude. When stored, this allows the index to return the original document for queries."
+    },
+    "TypeSets": {
+      "type": "array",
+      "insertionOrder": false,
+      "description": "Array of type sets that define alternate types for fields in the index. Each type set allows you to group related fields under a common name.",
+      "items": {
+        "$ref": "#/definitions/TypeSet",
+        "type": "object"
+      }
+    },
+    "NumPartitions": {
+      "type": "integer",
+      "description": "Number of partitions for the index. This is used to improve search performance for large datasets by distributing the index across multiple partitions."
     }
   },
   "required": [
     "ClusterName",
     "CollectionName",
-    "Database"
+    "Database",
+    "Name"
   ],
   "primaryIdentifier": [
     "/properties/IndexId",
@@ -228,7 +267,8 @@
     "/properties/ClusterName",
     "/properties/CollectionName",
     "/properties/Database",
-    "/properties/Type"
+    "/properties/Type",
+    "/properties/Name"
   ],
   "handlers": {
     "create": {

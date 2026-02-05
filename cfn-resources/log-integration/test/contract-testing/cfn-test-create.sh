@@ -6,15 +6,10 @@ set -o nounset
 set -o pipefail
 
 projectName="cfn-test-bot-$(date +%s)-$RANDOM"
-bucketName="atlas-logs-cfn-test-$RANDOM"
-iamRoleId="65a1b2c3d4e5f6a7b8c9d0e1"
 
-# create project
-projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+# Set unique tag for S3 bucket to avoid conflicts in CI
+export CFN_TEST_TAG="${projectName}"
 
-echo "projectId: $projectId"
 echo "projectName: $projectName"
-echo "bucketName: $bucketName"
-echo "iamRoleId: $iamRoleId (dummy 24-char hex format)"
 
-./test/cfn-test-create-inputs.sh "$projectName" "$bucketName" "$iamRoleId"
+./test/cfn-test-create-inputs.sh "$projectName"

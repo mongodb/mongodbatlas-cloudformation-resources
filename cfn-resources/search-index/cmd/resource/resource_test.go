@@ -23,7 +23,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestConvertToAnySlice tests JSON string array to any slice conversion
 func TestConvertToAnySlice(t *testing.T) {
 	testCases := []struct {
 		name        string
@@ -76,7 +75,6 @@ func TestConvertToAnySlice(t *testing.T) {
 	}
 }
 
-// TestNewTokenizerModel tests tokenizer struct to map conversion (signature changed in commit)
 func TestNewTokenizerModel(t *testing.T) {
 	testCases := []struct {
 		tokenizer *resource.ApiAtlasFTSAnalyzersTokenizer
@@ -150,7 +148,6 @@ func TestNewTokenizerModel(t *testing.T) {
 	}
 }
 
-// TestConvertStringToStoredSource tests NEW StoredSource conversion helper (added in commit 4c080db8)
 func TestConvertStringToStoredSource(t *testing.T) {
 	testCases := []struct {
 		expected    any
@@ -216,6 +213,255 @@ func TestConvertStringToStoredSource(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				assert.Equal(t, tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestBuildFields(t *testing.T) {
+	testCases := []struct {
+		model       *resource.Model
+		expected    *[]any
+		name        string
+		expectError bool
+	}{
+		{
+			name:        "Nil fields",
+			model:       &resource.Model{Fields: nil},
+			expected:    nil,
+			expectError: false,
+		},
+		{
+			name:        "Empty fields",
+			model:       &resource.Model{Fields: ptr.String("")},
+			expected:    nil,
+			expectError: false,
+		},
+		{
+			name: "Valid fields array",
+			model: &resource.Model{
+				Fields: ptr.String(`[{"type":"vector","path":"plot_embedding","numDimensions":1536,"similarity":"euclidean"}]`),
+			},
+			expected: &[]any{
+				map[string]any{
+					"type":          "vector",
+					"path":          "plot_embedding",
+					"numDimensions": float64(1536),
+					"similarity":    "euclidean",
+				},
+			},
+			expectError: false,
+		},
+		{
+			name: "Invalid JSON fields",
+			model: &resource.Model{
+				Fields: ptr.String(`[invalid json]`),
+			},
+			expected:    nil,
+			expectError: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := resource.BuildFields(tc.model)
+			if tc.expectError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestBuildAnalyzers(t *testing.T) {
+	testCases := []struct {
+		model       *resource.Model
+		name        string
+		expectError bool
+		expectNil   bool
+	}{
+		{
+			name:        "Empty analyzers",
+			model:       &resource.Model{Analyzers: []resource.ApiAtlasFTSAnalyzersViewManual{}},
+			expectError: false,
+			expectNil:   true,
+		},
+		{
+			name: "Valid analyzer with char and token filters",
+			model: &resource.Model{
+				Analyzers: []resource.ApiAtlasFTSAnalyzersViewManual{
+					{
+						Name:         ptr.String("myAnalyzer"),
+						CharFilters:  []string{`{"type":"icuNormalize"}`},
+						TokenFilters: []string{`{"type":"lowercase"}`},
+						Tokenizer: &resource.ApiAtlasFTSAnalyzersTokenizer{
+							Type: ptr.String("standard"),
+						},
+					},
+				},
+			},
+			expectError: false,
+			expectNil:   false,
+		},
+		{
+			name: "Invalid char filter JSON",
+			model: &resource.Model{
+				Analyzers: []resource.ApiAtlasFTSAnalyzersViewManual{
+					{
+						Name:        ptr.String("myAnalyzer"),
+						CharFilters: []string{`invalid json`},
+						Tokenizer: &resource.ApiAtlasFTSAnalyzersTokenizer{
+							Type: ptr.String("standard"),
+						},
+					},
+				},
+			},
+			expectError: true,
+			expectNil:   false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := resource.BuildAnalyzers(tc.model)
+			if tc.expectError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				if tc.expectNil {
+					assert.Nil(t, result)
+				} else {
+					assert.NotNil(t, result)
+				}
+			}
+		})
+	}
+}
+
+func TestBuildSynonyms(t *testing.T) {
+	testCases := []struct {
+		model     *resource.Model
+		name      string
+		expectNil bool
+	}{
+		{
+			name:      "Empty synonyms",
+			model:     &resource.Model{Synonyms: []resource.ApiAtlasFTSSynonymMappingDefinitionView{}},
+			expectNil: true,
+		},
+		{
+			name: "Valid synonyms",
+			model: &resource.Model{
+				Synonyms: []resource.ApiAtlasFTSSynonymMappingDefinitionView{
+					{
+						Analyzer: ptr.String("lucene.standard"),
+						Name:     ptr.String("mySynonyms"),
+						Source: &resource.SynonymSource{
+							Collection: ptr.String("synonyms"),
+						},
+					},
+				},
+			},
+			expectNil: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := resource.BuildSynonyms(tc.model)
+			require.NoError(t, err)
+			if tc.expectNil {
+				assert.Nil(t, result)
+			} else {
+				assert.NotNil(t, result)
+				assert.Len(t, *result, 1)
+			}
+		})
+	}
+}
+
+func TestBuildStoredSource(t *testing.T) {
+	testCases := []struct {
+		expected    any
+		model       *resource.Model
+		name        string
+		expectError bool
+	}{
+		{
+			name:        "Nil stored source",
+			model:       &resource.Model{StoredSource: nil},
+			expected:    nil,
+			expectError: false,
+		},
+		{
+			name:        "Boolean true",
+			model:       &resource.Model{StoredSource: ptr.String("true")},
+			expected:    true,
+			expectError: false,
+		},
+		{
+			name:        "Boolean false",
+			model:       &resource.Model{StoredSource: ptr.String("false")},
+			expected:    false,
+			expectError: false,
+		},
+		{
+			name:        "JSON object",
+			model:       &resource.Model{StoredSource: ptr.String(`{"include":["name"]}`)},
+			expected:    map[string]any{"include": []any{"name"}},
+			expectError: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := resource.BuildStoredSource(tc.model)
+			if tc.expectError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestBuildTypeSets(t *testing.T) {
+	testCases := []struct {
+		model     *resource.Model
+		name      string
+		expectNil bool
+	}{
+		{
+			name:      "Empty type sets",
+			model:     &resource.Model{TypeSets: []resource.TypeSet{}},
+			expectNil: true,
+		},
+		{
+			name: "Valid type sets",
+			model: &resource.Model{
+				TypeSets: []resource.TypeSet{
+					{
+						Name:  ptr.String("myTypeSet"),
+						Types: ptr.String(`[{"type":"string"}]`),
+					},
+				},
+			},
+			expectNil: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := resource.BuildTypeSets(tc.model)
+			require.NoError(t, err)
+			if tc.expectNil {
+				assert.Nil(t, result)
+			} else {
+				assert.NotNil(t, result)
+				assert.Len(t, *result, 1)
 			}
 		})
 	}

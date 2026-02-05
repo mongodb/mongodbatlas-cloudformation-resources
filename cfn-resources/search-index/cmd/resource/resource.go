@@ -298,111 +298,151 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// buildSearchIndexDefinition builds the common definition structure used by both create and update operations
-type searchIndexDefinition struct {
-	Analyzer       *string
-	SearchAnalyzer *string
-	NumPartitions  *int
-	Fields         *[]any
-	Mappings       *admin.SearchMappings
-	Analyzers      *[]admin.AtlasSearchAnalyzer
-	Synonyms       *[]admin.SearchSynonymMappingDefinition
-	StoredSource   any
-	TypeSets       *[]admin.SearchTypeSets
+func BuildFields(currentModel *Model) (*[]any, error) {
+	fields, err := convertStringToInterfaceMap(currentModel.Fields)
+	if err != nil {
+		return nil, err
+	}
+	if fields == nil {
+		return nil, nil
+	}
+
+	fieldsAny := make([]any, 0, len(fields))
+	for _, f := range fields {
+		fieldsAny = append(fieldsAny, f)
+	}
+	return &fieldsAny, nil
 }
 
-func buildSearchIndexDefinition(currentModel *Model) (*searchIndexDefinition, error) {
-	def := &searchIndexDefinition{
-		Analyzer:       currentModel.Analyzer,
-		SearchAnalyzer: currentModel.SearchAnalyzer,
-		NumPartitions:  currentModel.NumPartitions,
+func BuildMappings(currentModel *Model) (*admin.SearchMappings, error) {
+	if currentModel.Mappings == nil {
+		return nil, nil
+	}
+	return newMappings(currentModel)
+}
+
+func BuildAnalyzers(currentModel *Model) (*[]admin.AtlasSearchAnalyzer, error) {
+	if len(currentModel.Analyzers) == 0 {
+		return nil, nil
 	}
 
-	// Add Fields support
-	if fields, err := convertStringToInterfaceMap(currentModel.Fields); err == nil && fields != nil {
-		fieldsAny := make([]any, 0, len(fields))
-		for _, f := range fields {
-			fieldsAny = append(fieldsAny, f)
-		}
-		def.Fields = &fieldsAny
-	}
-
-	// Add Mappings support
-	if currentModel.Mappings != nil {
-		mapping, err := newMappings(currentModel)
+	analyzers := make([]admin.AtlasSearchAnalyzer, 0, len(currentModel.Analyzers))
+	for i := range currentModel.Analyzers {
+		charFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].CharFilters)
 		if err != nil {
 			return nil, err
 		}
-		def.Mappings = mapping
-	}
-
-	// Add Analyzers support
-	if len(currentModel.Analyzers) > 0 {
-		analyzers := make([]admin.AtlasSearchAnalyzer, 0, len(currentModel.Analyzers))
-		for i := range currentModel.Analyzers {
-			charFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].CharFilters)
-			if err != nil {
-				return nil, err
-			}
-			tokenFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].TokenFilters)
-			if err != nil {
-				return nil, err
-			}
-			tokenizer := NewTokenizerModel(currentModel.Analyzers[i].Tokenizer)
-			analyzers = append(analyzers, admin.AtlasSearchAnalyzer{
-				CharFilters:  &charFilters,
-				Name:         *currentModel.Analyzers[i].Name,
-				TokenFilters: &tokenFilters,
-				Tokenizer:    &tokenizer,
-			})
+		tokenFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].TokenFilters)
+		if err != nil {
+			return nil, err
 		}
-		def.Analyzers = &analyzers
+		tokenizer := NewTokenizerModel(currentModel.Analyzers[i].Tokenizer)
+		analyzers = append(analyzers, admin.AtlasSearchAnalyzer{
+			CharFilters:  &charFilters,
+			Name:         *currentModel.Analyzers[i].Name,
+			TokenFilters: &tokenFilters,
+			Tokenizer:    &tokenizer,
+		})
+	}
+	return &analyzers, nil
+}
+
+func BuildSynonyms(currentModel *Model) (*[]admin.SearchSynonymMappingDefinition, error) {
+	if len(currentModel.Synonyms) == 0 {
+		return nil, nil
 	}
 
-	// Add Synonyms support
-	if len(currentModel.Synonyms) > 0 {
-		synonyms := make([]admin.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
-		for i := range currentModel.Synonyms {
-			synonyms = append(synonyms, admin.SearchSynonymMappingDefinition{
-				Analyzer: *currentModel.Synonyms[i].Analyzer,
-				Name:     *currentModel.Synonyms[i].Name,
-				Source: admin.SynonymSource{
-					Collection: *currentModel.Synonyms[i].Source.Collection,
-				},
-			})
+	synonyms := make([]admin.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
+	for i := range currentModel.Synonyms {
+		synonyms = append(synonyms, admin.SearchSynonymMappingDefinition{
+			Analyzer: *currentModel.Synonyms[i].Analyzer,
+			Name:     *currentModel.Synonyms[i].Name,
+			Source: admin.SynonymSource{
+				Collection: *currentModel.Synonyms[i].Source.Collection,
+			},
+		})
+	}
+	return &synonyms, nil
+}
+
+func BuildStoredSource(currentModel *Model) (any, error) {
+	return ConvertStringToStoredSource(currentModel.StoredSource)
+}
+
+func BuildTypeSets(currentModel *Model) (*[]admin.SearchTypeSets, error) {
+	if len(currentModel.TypeSets) == 0 {
+		return nil, nil
+	}
+
+	typeSets := make([]admin.SearchTypeSets, 0, len(currentModel.TypeSets))
+	for i := range currentModel.TypeSets {
+		ts := admin.SearchTypeSets{
+			Name: *currentModel.TypeSets[i].Name,
 		}
-		def.Synonyms = &synonyms
-	}
-
-	// Add StoredSource support
-	if storedSource, err := ConvertStringToStoredSource(currentModel.StoredSource); err == nil && storedSource != nil {
-		def.StoredSource = storedSource
-	}
-
-	// Add TypeSets support
-	if len(currentModel.TypeSets) > 0 {
-		typeSets := make([]admin.SearchTypeSets, 0, len(currentModel.TypeSets))
-		for i := range currentModel.TypeSets {
-			ts := admin.SearchTypeSets{
-				Name: *currentModel.TypeSets[i].Name,
+		if typesList, err := convertStringToInterfaceMap(currentModel.TypeSets[i].Types); err == nil && typesList != nil {
+			typesAny := make([]any, 0, len(typesList))
+			for _, t := range typesList {
+				typesAny = append(typesAny, t)
 			}
-			if typesList, err := convertStringToInterfaceMap(currentModel.TypeSets[i].Types); err == nil && typesList != nil {
-				typesAny := make([]any, 0, len(typesList))
-				for _, t := range typesList {
-					typesAny = append(typesAny, t)
-				}
-				ts.Types = &typesAny
-			}
-			typeSets = append(typeSets, ts)
+			ts.Types = &typesAny
 		}
-		def.TypeSets = &typeSets
+		typeSets = append(typeSets, ts)
+	}
+	return &typeSets, nil
+}
+
+type searchIndexComponents struct {
+	fields       *[]any
+	mappings     *admin.SearchMappings
+	analyzers    *[]admin.AtlasSearchAnalyzer
+	synonyms     *[]admin.SearchSynonymMappingDefinition
+	storedSource any
+	typeSets     *[]admin.SearchTypeSets
+}
+
+func buildSearchIndexComponents(currentModel *Model) (*searchIndexComponents, error) {
+	fields, err := BuildFields(currentModel)
+	if err != nil {
+		return nil, err
 	}
 
-	return def, nil
+	mappings, err := BuildMappings(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	analyzers, err := BuildAnalyzers(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	synonyms, err := BuildSynonyms(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	storedSource, err := BuildStoredSource(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	typeSets, err := BuildTypeSets(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	return &searchIndexComponents{
+		fields:       fields,
+		mappings:     mappings,
+		analyzers:    analyzers,
+		synonyms:     synonyms,
+		storedSource: storedSource,
+		typeSets:     typeSets,
+	}, nil
 }
 
 func newSearchIndexCreateRequest(currentModel *Model) (*admin.SearchIndexCreateRequest, error) {
-	def, err := buildSearchIndexDefinition(currentModel)
+	components, err := buildSearchIndexComponents(currentModel)
 	if err != nil {
 		return nil, err
 	}
@@ -413,36 +453,36 @@ func newSearchIndexCreateRequest(currentModel *Model) (*admin.SearchIndexCreateR
 		Name:           aws.ToString(currentModel.Name),
 		Type:           currentModel.Type,
 		Definition: &admin.BaseSearchIndexCreateRequestDefinition{
-			Analyzer:       def.Analyzer,
-			SearchAnalyzer: def.SearchAnalyzer,
-			NumPartitions:  def.NumPartitions,
-			Fields:         def.Fields,
-			Mappings:       def.Mappings,
-			Analyzers:      def.Analyzers,
-			Synonyms:       def.Synonyms,
-			StoredSource:   def.StoredSource,
-			TypeSets:       def.TypeSets,
+			Analyzer:       currentModel.Analyzer,
+			SearchAnalyzer: currentModel.SearchAnalyzer,
+			NumPartitions:  currentModel.NumPartitions,
+			Fields:         components.fields,
+			Mappings:       components.mappings,
+			Analyzers:      components.analyzers,
+			Synonyms:       components.synonyms,
+			StoredSource:   components.storedSource,
+			TypeSets:       components.typeSets,
 		},
 	}, nil
 }
 
 func newSearchIndexUpdateRequest(currentModel *Model) (*admin.SearchIndexUpdateRequest, error) {
-	def, err := buildSearchIndexDefinition(currentModel)
+	components, err := buildSearchIndexComponents(currentModel)
 	if err != nil {
 		return nil, err
 	}
 
 	return &admin.SearchIndexUpdateRequest{
 		Definition: admin.SearchIndexUpdateRequestDefinition{
-			Analyzer:       def.Analyzer,
-			SearchAnalyzer: def.SearchAnalyzer,
-			NumPartitions:  def.NumPartitions,
-			Fields:         def.Fields,
-			Mappings:       def.Mappings,
-			Analyzers:      def.Analyzers,
-			Synonyms:       def.Synonyms,
-			StoredSource:   def.StoredSource,
-			TypeSets:       def.TypeSets,
+			Analyzer:       currentModel.Analyzer,
+			SearchAnalyzer: currentModel.SearchAnalyzer,
+			NumPartitions:  currentModel.NumPartitions,
+			Fields:         components.fields,
+			Mappings:       components.mappings,
+			Analyzers:      components.analyzers,
+			Synonyms:       components.synonyms,
+			StoredSource:   components.storedSource,
+			TypeSets:       components.typeSets,
 		},
 	}, nil
 }

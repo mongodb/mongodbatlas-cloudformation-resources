@@ -4,5 +4,7 @@
   "Type": "DATADOG",
   "ApiKey": "",
   "Region": "US",
-  "SendUserProvidedResourceTags": false
+  "SendUserProvidedResourceTags": "false",
+  "SendCollectionLatencyMetrics": "false",
+  "SendDatabaseMetrics": "false"
 }

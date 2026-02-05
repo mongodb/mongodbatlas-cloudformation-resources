@@ -36,6 +36,7 @@ jobs:
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
      stream-processor: ${{ steps.filter.outputs.stream-processor }}
      stream-workspace: ${{ steps.filter.outputs.stream-workspace }}
+     third-party-integration: ${{ steps.filter.outputs.third-party-integration }}
    steps:
    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
      if: ${{ github.event_name == 'push' }}
@@ -93,6 +94,8 @@ jobs:
           - 'cfn-resources/stream-processor/**'
         stream-workspace:
           - 'cfn-resources/stream-workspace/**'
+        third-party-integration:
+          - 'cfn-resources/third-party-integration/**'
   access-list-api-key:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
@@ -1115,6 +1118,58 @@ jobs:
 
           cat inputs/inputs_1_create.json
           cat inputs/inputs_1_update.json
+
+          make run-contract-testing
+          make delete-test-resources
+  third-party-integration:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.third-party-integration == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+      - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+          WEBHOOK_CREATE_URL: ${{ vars.WEBHOOK_CREATE_URL }}
+          WEBHOOK_UPDATE_URL: ${{ vars.WEBHOOK_UPDATE_URL }}
+          WEBHOOK_UPDATE_SECRET: ${{ vars.WEBHOOK_UPDATE_SECRET }}
+          PROMETHEUS_USER_NAME: ${{ vars.PROMETHEUS_USER_NAME }}
+          PROMETHEUS_PASSWORD_NAME: ${{ vars.PROMETHEUS_PASSWORD_NAME }}
+          PAGER_DUTY_CREATE_SERVICE_KEY: ${{ vars.PAGER_DUTY_CREATE_SERVICE_KEY }}
+          PAGER_DUTY_UPDATE_SERVICE_KEY: ${{ vars.PAGER_DUTY_UPDATE_SERVICE_KEY }}
+          DATA_DOG_CREATE_API_KEY: ${{ vars.DATA_DOG_CREATE_API_KEY }}
+          DATA_DOG_UPDATE_API_KEY: ${{ vars.DATA_DOG_UPDATE_API_KEY }}
+          OPS_GENIE_API_KEY: ${{ vars.OPS_GENIE_API_KEY }}
+          MICROSOFT_TEAMS_WEBHOOK_CREATE_URL: ${{ vars.MICROSOFT_TEAMS_WEBHOOK_CREATE_URL }}
+          MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL: ${{ vars.MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL }}
+        run: |
+          cd cfn-resources/third-party-integration
+          make create-test-resources
+          
+          cat inputs/*
 
           make run-contract-testing
           make delete-test-resources

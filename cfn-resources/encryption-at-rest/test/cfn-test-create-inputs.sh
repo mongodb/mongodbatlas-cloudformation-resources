@@ -81,11 +81,11 @@ echo "--------------------------------create key and key policy document policy 
 echo "$policyDocument"
 echo "--------------------------------policy document finished ----------------------------"
 
-roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')
+roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
 echo "--------------------------------Mongo CLI Role creation ends ----------------------------"
 
-atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
-atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
+atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
+atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
 jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
 	'.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
@@ -115,7 +115,7 @@ awsArne=$(echo "${awsArn}" | sed 's/"//g')
 #TODO Needs change to while loop using get operation
 sleep 65
 
-atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "${awsArne}"
+atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "${awsArne}" --projectId "${projectId}"
 echo "--------------------------------authorize mongodb  Role ends ----------------------------"
 
 jq --arg projectId "$projectId" \

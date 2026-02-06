@@ -67,7 +67,7 @@ func normalizeWorkspaceName(model *Model) *handler.ProgressEvent {
 }
 
 var InitEnvWithLatestClient = func(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
-	util.SetupLogger("mongodb-atlas-stream-connection")
+	util.SetupLogger("mongodb-atlas-stream-connection1")
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 

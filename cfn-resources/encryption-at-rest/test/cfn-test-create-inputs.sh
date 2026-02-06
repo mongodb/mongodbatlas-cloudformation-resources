@@ -4,6 +4,11 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -x
+
 function usage {
 	echo "usage:$0 <project_name>"
 	echo "Creates a new encryption key for the the project "
@@ -13,6 +18,13 @@ if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
+
+# set profile - relevant for contract tests which define a custom profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -27,6 +39,15 @@ fi
 echo "Check if a project is created $projectId"
 export MCLI_PROJECT_ID=$projectId
 
+# ---- DEBUG: test Atlas CLI calls with this project ----
+echo "================================ DEBUG: Project Details ============================="
+atlas projects describe "${projectId}" --output json 2>&1 || echo "atlas projects describe FAILED"
+echo "================================ DEBUG: List accessRoles (no projectId) ============="
+atlas cloudProviders accessRoles list --output json 2>&1 || echo "accessRoles list (no projectId) FAILED"
+echo "================================ DEBUG: List accessRoles (with projectId) ==========="
+atlas cloudProviders accessRoles list --projectId "${projectId}" --output json 2>&1 || echo "accessRoles list (with projectId) FAILED"
+echo "===================================================================================="
+
 keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
 	keyRegion=$(aws configure get region)
@@ -36,8 +57,8 @@ keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
 
-roleName="mongodb-test-enc-role-${keyRegion}"
-policyName="atlas-kms-role-policy-${keyRegion}"
+roleName="mongodb-atlas-enc-role-${keyRegion}"
+policyName="mongodb-atlas-kms-policy-${keyRegion}"
 
 echo "roleName: ${roleName} , policyName: ${policyName}"
 
@@ -60,8 +81,7 @@ echo "$policyDocument" >"$(dirname "$0")"/policy.json
 
 policyContent=$(jq '.Statement[0].Resource[0]' "$(dirname "$0")/policy.json")
 echo "$policyContent"
-# shellcheck disable=SC2116
-keyID=$(echo "${policyContent##*/}")
+keyID="${policyContent##*/}"
 # shellcheck disable=SC2001
 cleanedKeyID=$(echo "${keyID}" | sed 's/"//g')
 echo "$cleanedKeyID"
@@ -71,23 +91,49 @@ echo "--------------------------------create key and key policy document policy 
 echo "$policyDocument"
 echo "--------------------------------policy document finished ----------------------------"
 
-roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')
+echo "================================ DEBUG: Creating cloud provider access role ============"
+echo "Running: atlas cloudProviders accessRoles aws create --projectId ${projectId} --output json"
+
+# Retry with exponential backoff up to ~15 minutes total
+max_attempts=6
+delay=60
+max_delay=300
+create_ok=false
+for attempt in $(seq 1 $max_attempts); do
+	echo "Attempt ${attempt}/${max_attempts}: creating cloud provider access role..."
+	roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json 2>&1) && create_ok=true && break
+	echo "Failed (attempt ${attempt}): ${roleID}"
+	if [ "$attempt" -eq "$max_attempts" ]; then
+		echo "All ${max_attempts} attempts failed."
+		echo "================================ DEBUG: Final attempt with --debug flag ==============="
+		atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json --debug 2>&1 || true
+		echo "===================================================================================="
+		exit 1
+	fi
+	# cap delay at max_delay
+	if [ "$delay" -gt "$max_delay" ]; then delay=$max_delay; fi
+	echo "Retrying in ${delay}s... (elapsed wait so far)"
+	sleep "$delay"
+	delay=$((delay * 2))
+done
+roleID=$(echo "${roleID}" | jq -r '.roleId')
+echo "roleID: ${roleID}"
 echo "--------------------------------Mongo CLI Role creation ends ----------------------------"
 
-atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
-atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
+atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
+atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
 jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
 	'.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
 echo cat add-policy.json
 echo "--------------------------------AWS Role creation ends ----------------------------"
 
-awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+awsRoleID=$(aws iam get-role --role-name "${roleName}" 2>/dev/null | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId' || true)
 if [ -z "$awsRoleID" ]; then
 	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 	echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
 else
-	aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}"
+	aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}" 2>/dev/null || true
 	aws iam delete-role --role-name "${roleName}"
 	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 	echo -e "FOUND id: ${awsRoleID}\n"
@@ -105,21 +151,23 @@ awsArne=$(echo "${awsArn}" | sed 's/"//g')
 #TODO Needs change to while loop using get operation
 sleep 65
 
-atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "${awsArne}"
+atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "${awsArne}" --projectId "${projectId}"
 echo "--------------------------------authorize mongodb  Role ends ----------------------------"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	--arg KMS_KEY "$cleanedKeyID" \
 	--arg KMS_ROLE "${roleID}" \
 	--arg region "$keyRegion" \
-	'.AwsKmsConfig.CustomerMasterKeyID?|=$KMS_KEY | .AwsKmsConfig.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKmsConfig.Region?|=$region ' \
+	'.Profile?|=$profile | .ProjectId?|=$projectId | .AwsKmsConfig.CustomerMasterKeyID?|=$KMS_KEY | .AwsKmsConfig.RoleID?|=$KMS_ROLE | .AwsKmsConfig.Region?|=$region ' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	--arg KMS_KEY "$cleanedKeyID" \
 	--arg KMS_ROLE "${roleID}" \
 	--arg region "$keyRegion" \
-	'.AwsKmsConfig.CustomerMasterKeyID?|=$KMS_KEY | .AwsKmsConfig.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKmsConfig.Region?|=$region ' \
+	'.Profile?|=$profile | .ProjectId?|=$projectId | .AwsKmsConfig.CustomerMasterKeyID?|=$KMS_KEY | .AwsKmsConfig.RoleID?|=$KMS_ROLE | .AwsKmsConfig.Region?|=$region ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

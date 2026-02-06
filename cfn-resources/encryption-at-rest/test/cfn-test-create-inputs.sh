@@ -81,7 +81,23 @@ echo "--------------------------------create key and key policy document policy 
 echo "$policyDocument"
 echo "--------------------------------policy document finished ----------------------------"
 
-roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
+# Retry with exponential backoff — project-level permissions may need time to propagate
+max_attempts=5
+delay=10
+for attempt in $(seq 1 $max_attempts); do
+	echo "Attempt ${attempt}/${max_attempts}: creating cloud provider access role..."
+	roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json 2>&1) && break
+	echo "Failed (attempt ${attempt}): ${roleID}"
+	if [ "$attempt" -eq "$max_attempts" ]; then
+		echo "All ${max_attempts} attempts failed. Exiting."
+		exit 1
+	fi
+	echo "Retrying in ${delay}s..."
+	sleep "$delay"
+	delay=$((delay * 2))
+done
+roleID=$(echo "${roleID}" | jq -r '.roleId')
+echo "roleID: ${roleID}"
 echo "--------------------------------Mongo CLI Role creation ends ----------------------------"
 
 atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')

@@ -38,12 +38,27 @@ echo "==> Creating Atlas access role"
 roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')
 echo "Atlas roleId: ${roleID}"
 
+if [ -z "$roleID" ]; then
+    echo "Error: Failed to create Atlas access role. roleID is empty."
+    exit 1
+fi
+
 echo "==> Getting Atlas account details"
 atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] | select(.roleId | test($roleID)) | .atlasAWSAccountArn')
 atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] | select(.roleId | test($roleID)) | .atlasAssumedRoleExternalId')
 
 echo "Atlas AWS Account ARN: ${atlasAWSAccountArn}"
 echo "Atlas External ID: ${atlasAssumedRoleExternalId}"
+
+if [ -z "$atlasAWSAccountArn" ]; then
+    echo "Error: Failed to retrieve Atlas AWS Account ARN. atlasAWSAccountArn is empty."
+    exit 1
+fi
+
+if [ -z "$atlasAssumedRoleExternalId" ]; then
+    echo "Error: Failed to retrieve Atlas External ID. atlasAssumedRoleExternalId is empty."
+    exit 1
+fi
 
 echo "==> Generating IAM role trust policy"
 jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \

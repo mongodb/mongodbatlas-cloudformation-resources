@@ -36,6 +36,7 @@ jobs:
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
      stream-processor: ${{ steps.filter.outputs.stream-processor }}
      stream-workspace: ${{ steps.filter.outputs.stream-workspace }}
+     test-folder: ${{ steps.filter.outputs.test-folder }}
      third-party-integration: ${{ steps.filter.outputs.third-party-integration }}
    steps:
    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -94,6 +95,8 @@ jobs:
           - 'cfn-resources/stream-processor/**'
         stream-workspace:
           - 'cfn-resources/stream-workspace/**'
+        test-folder:
+          - 'cfn-resources/test-folder/**'
         third-party-integration:
           - 'cfn-resources/third-party-integration/**'
   access-list-api-key:
@@ -1121,6 +1124,32 @@ jobs:
 
           make run-contract-testing
           make delete-test-resources
+  test-folder:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.test-folder == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+      - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - name: Test access role and IAM authorization
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          cd cfn-resources/test-folder
+          PROJECT_NAME="test-access-role-${{ github.run_id }}"
+          make create-test-resources PROJECT_NAME="${PROJECT_NAME}"
+          make delete-test-resources PROJECT_NAME="${PROJECT_NAME}"
   third-party-integration:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.third-party-integration == 'true' }}

@@ -3,6 +3,7 @@
 # Tests Atlas access role creation and AWS IAM role authorization
 
 set -e
+set -x
 
 if [ "$#" -ne 1 ]; then
     echo "usage: $0 <project_name>"

@@ -3,6 +3,7 @@
 # Cleanup test resources
 
 set -e
+set -x
 
 if [ "$#" -ne 1 ]; then
     echo "usage: $0 <project_name>"

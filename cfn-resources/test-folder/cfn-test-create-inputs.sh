@@ -33,6 +33,7 @@ keyRegion=${keyRegion//-/_}
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 
 roleName="mongodb-atlas-enc-role-${keyRegion}"
+sleep 1200
 
 echo "==> Creating Atlas access role"
 roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')

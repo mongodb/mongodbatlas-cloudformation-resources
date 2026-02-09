@@ -31,8 +31,7 @@ keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
 	keyRegion=$(aws configure get region)
 fi
-# shellcheck disable=SC2001
-keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
+keyRegion=${keyRegion//-/_}
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
 

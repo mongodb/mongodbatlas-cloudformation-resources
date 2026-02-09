@@ -26,11 +26,10 @@ keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
     keyRegion=$(aws configure get region)
 fi
-keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
+keyRegion=${keyRegion//-/_}
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 
 roleName="mongodb-atlas-enc-role-${keyRegion}"
-policyName="mongodb-atlas-kms-policy-${keyRegion}"
 
 # Get role details from trust policy file
 if [ -f "$(dirname "$0")/trust-policy.json" ]; then

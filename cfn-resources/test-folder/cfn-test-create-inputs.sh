@@ -28,11 +28,10 @@ keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
     keyRegion=$(aws configure get region)
 fi
-keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
+keyRegion=${keyRegion//-/_}
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 
 roleName="mongodb-atlas-enc-role-${keyRegion}"
-policyName="mongodb-atlas-kms-policy-${keyRegion}"
 
 echo "==> Creating Atlas access role"
 roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')

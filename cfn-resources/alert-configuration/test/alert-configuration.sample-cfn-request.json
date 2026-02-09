@@ -4,6 +4,7 @@
     "ProjectId": "",
     "Enabled": true,
     "EventTypeName": "OUTSIDE_METRIC_THRESHOLD",
+    "SeverityOverride": "WARNING",
     "MetricThreshold": {
       "MetricName": "NORMALIZED_SYSTEM_CPU_USER",
       "Operator": "GREATER_THAN",

@@ -31,7 +31,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#enabled" title="Enabled">Enabled</a>" : <i>Boolean</i>,
         "<a href="#listenaddress" title="ListenAddress">ListenAddress</a>" : <i>String</i>,
         "<a href="#tlspempath" title="TlsPemPath">TlsPemPath</a>" : <i>String</i>,
-        "<a href="#senduserprovidedresourcetags" title="SendUserProvidedResourceTags">SendUserProvidedResourceTags</a>" : <i>Boolean</i>
+        "<a href="#senduserprovidedresourcetags" title="SendUserProvidedResourceTags">SendUserProvidedResourceTags</a>" : <i>Boolean</i>,
+        "<a href="#sendcollectionlatencymetrics" title="SendCollectionLatencyMetrics">SendCollectionLatencyMetrics</a>" : <i>Boolean</i>,
+        "<a href="#senddatabasemetrics" title="SendDatabaseMetrics">SendDatabaseMetrics</a>" : <i>Boolean</i>
     }
 }
 </pre>
@@ -61,6 +63,8 @@ Properties:
     <a href="#listenaddress" title="ListenAddress">ListenAddress</a>: <i>String</i>
     <a href="#tlspempath" title="TlsPemPath">TlsPemPath</a>: <i>String</i>
     <a href="#senduserprovidedresourcetags" title="SendUserProvidedResourceTags">SendUserProvidedResourceTags</a>: <i>Boolean</i>
+    <a href="#sendcollectionlatencymetrics" title="SendCollectionLatencyMetrics">SendCollectionLatencyMetrics</a>: <i>Boolean</i>
+    <a href="#senddatabasemetrics" title="SendDatabaseMetrics">SendDatabaseMetrics</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
@@ -262,6 +266,26 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 #### SendUserProvidedResourceTags
 
 Flag that indicates whether to include user-defined resource tags when sending metrics and alerts to third-party services.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SendCollectionLatencyMetrics
+
+Flag that indicates whether to send collection latency metrics to Datadog, including database names, collection names, and latency metrics on reads, writes, commands, and transactions.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SendDatabaseMetrics
+
+Flag that indicates whether to send database metrics to Datadog, including database names and metrics on the number of collections, storage size, and index size.
 
 _Required_: No
 

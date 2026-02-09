@@ -435,10 +435,10 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@c2a20b1822cc4a6bc594ff7f1dbb658758e383c3
+      - uses: aws-actions/setup-sam@d78e1a4a9656d3b223e59b80676a797f20093133
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
+      - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -446,7 +446,7 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.9'
-          cache: 'pip'
+          cache: 'pip' # caching pip dependencies
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
@@ -459,10 +459,10 @@ jobs:
         run: |
           pushd cfn-resources/encryption-at-rest
           make create-test-resources
-          
+
           cat inputs/inputs_1_create.json
           cat inputs/inputs_1_update.json
-          
+
           make run-contract-testing
           make delete-test-resources
   federated-database-instance:

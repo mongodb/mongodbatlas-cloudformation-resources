@@ -38,8 +38,10 @@ const (
 
 func handleFailedState(connection *admin.StreamsPrivateLinkConnection) handler.ProgressEvent {
 	errorMsg := errorMessageFailedStatus
-	if connection != nil && connection.ErrorMessage != nil {
-		errorMsg = fmt.Sprintf("%s: %s", errorMsg, *connection.ErrorMessage)
+	if connection != nil {
+		if errMsg := connection.GetErrorMessage(); errMsg != "" {
+			errorMsg = fmt.Sprintf("%s: %s", errorMsg, errMsg)
+		}
 	}
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,

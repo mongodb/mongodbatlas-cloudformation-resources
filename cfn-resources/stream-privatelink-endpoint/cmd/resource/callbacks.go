@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-	"net/http"
 
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
@@ -53,14 +52,12 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) h
 	notFound := util.StatusNotFound(apiResp)
 
 	if err != nil && !notFound {
-		if apiResp != nil && apiResp.StatusCode >= http.StatusInternalServerError {
-			return handleError(apiResp, constants.READ, err)
-		}
+		return handleError(apiResp, constants.READ, err)
 	}
 
 	state := stateDeleted
-	if streamsPrivateLinkConnection != nil && streamsPrivateLinkConnection.State != nil {
-		state = *streamsPrivateLinkConnection.State
+	if streamsPrivateLinkConnection != nil {
+		state = streamsPrivateLinkConnection.GetState()
 	}
 
 	targetState := stateDone

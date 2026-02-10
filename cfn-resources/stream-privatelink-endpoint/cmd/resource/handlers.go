@@ -42,8 +42,8 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 
 	model.Id = streamsPrivateLinkConnection.Id
 
-	if streamsPrivateLinkConnection.State != nil {
-		initialState := *streamsPrivateLinkConnection.State
+	initialState := streamsPrivateLinkConnection.GetState()
+	if initialState != "" {
 		if initialState == stateDone {
 			UpdateModel(model, streamsPrivateLinkConnection)
 			return handler.ProgressEvent{
@@ -123,7 +123,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 		return handleError(apiResp, constants.READ, err)
 	}
 
-	if streamsPrivateLinkConnection.State != nil && *streamsPrivateLinkConnection.State == stateDeleted {
+	if streamsPrivateLinkConnection.GetState() == stateDeleted {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         constants.Complete,

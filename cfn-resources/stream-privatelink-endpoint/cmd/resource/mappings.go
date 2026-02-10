@@ -46,10 +46,10 @@ func UpdateModel(model *Model, apiResp *admin.StreamsPrivateLinkConnection) {
 	if apiResp.DnsDomain != nil {
 		model.DnsDomain = apiResp.DnsDomain
 	}
-	if apiResp.DnsSubDomain != nil {
-		model.DnsSubDomain = *apiResp.DnsSubDomain
-	}
-	if len(model.DnsSubDomain) == 0 {
+	dnsSubDomain := apiResp.GetDnsSubDomain()
+	if len(dnsSubDomain) > 0 {
+		model.DnsSubDomain = dnsSubDomain
+	} else {
 		model.DnsSubDomain = nil
 	}
 	if apiResp.InterfaceEndpointId != nil {

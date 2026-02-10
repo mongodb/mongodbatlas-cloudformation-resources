@@ -36,7 +36,6 @@ else
 fi
 
 echo "Check if a project is created $projectId"
-export MCLI_PROJECT_ID=$projectId
 
 keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
@@ -47,7 +46,8 @@ keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
 
-roleName="mongodb-atlas-enc-role-${keyRegion}"
+# Use dynamic role name to avoid conflicts (matches test-folder pattern)
+roleName="mongodb-atlas-enc-role-${keyRegion}-$(date +%s)-${RANDOM}"
 policyName="mongodb-atlas-kms-policy-${keyRegion}"
 
 echo "roleName: ${roleName} , policyName: ${policyName}"
@@ -105,6 +105,9 @@ fi
 echo "--------------------------------AWS Role creation ends ----------------------------"
 
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')
+
+# Save role name for cleanup
+echo "${roleName}" > "$(dirname "$0")/role-name.txt"
 
 aws iam put-role-policy --role-name "${roleName}" --policy-name "${policyName}" --policy-document file://"$(dirname "$0")"/policy.json
 echo "--------------------------------attach mongodb  Role to AWS Role ends ----------------------------"

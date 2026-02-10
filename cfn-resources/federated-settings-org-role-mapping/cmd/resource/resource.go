@@ -21,8 +21,6 @@ import (
 	"net/http"
 	"strings"
 
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
@@ -30,6 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 )
 
 var CreateRequiredFields = []string{constants.FederationSettingsID, constants.OrgID, constants.ExternalGroupName, constants.RoleAssignments}
@@ -68,9 +67,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	orgID := currentModel.OrgId
 
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
-	federatedSettingsOrganizationRoleMapping, resp, err := client.Atlas20231115002.FederatedAuthenticationApi.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody).Execute()
+	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasSDK.FederatedAuthenticationApi.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody).Execute()
 	if err != nil {
-		if resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "DUPLICATE_ROLE_MAPPING") {
+		if resp != nil && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "DUPLICATE_ROLE_MAPPING") {
 			return progressevent.GetFailedEventByCode("Resource already exists",
 				string(types.HandlerErrorCodeAlreadyExists)), nil
 		}
@@ -101,7 +100,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
 
-	federatedSettingsOrganizationRoleMapping, resp, err := client.Atlas20231115002.FederatedAuthenticationApi.
+	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasSDK.FederatedAuthenticationApi.
 		GetRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID).
 		Execute()
 	if err != nil {
@@ -137,7 +136,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByCode("Not Found", string(types.HandlerErrorCodeNotFound)), nil
 	}
 
-	if (currentModel.RoleAssignments) == nil || len(currentModel.RoleAssignments) == 0 {
+	if len(currentModel.RoleAssignments) == 0 {
 		err := errors.New(RoleAssignementShouldBeSet)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -146,7 +145,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
-	federatedSettingsOrganizationRoleMapping, resp, err := client.Atlas20231115002.FederatedAuthenticationApi.
+	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasSDK.FederatedAuthenticationApi.
 		UpdateRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID, requestBody).
 		Execute()
 	if err != nil {
@@ -183,7 +182,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	federationSettingsID := currentModel.FederationSettingsId
 	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
-	resp, err := client.Atlas20231115002.FederatedAuthenticationApi.
+	resp, err := client.AtlasSDK.FederatedAuthenticationApi.
 		DeleteRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID).
 		Execute()
 	if err != nil {
@@ -214,7 +213,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	federationSettingsID := currentModel.FederationSettingsId
 	orgID := currentModel.OrgId
 
-	federatedSettingsOrganizationRoleMappings, resp, err := client.Atlas20231115002.
+	federatedSettingsOrganizationRoleMappings, resp, err := client.AtlasSDK.
 		FederatedAuthenticationApi.
 		ListRoleMappings(context.Background(), *federationSettingsID, *orgID).
 		Execute()
@@ -224,15 +223,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	models := make([]interface{}, 0)
-	for i := range federatedSettingsOrganizationRoleMappings.Results {
-		model := Model{}
-		model.Profile = currentModel.Profile
-		model.OrgId = currentModel.OrgId
-		model.FederationSettingsId = currentModel.FederationSettingsId
-		model.Id = federatedSettingsOrganizationRoleMappings.Results[i].Id
-		model.ExternalGroupName = &federatedSettingsOrganizationRoleMappings.Results[i].ExternalGroupName
-		model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings.Results[i].RoleAssignments)
-		models = append(models, model)
+	if federatedSettingsOrganizationRoleMappings.Results != nil {
+		for i := range *federatedSettingsOrganizationRoleMappings.Results {
+			roleMappings := *federatedSettingsOrganizationRoleMappings.Results
+			model := Model{}
+			model.Profile = currentModel.Profile
+			model.OrgId = currentModel.OrgId
+			model.FederationSettingsId = currentModel.FederationSettingsId
+			model.Id = roleMappings[i].Id
+			model.ExternalGroupName = &roleMappings[i].ExternalGroupName
+			model.RoleAssignments = flattenRoleAssignments(roleMappings[i].RoleAssignments)
+			models = append(models, model)
+		}
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -241,8 +243,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func modelToRoleMappingRequest(currentModel *Model) (*admin20231115002.AuthFederationRoleMapping, handler.ProgressEvent, error) {
-	roleMappingRequest := &admin20231115002.AuthFederationRoleMapping{}
+func modelToRoleMappingRequest(currentModel *Model) (*admin.AuthFederationRoleMapping, handler.ProgressEvent, error) {
+	roleMappingRequest := &admin.AuthFederationRoleMapping{}
 	if currentModel.Id != nil {
 		roleMappingRequest.Id = currentModel.Id
 	}
@@ -255,10 +257,10 @@ func modelToRoleMappingRequest(currentModel *Model) (*admin20231115002.AuthFeder
 	return roleMappingRequest, handler.ProgressEvent{}, nil
 }
 
-func expandRoleAssignments(assignments []RoleAssignment) []admin20231115002.RoleAssignment {
-	roles := make([]admin20231115002.RoleAssignment, len(assignments))
+func expandRoleAssignments(assignments []RoleAssignment) *[]admin.ConnectedOrgConfigRoleAssignment {
+	roles := make([]admin.ConnectedOrgConfigRoleAssignment, len(assignments))
 	for i := range assignments {
-		role := admin20231115002.RoleAssignment{}
+		role := admin.ConnectedOrgConfigRoleAssignment{}
 		if util.IsStringPresent(assignments[i].Role) {
 			role.Role = assignments[i].Role
 		}
@@ -273,10 +275,10 @@ func expandRoleAssignments(assignments []RoleAssignment) []admin20231115002.Role
 		roles[i] = role
 	}
 
-	return roles
+	return &roles
 }
 
-func roleMappingToModel(currentModel Model, roleMapping *admin20231115002.AuthFederationRoleMapping) *Model {
+func roleMappingToModel(currentModel Model, roleMapping *admin.AuthFederationRoleMapping) *Model {
 	out := &Model{
 		Profile:              currentModel.Profile,
 		FederationSettingsId: currentModel.FederationSettingsId,
@@ -288,9 +290,12 @@ func roleMappingToModel(currentModel Model, roleMapping *admin20231115002.AuthFe
 	return out
 }
 
-func flattenRoleAssignments(assignments []admin20231115002.RoleAssignment) []RoleAssignment {
+func flattenRoleAssignments(assignments *[]admin.ConnectedOrgConfigRoleAssignment) []RoleAssignment {
 	roleAssignments := make([]RoleAssignment, 0)
-	for _, role := range assignments {
+	if assignments == nil {
+		return roleAssignments
+	}
+	for _, role := range *assignments {
 		roleAssignments = append(roleAssignments, RoleAssignment{
 			Role:      role.Role,
 			OrgId:     role.OrgId,
@@ -302,7 +307,7 @@ func flattenRoleAssignments(assignments []admin20231115002.RoleAssignment) []Rol
 
 func isRoleMappingExists(currentModel *Model, client *util.MongoDBClient) bool {
 	var isExists bool
-	fedSettingsConnectedOrg, _, err := client.Atlas20231115002.FederatedAuthenticationApi.
+	fedSettingsConnectedOrg, _, err := client.AtlasSDK.FederatedAuthenticationApi.
 		GetRoleMapping(context.Background(), *currentModel.FederationSettingsId, *currentModel.Id, *currentModel.OrgId).
 		Execute()
 	if err != nil {

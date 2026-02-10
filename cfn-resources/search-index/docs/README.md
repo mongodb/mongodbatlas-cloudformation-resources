@@ -24,7 +24,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#type" title="Type">Type</a>" : <i>String</i>,
         "<a href="#searchanalyzer" title="SearchAnalyzer">SearchAnalyzer</a>" : <i>String</i>,
         "<a href="#synonyms" title="Synonyms">Synonyms</a>" : <i>[ <a href="apiatlasftssynonymmappingdefinitionview.md">ApiAtlasFTSSynonymMappingDefinitionView</a>, ... ]</i>,
-        "<a href="#fields" title="Fields">Fields</a>" : <i>String</i>
+        "<a href="#fields" title="Fields">Fields</a>" : <i>String</i>,
+        "<a href="#storedsource" title="StoredSource">StoredSource</a>" : <i>String</i>,
+        "<a href="#typesets" title="TypeSets">TypeSets</a>" : <i>[ <a href="typeset.md">TypeSet</a>, ... ]</i>,
+        "<a href="#numpartitions" title="NumPartitions">NumPartitions</a>" : <i>Integer</i>
     }
 }
 </pre>
@@ -49,6 +52,10 @@ Properties:
     <a href="#synonyms" title="Synonyms">Synonyms</a>: <i>
       - <a href="apiatlasftssynonymmappingdefinitionview.md">ApiAtlasFTSSynonymMappingDefinitionView</a></i>
     <a href="#fields" title="Fields">Fields</a>: <i>String</i>
+    <a href="#storedsource" title="StoredSource">StoredSource</a>: <i>String</i>
+    <a href="#typesets" title="TypeSets">TypeSets</a>: <i>
+      - <a href="typeset.md">TypeSet</a></i>
+    <a href="#numpartitions" title="NumPartitions">NumPartitions</a>: <i>Integer</i>
 </pre>
 
 ## Properties
@@ -156,11 +163,11 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Human-readable label that identifies this index. Within each namespace, names of all indexes in the namespace must be unique.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Type
 
@@ -169,6 +176,8 @@ Type of index: **search** or **vectorSearch**. Default type is **search**.
 _Required_: No
 
 _Type_: String
+
+_Allowed Values_: <code>search</code> | <code>vectorSearch</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
@@ -199,6 +208,36 @@ Array of [Fields](https://www.mongodb.com/docs/atlas/atlas-search/field-types/kn
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### StoredSource
+
+Flag that indicates whether to store the original document in the index. Can be a boolean ("true" or "false") or a stringified JSON object specifying which fields to include/exclude. When stored, this allows the index to return the original document for queries.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### TypeSets
+
+Array of type sets that define alternate types for fields in the index. Each type set allows you to group related fields under a common name.
+
+_Required_: No
+
+_Type_: List of <a href="typeset.md">TypeSet</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### NumPartitions
+
+Number of partitions for the index. This is used to improve search performance for large datasets by distributing the index across multiple partitions.
+
+_Required_: No
+
+_Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

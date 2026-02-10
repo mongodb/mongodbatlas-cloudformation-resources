@@ -13,18 +13,22 @@ build:
 
 debug:
 	cfn generate
-	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflagsD)" -tags="$(tags)" -o bin/bootstrap cmd/main.go
+	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflagsD)" -tags="$(tags)" -o bin/debug cmd/main.go
 
 clean:
 	rm -rf bin
 
+submit: clean build
+	@echo "==> Submitting to private registry for testing"
+	 cfn submit --set-default --region us-east-1
+
 create-test-resources:
-	@echo "==> Creating test files for contract testing"
-	./test/contract-testing/cfn-test-create-inputs.sh
+	@echo "==> Creating test files and resources for contract testing"
+	./test/contract-testing/cfn-test-create.sh
 
 delete-test-resources:
 	@echo "==> Delete test resources used for contract testing"
-	./test/cfn-test-delete-inputs.sh
+	./test/contract-testing/cfn-test-delete.sh
 
 run-contract-testing:
 	@echo "==> Run contract testing"

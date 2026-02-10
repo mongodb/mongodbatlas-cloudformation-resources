@@ -1,0 +1,12 @@
+{
+  "Profile": "default",
+  "ClusterName": "MongoDB12345",
+  "CollectionName": "testcoll",
+  "Database": "testdb",
+  "Name": "vector-abc-123",
+  "ProjectId": "$PROJECT_ID",
+  "Type": "vectorSearch",
+  "NumPartitions": "1",
+  "Fields": "[{\"type\":\"vector\",\"path\":\"plot_embedding\",\"numDimensions\":1536,\"similarity\":\"cosine\"},{\"type\":\"filter\",\"path\":\"genres\"},{\"type\":\"filter\",\"path\":\"year\"}]",
+  "StoredSource": "{\"exclude\":[\"plot_embedding\"]}"
+}

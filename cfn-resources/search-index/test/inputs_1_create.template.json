@@ -6,6 +6,8 @@
   "Database": "testdb",
   "Name": "abc-123",
   "ProjectId": "$PROJECT_ID",
+  "SearchAnalyzer": "lucene.english",
+  "NumPartitions": "1",
   "Mappings": {
     "Dynamic": "true"
   },
@@ -17,5 +19,6 @@
         "Collection": "someCollection"
       }
     }
-  ]
+  ],
+  "StoredSource": "{\"include\":[\"name\",\"address\",\"price\"]}"
 }

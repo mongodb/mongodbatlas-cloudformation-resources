@@ -1147,9 +1147,8 @@ jobs:
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/test-folder
-          PROJECT_NAME="test-access-role-${{ github.run_id }}"
-          make create-test-resources PROJECT_NAME="${PROJECT_NAME}"
-          make delete-test-resources PROJECT_NAME="${PROJECT_NAME}"
+          make create-test-resources
+          make delete-test-resources
   third-party-integration:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.third-party-integration == 'true' }}

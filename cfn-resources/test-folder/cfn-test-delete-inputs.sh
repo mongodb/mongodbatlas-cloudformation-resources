@@ -2,64 +2,56 @@
 # cfn-test-delete-inputs.sh
 # Cleanup test resources
 
-set -e
-set -x
+set -euo pipefail
 
-if [ "$#" -ne 1 ]; then
-    echo "usage: $0 <project_name>"
+function usage {
+    echo "usage:$0 "
+}
+
+# Read metadata from JSON file (similar to stream-connection pattern)
+if [ ! -f "./inputs/test-metadata.json" ]; then
+    echo "Error: test-metadata.json not found. Run create-test-resources first."
     exit 1
 fi
 
-projectName="${1}"
+projectId=$(jq -r '.ProjectId' ./inputs/test-metadata.json)
+projectName=$(jq -r '.ProjectName' ./inputs/test-metadata.json)
+iamRoleName=$(jq -r '.IamRoleName' ./inputs/test-metadata.json)
 
-echo "==> Getting project details"
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
-if [ -z "$projectId" ]; then
-    echo "Project not found: ${projectName}"
-    exit 1
-fi
+echo "==> Reading test metadata"
+echo "Project: ${projectName} (${projectId})"
+echo "IAM Role: ${iamRoleName}"
 
-export MCLI_PROJECT_ID=$projectId
-echo "Found project: ${projectName} (${projectId})"
+# Deauthorize Atlas access role using the roleId from metadata
+echo "==> Deauthorizing Atlas access role"
+roleId=$(jq -r '.AtlasRoleId' ./inputs/test-metadata.json)
 
-# Get AWS region
-keyRegion=$AWS_DEFAULT_REGION
-if [ -z "$keyRegion" ]; then
-    keyRegion=$(aws configure get region)
-fi
-keyRegion=${keyRegion//-/_}
-keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
-
-roleName="mongodb-atlas-enc-role-${keyRegion}"
-
-# Get role details from trust policy file
-if [ -f "$(dirname "$0")/trust-policy.json" ]; then
-    echo "==> Reading trust policy"
-    atlasAssumedRoleExternalId=$(jq -r '.Statement[0].Condition.StringEquals["sts:ExternalId"]' "$(dirname "$0")/trust-policy.json")
-    
-    if [ -n "$atlasAssumedRoleExternalId" ] && [ "$atlasAssumedRoleExternalId" != "null" ]; then
-        echo "External ID: ${atlasAssumedRoleExternalId}"
-        
-        echo "==> Deauthorizing Atlas access role"
-        roleId=$(atlas cloudProviders accessRoles list --output json | jq --arg externalId "${atlasAssumedRoleExternalId}" -r '.awsIamRoles[] | select(.atlasAssumedRoleExternalId | test($externalId)) | .roleId' || echo "")
-        
-        if [ -n "$roleId" ]; then
-            echo "Deauthorizing roleId: ${roleId}"
-            atlas cloudProviders accessRoles aws deauthorize "${roleId}" --force || echo "Failed to deauthorize role"
-        else
-            echo "No Atlas role found to deauthorize"
-        fi
-    fi
+if [ -n "$roleId" ] && [ "$roleId" != "null" ]; then
+    echo "Deauthorizing roleId: ${roleId}"
+    atlas cloudProviders accessRoles aws deauthorize "${roleId}" --projectId "${projectId}" --force || echo "Failed to deauthorize role"
+else
+    echo "No Atlas role found in metadata"
 fi
 
 echo "==> Deleting AWS IAM role"
-aws iam delete-role --role-name "$roleName" 2>/dev/null && echo "Deleted AWS role: ${roleName}" || echo "AWS role not found or already deleted"
+if [ -n "${iamRoleName:-}" ] && [ "${iamRoleName}" != "null" ] && [ "${iamRoleName}" != "" ]; then
+    echo "Deleting IAM role: ${iamRoleName}"
+    aws iam delete-role --role-name "${iamRoleName}" 2>/dev/null && echo "Deleted AWS role: ${iamRoleName}" || echo "AWS role not found or already deleted"
+else
+    echo "No IAM role name found, skipping deletion"
+fi
 
 echo "==> Deleting Atlas project"
-atlas projects delete "${projectId}" --force && echo "Deleted project: ${projectName} (${projectId})" || echo "Failed to delete project"
+if atlas projects delete "${projectId}" --force; then
+    echo "$projectId project deletion OK"
+else
+    echo "Failed cleaning project: $projectId"
+    exit 1
+fi
 
 echo "==> Cleaning up generated files"
 rm -f "$(dirname "$0")/trust-policy.json"
+rm -rf inputs
 
 echo ""
 echo "==> Cleanup completed!"

@@ -6,16 +6,19 @@
   "Database": "testdb",
   "Name": "abc-123",
   "ProjectId": "$PROJECT_ID",
+  "SearchAnalyzer": "lucene.standard",
+  "NumPartitions": "1",
   "Mappings": {
     "Dynamic": "true"
   },
   "Synonyms": [
     {
       "Analyzer": "lucene.simple",
-      "Name": "synonym_test",
+      "Name": "synonym_test_updated",
       "Source": {
         "Collection": "someCollection"
       }
     }
-  ]
+  ],
+  "StoredSource": "{\"exclude\":[\"description\"]}"
 }

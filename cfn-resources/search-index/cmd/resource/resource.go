@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -28,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 )
 
 func setup() {
@@ -39,6 +38,7 @@ var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName}
 var ReadRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
 var UpdateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
+var ListRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.CollectionName, constants.Database}
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
@@ -52,7 +52,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
 	}
 
-	searchIndex, err := newSearchIndex(currentModel)
+	searchIndexRequest, err := newSearchIndexCreateRequest(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -72,7 +72,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	newSearchIndex, _, err := atlasV2.AtlasSearchApi.CreateAtlasSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndex).Execute()
+	newSearchIndex, _, err := atlasV2.AtlasSearchApi.CreateClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndexRequest).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			Message:          err.Error(),
@@ -113,16 +113,20 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
-	searchIndex, resp, err := atlasV2.AtlasSearchApi.GetAtlasSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+	searchIndex, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(resp) {
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
 				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 		}
+		return handler.ProgressEvent{
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
 	currentModel.Status = searchIndex.Status
 	currentModel.Type = searchIndex.Type
@@ -153,7 +157,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
@@ -162,7 +166,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.IndexId = &id
 		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
 	}
-	searchIndex, err := newSearchIndex(currentModel)
+	searchIndexRequest, err := newSearchIndexUpdateRequest(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -172,11 +176,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	updatedSearchIndex, res, err := atlasV2.AtlasSearchApi.UpdateAtlasSearchIndex(
-		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndex).Execute()
+	updatedSearchIndex, res, err := atlasV2.AtlasSearchApi.UpdateClusterSearchIndex(
+		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndexRequest).Execute()
 	if err != nil {
-		// Log and handle 404 ok
-		if res != nil && res.StatusCode == http.StatusNotFound {
+		if util.StatusNotFound(res) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -220,7 +223,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	ctx := context.Background()
 
@@ -231,9 +234,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
 	}
 
-	_, resp, err := atlasV2.AtlasSearchApi.DeleteAtlasSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+	resp, err := atlasV2.AtlasSearchApi.DeleteClusterSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
-		if resp != nil && (resp.StatusCode == http.StatusInternalServerError || resp.StatusCode == http.StatusNotFound) {
+		if util.StatusInternalServerError(resp) || util.StatusNotFound(resp) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          string(types.HandlerErrorCodeNotFound),
@@ -259,7 +262,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(UpdateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(ListRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
@@ -268,7 +271,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	ctx := context.Background()
 
@@ -276,7 +279,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return validateProgress(ctx, atlasV2, currentModel, "IDLE")
 	}
 
-	indices, _, err := atlasV2.AtlasSearchApi.ListAtlasSearchIndexes(
+	indices, _, err := atlasV2.AtlasSearchApi.ListSearchIndex(
 		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.CollectionName, *currentModel.Database).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
@@ -295,68 +298,193 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func newSearchIndex(currentModel *Model) (*admin20231115002.ClusterSearchIndex, error) {
-	searchIndex := &admin20231115002.ClusterSearchIndex{
-		Analyzer:       currentModel.Analyzer,
-		CollectionName: aws.ToString(currentModel.CollectionName),
-		Database:       aws.ToString(currentModel.Database),
-		IndexID:        currentModel.IndexId,
-		Name:           aws.ToString(currentModel.Name),
-		SearchAnalyzer: currentModel.SearchAnalyzer,
-		Status:         currentModel.Status,
-		Type:           currentModel.Type,
+func BuildFields(currentModel *Model) (*[]any, error) {
+	fields, err := convertStringToInterfaceMap(currentModel.Fields)
+	if err != nil {
+		return nil, err
+	}
+	if fields == nil {
+		return nil, nil
 	}
 
-	if fields, err := convertStringToInterfaceMap(currentModel.Fields); err == nil {
-		searchIndex.Fields = fields
+	fieldsAny := make([]any, 0, len(fields))
+	for _, f := range fields {
+		fieldsAny = append(fieldsAny, f)
+	}
+	return &fieldsAny, nil
+}
+
+func BuildMappings(currentModel *Model) (*admin.SearchMappings, error) {
+	if currentModel.Mappings == nil {
+		return nil, nil
+	}
+	return newMappings(currentModel)
+}
+
+func BuildAnalyzers(currentModel *Model) (*[]admin.AtlasSearchAnalyzer, error) {
+	if len(currentModel.Analyzers) == 0 {
+		return nil, nil
 	}
 
-	if currentModel.Mappings != nil {
-		mapping, err := newMappings(currentModel)
-		if err != nil {
-			return nil, err
-		}
-		searchIndex.Mappings = mapping
-	}
-	analyzers := make([]admin20231115002.ApiAtlasFTSAnalyzers, 0, len(currentModel.Analyzers))
+	analyzers := make([]admin.AtlasSearchAnalyzer, 0, len(currentModel.Analyzers))
 	for i := range currentModel.Analyzers {
 		charFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].CharFilters)
 		if err != nil {
 			return nil, err
 		}
-
 		tokenFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].TokenFilters)
 		if err != nil {
 			return nil, err
 		}
-
-		s := admin20231115002.ApiAtlasFTSAnalyzers{
-			CharFilters:  charFilters,
+		tokenizer := NewTokenizerModel(currentModel.Analyzers[i].Tokenizer)
+		analyzers = append(analyzers, admin.AtlasSearchAnalyzer{
+			CharFilters:  &charFilters,
 			Name:         *currentModel.Analyzers[i].Name,
-			TokenFilters: tokenFilters,
-			Tokenizer:    NewTokenizerModel(currentModel.Analyzers[i].Tokenizer),
-		}
-		analyzers = append(analyzers, s)
+			TokenFilters: &tokenFilters,
+			Tokenizer:    &tokenizer,
+		})
 	}
-	if len(analyzers) > 0 {
-		searchIndex.Analyzers = analyzers
+	return &analyzers, nil
+}
+
+func BuildSynonyms(currentModel *Model) (*[]admin.SearchSynonymMappingDefinition, error) {
+	if len(currentModel.Synonyms) == 0 {
+		return nil, nil
 	}
 
-	synonyms := make([]admin20231115002.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
+	synonyms := make([]admin.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
 	for i := range currentModel.Synonyms {
-		s := admin20231115002.SearchSynonymMappingDefinition{
+		synonyms = append(synonyms, admin.SearchSynonymMappingDefinition{
 			Analyzer: *currentModel.Synonyms[i].Analyzer,
 			Name:     *currentModel.Synonyms[i].Name,
-			Source: admin20231115002.SynonymSource{
+			Source: admin.SynonymSource{
 				Collection: *currentModel.Synonyms[i].Source.Collection,
 			},
+		})
+	}
+	return &synonyms, nil
+}
+
+func BuildStoredSource(currentModel *Model) (any, error) {
+	return ConvertStringToStoredSource(currentModel.StoredSource)
+}
+
+func BuildTypeSets(currentModel *Model) (*[]admin.SearchTypeSets, error) {
+	if len(currentModel.TypeSets) == 0 {
+		return nil, nil
+	}
+
+	typeSets := make([]admin.SearchTypeSets, 0, len(currentModel.TypeSets))
+	for i := range currentModel.TypeSets {
+		ts := admin.SearchTypeSets{
+			Name: *currentModel.TypeSets[i].Name,
 		}
-		synonyms = append(synonyms, s)
+		if typesList, err := convertStringToInterfaceMap(currentModel.TypeSets[i].Types); err == nil && typesList != nil {
+			typesAny := make([]any, 0, len(typesList))
+			for _, t := range typesList {
+				typesAny = append(typesAny, t)
+			}
+			ts.Types = &typesAny
+		}
+		typeSets = append(typeSets, ts)
 	}
-	if len(synonyms) > 0 {
-		searchIndex.Synonyms = synonyms
+	return &typeSets, nil
+}
+
+type searchIndexComponents struct {
+	fields       *[]any
+	mappings     *admin.SearchMappings
+	analyzers    *[]admin.AtlasSearchAnalyzer
+	synonyms     *[]admin.SearchSynonymMappingDefinition
+	storedSource any
+	typeSets     *[]admin.SearchTypeSets
+}
+
+func buildSearchIndexComponents(currentModel *Model) (*searchIndexComponents, error) {
+	fields, err := BuildFields(currentModel)
+	if err != nil {
+		return nil, err
 	}
-	return searchIndex, nil
+
+	mappings, err := BuildMappings(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	analyzers, err := BuildAnalyzers(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	synonyms, err := BuildSynonyms(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	storedSource, err := BuildStoredSource(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	typeSets, err := BuildTypeSets(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	return &searchIndexComponents{
+		fields:       fields,
+		mappings:     mappings,
+		analyzers:    analyzers,
+		synonyms:     synonyms,
+		storedSource: storedSource,
+		typeSets:     typeSets,
+	}, nil
+}
+
+func newSearchIndexCreateRequest(currentModel *Model) (*admin.SearchIndexCreateRequest, error) {
+	components, err := buildSearchIndexComponents(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	return &admin.SearchIndexCreateRequest{
+		CollectionName: aws.ToString(currentModel.CollectionName),
+		Database:       aws.ToString(currentModel.Database),
+		Name:           aws.ToString(currentModel.Name),
+		Type:           currentModel.Type,
+		Definition: &admin.BaseSearchIndexCreateRequestDefinition{
+			Analyzer:       currentModel.Analyzer,
+			SearchAnalyzer: currentModel.SearchAnalyzer,
+			NumPartitions:  currentModel.NumPartitions,
+			Fields:         components.fields,
+			Mappings:       components.mappings,
+			Analyzers:      components.analyzers,
+			Synonyms:       components.synonyms,
+			StoredSource:   components.storedSource,
+			TypeSets:       components.typeSets,
+		},
+	}, nil
+}
+
+func newSearchIndexUpdateRequest(currentModel *Model) (*admin.SearchIndexUpdateRequest, error) {
+	components, err := buildSearchIndexComponents(currentModel)
+	if err != nil {
+		return nil, err
+	}
+
+	return &admin.SearchIndexUpdateRequest{
+		Definition: admin.SearchIndexUpdateRequestDefinition{
+			Analyzer:       currentModel.Analyzer,
+			SearchAnalyzer: currentModel.SearchAnalyzer,
+			NumPartitions:  currentModel.NumPartitions,
+			Fields:         components.fields,
+			Mappings:       components.mappings,
+			Analyzers:      components.analyzers,
+			Synonyms:       components.synonyms,
+			StoredSource:   components.storedSource,
+			TypeSets:       components.typeSets,
+		},
+	}, nil
 }
 
 func ConvertToAnySlice(input []string) ([]any, error) {
@@ -374,21 +502,33 @@ func ConvertToAnySlice(input []string) ([]any, error) {
 	return result, nil
 }
 
-func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin20231115002.ApiAtlasFTSAnalyzersTokenizer {
+func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) map[string]any {
 	if tokenizer == nil {
-		return admin20231115002.ApiAtlasFTSAnalyzersTokenizer{}
+		return nil
 	}
-	return admin20231115002.ApiAtlasFTSAnalyzersTokenizer{
-		MaxGram:        tokenizer.MaxGram,
-		MinGram:        tokenizer.MinGram,
-		Type:           tokenizer.Type,
-		Group:          tokenizer.Group,
-		Pattern:        tokenizer.Pattern,
-		MaxTokenLength: tokenizer.MaxTokenLength,
+	result := make(map[string]any)
+	if tokenizer.MaxGram != nil {
+		result["maxGram"] = *tokenizer.MaxGram
 	}
+	if tokenizer.MinGram != nil {
+		result["minGram"] = *tokenizer.MinGram
+	}
+	if tokenizer.Type != nil {
+		result["type"] = *tokenizer.Type
+	}
+	if tokenizer.Group != nil {
+		result["group"] = *tokenizer.Group
+	}
+	if tokenizer.Pattern != nil {
+		result["pattern"] = *tokenizer.Pattern
+	}
+	if tokenizer.MaxTokenLength != nil {
+		result["maxTokenLength"] = *tokenizer.MaxTokenLength
+	}
+	return result
 }
 
-func newMappings(currentModel *Model) (*admin20231115002.ApiAtlasFTSMappings, error) {
+func newMappings(currentModel *Model) (*admin.SearchMappings, error) {
 	if currentModel.Mappings == nil {
 		return nil, nil
 	}
@@ -397,10 +537,21 @@ func newMappings(currentModel *Model) (*admin20231115002.ApiAtlasFTSMappings, er
 	if err != nil {
 		return nil, err
 	}
-	return &admin20231115002.ApiAtlasFTSMappings{
-		Dynamic: currentModel.Mappings.Dynamic,
-		Fields:  fields,
-	}, nil
+
+	mapping := &admin.SearchMappings{Fields: &fields}
+
+	// DynamicConfig takes precedence over Dynamic
+	if util.IsStringPresent(currentModel.Mappings.DynamicConfig) {
+		var dynamicConfig any
+		if err := json.Unmarshal([]byte(*currentModel.Mappings.DynamicConfig), &dynamicConfig); err != nil {
+			return nil, err
+		}
+		mapping.Dynamic = dynamicConfig
+	} else if currentModel.Mappings.Dynamic != nil {
+		mapping.Dynamic = currentModel.Mappings.Dynamic
+	}
+
+	return mapping, nil
 }
 
 func convertStringToInterface(fields *string) (map[string]any, error) {
@@ -425,6 +576,27 @@ func convertStringToInterfaceMap(fields *string) ([]map[string]any, error) {
 	return data, nil
 }
 
+func ConvertStringToStoredSource(storedSource *string) (any, error) {
+	if !util.IsStringPresent(storedSource) {
+		return nil, nil
+	}
+
+	// Try to parse as boolean first
+	switch *storedSource {
+	case "true":
+		return true, nil
+	case "false":
+		return false, nil
+	}
+
+	// Otherwise parse as JSON object
+	var data any
+	if err := json.Unmarshal([]byte(*storedSource), &data); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func status(currentModel *Model) handler.Status {
 	switch *currentModel.Status {
 	case string(handler.Success):
@@ -437,7 +609,7 @@ func status(currentModel *Model) handler.Status {
 	return handler.InProgress
 }
 
-func validateProgress(ctx context.Context, client *admin20231115002.APIClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
+func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	index, err := SearchIndexExists(ctx, client, currentModel)
 	if err != nil {
 		_, _ = logger.Debugf("Error Cluster validate progress() err: %+v", err)
@@ -459,7 +631,7 @@ func validateProgress(ctx context.Context, client *admin20231115002.APIClient, c
 		return p, nil
 	}
 	p := handler.NewProgressEvent()
-	if util.AreStringPtrEqual(index.Status, admin20231115002.PtrString(string(handler.Failed))) {
+	if util.AreStringPtrEqual(index.Status, admin.PtrString(string(handler.Failed))) {
 		p.OperationStatus = handler.Failed
 		p.Message = "Failed"
 		p.HandlerErrorCode = string(types.HandlerErrorCodeInvalidRequest)
@@ -474,11 +646,11 @@ func validateProgress(ctx context.Context, client *admin20231115002.APIClient, c
 	return p, nil
 }
 
-func SearchIndexExists(ctx context.Context, atlasV2 *admin20231115002.APIClient, currentModel *Model) (*admin20231115002.ClusterSearchIndex, error) {
-	index, resp, err := atlasV2.AtlasSearchApi.GetAtlasSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+func SearchIndexExists(ctx context.Context, atlasV2 *admin.APIClient, currentModel *Model) (*admin.SearchIndexResponse, error) {
+	index, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return &admin20231115002.ClusterSearchIndex{Status: admin20231115002.PtrString("DELETED")}, nil
+		if util.StatusNotFound(resp) {
+			return &admin.SearchIndexResponse{Status: admin.PtrString("DELETED")}, nil
 		}
 	}
 	return index, err

@@ -1,11 +1,15 @@
 {
-  "Profile": "federation",
+  "Profile": "default",
   "FederationSettingsId": "",
   "OrgId": "",
   "ExternalGroupName": "RM-01",
   "RoleAssignments": [
     {
-      "Role": "GROUP_DATA_ACCESS_READ_WRITE",
+      "Role": "ORG_MEMBER",
+      "OrgId": ""
+    },
+    {
+      "Role": "GROUP_OWNER",
       "ProjectId": ""
     }
   ]

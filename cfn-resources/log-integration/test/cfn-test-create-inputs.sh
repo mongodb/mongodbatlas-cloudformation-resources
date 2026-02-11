@@ -28,7 +28,7 @@ fi
 regionFormatted=$(echo "$region" | sed -e "s/-/_/g" | tr '[:lower:]' '[:upper:]')
 echo "Using region: $region (formatted: $regionFormatted)"
 
-roleName="mongodb-atlas-logs-role-${regionFormatted}"
+roleName="mongodb-atlas-logs-role-${regionFormatted}-$(date +%s)-${RANDOM}"
 policyName="atlas-logs-s3-policy-${regionFormatted}"
 bucketTag="${CFN_TEST_TAG:-$(date +%Y%m%d%H%M%S)}"
 bucketName="mongodb-atlas-cfn-test-logs-${bucketTag}"
@@ -105,6 +105,10 @@ atlas cloudProviders accessRoles aws authorize "${roleID}" \
 	--projectId "${projectId}" \
 	--iamAssumedRoleArn "${awsRoleArn}"
 echo "--------------------------------authorize mongodb Role ends----------------------------"
+
+# Save role name for cleanup
+echo "${roleName}" > "$(dirname "$0")/role-name.txt"
+
 rm -rf inputs
 mkdir inputs
 

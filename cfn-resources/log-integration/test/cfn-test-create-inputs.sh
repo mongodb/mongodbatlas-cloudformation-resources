@@ -28,7 +28,8 @@ fi
 regionFormatted=$(echo "$region" | sed -e "s/-/_/g" | tr '[:lower:]' '[:upper:]')
 echo "Using region: $region (formatted: $regionFormatted)"
 
-roleName="mongodb-atlas-logs-role-${regionFormatted}"
+# Use dynamic role name to avoid conflicts in CI (matches test-folder pattern)
+roleName="mongodb-atlas-logs-role-${regionFormatted}-$(date +%s)-${RANDOM}"
 policyName="atlas-logs-s3-policy-${regionFormatted}"
 bucketTag="${CFN_TEST_TAG:-$(date +%Y%m%d%H%M%S)}"
 bucketName="mongodb-atlas-cfn-test-logs-${bucketTag}"
@@ -107,6 +108,15 @@ atlas cloudProviders accessRoles aws authorize "${roleID}" \
 echo "--------------------------------authorize mongodb Role ends----------------------------"
 rm -rf inputs
 mkdir inputs
+
+# Store AWS role ARN in a separate metadata file for cleanup (not part of CFN schema)
+cat > "$(dirname "$0")/test-metadata.json" <<EOF
+{
+  "awsRoleArn": "${awsRoleArn}",
+  "roleName": "${roleName}",
+  "policyName": "${policyName}"
+}
+EOF
 
 WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit

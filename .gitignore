@@ -53,3 +53,4 @@ cfn-resources/resource-versions.md
 **/test/trust-policy.json
 **/test/s3-policy.json
 **/test/add-policy.json
+**/test/test-metadata.json

@@ -33,9 +33,6 @@ func HandleClusterError(err error, resp *http.Response) *handler.ProgressEvent {
 	if resp != nil && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), constants.Duplicate) {
 		pe.HandlerErrorCode = string(types.HandlerErrorCodeAlreadyExists)
 	}
-	if resp != nil && resp.StatusCode == http.StatusNotFound {
-		pe.HandlerErrorCode = string(types.HandlerErrorCodeNotFound)
-	}
 	if strings.Contains(err.Error(), "not exist") || strings.Contains(err.Error(), "being deleted") {
 		pe.HandlerErrorCode = string(types.HandlerErrorCodeNotFound)
 	}

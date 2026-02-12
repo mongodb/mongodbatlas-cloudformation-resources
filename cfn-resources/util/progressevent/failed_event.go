@@ -22,11 +22,16 @@ import (
 )
 
 func getHandlerErrorCode(response *http.Response) string {
+	if response == nil {
+		return string(types.HandlerErrorCodeInternalFailure)
+	}
 	switch response.StatusCode {
 	case http.StatusBadRequest:
 		return string(types.HandlerErrorCodeInvalidRequest)
 	case http.StatusNotFound:
 		return string(types.HandlerErrorCodeNotFound)
+	case http.StatusConflict:
+		return string(types.HandlerErrorCodeAlreadyExists)
 	case http.StatusInternalServerError:
 		return string(types.HandlerErrorCodeServiceInternalError)
 	case http.StatusPaymentRequired, http.StatusUnauthorized:
@@ -37,34 +42,6 @@ func getHandlerErrorCode(response *http.Response) string {
 }
 
 func GetFailedEventByResponse(message string, response *http.Response) handler.ProgressEvent {
-	if response == nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          message,
-			HandlerErrorCode: string(types.HandlerErrorCodeHandlerInternalFailure)}
-	}
-
-	if response.StatusCode == http.StatusConflict {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          message,
-			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}
-	}
-
-	if response.StatusCode == http.StatusUnauthorized {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Not found",
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
-	}
-
-	if response.StatusCode == http.StatusBadRequest {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          message,
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}
-	}
-
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          message,

@@ -168,7 +168,7 @@ func handleUnpausingUpdate(client *util.MongoDBClient, currentCluster *admin2023
 	return nil
 }
 
-// Delete handles the Delete event from the Cloudformation service.
+// Delete handles the Delete event from the Cloudformation service
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, setupErr := setupRequest(req, currentModel, createReadUpdateDeleteRequiredFields)
 	if setupErr != nil {

@@ -1,0 +1,174 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a log integration for MongoDB Atlas, enabling export of database logs to AWS S3. This will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your MongoDB Atlas project"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys",
+      "Default": "default"
+    },
+    "BucketName": {
+      "Type": "String",
+      "Description": "Name of the AWS S3 bucket to which logs are exported"
+    },
+    "IamRoleId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies the IAM role from MongoDB Atlas Cloud Provider Access. This role must have permissions to access the S3 bucket."
+    },
+    "PrefixPath": {
+      "Type": "String",
+      "Description": "S3 bucket prefix path to which logs are exported",
+      "Default": "mongodb/logs"
+    },
+    "LogType1": {
+      "Type": "String",
+      "Description": "First log type to export",
+      "Default": "MONGOD_AUDIT",
+      "AllowedValues": [
+        "MONGOD",
+        "MONGOS",
+        "MONGOD_AUDIT",
+        "MONGOS_AUDIT"
+      ]
+    },
+    "LogType2": {
+      "Type": "String",
+      "Description": "Second log type to export (optional)",
+      "Default": "",
+      "AllowedValues": [
+        "",
+        "MONGOD",
+        "MONGOS",
+        "MONGOD_AUDIT",
+        "MONGOS_AUDIT"
+      ]
+    },
+    "KmsKey": {
+      "Type": "String",
+      "Description": "AWS KMS customer master key ARN for encrypting logs (optional)",
+      "Default": ""
+    }
+  },
+  "Conditions": {
+    "HasLogType2": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "LogType2"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "HasKmsKey": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "KmsKey"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "AtlasLogIntegration": {
+      "Type": "MongoDB::Atlas::LogIntegration",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "Type": "S3_LOG_EXPORT",
+        "BucketName": {
+          "Ref": "BucketName"
+        },
+        "IamRoleId": {
+          "Ref": "IamRoleId"
+        },
+        "PrefixPath": {
+          "Ref": "PrefixPath"
+        },
+        "LogTypes": {
+          "Fn::If": [
+            "HasLogType2",
+            [
+              {
+                "Ref": "LogType1"
+              },
+              {
+                "Ref": "LogType2"
+              }
+            ],
+            [
+              {
+                "Ref": "LogType1"
+              }
+            ]
+          ]
+        },
+        "KmsKey": {
+          "Fn::If": [
+            "HasKmsKey",
+            {
+              "Ref": "KmsKey"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "IntegrationId": {
+      "Description": "Unique identifier of the log integration",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-IntegrationId"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasLogIntegration",
+          "IntegrationId"
+        ]
+      }
+    },
+    "ProjectId": {
+      "Description": "MongoDB Atlas project ID",
+      "Value": {
+        "Ref": "ProjectId"
+      }
+    },
+    "BucketName": {
+      "Description": "S3 bucket name where logs are exported",
+      "Value": {
+        "Ref": "BucketName"
+      }
+    },
+    "IamRoleId": {
+      "Description": "IAM role ID used for S3 access",
+      "Value": {
+        "Ref": "IamRoleId"
+      }
+    },
+    "PrefixPath": {
+      "Description": "S3 bucket prefix path for exported logs",
+      "Value": {
+        "Ref": "PrefixPath"
+      }
+    }
+  }
+}

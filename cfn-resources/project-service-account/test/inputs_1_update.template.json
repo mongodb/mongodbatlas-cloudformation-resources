@@ -1,0 +1,12 @@
+{
+  "ProjectId": "ProjectId",
+  "ClientId": "",
+  "Name": "cfn-test-project-service-account-updated",
+  "Description": "Project service account updated for CFN testing - all updatable fields changed",
+  "Roles": [
+    "GROUP_READ_ONLY",
+    "GROUP_DATA_ACCESS_READ_ONLY"
+  ],
+  "Profile": "default"
+}
+

@@ -8,6 +8,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
+    "<a href="#metricname" title="MetricName">MetricName</a>" : <i>String</i>,
+    "<a href="#mode" title="Mode">Mode</a>" : <i>String</i>,
     "<a href="#operator" title="Operator">Operator</a>" : <i>String</i>,
     "<a href="#threshold" title="Threshold">Threshold</a>" : <i>Double</i>,
     "<a href="#units" title="Units">Units</a>" : <i>String</i>
@@ -17,12 +19,34 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
+<a href="#metricname" title="MetricName">MetricName</a>: <i>String</i>
+<a href="#mode" title="Mode">Mode</a>: <i>String</i>
 <a href="#operator" title="Operator">Operator</a>: <i>String</i>
 <a href="#threshold" title="Threshold">Threshold</a>: <i>Double</i>
 <a href="#units" title="Units">Units</a>: <i>String</i>
 </pre>
 
 ## Properties
+
+#### MetricName
+
+Human-readable label that identifies the metric against which MongoDB Cloud checks the configured threshold.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Mode
+
+Indicates how MongoDB Cloud computes the current metric value (e.g., AVERAGE).
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Operator
 

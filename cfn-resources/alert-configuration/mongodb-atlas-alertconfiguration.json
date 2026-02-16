@@ -194,6 +194,14 @@
     "IntegerThresholdView": {
       "type": "object",
       "properties": {
+        "MetricName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the metric against which MongoDB Cloud checks the configured threshold."
+        },
+        "Mode": {
+          "type": "string",
+          "description": "Indicates how MongoDB Cloud computes the current metric value (e.g., AVERAGE)."
+        },
         "Operator": {
           "type": "string",
           "description": "Comparison operator to apply when checking the current metric value.",

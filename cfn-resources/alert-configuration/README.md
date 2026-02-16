@@ -15,4 +15,8 @@ See the [resource docs](docs/README.md).
 
 ## CloudFormation Examples
 
-See the examples [CFN Template](/examples/alert-configuration/alert-configuration.json) for example resource.
+See the example CFN templates in the [examples directory](/examples/alert-configuration/):
+
+- [alert-configuration-email.json](/examples/alert-configuration/alert-configuration-email.json) - Email alert for host metrics
+- [alert-configuration-microsoft-teams.json](/examples/alert-configuration/alert-configuration-microsoft-teams.json) - Microsoft Teams alert for host metrics
+- [alert-configuration-stream-processor.json](/examples/alert-configuration/alert-configuration-stream-processor.json) - Email alert for Stream Processor metrics

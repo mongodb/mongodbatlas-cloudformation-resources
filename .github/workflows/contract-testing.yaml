@@ -191,7 +191,7 @@ jobs:
           cd cfn-resources/alert-configuration
           make create-test-resources
 
-          cat inputs/inputs_1_create.json
+          cat inputs/*
 
           make run-contract-testing
           make delete-test-resources

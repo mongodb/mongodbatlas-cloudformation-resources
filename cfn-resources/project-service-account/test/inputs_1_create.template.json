@@ -1,0 +1,11 @@
+{
+  "ProjectId": "ProjectId",
+  "Name": "cfn-test-project-service-account",
+  "Description": "Project service account created for CFN testing",
+  "Roles": [
+    "GROUP_OWNER"
+  ],
+  "SecretExpiresAfterHours": "720",
+  "Profile": "default"
+}
+

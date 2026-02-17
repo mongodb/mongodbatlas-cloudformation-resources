@@ -1,0 +1,676 @@
+{
+  "components": [
+    {
+      "bom-ref": "pkg:golang/../vendor/go.mongodb.org/atlas-sdk/v20231115014@%28devel%29",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/../vendor/go.mongodb.org/atlas-sdk/v20231115014@(devel)"
+        }
+      ],
+      "group": "../vendor/go.mongodb.org/atlas-sdk",
+      "name": "v20231115014",
+      "purl": "pkg:golang/../vendor/go.mongodb.org/atlas-sdk/v20231115014@%28devel%29",
+      "type": "library",
+      "version": "(devel)"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws/aws-lambda-go@v1.37.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws/aws-lambda-go"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws/aws-lambda-go@v1.37.0"
+        }
+      ],
+      "group": "github.com/aws",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "aws-lambda-go",
+      "purl": "pkg:golang/github.com/aws/aws-lambda-go@v1.37.0",
+      "type": "library",
+      "version": "v1.37.0"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go@v1.55.8",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws/aws-sdk-go"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go@v1.55.8"
+        }
+      ],
+      "group": "github.com/aws",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        },
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ],
+      "name": "aws-sdk-go",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go@v1.55.8",
+      "type": "library",
+      "version": "v1.55.8"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.1",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws/aws-sdk-go-v2"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2@v1.41.1"
+        }
+      ],
+      "group": "github.com/aws",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        },
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ],
+      "name": "aws-sdk-go-v2",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.1",
+      "type": "library",
+      "version": "v1.41.1"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws/smithy-go@v1.24.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws/smithy-go"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws/smithy-go@v1.24.0"
+        }
+      ],
+      "group": "github.com/aws",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        },
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ],
+      "name": "smithy-go",
+      "purl": "pkg:golang/github.com/aws/smithy-go@v1.24.0",
+      "type": "library",
+      "version": "v1.24.0"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws-cloudformation/cloudformation-cli-go-plugin@v1.2.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws-cloudformation/cloudformation-cli-go-plugin"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws-cloudformation/cloudformation-cli-go-plugin@v1.2.0"
+        }
+      ],
+      "group": "github.com/aws-cloudformation",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "cloudformation-cli-go-plugin",
+      "purl": "pkg:golang/github.com/aws-cloudformation/cloudformation-cli-go-plugin@v1.2.0",
+      "type": "library",
+      "version": "v1.2.0"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.17",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws/aws-sdk-go-v2"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.17"
+        }
+      ],
+      "group": "github.com/aws/aws-sdk-go-v2/internal",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "configsources",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.17",
+      "type": "library",
+      "version": "v1.4.17"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.17",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws/aws-sdk-go-v2"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.17"
+        }
+      ],
+      "group": "github.com/aws/aws-sdk-go-v2/internal/endpoints",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "v2",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.17",
+      "type": "library",
+      "version": "v2.7.17"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/cloudformation@v1.71.5",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws/aws-sdk-go-v2"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/service/cloudformation@v1.71.5"
+        }
+      ],
+      "group": "github.com/aws/aws-sdk-go-v2/service",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "cloudformation",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/cloudformation@v1.71.5",
+      "type": "library",
+      "version": "v1.71.5"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/secretsmanager@v1.41.1",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/aws/aws-sdk-go-v2"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/service/secretsmanager@v1.41.1"
+        }
+      ],
+      "group": "github.com/aws/aws-sdk-go-v2/service",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "secretsmanager",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/secretsmanager@v1.41.1",
+      "type": "library",
+      "version": "v1.41.1"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/google/go-querystring@v1.1.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/google/go-querystring"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/google/go-querystring@v1.1.0"
+        }
+      ],
+      "group": "github.com/google",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ],
+      "name": "go-querystring",
+      "purl": "pkg:golang/github.com/google/go-querystring@v1.1.0",
+      "type": "library",
+      "version": "v1.1.0"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/jmespath/go-jmespath@v0.4.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/jmespath/go-jmespath"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/jmespath/go-jmespath@v0.4.0"
+        }
+      ],
+      "group": "github.com/jmespath",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "go-jmespath",
+      "purl": "pkg:golang/github.com/jmespath/go-jmespath@v0.4.0",
+      "type": "library",
+      "version": "v0.4.0"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/mongodb-forks/digest@v1.1.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/mongodb-forks/digest"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/mongodb-forks/digest@v1.1.0"
+        }
+      ],
+      "group": "github.com/mongodb-forks",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "digest",
+      "purl": "pkg:golang/github.com/mongodb-forks/digest@v1.1.0",
+      "type": "library",
+      "version": "v1.1.0"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/mongodb-labs/go-client-mongodb-atlas-app-services@v1.0.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/mongodb-labs/go-client-mongodb-atlas-app-services"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/mongodb-labs/go-client-mongodb-atlas-app-services@v1.0.0"
+        }
+      ],
+      "group": "github.com/mongodb-labs",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "go-client-mongodb-atlas-app-services",
+      "purl": "pkg:golang/github.com/mongodb-labs/go-client-mongodb-atlas-app-services@v1.0.0",
+      "type": "library",
+      "version": "v1.0.0"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/rs/xid@v1.6.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/rs/xid"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/rs/xid@v1.6.0"
+        }
+      ],
+      "group": "github.com/rs",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ],
+      "name": "xid",
+      "purl": "pkg:golang/github.com/rs/xid@v1.6.0",
+      "type": "library",
+      "version": "v1.6.0"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/segmentio/ksuid@v1.0.4",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/segmentio/ksuid"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/segmentio/ksuid@v1.0.4"
+        }
+      ],
+      "group": "github.com/segmentio",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ],
+      "name": "ksuid",
+      "purl": "pkg:golang/github.com/segmentio/ksuid@v1.0.4",
+      "type": "library",
+      "version": "v1.0.4"
+    },
+    {
+      "bom-ref": "pkg:golang/go.mongodb.org/atlas@v0.37.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/mongodb/go-client-mongodb-atlas.git"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/go.mongodb.org/atlas@v0.37.0"
+        }
+      ],
+      "group": "go.mongodb.org",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "atlas",
+      "purl": "pkg:golang/go.mongodb.org/atlas@v0.37.0",
+      "type": "library",
+      "version": "v0.37.0"
+    },
+    {
+      "bom-ref": "pkg:golang/go.mongodb.org/atlas-sdk/v20231115002@v20231115002.1.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/mongodb/atlas-sdk-go.git"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/go.mongodb.org/atlas-sdk/v20231115002@v20231115002.1.0"
+        }
+      ],
+      "group": "go.mongodb.org/atlas-sdk",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "v20231115002",
+      "purl": "pkg:golang/go.mongodb.org/atlas-sdk/v20231115002@v20231115002.1.0",
+      "type": "library",
+      "version": "v20231115002.1.0"
+    },
+    {
+      "bom-ref": "pkg:golang/go.mongodb.org/atlas-sdk/v20231115014@v20231115014.0.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/mongodb/atlas-sdk-go.git"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/go.mongodb.org/atlas-sdk/v20231115014@v20231115014.0.0"
+        }
+      ],
+      "group": "go.mongodb.org/atlas-sdk",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "v20231115014",
+      "purl": "pkg:golang/go.mongodb.org/atlas-sdk/v20231115014@v20231115014.0.0",
+      "type": "library",
+      "version": "v20231115014.0.0"
+    },
+    {
+      "bom-ref": "pkg:golang/go.mongodb.org/atlas-sdk/v20250312013@v20250312013.2.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/mongodb/atlas-sdk-go.git"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/go.mongodb.org/atlas-sdk/v20250312013@v20250312013.2.0"
+        }
+      ],
+      "group": "go.mongodb.org/atlas-sdk",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "v20250312013",
+      "purl": "pkg:golang/go.mongodb.org/atlas-sdk/v20250312013@v20250312013.2.0",
+      "type": "library",
+      "version": "v20250312013.2.0"
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/oauth2@v0.34.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://go.googlesource.com/oauth2"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/golang.org/x/oauth2@v0.34.0"
+        }
+      ],
+      "group": "golang.org/x",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ],
+      "name": "oauth2",
+      "purl": "pkg:golang/golang.org/x/oauth2@v0.34.0",
+      "type": "library",
+      "version": "v0.34.0"
+    },
+    {
+      "bom-ref": "pkg:golang/gopkg.in/validator.v2@v2.0.1",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://gopkg.in/validator.v2"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/gopkg.in/validator.v2@v2.0.1"
+        }
+      ],
+      "group": "gopkg.in",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "validator.v2",
+      "purl": "pkg:golang/gopkg.in/validator.v2@v2.0.1",
+      "type": "library",
+      "version": "v2.0.1"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:golang/../vendor/go.mongodb.org/atlas-sdk/v20231115014@%28devel%29"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws-cloudformation/cloudformation-cli-go-plugin@v1.2.0"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws/aws-lambda-go@v1.37.0"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.17"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.17"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/cloudformation@v1.71.5"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/secretsmanager@v1.41.1"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.1"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go@v1.55.8"
+    },
+    {
+      "ref": "pkg:golang/github.com/aws/smithy-go@v1.24.0"
+    },
+    {
+      "ref": "pkg:golang/github.com/google/go-querystring@v1.1.0"
+    },
+    {
+      "ref": "pkg:golang/github.com/jmespath/go-jmespath@v0.4.0"
+    },
+    {
+      "ref": "pkg:golang/github.com/mongodb-forks/digest@v1.1.0"
+    },
+    {
+      "ref": "pkg:golang/github.com/mongodb-labs/go-client-mongodb-atlas-app-services@v1.0.0"
+    },
+    {
+      "ref": "pkg:golang/github.com/rs/xid@v1.6.0"
+    },
+    {
+      "ref": "pkg:golang/github.com/segmentio/ksuid@v1.0.4"
+    },
+    {
+      "ref": "pkg:golang/go.mongodb.org/atlas-sdk/v20231115002@v20231115002.1.0"
+    },
+    {
+      "ref": "pkg:golang/go.mongodb.org/atlas-sdk/v20231115014@v20231115014.0.0"
+    },
+    {
+      "ref": "pkg:golang/go.mongodb.org/atlas-sdk/v20250312013@v20250312013.2.0"
+    },
+    {
+      "ref": "pkg:golang/go.mongodb.org/atlas@v0.37.0"
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/oauth2@v0.34.0"
+    },
+    {
+      "ref": "pkg:golang/gopkg.in/validator.v2@v2.0.1"
+    }
+  ],
+  "metadata": {
+    "timestamp": "2026-02-17T03:57:26.558253+00:00",
+    "tools": [
+      {
+        "externalReferences": [
+          {
+            "type": "build-system",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/actions"
+          },
+          {
+            "type": "distribution",
+            "url": "https://pypi.org/project/cyclonedx-python-lib/"
+          },
+          {
+            "type": "documentation",
+            "url": "https://cyclonedx-python-library.readthedocs.io/"
+          },
+          {
+            "type": "issue-tracker",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/issues"
+          },
+          {
+            "type": "license",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/LICENSE"
+          },
+          {
+            "type": "release-notes",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/CHANGELOG.md"
+          },
+          {
+            "type": "vcs",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib"
+          },
+          {
+            "type": "website",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/#readme"
+          }
+        ],
+        "name": "cyclonedx-python-lib",
+        "vendor": "CycloneDX",
+        "version": "6.4.4"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:8af39cbc-beb5-4d83-8960-07e8f02b95a8",
+  "version": 1,
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "vulnerabilities": []
+}

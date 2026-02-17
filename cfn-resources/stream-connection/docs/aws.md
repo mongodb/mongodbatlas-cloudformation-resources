@@ -10,7 +10,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#rolearn" title="RoleArn">RoleArn</a>" : <i>String</i>
+    "<a href="#rolearn" title="RoleArn">RoleArn</a>" : <i>String</i>,
+    "<a href="#testbucket" title="TestBucket">TestBucket</a>" : <i>String</i>
 }
 </pre>
 
@@ -18,6 +19,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 <a href="#rolearn" title="RoleArn">RoleArn</a>: <i>String</i>
+<a href="#testbucket" title="TestBucket">TestBucket</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -27,6 +29,16 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Amazon Resource Name (ARN) of the IAM role for AWS Lambda connection.
 
 _Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### TestBucket
+
+The name of an S3 bucket used to check authorization of the passed-in IAM role ARN.
+
+_Required_: No
 
 _Type_: String
 

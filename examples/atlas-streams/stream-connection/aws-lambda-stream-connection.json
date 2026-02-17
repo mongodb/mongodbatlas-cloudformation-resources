@@ -27,6 +27,25 @@
       "Type": "String",
       "Description": "Amazon Resource Name (ARN) of the IAM role that Stream Processing will assume to access AWS Lambda. The role must have permissions to invoke Lambda functions.",
       "AllowedPattern": "^arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9+=,.@_-]+$"
+    },
+    "TestBucket": {
+      "Type": "String",
+      "Description": "Optional S3 bucket name used to validate the IAM role permissions. Atlas will attempt to access this bucket to verify the role has proper S3 permissions.",
+      "Default": ""
+    }
+  },
+  "Conditions": {
+    "HasTestBucket": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "TestBucket"
+            },
+            ""
+          ]
+        }
+      ]
     }
   },
   "Mappings": {},
@@ -50,6 +69,9 @@
         "Aws": {
           "RoleArn": {
             "Ref": "LambdaRoleArn"
+          },
+          "TestBucket": {
+            "Ref": "TestBucket"
           }
         }
       }
@@ -71,7 +93,13 @@
       "Value": {
         "Ref": "LambdaRoleArn"
       }
+    },
+    "TestBucket": {
+      "Description": "S3 bucket used for IAM role validation (if provided)",
+      "Value": {
+        "Ref": "TestBucket"
+      },
+      "Condition": "HasTestBucket"
     }
   }
 }
-

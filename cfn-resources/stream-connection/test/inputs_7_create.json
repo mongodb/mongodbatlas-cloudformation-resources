@@ -1,0 +1,24 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ConnectionName": "ConnectionNameKafkaSSL",
+  "Type": "Kafka",
+  "BootstrapServers": "kafka.example.com:9092",
+  "Authentication": {
+    "Mechanism": "PLAIN",
+    "Username": "testuser",
+    "Password": "testpass",
+    "SslCertificate": "-----BEGIN CERTIFICATE-----\nMIIDXTCCAkWgAwIBAgIJAKL0UG+mRKSz\n-----END CERTIFICATE-----",
+    "SslKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC\n-----END PRIVATE KEY-----",
+    "SslKeyPassword": "keypassword"
+  },
+  "Security": {
+    "Protocol": "SSL"
+  },
+  "Networking": {
+    "Access": {
+      "Type": "PUBLIC"
+    }
+  }
+}

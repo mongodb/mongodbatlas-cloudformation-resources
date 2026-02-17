@@ -1,7 +1,7 @@
 SSDLC Compliance Report: CloudFormation MongoDB::Atlas::search-deployment 1.1.0
 =================================================================
 
-- Release Creator: ParthasarathyV
+- Release Creator: rakhul-mongo
 - Created On:       2026-02-17
 
 Overview:

@@ -1,0 +1,24 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ConnectionName": "ConnectionNameKafkaSSL",
+  "Type": "Kafka",
+  "BootstrapServers": "kafka.example.com:9092",
+  "Authentication": {
+    "Mechanism": "SCRAM-256",
+    "Username": "updateduser",
+    "Password": "updatedpass",
+    "SslCertificate": "-----BEGIN CERTIFICATE-----\nMIIDXTCCAkWgAwIBAgIJAKL0UPDATED\n-----END CERTIFICATE-----",
+    "SslKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9UPDATED\n-----END PRIVATE KEY-----",
+    "SslKeyPassword": "newkeypassword"
+  },
+  "Security": {
+    "Protocol": "SSL"
+  },
+  "Networking": {
+    "Access": {
+      "Type": "PUBLIC"
+    }
+  }
+}

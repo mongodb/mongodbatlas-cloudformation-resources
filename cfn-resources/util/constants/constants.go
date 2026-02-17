@@ -170,4 +170,7 @@ const (
 	AuthorizedEmail         = "AuthorizedEmail"
 	AuthorizedUserFirstName = "AuthorizedUserFirstName"
 	AuthorizedUserLastName  = "AuthorizedUserLastName"
+
+	GrantType      = "GrantType"
+	ExpirationTime = "ExpirationTime"
 )

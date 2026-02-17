@@ -1,0 +1,7 @@
+{
+  "ProjectId": "",
+  "ClusterName": "",
+  "Profile": "default",
+  "GrantType": "CLUSTER_DATABASE_LOGS",
+  "ExpirationTime": "2025-09-01T12:00:00Z"
+}

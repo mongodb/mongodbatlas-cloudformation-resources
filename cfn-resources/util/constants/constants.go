@@ -181,4 +181,7 @@ const (
 	LogTypes      = "LogTypes"
 
 	SecretExpiresAfterHours = "SecretExpiresAfterHours"
+
+	GrantType      = "GrantType"
+	ExpirationTime = "ExpirationTime"
 )

@@ -1,0 +1,10 @@
+{
+  "OrgId": "",
+  "ClientId": "",
+  "ProjectId": "",
+  "Roles": [
+    "GROUP_READ_ONLY",
+    "GROUP_DATA_ACCESS_ADMIN"
+  ],
+  "Profile": "default"
+}

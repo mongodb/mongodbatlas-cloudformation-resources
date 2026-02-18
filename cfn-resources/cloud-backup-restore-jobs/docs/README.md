@@ -229,3 +229,15 @@ Timestamp in ISO 8601 date and time format in UTC when the snapshot associated t
 
 One or more links to sub-resources and/or related resources.
 
+#### DesiredTimestamp
+
+BSON timestamp that indicates when the checkpoint token entry in the oplog occurred.
+
+#### PrivateDownloadDeliveryUrls
+
+One or more URLs that point to the compressed snapshot files for manual download via private endpoints.
+
+#### Components
+
+Information on the restore job for each replica set in the sharded cluster.
+

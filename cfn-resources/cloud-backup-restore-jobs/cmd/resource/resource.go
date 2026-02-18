@@ -20,11 +20,11 @@ import (
 	"fmt"
 	"time"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -105,7 +105,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Id = serverless.Id
 	} else {
 		params := paramsServer(currentModel)
-		server, resp, err := client.Atlas20231115014.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
+		server, resp, err := client.AtlasSDK.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -205,7 +205,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	_, resp, err := client.Atlas20231115014.CloudBackupsApi.CancelBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id).Execute()
+	resp, err := client.AtlasSDK.CloudBackupsApi.CancelBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -250,7 +250,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			}
 		}
 	} else {
-		server, resp, err := client.Atlas20231115014.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		server, resp, err := client.AtlasSDK.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -362,7 +362,7 @@ func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *ha
 		}
 		updateModelServerless(model, serverless)
 	} else {
-		server, resp, err := client.Atlas20231115014.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
+		server, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
@@ -372,22 +372,7 @@ func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *ha
 	return nil
 }
 
-func updateModelServerless(model *Model, job *admin20231115014.ServerlessBackupRestoreJob) {
-	model.TargetClusterName = &job.TargetClusterName
-	model.DeliveryType = &job.DeliveryType
-	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
-	model.Id = job.Id
-	model.FinishedAt = util.TimePtrToStringPtr(job.FinishedAt)
-	model.SnapshotId = job.SnapshotId
-	model.TargetProjectId = &job.TargetGroupId
-	model.Timestamp = util.TimePtrToStringPtr(job.Timestamp)
-	model.Cancelled = job.Cancelled
-	model.Expired = job.Expired
-	model.DeliveryUrl = job.GetDeliveryUrl()
-	model.Links = flattenLinks(job.GetLinks())
-}
-
-func updateModelServer(model *Model, job *admin20231115014.DiskBackupSnapshotRestoreJob) {
+func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
 	model.TargetClusterName = job.TargetClusterName
 	model.DeliveryType = &job.DeliveryType
 	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
@@ -401,9 +386,35 @@ func updateModelServer(model *Model, job *admin20231115014.DiskBackupSnapshotRes
 	model.Expired = job.Expired
 	model.DeliveryUrl = job.GetDeliveryUrl()
 	model.Links = flattenLinks(job.GetLinks())
+	model.DesiredTimestamp = flattenDesiredTimestamp(job.DesiredTimestamp)
+	model.PrivateDownloadDeliveryUrls = flattenPrivateDownloadDeliveryUrls(job.PrivateDownloadDeliveryUrls)
+	model.Components = flattenComponents(job.Components)
 }
 
-func flattenLinks(linksResult []admin20231115014.Link) []Links {
+func updateModelServerless(model *Model, job *admin20231115014.ServerlessBackupRestoreJob) {
+	if job.TargetClusterName != "" {
+		model.TargetClusterName = &job.TargetClusterName
+	}
+	model.DeliveryType = &job.DeliveryType
+	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
+	model.Id = job.Id
+	model.FinishedAt = util.TimePtrToStringPtr(job.FinishedAt)
+	model.SnapshotId = job.SnapshotId
+	if job.TargetGroupId != "" {
+		model.TargetProjectId = &job.TargetGroupId
+	}
+	model.Timestamp = util.TimePtrToStringPtr(job.Timestamp)
+	model.Cancelled = job.Cancelled
+	model.Failed = job.Failed
+	model.Expired = job.Expired
+	model.DeliveryUrl = job.GetDeliveryUrl()
+	model.Links = flattenLinksV20231115014(job.GetLinks())
+	model.DesiredTimestamp = nil
+	model.PrivateDownloadDeliveryUrls = nil
+	model.Components = nil
+}
+
+func flattenLinks(linksResult []admin.Link) []Links {
 	links := make([]Links, 0)
 	for _, link := range linksResult {
 		var lin Links
@@ -414,8 +425,60 @@ func flattenLinks(linksResult []admin20231115014.Link) []Links {
 	return links
 }
 
-func paramsServer(model *Model) *admin20231115014.DiskBackupSnapshotRestoreJob {
-	return &admin20231115014.DiskBackupSnapshotRestoreJob{
+func flattenLinksV20231115014(linksResult []admin20231115014.Link) []Links {
+	links := make([]Links, 0)
+	for _, link := range linksResult {
+		var lin Links
+		lin.Href = link.Href
+		lin.Rel = link.Rel
+		links = append(links, lin)
+	}
+	return links
+}
+
+func flattenDesiredTimestamp(timestamp *admin.ApiBSONTimestamp) *DesiredTimestamp {
+	if timestamp == nil {
+		return nil
+	}
+	return &DesiredTimestamp{
+		Date:      util.TimePtrToStringPtr(timestamp.Date),
+		Increment: timestamp.Increment,
+	}
+}
+
+func flattenPrivateDownloadDeliveryUrls(urls *[]admin.ApiPrivateDownloadDeliveryUrl) []PrivateDownloadDeliveryUrl {
+	if urls == nil || len(*urls) == 0 {
+		return nil
+	}
+
+	result := make([]PrivateDownloadDeliveryUrl, 0, len(*urls))
+	for _, url := range *urls {
+		result = append(result, PrivateDownloadDeliveryUrl{
+			DeliveryUrl: url.DeliveryUrl,
+			EndpointId:  url.EndpointId,
+		})
+	}
+	return result
+}
+
+func flattenComponents(components *[]admin.DiskBackupRestoreMember) []Component {
+	if components == nil || len(*components) == 0 {
+		return nil
+	}
+
+	result := make([]Component, 0, len(*components))
+	for _, comp := range *components {
+		result = append(result, Component{
+			DownloadUrl:                 comp.DownloadUrl,
+			ReplicaSetName:              comp.ReplicaSetName,
+			PrivateDownloadDeliveryUrls: flattenPrivateDownloadDeliveryUrls(comp.PrivateDownloadDeliveryUrls),
+		})
+	}
+	return result
+}
+
+func paramsServer(model *Model) *admin.DiskBackupSnapshotRestoreJob {
+	return &admin.DiskBackupSnapshotRestoreJob{
 		SnapshotId:            model.SnapshotId,
 		DeliveryType:          *model.DeliveryType,
 		TargetClusterName:     model.TargetClusterName,
@@ -427,13 +490,18 @@ func paramsServer(model *Model) *admin20231115014.DiskBackupSnapshotRestoreJob {
 }
 
 func paramsServerless(model *Model) *admin20231115014.ServerlessBackupRestoreJob {
-	return &admin20231115014.ServerlessBackupRestoreJob{
+	params := &admin20231115014.ServerlessBackupRestoreJob{
 		SnapshotId:            model.SnapshotId,
 		DeliveryType:          *model.DeliveryType,
-		TargetClusterName:     *model.TargetClusterName,
-		TargetGroupId:         *model.TargetProjectId,
 		OplogTs:               util.StrPtrToIntPtr(model.OpLogTs),
 		OplogInc:              util.StrPtrToIntPtr(model.OpLogInc),
 		PointInTimeUTCSeconds: model.PointInTimeUtcSeconds,
 	}
+	if model.TargetClusterName != nil {
+		params.TargetClusterName = *model.TargetClusterName
+	}
+	if model.TargetProjectId != nil {
+		params.TargetGroupId = *model.TargetProjectId
+	}
+	return params
 }

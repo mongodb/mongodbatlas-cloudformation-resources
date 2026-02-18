@@ -45,6 +45,9 @@
           "Ref": "ProjectId"
         },
         "InstanceName": {
+          "Ref": "InstanceName"
+        },
+        "InstanceType": {
           "Ref": "InstanceType"
         },
         "Profile": {

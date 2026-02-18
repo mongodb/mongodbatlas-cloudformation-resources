@@ -20,6 +20,59 @@
         }
       },
       "additionalProperties": false
+    },
+    "DesiredTimestamp": {
+      "type": "object",
+      "description": "BSON timestamp that indicates when the checkpoint token entry in the oplog occurred.",
+      "properties": {
+        "Date": {
+          "type": "string",
+          "description": "Date and time when the oplog recorded this database operation."
+        },
+        "Increment": {
+          "type": "integer",
+          "description": "Order of the database operation that the oplog recorded at specific date and time."
+        }
+      },
+      "additionalProperties": false
+    },
+    "PrivateDownloadDeliveryUrl": {
+      "type": "object",
+      "description": "Private endpoint delivery URL for manual download.",
+      "properties": {
+        "DeliveryUrl": {
+          "type": "string",
+          "description": "One URL that points to the compressed snapshot files for manual download."
+        },
+        "EndpointId": {
+          "type": "string",
+          "description": "Unique identifier of the private endpoint."
+        }
+      },
+      "additionalProperties": false
+    },
+    "Component": {
+      "type": "object",
+      "description": "Information on the restore job for each replica set in the sharded cluster.",
+      "properties": {
+        "DownloadUrl": {
+          "type": "string",
+          "description": "One URL that points to the compressed snapshot files for this replica set."
+        },
+        "ReplicaSetName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the replica set."
+        },
+        "PrivateDownloadDeliveryUrls": {
+          "type": "array",
+          "description": "Private endpoint URLs for this replica set.",
+          "insertionOrder": false,
+          "items": {
+            "$ref": "#/definitions/PrivateDownloadDeliveryUrl"
+          }
+        }
+      },
+      "additionalProperties": false
     }
   },
   "properties": {
@@ -105,6 +158,26 @@
         "additionalProperties": false
       }
     },
+    "DesiredTimestamp": {
+      "description": "BSON timestamp that indicates when the checkpoint token entry in the oplog occurred.",
+      "$ref": "#/definitions/DesiredTimestamp"
+    },
+    "PrivateDownloadDeliveryUrls": {
+      "description": "One or more URLs that point to the compressed snapshot files for manual download via private endpoints.",
+      "type": "array",
+      "insertionOrder": false,
+      "items": {
+        "$ref": "#/definitions/PrivateDownloadDeliveryUrl"
+      }
+    },
+    "Components": {
+      "description": "Information on the restore job for each replica set in the sharded cluster.",
+      "type": "array",
+      "insertionOrder": false,
+      "items": {
+        "$ref": "#/definitions/Component"
+      }
+    },
     "OpLogTs": {
       "description": "Timestamp in the number of seconds that have elapsed since the UNIX epoch from which to you want to restore this snapshot. This is the first part of an Oplog timestamp.",
       "type": "string"
@@ -162,7 +235,10 @@
     "/properties/ExpiresAt",
     "/properties/FinishedAt",
     "/properties/Timestamp",
-    "/properties/Links"
+    "/properties/Links",
+    "/properties/DesiredTimestamp",
+    "/properties/PrivateDownloadDeliveryUrls",
+    "/properties/Components"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",

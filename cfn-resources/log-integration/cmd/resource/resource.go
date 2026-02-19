@@ -52,7 +52,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	return HandleUpdate(&req, client, model), nil
+	return HandleUpdate(&req, client, prevModel, model), nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.

@@ -55,7 +55,11 @@
     "LogTypes"
   ],
   "readOnlyProperties": ["/properties/IntegrationId"],
-  "createOnlyProperties": ["/properties/ProjectId", "/properties/Profile"],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile",
+    "/properties/Type"
+  ],
   "primaryIdentifier": [
     "/properties/ProjectId",
     "/properties/IntegrationId",

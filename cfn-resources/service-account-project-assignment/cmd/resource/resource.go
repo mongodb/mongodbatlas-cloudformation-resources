@@ -23,14 +23,16 @@ import (
 )
 
 var (
-	createUpdateDeleteRequiredFields = []string{constants.ProjectID, constants.ClientID}
-	readRequiredFields               = []string{constants.ProjectID, constants.ClientID}
-	listRequiredFields               = []string{constants.OrgID, constants.ClientID}
+	createRequiredFields = []string{constants.ProjectID, constants.ClientID, constants.Roles}
+	updateRequiredFields = []string{constants.ProjectID, constants.ClientID, constants.Roles}
+	deleteRequiredFields = []string{constants.ProjectID, constants.ClientID}
+	readRequiredFields   = []string{constants.ProjectID, constants.ClientID}
+	listRequiredFields   = []string{constants.OrgID, constants.ClientID}
 )
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := setupRequest(req, model, createUpdateDeleteRequiredFields)
+	client, setupErr := setupRequest(req, model, createRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
@@ -48,7 +50,7 @@ func Read(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := setupRequest(req, model, createUpdateDeleteRequiredFields)
+	client, setupErr := setupRequest(req, model, updateRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}
@@ -57,7 +59,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := setupRequest(req, model, createUpdateDeleteRequiredFields)
+	client, setupErr := setupRequest(req, model, deleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
 	}

@@ -65,7 +65,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### ProjectId
 
-Unique 24-hexadecimal digit string that identifies your project.
+Unique identifier of the Atlas project to which the user belongs.
 
 _Required_: Yes
 

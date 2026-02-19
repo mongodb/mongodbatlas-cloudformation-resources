@@ -179,4 +179,6 @@ const (
 	IamRoleID     = "IamRoleId"
 	PrefixPath    = "PrefixPath"
 	LogTypes      = "LogTypes"
+
+	SecretExpiresAfterHours = "SecretExpiresAfterHours"
 )

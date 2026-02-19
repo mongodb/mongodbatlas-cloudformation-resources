@@ -17,15 +17,16 @@ package resource
 import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
 
 var (
-	CreateRequiredFields = []string{"ProjectId", "Name", "Description", "Roles"}
-	ReadRequiredFields   = []string{"ProjectId", "ClientId"}
-	UpdateRequiredFields = []string{"ProjectId", "ClientId"}
-	DeleteRequiredFields = []string{"ProjectId", "ClientId"}
-	ListRequiredFields   = []string{"ProjectId"}
+	CreateRequiredFields = []string{constants.ProjectID, constants.Name, constants.Description, constants.Roles, constants.SecretExpiresAfterHours}
+	ReadRequiredFields   = []string{constants.ProjectID, constants.ClientID}
+	UpdateRequiredFields = []string{constants.ProjectID, constants.ClientID}
+	DeleteRequiredFields = []string{constants.ProjectID, constants.ClientID}
+	ListRequiredFields   = []string{constants.ProjectID}
 )
 
 func setupRequest(req handler.Request, model *Model, requiredFields []string) (*util.MongoDBClient, *handler.ProgressEvent) {

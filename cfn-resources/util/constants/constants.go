@@ -172,4 +172,5 @@ const (
 	AuthorizedUserLastName  = "AuthorizedUserLastName"
 
 	ClientID = "ClientId"
+	SecretID = "SecretId"
 )

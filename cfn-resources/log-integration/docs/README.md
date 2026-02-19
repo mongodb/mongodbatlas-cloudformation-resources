@@ -1,6 +1,6 @@
 # MongoDB::Atlas::LogIntegration
 
-The log integration resource provides access to push-based log export configurations for MongoDB Atlas. The resource allows you to create, edit and delete log export integrations to AWS S3 buckets. The resource requires your Project ID.
+The log integration resource provides access to push-based log export configurations for MongoDB Atlas. The resource allows you to create, edit and delete log export integrations (e.g. to cloud storage or log services). This release supports S3 integration; additional integration types will be added as the API supports them. The resource requires your Project ID.
 
 ## Syntax
 
@@ -74,7 +74,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### BucketName
 
-Human-readable label that identifies the S3 bucket name for storing log files.
+Human-readable label that identifies the bucket (or storage container) name for storing log files.
 
 _Required_: Yes
 
@@ -94,7 +94,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### PrefixPath
 
-S3 directory path prefix where the log files will be stored. MongoDB Cloud will add further sub-directories based on the log type.
+Path prefix where log files will be stored. MongoDB Cloud adds further sub-directories based on the log type.
 
 _Required_: Yes
 
@@ -114,7 +114,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### LogTypes
 
-Array of log types to export to S3. Valid values: MONGOD, MONGOS, MONGOD_AUDIT, MONGOS_AUDIT.
+Array of log types to export. Valid values depend on the integration type (e.g. MONGOD, MONGOS, MONGOD_AUDIT, MONGOS_AUDIT for S3).
 
 _Required_: Yes
 

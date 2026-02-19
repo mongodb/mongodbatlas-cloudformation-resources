@@ -171,6 +171,9 @@ const (
 	AuthorizedUserFirstName = "AuthorizedUserFirstName"
 	AuthorizedUserLastName  = "AuthorizedUserLastName"
 
+	ClientID = "ClientId"
+	SecretID = "SecretId"
+
 	GrantType      = "GrantType"
 	ExpirationTime = "ExpirationTime"
 )

@@ -405,6 +405,31 @@
       "version": "v1.0.4"
     },
     {
+      "bom-ref": "pkg:golang/github.com/spf13/cast@v1.10.0",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/spf13/cast"
+        },
+        {
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/spf13/cast@v1.10.0"
+        }
+      ],
+      "group": "github.com/spf13",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ],
+      "name": "cast",
+      "purl": "pkg:golang/github.com/spf13/cast@v1.10.0",
+      "type": "library",
+      "version": "v1.10.0"
+    },
+    {
       "bom-ref": "pkg:golang/go.mongodb.org/atlas@v0.37.0",
       "externalReferences": [
         {
@@ -605,6 +630,9 @@
       "ref": "pkg:golang/github.com/segmentio/ksuid@v1.0.4"
     },
     {
+      "ref": "pkg:golang/github.com/spf13/cast@v1.10.0"
+    },
+    {
       "ref": "pkg:golang/go.mongodb.org/atlas-sdk/v20231115002@v20231115002.1.0"
     },
     {
@@ -624,7 +652,7 @@
     }
   ],
   "metadata": {
-    "timestamp": "2026-02-17T08:55:47.004341+00:00",
+    "timestamp": "2026-02-18T05:34:00.577089+00:00",
     "tools": [
       {
         "externalReferences": [
@@ -667,7 +695,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:e5db676a-8f14-42ec-a49e-cfb407a36173",
+  "serialNumber": "urn:uuid:21506d83-0cee-4b2c-8f37-4493776742d3",
   "version": 1,
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",

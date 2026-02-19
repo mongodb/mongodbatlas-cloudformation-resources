@@ -79,6 +79,7 @@ jobs:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
           MONGODB_ATLAS_ORG_OWNER_ID: ${{ github.event.inputs.resourceName=='organization' && secrets.ATLAS_ORG_OWNER_ID || secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }}
           ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
+          MONGODB_ATLAS_FEDERATION_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
           MONGODB_ATLAS_PROFILE: ${{ env.MONGODB_ATLAS_PROFILE }}
 
           # LDAP config

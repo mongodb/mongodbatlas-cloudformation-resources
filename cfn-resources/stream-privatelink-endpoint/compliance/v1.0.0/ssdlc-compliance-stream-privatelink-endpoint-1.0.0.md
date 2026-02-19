@@ -2,12 +2,12 @@ SSDLC Compliance Report: CloudFormation MongoDB::Atlas::stream-privatelink-endpo
 =================================================================
 
 - Release Creator: rakhul-mongo
-- Created On:       2026-02-18
+- Created On:       2026-02-19
 
 Overview:
 
 - **Product and Release Name**
-  - CloudFormation MongoDB::Atlas::stream-privatelink-endpoint 1.0.0, 2026-02-18.
+  - CloudFormation MongoDB::Atlas::stream-privatelink-endpoint 1.0.0, 2026-02-19.
 
 - **Process Document**
   - https://www.mongodb.com/blog/post/how-mongodb-protects-against-supply-chain-vulnerabilities

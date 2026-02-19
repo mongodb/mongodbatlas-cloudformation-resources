@@ -171,7 +171,7 @@ const (
 	AuthorizedUserFirstName = "AuthorizedUserFirstName"
 	AuthorizedUserLastName  = "AuthorizedUserLastName"
 
-	ClientID = "ClientId"
-	SecretID = "SecretId"
+	ClientID                = "ClientId"
+	SecretID                = "SecretId"
 	SecretExpiresAfterHours = "SecretExpiresAfterHours"
 )

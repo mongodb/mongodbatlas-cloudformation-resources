@@ -173,4 +173,5 @@ const (
 
 	ClientID = "ClientId"
 	SecretID = "SecretId"
+	SecretExpiresAfterHours = "SecretExpiresAfterHours"
 )

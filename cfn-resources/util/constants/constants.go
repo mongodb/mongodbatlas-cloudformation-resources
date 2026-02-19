@@ -170,5 +170,7 @@ const (
 	AuthorizedEmail         = "AuthorizedEmail"
 	AuthorizedUserFirstName = "AuthorizedUserFirstName"
 	AuthorizedUserLastName  = "AuthorizedUserLastName"
-	ClientID                = "ClientId"
+
+	ClientID = "ClientId"
+	SecretID = "SecretId"
 )

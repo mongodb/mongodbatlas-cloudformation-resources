@@ -1,13 +1,13 @@
-SSDLC Compliance Report: CloudFormation MongoDB::Atlas::stream-privatelink-endpoint 1.0.0
+SSDLC Compliance Report: CloudFormation MongoDB::Atlas::federated-settings-org-role-mapping 2.1.0
 =================================================================
 
 - Release Creator: rakhul-mongo
-- Created On:       2026-02-19
+- Created On:       2026-02-18
 
 Overview:
 
 - **Product and Release Name**
-  - CloudFormation MongoDB::Atlas::stream-privatelink-endpoint 1.0.0, 2026-02-19.
+  - CloudFormation MongoDB::Atlas::federated-settings-org-role-mapping 2.1.0, 2026-02-18.
 
 - **Process Document**
   - https://www.mongodb.com/blog/post/how-mongodb-protects-against-supply-chain-vulnerabilities
@@ -17,7 +17,7 @@ Overview:
 
 - **Dependency Information**
   - See SBOM Lite manifests (CycloneDX in JSON format):
-      - https://github.com/mongodb/mongodbatlas-cloudformation-resources/cfn-resources/stream-privatelink-endpoint/compliance/v1.0.0/sbom.json
+      - https://github.com/mongodb/mongodbatlas-cloudformation-resources/cfn-resources/federated-settings-org-role-mapping/compliance/v2.1.0/sbom.json
 
 - **Security Testing Report**
   - Available as needed from Cloud Security.

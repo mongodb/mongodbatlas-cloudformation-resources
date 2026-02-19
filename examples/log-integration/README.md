@@ -21,10 +21,11 @@ Your LogIntegration Resource is ready to use.
 Note: Make sure you are providing appropriate values for:
 
 1. **ProjectId** (required) - Your MongoDB Atlas project ID
-2. **BucketName** (required) - S3 bucket name for log export
-3. **IamRoleId** (required) - 24-character hex string from Atlas Cloud Provider Access
-4. **PrefixPath** (optional) - S3 prefix path (default: "mongodb/logs")
-5. **LogType1** (required) - First log type to export (MONGOD, MONGOS, MONGOD_AUDIT, MONGOS_AUDIT)
-6. **LogType2** (optional) - Second log type to export
-7. **KmsKey** (optional) - AWS KMS key ARN for encryption
-8. **Profile** (optional) - Secret Manager profile name (default: "default")
+2. **Type** (required, create-only) - Log integration type; use `S3_LOG_EXPORT` for S3. This value cannot be changed after creation.
+3. **BucketName** (required) - S3 bucket name for log export
+4. **IamRoleId** (required) - 24-character hex string from Atlas Cloud Provider Access
+5. **PrefixPath** (optional) - S3 prefix path (default: "mongodb/logs")
+6. **LogType1** (required) - First log type to export (MONGOD, MONGOS, MONGOD_AUDIT, MONGOS_AUDIT)
+7. **LogType2** (optional) - Second log type to export
+8. **KmsKey** (optional) - AWS KMS key ARN for encryption
+9. **Profile** (optional) - Secret Manager profile name (default: "default")

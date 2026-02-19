@@ -26,6 +26,10 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
+    "RequirePrivateNetworking": {
+      "type": "boolean",
+      "description": "Indicates whether to do exports over PrivateLink as opposed to public IPs. Defaults to false."
+    },
     "Id": {
       "type": "string",
       "description": "Unique 24-hexadecimal character string that identifies the Amazon Web Services (AWS) Simple Storage Service (S3) export bucket.",

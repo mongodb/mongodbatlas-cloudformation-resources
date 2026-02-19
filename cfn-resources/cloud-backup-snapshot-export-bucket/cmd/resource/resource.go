@@ -19,12 +19,11 @@ import (
 	"errors"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 )
 
 const (
@@ -53,17 +52,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	params := &admin20231115002.DiskBackupSnapshotAWSExportBucket{
-		BucketName:    currentModel.BucketName,
-		CloudProvider: aws.String(constants.AWS),
-		IamRoleId:     currentModel.IamRoleID,
+	params := &admin.DiskBackupSnapshotExportBucketRequest{
+		BucketName:               currentModel.BucketName,
+		CloudProvider:            constants.AWS,
+		IamRoleId:                currentModel.IamRoleID,
+		RequirePrivateNetworking: currentModel.RequirePrivateNetworking,
 	}
-	output, resp, err := client.Atlas20231115002.CloudBackupsApi.CreateExportBucket(context.Background(), *currentModel.ProjectId, params).Execute()
+	output, resp, err := client.AtlasSDK.CloudBackupsApi.CreateExportBucket(context.Background(), *currentModel.ProjectId, params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.Id = output.Id
+	currentModel.Id = &output.Id
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -84,7 +84,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	output, resp, err := client.Atlas20231115002.CloudBackupsApi.GetExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	output, resp, err := client.AtlasSDK.CloudBackupsApi.GetExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -114,7 +114,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err := client.Atlas20231115002.CloudBackupsApi.DeleteExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	resp, err := client.AtlasSDK.CloudBackupsApi.DeleteExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -137,20 +137,22 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	output, resp, err := client.Atlas20231115002.CloudBackupsApi.ListExportBuckets(context.Background(), *currentModel.ProjectId).Execute()
+	output, resp, err := client.AtlasSDK.CloudBackupsApi.ListExportBuckets(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	resultList := make([]interface{}, 0)
+	resultList := make([]any, 0)
 
-	for i := range output.Results {
-		model := Model{
-			ProjectId: currentModel.ProjectId,
-			Profile:   currentModel.Profile,
+	if output.Results != nil {
+		for i := range *output.Results {
+			model := Model{
+				ProjectId: currentModel.ProjectId,
+				Profile:   currentModel.Profile,
+			}
+			model.updateModel(&(*output.Results)[i])
+			resultList = append(resultList, model)
 		}
-		model.updateModel(&output.Results[i])
-		resultList = append(resultList, model)
 	}
 
 	return handler.ProgressEvent{
@@ -160,8 +162,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func (m *Model) updateModel(bucket *admin20231115002.DiskBackupSnapshotAWSExportBucket) {
-	m.BucketName = bucket.BucketName
+func (m *Model) updateModel(bucket *admin.DiskBackupSnapshotExportBucketResponse) {
+	m.Id = &bucket.Id
+	m.BucketName = &bucket.BucketName
 	m.IamRoleID = bucket.IamRoleId
-	m.Id = bucket.Id
+	m.RequirePrivateNetworking = bucket.RequirePrivateNetworking
 }

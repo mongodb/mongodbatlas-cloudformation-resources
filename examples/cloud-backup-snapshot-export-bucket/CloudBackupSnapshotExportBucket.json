@@ -36,7 +36,8 @@
         },
         "Profile": {
           "Ref": "Profile"
-        }
+        },
+        "RequirePrivateNetworking": false
       }
     }
   },

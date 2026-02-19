@@ -16,6 +16,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#bucketname" title="BucketName">BucketName</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#iamroleid" title="IamRoleID">IamRoleID</a>" : <i>String</i>,
+        "<a href="#requireprivatenetworking" title="RequirePrivateNetworking">RequirePrivateNetworking</a>" : <i>Boolean</i>,
     }
 }
 </pre>
@@ -29,6 +30,7 @@ Properties:
     <a href="#bucketname" title="BucketName">BucketName</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#iamroleid" title="IamRoleID">IamRoleID</a>: <i>String</i>
+    <a href="#requireprivatenetworking" title="RequirePrivateNetworking">RequirePrivateNetworking</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
@@ -61,9 +63,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
@@ -77,11 +79,21 @@ _Required_: Yes
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### RequirePrivateNetworking
+
+Indicates whether to do exports over PrivateLink as opposed to public IPs. Defaults to false.
+
+_Required_: No
+
+_Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

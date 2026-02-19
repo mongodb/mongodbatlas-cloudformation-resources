@@ -9,41 +9,28 @@ Resources:
     Properties:
       MaxSessionDuration: 8400
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
               Service: resources.cloudformation.amazonaws.com
             Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                aws:SourceAccount:
+                  Ref: AWS::AccountId
+              StringLike:
+                aws:SourceArn:
+                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/MongoDB-Atlas-CloudBackupSnapshotExportBucket/*
       Path: "/"
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
-                - "secretsmanager:CreateSecret"
-                - "secretsmanager:DescribeSecret"
-                - "secretsmanager:GetSecretValue"
-                - "secretsmanager:PutSecretValue"
-                - "secretsmanager:UpdateSecretVersionStage"
-                - "ec2:CreateVpcEndpoint"
-                - "ec2:DeleteVpcEndpoints"
-                - "cloudformation:CreateResource"
-                - "cloudformation:DeleteResource"
-                - "cloudformation:GetResource"
-                - "cloudformation:GetResourceRequestStatus"
-                - "cloudformation:ListResources"
-                - "cloudformation:UpdateResource"
-                - "iam:AttachRolePolicy"
-                - "iam:CreateRole"
-                - "iam:DeleteRole"
-                - "iam:GetRole"
-                - "iam:GetRolePolicy"
-                - "iam:ListAttachedRolePolicies"
-                - "iam:ListRolePolicies"
-                - "iam:PutRolePolicy"
+                  - "secretsmanager:GetSecretValue"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

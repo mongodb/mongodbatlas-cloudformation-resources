@@ -321,6 +321,8 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
+        env:
+          MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
         run: |
           pushd cfn-resources/cloud-backup-restore-jobs
           make create-test-resources

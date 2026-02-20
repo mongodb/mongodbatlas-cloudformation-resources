@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"strconv"
 
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -57,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err := client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
+	_, resp, err := client.AtlasSDK.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -82,7 +82,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	info, resp, err := client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	info, resp, err := client.AtlasSDK.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -91,10 +91,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
+	if currentModel.AwsKmsConfig == nil {
+		currentModel.AwsKmsConfig = &AwsKmsConfig{}
+	}
 	currentModel.AwsKmsConfig.CustomerMasterKeyID = info.AwsKms.CustomerMasterKeyID
 	currentModel.AwsKmsConfig.Enabled = info.AwsKms.Enabled
 	currentModel.AwsKmsConfig.RoleID = info.AwsKms.RoleId
 	currentModel.AwsKmsConfig.Region = info.AwsKms.Region
+	currentModel.AwsKmsConfig.Valid = info.AwsKms.Valid
+	currentModel.AwsKmsConfig.RequirePrivateNetworking = info.AwsKms.RequirePrivateNetworking
+
+	currentModel.EnabledForSearchNodes = info.EnabledForSearchNodes
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -115,7 +122,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	info, resp, err := client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	info, resp, err := client.AtlasSDK.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -124,7 +131,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err = client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
+	_, resp, err = client.AtlasSDK.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -148,7 +155,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	info, resp, err := client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	info, resp, err := client.AtlasSDK.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -157,10 +164,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	params := &admin20231115002.EncryptionAtRest{
-		AwsKms: &admin20231115002.AWSKMSConfiguration{Enabled: aws.Bool(false)},
+	params := &admin.EncryptionAtRest{
+		AwsKms: &admin.AWSKMSConfiguration{Enabled: aws.Bool(false)},
 	}
-	_, resp, err = client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, params).Execute()
+	_, resp, err = client.AtlasSDK.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -175,7 +182,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func validateExist(info *admin20231115002.EncryptionAtRest) *handler.ProgressEvent {
+func validateExist(info *admin.EncryptionAtRest) *handler.ProgressEvent {
 	if info != nil && info.AwsKms != nil && aws.ToBool(info.AwsKms.Enabled) {
 		return nil
 	}
@@ -193,13 +200,22 @@ func randInt64() int64 {
 	return val.Int64()
 }
 
-func (m *Model) getParams() *admin20231115002.EncryptionAtRest {
-	return &admin20231115002.EncryptionAtRest{
-		AwsKms: &admin20231115002.AWSKMSConfiguration{
-			Enabled:             m.AwsKmsConfig.Enabled,
-			CustomerMasterKeyID: m.AwsKmsConfig.CustomerMasterKeyID,
-			RoleId:              m.AwsKmsConfig.RoleID,
-			Region:              m.AwsKmsConfig.Region,
-		},
+func (m *Model) getParams() *admin.EncryptionAtRest {
+	params := &admin.EncryptionAtRest{}
+
+	if m.EnabledForSearchNodes != nil {
+		params.EnabledForSearchNodes = m.EnabledForSearchNodes
 	}
+
+	if m.AwsKmsConfig != nil {
+		params.AwsKms = &admin.AWSKMSConfiguration{
+			Enabled:                  m.AwsKmsConfig.Enabled,
+			CustomerMasterKeyID:      m.AwsKmsConfig.CustomerMasterKeyID,
+			Region:                   m.AwsKmsConfig.Region,
+			RoleId:                   m.AwsKmsConfig.RoleID,
+			RequirePrivateNetworking: m.AwsKmsConfig.RequirePrivateNetworking,
+		}
+	}
+
+	return params
 }

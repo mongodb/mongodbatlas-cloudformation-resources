@@ -5,11 +5,11 @@ on:
       - master
   pull_request:
 env:
-  MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-  MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-  MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-  MONGODB_ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
-  MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
+  MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_QA }}
+  MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_QA }}
+  MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_QA }}
+  MONGODB_ATLAS_BASE_URL: https://cloud-qa.mongodb.com/
+  MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-qa-github-action
 jobs:
   change-detection:
     runs-on: ubuntu-latest
@@ -17,10 +17,10 @@ jobs:
       pull-requests: read
       repository-projects: read
     outputs:
-      cluster: ${{ steps.filter.outputs.cluster }}
-      flex-cluster: ${{ steps.filter.outputs.flex-cluster }}
-      project: ${{ steps.filter.outputs.project }}
-      search-deployment: ${{ steps.filter.outputs.search-deployment }}
+      cluster: ${{ steps.filter.outputs.cluster || true }}
+      flex-cluster: ${{ steps.filter.outputs.flex-cluster || true }}
+      project: ${{ steps.filter.outputs.project || true }}
+      search-deployment: ${{ steps.filter.outputs.search-deployment || true }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         if: ${{ github.event_name == 'push' }}

@@ -714,8 +714,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/service-account
           make create-test-resources

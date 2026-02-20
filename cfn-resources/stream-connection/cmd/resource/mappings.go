@@ -21,27 +21,21 @@ import (
 )
 
 func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel *Model) *Model {
-	var model *Model
+	model := new(Model)
 
 	if currentModel != nil {
-		model = currentModel
-		if model.WorkspaceName == nil && model.InstanceName != nil && *model.InstanceName != "" {
-			model.WorkspaceName = model.InstanceName
-		}
-	} else {
-		model = new(Model)
+		model.ProjectId = currentModel.ProjectId
+		model.Profile = currentModel.Profile
+		model.WorkspaceName = currentModel.WorkspaceName
+		model.InstanceName = currentModel.InstanceName
 	}
 
 	model.ConnectionName = streamsConn.Name
 	model.Type = streamsConn.Type
 	model.ClusterName = streamsConn.ClusterName
-	if streamsConn.ClusterGroupId != nil {
-		model.ClusterProjectId = streamsConn.ClusterGroupId
-	}
+	model.ClusterProjectId = streamsConn.ClusterGroupId
 	model.BootstrapServers = streamsConn.BootstrapServers
-	if streamsConn.Url != nil {
-		model.Url = streamsConn.Url
-	}
+	model.Url = streamsConn.Url
 
 	model.DbRoleToExecute = NewModelDBRoleToExecute(streamsConn.DbRoleToExecute)
 
@@ -62,6 +56,8 @@ func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 			Access: &Access{
 				Type:         streamsConn.Networking.Access.Type,
 				ConnectionId: streamsConn.Networking.Access.ConnectionId,
+				Name:         streamsConn.Networking.Access.Name,
+				TgwRouteId:   streamsConn.Networking.Access.TgwRouteId,
 			},
 		}
 	}
@@ -70,6 +66,31 @@ func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 		model.Aws = &Aws{
 			RoleArn: streamsConn.Aws.RoleArn,
 		}
+	}
+
+	// Schema Registry fields
+	if streamsConn.Provider != nil {
+		model.Provider = streamsConn.Provider
+	} else if currentModel != nil {
+		model.Provider = currentModel.Provider
+	}
+
+	if streamsConn.SchemaRegistryAuthentication != nil {
+		model.SchemaRegistryAuthentication = &SchemaRegistryAuthentication{
+			Type:     &streamsConn.SchemaRegistryAuthentication.Type,
+			Username: streamsConn.SchemaRegistryAuthentication.Username,
+		}
+	} else if currentModel != nil && currentModel.SchemaRegistryAuthentication != nil {
+		model.SchemaRegistryAuthentication = &SchemaRegistryAuthentication{
+			Type:     currentModel.SchemaRegistryAuthentication.Type,
+			Username: currentModel.SchemaRegistryAuthentication.Username,
+		}
+	}
+
+	if streamsConn.SchemaRegistryUrls != nil {
+		model.SchemaRegistryUrls = *streamsConn.SchemaRegistryUrls
+	} else if currentModel != nil {
+		model.SchemaRegistryUrls = currentModel.SchemaRegistryUrls
 	}
 
 	return model
@@ -145,6 +166,8 @@ func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
 				Access: &admin.StreamsKafkaNetworkingAccess{
 					Type:         model.Networking.Access.Type,
 					ConnectionId: model.Networking.Access.ConnectionId,
+					Name:         model.Networking.Access.Name,
+					TgwRouteId:   model.Networking.Access.TgwRouteId,
 				},
 			}
 		}
@@ -153,7 +176,8 @@ func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
 	if typeStr == AWSLambdaType {
 		if model.Aws != nil {
 			streamConnReq.Aws = &admin.StreamsAWSConnectionConfig{
-				RoleArn: model.Aws.RoleArn,
+				RoleArn:    model.Aws.RoleArn,
+				TestBucket: model.Aws.TestBucket,
 			}
 		}
 	}
@@ -163,6 +187,19 @@ func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
 		if model.Headers != nil {
 			streamConnReq.Headers = &model.Headers
 		}
+	}
+
+	// Schema Registry fields
+	streamConnReq.Provider = model.Provider
+	if model.SchemaRegistryAuthentication != nil {
+		streamConnReq.SchemaRegistryAuthentication = &admin.SchemaRegistryAuthentication{
+			Type:     util.SafeString(model.SchemaRegistryAuthentication.Type),
+			Username: model.SchemaRegistryAuthentication.Username,
+			Password: model.SchemaRegistryAuthentication.Password,
+		}
+	}
+	if len(model.SchemaRegistryUrls) > 0 {
+		streamConnReq.SchemaRegistryUrls = &model.SchemaRegistryUrls
 	}
 
 	return &streamConnReq
@@ -205,5 +242,8 @@ func newStreamsKafkaAuthentication(authenticationModel *StreamsKafkaAuthenticati
 		ClientSecret:              authenticationModel.ClientSecret,
 		Scope:                     authenticationModel.Scope,
 		SaslOauthbearerExtensions: authenticationModel.SaslOauthbearerExtensions,
+		SslCertificate:            authenticationModel.SslCertificate,
+		SslKey:                    authenticationModel.SslKey,
+		SslKeyPassword:            authenticationModel.SslKeyPassword,
 	}
 }

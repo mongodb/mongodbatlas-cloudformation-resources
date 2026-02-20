@@ -4,6 +4,14 @@ on:
     branches:
       - master
   pull_request:
+
+env:
+  MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+  MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+  MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+  MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+  MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+
 jobs:
   change-detection:
    runs-on: ubuntu-latest
@@ -140,12 +148,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/access-list-api-key
           make create-test-resources
@@ -178,12 +180,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/alert-configuration
           make create-test-resources
@@ -218,12 +214,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-         MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-         MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-         MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-         MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
-         MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
          pushd cfn-resources/api-key
          make create-test-resources
@@ -259,12 +249,6 @@ jobs:
     - run: pip install cloudformation-cli cloudformation-cli-go-plugin
     - name: Run the Contract test
       shell: bash
-      env:
-       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-       MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
       run: |
        pushd cfn-resources/auditing
        make create-test-resources
@@ -302,12 +286,6 @@ jobs:
     - run: pip install cloudformation-cli cloudformation-cli-go-plugin
     - name: Run the Contract test
       shell: bash
-      env:
-       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-       MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
       run: |
        cd cfn-resources/backup-compliance-policy
        make create-test-resources
@@ -343,13 +321,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
-          MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/cloud-backup-restore-jobs
           make create-test-resources
@@ -385,12 +356,7 @@ jobs:
       - name: Run the Contract test
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
           MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/cluster-outage-simulation
           make create-test-resources
@@ -425,12 +391,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/database-user
           make create-test-resources
@@ -465,12 +425,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/encryption-at-rest
           make create-test-resources
@@ -506,12 +460,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/federated-database-instance
           make create-test-resources
@@ -547,12 +495,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/federated-query-limit
           make create-test-resources
@@ -590,11 +532,6 @@ jobs:
       - name: Run the Contract test
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
           MONGODB_ATLAS_FEDERATION_SETTINGS_ID: ${{ vars.MONGODB_ATLAS_FEDERATION_SETTINGS_ID }}
         run: |
           cd cfn-resources/federated-settings-identity-provider
@@ -633,11 +570,6 @@ jobs:
       - name: Run the Contract test
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
           MONGODB_ATLAS_FEDERATION_SETTINGS_ID: ${{ vars.MONGODB_ATLAS_FEDERATION_SETTINGS_ID }}
         run: |
           cd cfn-resources/federated-settings-org-role-mapping
@@ -674,12 +606,6 @@ jobs:
     - run: pip install cloudformation-cli cloudformation-cli-go-plugin
     - name: Run the Contract test
       shell: bash
-      env:
-        MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-        MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-        MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-        MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-        MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
       run: |
         pushd cfn-resources/flex-cluster
         make create-test-resources
@@ -715,12 +641,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/online-archive
           make create-test-resources
@@ -756,11 +676,6 @@ jobs:
       - name: Run the Contract test
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
           MONGODB_ATLAS_ORG_OWNER_ID: ${{ vars.CLOUD_DEV_ORG_OWNER_ID }}
         run: |
           pushd cfn-resources/organization
@@ -798,10 +713,6 @@ jobs:
       - name: Run the Contract test
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/service-account
@@ -838,12 +749,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/service-account-secret
           make create-test-resources
@@ -879,12 +784,7 @@ jobs:
       - name: Run the Contract test
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
-          MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/private-endpoint-aws
           make create-test-resources
@@ -920,12 +820,7 @@ jobs:
       - name: Run the Contract test
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
-          MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/private-endpoint-service
           make create-test-resources
@@ -960,12 +855,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/privatelink-endpoint-service-data-federation-online-archive
           make create-test-resources
@@ -1002,12 +891,7 @@ jobs:
     - name: Run the Contract test
       shell: bash
       env:
-       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-       MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
        MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
-       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
       run: |
        pushd cfn-resources/project
        make create-test-resources
@@ -1043,12 +927,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/project-service-account-secret
           make create-test-resources
@@ -1083,12 +961,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/resource-policy
           make create-test-resources
@@ -1126,12 +998,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/search-deployment
           make create-test-resources
@@ -1166,12 +1032,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/search-index
           make create-test-resources
@@ -1206,12 +1066,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/stream-connection
           make create-test-resources
@@ -1249,12 +1103,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/stream-instance
           make create-test-resources
@@ -1287,12 +1135,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/stream-privatelink-endpoint
           make create-test-resources
@@ -1327,12 +1169,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/stream-processor
           make create-test-resources
@@ -1367,12 +1203,6 @@ jobs:
       - run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/stream-workspace
           make create-test-resources
@@ -1409,11 +1239,6 @@ jobs:
       - name: Run the Contract test
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
           WEBHOOK_CREATE_URL: ${{ vars.WEBHOOK_CREATE_URL }}
           WEBHOOK_UPDATE_URL: ${{ vars.WEBHOOK_UPDATE_URL }}
           WEBHOOK_UPDATE_SECRET: ${{ vars.WEBHOOK_UPDATE_SECRET }}

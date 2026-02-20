@@ -54,10 +54,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 	}
 }
 
-func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *Model, model *Model) handler.ProgressEvent {
-	if model.Type == nil && prevModel != nil {
-		model.Type = prevModel.Type
-	}
+func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	logIntegrationReq := NewLogIntegrationUpdateRequest(model)
 	logIntegrationResp, resp, err := client.AtlasSDK.PushBasedLogExportApi.UpdateGroupLogIntegration(context.Background(), *model.ProjectId, *model.IntegrationId, logIntegrationReq).Execute()
 	if err != nil {

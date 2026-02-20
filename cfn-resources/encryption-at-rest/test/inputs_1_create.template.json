@@ -1,10 +1,12 @@
 {
   "ProjectId": "ProjectId",
   "Profile": "default",
+  "EnabledForSearchNodes": "false",
   "AwsKmsConfig": {
     "CustomerMasterKeyID": "$KMS_KEY",
     "Enabled": "true",
     "Region": "$region",
-    "RoleID": "$KMS_ROLE"
+    "RoleID": "$KMS_ROLE",
+    "RequirePrivateNetworking": "false"
   }
 }

@@ -173,4 +173,7 @@ const (
 
 	ClientID = "ClientId"
 	SecretID = "SecretId"
+
+	GrantType      = "GrantType"
+	ExpirationTime = "ExpirationTime"
 )

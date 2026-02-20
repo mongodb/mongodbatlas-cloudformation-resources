@@ -24,9 +24,9 @@ on:
 jobs:
   publish:
     env: # env vars defined here can be referenced in env vars inside the steps
-      MONGODB_ATLAS_BASE_URL: ${{ github.event.inputs.resourceName=='organization' && 'https://cloud-dev.mongodb.com/' || 'https://cloud-qa.mongodb.com/' }}
       MONGODB_ATLAS_OUTPUT: 'json'
       # some resources need specific Atlas credentials and orgs
+      MONGODB_ATLAS_BASE_URL: ${{ github.event.inputs.resourceName=='organization' && 'https://cloud-dev.mongodb.com/' || 'https://cloud-qa.mongodb.com/' }}
       MONGODB_ATLAS_ORG_ID: ${{ github.event.inputs.resourceName=='organization' && secrets.CLOUD_DEV_ORG_ID || github.event.inputs.resourceName=='resource-policy' && vars.MONGODB_ATLAS_RP_ORG_ID_QA || vars.ATLAS_ORG_ID_QA }}
       MONGODB_ATLAS_PUBLIC_KEY: ${{ github.event.inputs.resourceName=='organization' && secrets.CLOUD_DEV_PUBLIC_KEY || github.event.inputs.resourceName=='resource-policy' && secrets.MONGODB_ATLAS_RP_PUBLIC_KEY_QA || secrets.ATLAS_PUBLIC_KEY_QA }}
       MONGODB_ATLAS_PRIVATE_KEY: ${{ github.event.inputs.resourceName=='organization' && secrets.CLOUD_DEV_PRIVATE_KEY || github.event.inputs.resourceName=='resource-policy' && secrets.MONGODB_ATLAS_RP_PRIVATE_KEY_QA || secrets.ATLAS_PRIVATE_KEY_QA }}

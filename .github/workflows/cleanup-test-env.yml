@@ -21,6 +21,21 @@ jobs:
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_BASE_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
           MONGODB_ATLAS_CLEAN_RETRY_ATTEMPTS: "1"
+  cleanup-dev-cfntest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: terraform-provider-mongodbatlas-checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: mongodb/terraform-provider-mongodbatlas
+      - name: Cleanup cloud-dev CFN Test
+        uses: ./.github/templates/clean-atlas-org
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_CFN_TEST_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_CFN_TEST_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_CFN_TEST_ORG_ID }}
+          MONGODB_ATLAS_BASE_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_CLEAN_RETRY_ATTEMPTS: "1"
   cleanup-qa-env-rp:
     runs-on: ubuntu-latest
     steps:

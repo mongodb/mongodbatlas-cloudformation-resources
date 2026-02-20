@@ -16,11 +16,25 @@
     },
     "Enabled": {
       "Type": "String",
-      "Description": "Flag that indicates whether Encryption at Rest using Customer Key Management is enabled for an Atlas project. To disable Encryption at Rest using Customer Key Management, pass only this parameter with a value of false. When you disable Encryption at Rest using Customer Key Management, Atlas removes the configuration details."
+      "Description": "Flag that indicates whether Encryption at Rest using Customer Key Management is enabled for an Atlas project. To disable Encryption at Rest using Customer Key Management, pass only this parameter with a value of false. When you disable Encryption at Rest using Customer Key Management, Atlas removes the configuration details.",
+      "Default": "true",
+      "AllowedValues": ["true", "false"]
     },
     "Region": {
       "Type": "String",
       "Description": "AWS region in which the AWS customer master key exists."
+    },
+    "EnabledForSearchNodes": {
+      "Type": "String",
+      "Description": "Flag that indicates whether Encryption at Rest for Dedicated Search Nodes is enabled in the specified project.",
+      "Default": "false",
+      "AllowedValues": ["true", "false"]
+    },
+    "RequirePrivateNetworking": {
+      "Type": "String",
+      "Description": "Enable connection to your Amazon Web Services (AWS) Key Management Service (KMS) over private networking.",
+      "Default": "false",
+      "AllowedValues": ["true", "false"]
     },
     "Profile": {
       "Type": "String",
@@ -39,7 +53,10 @@
         "Profile": {
           "Ref": "Profile"
         },
-        "AwsKms": {
+        "EnabledForSearchNodes": {
+          "Ref": "EnabledForSearchNodes"
+        },
+        "AwsKmsConfig": {
           "RoleID": {
             "Ref": "RoleID"
           },
@@ -51,6 +68,9 @@
           },
           "Region": {
             "Ref": "Region"
+          },
+          "RequirePrivateNetworking": {
+            "Ref": "RequirePrivateNetworking"
           }
         }
       }
@@ -67,6 +87,12 @@
       "Description": "encryption at rest identifier",
       "Value": {
         "Ref": "EncryptionAtRest"
+      }
+    },
+    "Valid": {
+      "Description": "Flag that indicates whether the AWS KMS encryption key can encrypt and decrypt data",
+      "Value": {
+        "Fn::GetAtt": ["EncryptionAtRest", "AwsKmsConfig.Valid"]
       }
     }
   }

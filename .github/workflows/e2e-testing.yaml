@@ -17,10 +17,10 @@ jobs:
       pull-requests: read
       repository-projects: read
     outputs:
-      cluster: ${{ steps.filter.outputs.cluster || true }}
-      flex-cluster: ${{ steps.filter.outputs.flex-cluster || true }}
-      project: ${{ steps.filter.outputs.project || true }}
-      search-deployment: ${{ steps.filter.outputs.search-deployment || true }}
+      cluster: 'true'
+      flex-cluster: 'true'
+      project: 'true'
+      search-deployment: 'true'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         if: ${{ github.event_name == 'push' }}

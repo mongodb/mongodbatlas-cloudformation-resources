@@ -7,7 +7,7 @@ on:
 env:
   MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_QA }}
   MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_QA }}
-  MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_QA }}
+  MONGODB_ATLAS_ORG_ID: ${{ vars.ATLAS_ORG_ID_QA }}
   MONGODB_ATLAS_BASE_URL: https://cloud-qa.mongodb.com/
   MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-qa-github-action
 jobs:

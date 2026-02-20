@@ -1,0 +1,83 @@
+{
+  "typeName": "MongoDB::Atlas::LogIntegration",
+  "description": "The log integration resource provides access to push-based log export configurations for MongoDB Atlas. The resource allows you to create, edit and delete log export integrations (e.g. to cloud storage or log services). This release supports S3 integration; additional integration types will be added as the API supports them. The resource requires your Project ID.",
+  "definitions": {},
+  "properties": {
+    "Profile": {
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "type": "string",
+      "default": "default"
+    },
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal digit string that identifies your project. Use the /groups endpoint to retrieve all projects to which the authenticated user has access. Groups and projects are synonymous terms. Your group id is the same as your project id.",
+      "type": "string"
+    },
+    "IntegrationId": {
+      "description": "Unique 24-character hexadecimal digit string that identifies the log integration configuration.",
+      "type": "string"
+    },
+    "Type": {
+      "description": "Human-readable label that identifies the service to which you want to integrate with MongoDB Cloud. The value must match the log integration type.",
+      "type": "string"
+    },
+    "BucketName": {
+      "description": "Human-readable label that identifies the bucket (or storage container) name for storing log files.",
+      "type": "string"
+    },
+    "IamRoleId": {
+      "description": "Unique 24-hexadecimal digit string that identifies the AWS IAM role that MongoDB Cloud uses to access your S3 bucket.",
+      "type": "string"
+    },
+    "PrefixPath": {
+      "description": "Path prefix where log files will be stored. MongoDB Cloud adds further sub-directories based on the log type.",
+      "type": "string"
+    },
+    "KmsKey": {
+      "description": "AWS KMS key ID or ARN for server-side encryption (optional). If not provided, uses bucket default encryption settings.",
+      "type": "string"
+    },
+    "LogTypes": {
+      "description": "Array of log types to export. Valid values depend on the integration type (e.g. MONGOD, MONGOS, MONGOD_AUDIT, MONGOS_AUDIT for S3).",
+      "type": "array",
+      "insertionOrder": false,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId",
+    "Type",
+    "BucketName",
+    "IamRoleId",
+    "PrefixPath",
+    "LogTypes"
+  ],
+  "readOnlyProperties": ["/properties/IntegrationId"],
+  "createOnlyProperties": ["/properties/ProjectId", "/properties/Profile"],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/IntegrationId",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "read": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "update": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    },
+    "delete": {
+      "permissions": ["secretsmanager:GetSecretValue"]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/log-integration/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/log-integration"
+}

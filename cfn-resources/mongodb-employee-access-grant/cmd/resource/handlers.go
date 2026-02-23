@@ -1,4 +1,4 @@
-// Copyright 2025 MongoDB Inc
+// Copyright 2026 MongoDB Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,20 +35,12 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 	}
 
 	if apiResp, ok := cluster.GetMongoDBEmployeeAccessGrantOk(); ok && apiResp != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "MongoDB employee access grant already exists for cluster: " + *model.ClusterName,
-			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists),
-		}
+		return progressevent.GetFailedEventByCode("MongoDB employee access grant already exists for cluster: "+*model.ClusterName, string(types.HandlerErrorCodeAlreadyExists))
 	}
 
 	expirationTime, err := time.Parse(time.RFC3339, *model.ExpirationTime)
 	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Invalid expiration time format. Expected RFC3339 format (e.g., 2025-08-01T12:00:00Z)",
-			HandlerErrorCode: "InvalidRequest",
-		}
+		return progressevent.GetFailedEventByCode("Invalid expiration time format. Expected RFC3339 format (e.g., 2025-08-01T12:00:00Z)", string(types.HandlerErrorCodeInvalidRequest))
 	}
 
 	grantReq := &admin.EmployeeAccessGrant{
@@ -74,11 +66,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 
 	apiResp, ok := cluster.GetMongoDBEmployeeAccessGrantOk()
 	if !ok || apiResp == nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          constants.ResourceNotFound,
-			HandlerErrorCode: "NotFound",
-		}
+		return progressevent.GetFailedEventByCode(constants.ResourceNotFound, string(types.HandlerErrorCodeNotFound))
 	}
 
 	updateModel(model, apiResp)
@@ -99,20 +87,12 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 	}
 
 	if apiResp, ok := cluster.GetMongoDBEmployeeAccessGrantOk(); !ok || apiResp == nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          constants.ResourceNotFound,
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
-		}
+		return progressevent.GetFailedEventByCode(constants.ResourceNotFound, string(types.HandlerErrorCodeNotFound))
 	}
 
 	expirationTime, err := time.Parse(time.RFC3339, *model.ExpirationTime)
 	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Invalid expiration time format. Expected RFC3339 format (e.g., 2025-08-01T12:00:00Z)",
-			HandlerErrorCode: "InvalidRequest",
-		}
+		return progressevent.GetFailedEventByCode("Invalid expiration time format. Expected RFC3339 format (e.g., 2025-08-01T12:00:00Z)", string(types.HandlerErrorCodeInvalidRequest))
 	}
 
 	grantReq := &admin.EmployeeAccessGrant{
@@ -137,11 +117,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 	}
 
 	if apiResp, ok := cluster.GetMongoDBEmployeeAccessGrantOk(); !ok || apiResp == nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          constants.ResourceNotFound,
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
-		}
+		return progressevent.GetFailedEventByCode(constants.ResourceNotFound, string(types.HandlerErrorCodeNotFound))
 	}
 
 	resp, err = client.AtlasSDK.ClustersApi.RevokeMongoEmployeeAccess(ctx, *model.ProjectId, *model.ClusterName).Execute()
@@ -156,9 +132,5 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 }
 
 func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	return handler.ProgressEvent{
-		OperationStatus:  handler.Failed,
-		Message:          "List operation is not supported",
-		HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
-	}
+	return progressevent.GetFailedEventByCode("List operation is not supported", string(types.HandlerErrorCodeNotFound))
 }

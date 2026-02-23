@@ -52,11 +52,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest {
 			if apiError.ErrorCode == InvalidRoleAssignmentError && strings.Contains(err.Error(), ServiceAccountAlreadyInGroupError) {
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          err.Error(),
-					HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists),
-				}
+				return progress_events.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeAlreadyExists))
 			}
 		}
 		return HandleError(resp, constants.CREATE, err)

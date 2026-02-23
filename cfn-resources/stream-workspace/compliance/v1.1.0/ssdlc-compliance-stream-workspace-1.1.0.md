@@ -1,13 +1,13 @@
 SSDLC Compliance Report: CloudFormation MongoDB::Atlas::stream-workspace 1.1.0
 =================================================================
 
-- Release Creator: ParthasarathyV
-- Created On:       2026-02-17
+- Release Creator: rakhul-mongo
+- Created On:       2026-02-23
 
 Overview:
 
 - **Product and Release Name**
-  - CloudFormation MongoDB::Atlas::stream-workspace 1.1.0, 2026-02-17.
+  - CloudFormation MongoDB::Atlas::stream-workspace 1.1.0, 2026-02-23.
 
 - **Process Document**
   - https://www.mongodb.com/blog/post/how-mongodb-protects-against-supply-chain-vulnerabilities

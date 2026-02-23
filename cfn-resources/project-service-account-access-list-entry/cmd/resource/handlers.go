@@ -38,6 +38,13 @@ func getCIDROrIP(model *Model) string {
 	return ""
 }
 
+func newListPageFunc(client *util.MongoDBClient, projectID, clientID string) serviceaccountaccesslist.ListPageFunc {
+	return func(ctx context.Context, pageNum int) (*admin.PaginatedServiceAccountIPAccessEntry, *http.Response, error) {
+		return client.AtlasSDK.ServiceAccountsApi.ListAccessList(ctx, projectID, clientID).
+			PageNum(pageNum).ItemsPerPage(serviceaccountaccesslist.ItemsPerPage).Execute()
+	}
+}
+
 func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 	projectID := *model.ProjectId
@@ -56,9 +63,7 @@ func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	}
 
 	cidrOrIP := getCIDROrIP(model)
-	listPageFunc := func(ctx context.Context, pageNum int) (*admin.PaginatedServiceAccountIPAccessEntry, *http.Response, error) {
-		return client.AtlasSDK.ServiceAccountsApi.ListAccessList(ctx, projectID, clientID).PageNum(pageNum).ItemsPerPage(serviceaccountaccesslist.ItemsPerPage).Execute()
-	}
+	listPageFunc := newListPageFunc(client, projectID, clientID)
 
 	entry, err := serviceaccountaccesslist.FindAccessListEntry(ctx, listPageFunc, cidrOrIP, firstPage)
 	if err != nil || entry == nil {
@@ -66,10 +71,7 @@ func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 		if err != nil {
 			errMsg = fmt.Sprintf("Error finding created entry: %s", err.Error())
 		}
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         errMsg,
-		}
+		return progress_events.GetFailedEventByCode(errMsg, string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	UpdateModelFromEntry(model, entry)
@@ -86,25 +88,19 @@ func handleRead(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 	projectID := *model.ProjectId
 	clientID := *model.ClientId
 	cidrOrIP := getCIDROrIP(model)
-
-	listPageFunc := func(ctx context.Context, pageNum int) (*admin.PaginatedServiceAccountIPAccessEntry, *http.Response, error) {
-		return client.AtlasSDK.ServiceAccountsApi.ListAccessList(ctx, projectID, clientID).PageNum(pageNum).ItemsPerPage(serviceaccountaccesslist.ItemsPerPage).Execute()
-	}
+	listPageFunc := newListPageFunc(client, projectID, clientID)
 
 	entry, err := serviceaccountaccesslist.FindAccessListEntry(ctx, listPageFunc, cidrOrIP, nil)
 	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         fmt.Sprintf("Error reading entry: %s", err.Error()),
-		}
+		return progress_events.GetFailedEventByCode(
+			fmt.Sprintf("Error reading entry: %s", err.Error()),
+			string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	if entry == nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          fmt.Sprintf("Access list entry %s not found for service account %s", cidrOrIP, clientID),
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
-		}
+		return progress_events.GetFailedEventByCode(
+			fmt.Sprintf("Access list entry %s not found for service account %s", cidrOrIP, clientID),
+			string(types.HandlerErrorCodeNotFound))
 	}
 
 	UpdateModelFromEntry(model, entry)
@@ -124,13 +120,6 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 
 	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteGroupAccessEntry(ctx, projectID, clientID, cidrOrIP).Execute()
 	if err != nil {
-		if util.StatusNotFound(apiResp) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Resource not found",
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
-			}
-		}
 		return handleError(apiResp, constants.DELETE, err)
 	}
 
@@ -144,17 +133,13 @@ func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 	ctx := context.Background()
 	projectID := *model.ProjectId
 	clientID := *model.ClientId
-
-	listPageFunc := func(ctx context.Context, pageNum int) (*admin.PaginatedServiceAccountIPAccessEntry, *http.Response, error) {
-		return client.AtlasSDK.ServiceAccountsApi.ListAccessList(ctx, projectID, clientID).PageNum(pageNum).ItemsPerPage(serviceaccountaccesslist.ItemsPerPage).Execute()
-	}
+	listPageFunc := newListPageFunc(client, projectID, clientID)
 
 	entries, err := serviceaccountaccesslist.ListAllAccessListEntries(ctx, listPageFunc)
 	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         fmt.Sprintf("Error listing entries: %s", err.Error()),
-		}
+		return progress_events.GetFailedEventByCode(
+			fmt.Sprintf("Error listing entries: %s", err.Error()),
+			string(types.HandlerErrorCodeInternalFailure))
 	}
 
 	entryModels := make([]any, 0, len(entries))

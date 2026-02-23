@@ -23,14 +23,16 @@ on:
   
 jobs:
   publish:
-    env: # env vars defined here can be referenced in env vars inside the steps
-      MONGODB_ATLAS_BASE_URL: ${{ github.event.inputs.resourceName=='resource-policy' && 'https://cloud-qa.mongodb.com/' || 'https://cloud.mongodb.com/' }}
+    env:
+      # organization is in dev because qa doesn't have paying orgs yet.
+      # resource-policy is in a different qa org to avoid conflicts with other resources.
+      # All other resources are in qa.
+      MONGODB_ATLAS_BASE_URL: ${{ github.event.inputs.resourceName=='organization' && 'https://cloud-dev.mongodb.com/' || 'https://cloud-qa.mongodb.com/' }}
+      MONGODB_ATLAS_ORG_ID: ${{ github.event.inputs.resourceName=='organization' && secrets.CLOUD_DEV_ORG_ID || github.event.inputs.resourceName=='resource-policy' && vars.MONGODB_ATLAS_RP_ORG_ID_QA || vars.ATLAS_ORG_ID_QA }}
+      MONGODB_ATLAS_PUBLIC_KEY: ${{ github.event.inputs.resourceName=='organization' && secrets.CLOUD_DEV_PUBLIC_KEY || github.event.inputs.resourceName=='resource-policy' && secrets.MONGODB_ATLAS_RP_PUBLIC_KEY_QA || secrets.ATLAS_PUBLIC_KEY_QA }}
+      MONGODB_ATLAS_PRIVATE_KEY: ${{ github.event.inputs.resourceName=='organization' && secrets.CLOUD_DEV_PRIVATE_KEY || github.event.inputs.resourceName=='resource-policy' && secrets.MONGODB_ATLAS_RP_PRIVATE_KEY_QA || secrets.ATLAS_PRIVATE_KEY_QA }}
+      MONGODB_ATLAS_PROFILE: ${{ github.event.inputs.resourceName=='organization' && 'cfn-cloud-dev-github-action' || github.event.inputs.resourceName=='resource-policy' && 'qa-resource-policy-cloud-profile' || 'cfn-cloud-qa-github-action' }}
       MONGODB_ATLAS_OUTPUT: 'json'
-      # some resources need specific Atlas credentials and orgs
-      MONGODB_ATLAS_ORG_ID: ${{ github.event.inputs.resourceName=='organization' && secrets.ATLAS_ORG_ID || github.event.inputs.resourceName=='resource-policy' && vars.MONGODB_ATLAS_RP_ORG_ID_QA || github.event.inputs.resourceName=='federated-settings-org-role-mapping' && secrets.ATLAS_ORG_ID_FOR_FEDERATION || secrets.ATLAS_ORG_ID_PUBLISHING }}
-      MONGODB_ATLAS_PUBLIC_KEY: ${{ github.event.inputs.resourceName=='organization' && secrets.ATLAS_PUBLIC_KEY || github.event.inputs.resourceName=='resource-policy' && secrets.MONGODB_ATLAS_RP_PUBLIC_KEY_QA || github.event.inputs.resourceName=='federated-settings-org-role-mapping' && secrets.ATLAS_PUBLIC_KEY_FOR_FEDERATION || secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
-      MONGODB_ATLAS_PRIVATE_KEY: ${{ github.event.inputs.resourceName=='organization' && secrets.ATLAS_PRIVATE_KEY || github.event.inputs.resourceName=='resource-policy' && secrets.MONGODB_ATLAS_RP_PRIVATE_KEY_QA || github.event.inputs.resourceName=='federated-settings-org-role-mapping' && secrets.ATLAS_PRIVATE_KEY_FOR_FEDERATION || secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
-      MONGODB_ATLAS_PROFILE: ${{ github.event.inputs.resourceName=='organization' && 'cfn-publish-organization-profile' || github.event.inputs.resourceName=='resource-policy' && 'qa-resource-policy-cloud-profile' || 'default' }}
     strategy:
       fail-fast: false
       max-parallel: ${{ fromJSON(github.event.inputs.maxParallelRegions) }}
@@ -77,10 +79,10 @@ jobs:
           MCLI_PRIVATE_API_KEY: ${{ env.MONGODB_ATLAS_PRIVATE_KEY }}
           AWS_DEFAULT_REGION: ${{ matrix.region }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
-          MONGODB_ATLAS_ORG_OWNER_ID: ${{ github.event.inputs.resourceName=='organization' && secrets.ATLAS_ORG_OWNER_ID || secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }}
-          ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
-          MONGODB_ATLAS_FEDERATION_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
-          MONGODB_ATLAS_PROFILE: ${{ env.MONGODB_ATLAS_PROFILE }}
+          MONGODB_ATLAS_ORG_OWNER_ID: ${{ vars.ATLAS_ORG_OWNER_ID_QA }}
+          ATLAS_FEDERATED_SETTINGS_ID: ${{ vars.ATLAS_FEDERATED_SETTINGS_ID_QA }}
+          MONGODB_ATLAS_FEDERATION_SETTINGS_ID: ${{ vars.ATLAS_FEDERATED_SETTINGS_ID_QA }}
+          MONGODB_ATLAS_TEAM_ID: ${{ vars.ATLAS_TEAM_ID_QA }}
 
           # LDAP config
           LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME_PUBLISHING }}

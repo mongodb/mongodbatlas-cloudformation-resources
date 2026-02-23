@@ -4,6 +4,8 @@
 
 Resource for managing [Project Service Accounts](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-createprojectserviceaccount) for a MongoDB Atlas project. Project service accounts provide programmatic access to project-level resources and are used for automation, CI/CD pipelines, and service-to-service authentication within a specific project scope.
 
+**Note:** Deleting this resource only unassigns the Service Account from the project, but doesn't delete it from the organization.
+
 ## Requirements
 
 To securely give CloudFormation access to your Atlas credentials, you must

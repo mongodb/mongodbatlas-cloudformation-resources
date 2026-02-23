@@ -23,18 +23,21 @@ import (
 	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project-service-account/cmd/resource"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewGroupServiceAccountCreateReq(t *testing.T) {
 	tests := []struct {
-		input    *resource.Model
-		expected *admin.GroupServiceAccountRequest
-		name     string
+		input     *resource.Model
+		expected  *admin.GroupServiceAccountRequest
+		name      string
+		expectErr bool
 	}{
 		{
-			name:     "Nil Input",
-			input:    nil,
-			expected: nil,
+			name:      "Nil Input",
+			input:     nil,
+			expected:  nil,
+			expectErr: true,
 		},
 		{
 			name: "Valid Input - Roles Sorted",
@@ -55,11 +58,13 @@ func TestNewGroupServiceAccountCreateReq(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := resource.NewGroupServiceAccountCreateReq(tt.input)
-			if tt.expected == nil {
+			actual, err := resource.NewGroupServiceAccountCreateReq(tt.input)
+			if tt.expectErr {
+				require.Error(t, err)
 				assert.Nil(t, actual)
 				return
 			}
+			require.NoError(t, err)
 			assert.Equal(t, tt.expected.Name, actual.Name)
 			assert.Equal(t, tt.expected.Description, actual.Description)
 			assert.Equal(t, tt.expected.Roles, actual.Roles)
@@ -70,14 +75,16 @@ func TestNewGroupServiceAccountCreateReq(t *testing.T) {
 
 func TestNewGroupServiceAccountUpdateReq(t *testing.T) {
 	tests := []struct {
-		input    *resource.Model
-		expected *admin.GroupServiceAccountUpdateRequest
-		name     string
+		input     *resource.Model
+		expected  *admin.GroupServiceAccountUpdateRequest
+		name      string
+		expectErr bool
 	}{
 		{
-			name:     "Nil Input",
-			input:    nil,
-			expected: nil,
+			name:      "Nil Input",
+			input:     nil,
+			expected:  nil,
+			expectErr: true,
 		},
 		{
 			name: "Valid Input - Roles Sorted",
@@ -109,11 +116,13 @@ func TestNewGroupServiceAccountUpdateReq(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := resource.NewGroupServiceAccountUpdateReq(tt.input)
-			if tt.expected == nil {
+			actual, err := resource.NewGroupServiceAccountUpdateReq(tt.input)
+			if tt.expectErr {
+				require.Error(t, err)
 				assert.Nil(t, actual)
 				return
 			}
+			require.NoError(t, err)
 			assert.Equal(t, tt.expected.Name, actual.Name)
 			assert.Equal(t, tt.expected.Description, actual.Description)
 			if tt.expected.Roles == nil {

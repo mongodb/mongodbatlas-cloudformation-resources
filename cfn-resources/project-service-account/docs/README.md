@@ -1,6 +1,6 @@
 # MongoDB::Atlas::ProjectServiceAccount
 
-Creates and manages a Project Service Account. This resource creates a Service Account and assigns it to a project.
+Creates and manages a Project Service Account. This resource creates a Service Account and assigns it to a project. Note: Deleting this resource only unassigns the Service Account from the project, but doesn't delete it from the organization.
 
 ## Syntax
 

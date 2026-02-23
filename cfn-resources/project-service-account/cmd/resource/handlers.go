@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -29,7 +31,10 @@ import (
 func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 	projectID := model.ProjectId
-	serviceAccountReq := NewGroupServiceAccountCreateReq(model)
+	serviceAccountReq, err := NewGroupServiceAccountCreateReq(model)
+	if err != nil {
+		return progress_events.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest))
+	}
 
 	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.CreateGroupServiceAccount(ctx, *projectID, serviceAccountReq).Execute()
 	if err != nil {
@@ -75,16 +80,12 @@ func handleUpdate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	projectID := model.ProjectId
 	clientID := model.ClientId
 
-	serviceAccountReq := NewGroupServiceAccountUpdateReq(model)
+	serviceAccountReq, err := NewGroupServiceAccountUpdateReq(model)
+	if err != nil {
+		return progress_events.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest))
+	}
 	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.UpdateGroupServiceAccount(ctx, *clientID, *projectID, serviceAccountReq).Execute()
 	if err != nil {
-		if util.StatusNotFound(apiResp) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Resource not found",
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
-			}
-		}
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
@@ -110,13 +111,6 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 
 	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteGroupServiceAccount(ctx, *clientID, *projectID).Execute()
 	if err != nil {
-		if util.StatusNotFound(apiResp) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Resource not found",
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
-			}
-		}
 		return handleError(apiResp, constants.DELETE, err)
 	}
 
@@ -128,18 +122,25 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 
 func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
-	projectID := model.ProjectId
-
-	serviceAccounts, apiResp, err := client.AtlasSDK.ServiceAccountsApi.ListGroupServiceAccounts(ctx, *projectID).Execute()
-	if err != nil {
-		return handleError(apiResp, constants.LIST, err)
-	}
+	projectID := *model.ProjectId
 
 	response := make([]interface{}, 0)
-	if serviceAccounts != nil && serviceAccounts.Results != nil {
-		for i := range *serviceAccounts.Results {
+	const itemsPerPage = 100
+	for pageNum := 1; ; pageNum++ {
+		listParams := &admin.ListGroupServiceAccountsApiParams{
+			GroupId:      projectID,
+			ItemsPerPage: util.Pointer(itemsPerPage),
+			PageNum:      util.Pointer(pageNum),
+		}
+		serviceAccounts, apiResp, err := client.AtlasSDK.ServiceAccountsApi.ListGroupServiceAccountsWithParams(ctx, listParams).Execute()
+		if err != nil {
+			return handleError(apiResp, constants.LIST, err)
+		}
+
+		results := serviceAccounts.GetResults()
+		for i := range results {
 			itemModel := &Model{}
-			resourceModel := GetGroupServiceAccountModel(&(*serviceAccounts.Results)[i], itemModel)
+			resourceModel := GetGroupServiceAccountModel(&results[i], itemModel)
 			resourceModel.ProjectId = model.ProjectId
 			resourceModel.Profile = model.Profile
 			if resourceModel.Secrets != nil {
@@ -148,6 +149,10 @@ func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 				}
 			}
 			response = append(response, resourceModel)
+		}
+
+		if serviceAccounts.GetTotalCount() <= len(response) || len(results) < itemsPerPage {
+			break
 		}
 	}
 

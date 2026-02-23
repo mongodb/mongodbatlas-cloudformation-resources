@@ -15,6 +15,8 @@
 package resource
 
 import (
+	"errors"
+	"fmt"
 	"sort"
 
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
@@ -67,12 +69,12 @@ func GetGroupServiceAccountModel(account *admin.GroupServiceAccount, currentMode
 	return model
 }
 
-func NewGroupServiceAccountCreateReq(model *Model) *admin.GroupServiceAccountRequest {
+func NewGroupServiceAccountCreateReq(model *Model) (*admin.GroupServiceAccountRequest, error) {
 	if model == nil {
-		return nil
+		return nil, errors.New("model is nil")
 	}
 	if model.SecretExpiresAfterHours == nil {
-		return nil
+		return nil, fmt.Errorf("SecretExpiresAfterHours is required")
 	}
 	secretExpiresAfterHours := *model.SecretExpiresAfterHours
 	roles := make([]string, len(model.Roles))
@@ -83,12 +85,12 @@ func NewGroupServiceAccountCreateReq(model *Model) *admin.GroupServiceAccountReq
 		Description:             *model.Description,
 		Roles:                   roles,
 		SecretExpiresAfterHours: secretExpiresAfterHours,
-	}
+	}, nil
 }
 
-func NewGroupServiceAccountUpdateReq(model *Model) *admin.GroupServiceAccountUpdateRequest {
+func NewGroupServiceAccountUpdateReq(model *Model) (*admin.GroupServiceAccountUpdateRequest, error) {
 	if model == nil {
-		return nil
+		return nil, errors.New("model is nil")
 	}
 	var roles *[]string
 	if len(model.Roles) > 0 {
@@ -101,5 +103,5 @@ func NewGroupServiceAccountUpdateReq(model *Model) *admin.GroupServiceAccountUpd
 		Name:        model.Name,
 		Description: model.Description,
 		Roles:       roles,
-	}
+	}, nil
 }

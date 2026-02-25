@@ -12,10 +12,12 @@
       "Description": "Atlas Cluster Name where to get the snapshot",
       "ConstraintDescription": ""
     },
-    "InstanceType" : {
-      "Type" : "String",
-      "Default" : "cluster",
-      "AllowedValues" : ["cluster", "serverless"]
+    "InstanceType": {
+      "Type": "String",
+      "Default": "cluster",
+      "AllowedValues": [
+        "cluster"
+      ]
     },
     "Profile": {
       "Type": "String",

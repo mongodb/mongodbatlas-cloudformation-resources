@@ -256,15 +256,14 @@
       ]
     },
     "InstanceType": {
-      "description": "Type of instance specified on the Instance Name serverless or cluster",
+      "description": "Type of instance specified on the Instance Name.",
       "type": "string",
       "enum": [
-        "serverless",
         "cluster"
       ]
     },
     "InstanceName": {
-      "description": "The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore snapshot.",
+      "description": "Human-readable label that identifies the cluster.",
       "type": "string"
     },
     "CreatedAt": {

@@ -12,10 +12,12 @@
       "Description": "Atlas Cluster Name where to get the snapshot",
       "ConstraintDescription": ""
     },
-    "InstanceType" : {
-      "Type" : "String",
-      "Default" : "cluster",
-      "AllowedValues" : ["cluster", "serverless"]
+    "InstanceType": {
+      "Type": "String",
+      "Default": "cluster",
+      "AllowedValues": [
+        "cluster"
+      ]
     },
     "Profile": {
       "Type": "String",
@@ -84,11 +86,11 @@
         "TargetProjectId": {
           "Ref": "ProjectId"
         },
-        "EnableSynchronousCreation" : "true",
-        "SynchronousCreationOptions" : {
-          "TimeOutInSeconds" : 900,
-          "CallbackDelaySeconds" : 30,
-          "ReturnSuccessIfTimeOut" : true
+        "EnableSynchronousCreation": "true",
+        "SynchronousCreationOptions": {
+          "TimeOutInSeconds": 900,
+          "CallbackDelaySeconds": 30,
+          "ReturnSuccessIfTimeOut": true
         }
       }
     }

@@ -70,7 +70,7 @@
       "version": "v1.55.8"
     },
     {
-      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.1",
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.2",
       "externalReferences": [
         {
           "type": "vcs",
@@ -78,7 +78,7 @@
         },
         {
           "type": "website",
-          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2@v1.41.1"
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2@v1.41.2"
         }
       ],
       "group": "github.com/aws",
@@ -95,12 +95,12 @@
         }
       ],
       "name": "aws-sdk-go-v2",
-      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.1",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.2",
       "type": "library",
-      "version": "v1.41.1"
+      "version": "v1.41.2"
     },
     {
-      "bom-ref": "pkg:golang/github.com/aws/smithy-go@v1.24.0",
+      "bom-ref": "pkg:golang/github.com/aws/smithy-go@v1.24.1",
       "externalReferences": [
         {
           "type": "vcs",
@@ -108,7 +108,7 @@
         },
         {
           "type": "website",
-          "url": "https://pkg.go.dev/github.com/aws/smithy-go@v1.24.0"
+          "url": "https://pkg.go.dev/github.com/aws/smithy-go@v1.24.1"
         }
       ],
       "group": "github.com/aws",
@@ -125,9 +125,9 @@
         }
       ],
       "name": "smithy-go",
-      "purl": "pkg:golang/github.com/aws/smithy-go@v1.24.0",
+      "purl": "pkg:golang/github.com/aws/smithy-go@v1.24.1",
       "type": "library",
-      "version": "v1.24.0"
+      "version": "v1.24.1"
     },
     {
       "bom-ref": "pkg:golang/github.com/aws-cloudformation/cloudformation-cli-go-plugin@v1.2.0",
@@ -155,7 +155,7 @@
       "version": "v1.2.0"
     },
     {
-      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.17",
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.18",
       "externalReferences": [
         {
           "type": "vcs",
@@ -163,7 +163,7 @@
         },
         {
           "type": "website",
-          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.17"
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.18"
         }
       ],
       "group": "github.com/aws/aws-sdk-go-v2/internal",
@@ -175,12 +175,12 @@
         }
       ],
       "name": "configsources",
-      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.17",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.18",
       "type": "library",
-      "version": "v1.4.17"
+      "version": "v1.4.18"
     },
     {
-      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.17",
+      "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.18",
       "externalReferences": [
         {
           "type": "vcs",
@@ -188,7 +188,7 @@
         },
         {
           "type": "website",
-          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.17"
+          "url": "https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.18"
         }
       ],
       "group": "github.com/aws/aws-sdk-go-v2/internal/endpoints",
@@ -200,9 +200,9 @@
         }
       ],
       "name": "v2",
-      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.17",
+      "purl": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.18",
       "type": "library",
-      "version": "v2.7.17"
+      "version": "v2.7.18"
     },
     {
       "bom-ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/cloudformation@v1.71.5",
@@ -505,7 +505,7 @@
       "version": "v20250312013.2.0"
     },
     {
-      "bom-ref": "pkg:golang/golang.org/x/oauth2@v0.34.0",
+      "bom-ref": "pkg:golang/golang.org/x/oauth2@v0.35.0",
       "externalReferences": [
         {
           "type": "vcs",
@@ -513,7 +513,7 @@
         },
         {
           "type": "website",
-          "url": "https://pkg.go.dev/golang.org/x/oauth2@v0.34.0"
+          "url": "https://pkg.go.dev/golang.org/x/oauth2@v0.35.0"
         }
       ],
       "group": "golang.org/x",
@@ -525,9 +525,9 @@
         }
       ],
       "name": "oauth2",
-      "purl": "pkg:golang/golang.org/x/oauth2@v0.34.0",
+      "purl": "pkg:golang/golang.org/x/oauth2@v0.35.0",
       "type": "library",
-      "version": "v0.34.0"
+      "version": "v0.35.0"
     },
     {
       "bom-ref": "pkg:golang/gopkg.in/validator.v2@v2.0.1",
@@ -566,10 +566,10 @@
       "ref": "pkg:golang/github.com/aws/aws-lambda-go@v1.37.0"
     },
     {
-      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.17"
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/configsources@v1.4.18"
     },
     {
-      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.17"
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/internal/endpoints/v2@v2.7.18"
     },
     {
       "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/cloudformation@v1.71.5"
@@ -578,13 +578,13 @@
       "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2/service/secretsmanager@v1.41.1"
     },
     {
-      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.1"
+      "ref": "pkg:golang/github.com/aws/aws-sdk-go-v2@v1.41.2"
     },
     {
       "ref": "pkg:golang/github.com/aws/aws-sdk-go@v1.55.8"
     },
     {
-      "ref": "pkg:golang/github.com/aws/smithy-go@v1.24.0"
+      "ref": "pkg:golang/github.com/aws/smithy-go@v1.24.1"
     },
     {
       "ref": "pkg:golang/github.com/google/go-querystring@v1.1.0"
@@ -617,14 +617,14 @@
       "ref": "pkg:golang/go.mongodb.org/atlas@v0.37.0"
     },
     {
-      "ref": "pkg:golang/golang.org/x/oauth2@v0.34.0"
+      "ref": "pkg:golang/golang.org/x/oauth2@v0.35.0"
     },
     {
       "ref": "pkg:golang/gopkg.in/validator.v2@v2.0.1"
     }
   ],
   "metadata": {
-    "timestamp": "2026-02-18T13:14:53.935576+00:00",
+    "timestamp": "2026-02-25T05:00:39.015709+00:00",
     "tools": [
       {
         "externalReferences": [
@@ -667,7 +667,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:0f3fa156-0b10-4ed1-ba34-0e9532a810c0",
+  "serialNumber": "urn:uuid:ef591d52-3a1a-49ed-b20f-151c288b0596",
   "version": 1,
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",

@@ -9,13 +9,21 @@ set -o nounset
 set -o pipefail
 
 function usage {
-	echo "usage:$0 <org_id>"
+	echo "usage: $0"
+	echo "  Requires MONGODB_ATLAS_ORG_ID environment variable to be set."
 	echo "Generates test input files for service account secret"
 	exit 0
 }
 
-if [ "$#" -ne 1 ]; then usage; fi
-if [[ "$*" == help ]]; then usage; fi
+if [[ "${1:-}" == help ]]; then usage; fi
+
+if [ -z "${MONGODB_ATLAS_ORG_ID:-}" ]; then
+	echo "Error: MONGODB_ATLAS_ORG_ID environment variable is not set"
+	exit 1
+fi
+
+orgId="${MONGODB_ATLAS_ORG_ID}"
+echo "OrgId: $orgId"
 
 rm -rf inputs
 mkdir inputs
@@ -26,9 +34,6 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
 	profile=${MONGODB_ATLAS_PROFILE}
 fi
-
-orgId="${1}"
-echo "OrgId: $orgId"
 
 # Create a service account for testing using Atlas CLI
 serviceAccountName="cfn-test-sa-$(date +%s)-$RANDOM"

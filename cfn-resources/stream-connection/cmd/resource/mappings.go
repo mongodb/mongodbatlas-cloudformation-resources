@@ -28,6 +28,9 @@ func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 		model.Profile = currentModel.Profile
 		model.WorkspaceName = currentModel.WorkspaceName
 		model.InstanceName = currentModel.InstanceName
+		if model.WorkspaceName == nil && model.InstanceName != nil && *model.InstanceName != "" {
+			model.WorkspaceName = model.InstanceName
+		}
 	}
 
 	model.ConnectionName = streamsConn.Name
@@ -68,7 +71,6 @@ func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 		}
 	}
 
-	// Schema Registry fields
 	if streamsConn.Provider != nil {
 		model.Provider = streamsConn.Provider
 	} else if currentModel != nil {
@@ -189,17 +191,18 @@ func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
 		}
 	}
 
-	// Schema Registry fields
-	streamConnReq.Provider = model.Provider
-	if model.SchemaRegistryAuthentication != nil {
-		streamConnReq.SchemaRegistryAuthentication = &admin.SchemaRegistryAuthentication{
-			Type:     util.SafeString(model.SchemaRegistryAuthentication.Type),
-			Username: model.SchemaRegistryAuthentication.Username,
-			Password: model.SchemaRegistryAuthentication.Password,
+	if typeStr == SchemaRegistryType {
+		streamConnReq.Provider = model.Provider
+		if model.SchemaRegistryAuthentication != nil {
+			streamConnReq.SchemaRegistryAuthentication = &admin.SchemaRegistryAuthentication{
+				Type:     util.SafeString(model.SchemaRegistryAuthentication.Type),
+				Username: model.SchemaRegistryAuthentication.Username,
+				Password: model.SchemaRegistryAuthentication.Password,
+			}
 		}
-	}
-	if len(model.SchemaRegistryUrls) > 0 {
-		streamConnReq.SchemaRegistryUrls = &model.SchemaRegistryUrls
+		if len(model.SchemaRegistryUrls) > 0 {
+			streamConnReq.SchemaRegistryUrls = &model.SchemaRegistryUrls
+		}
 	}
 
 	return &streamConnReq

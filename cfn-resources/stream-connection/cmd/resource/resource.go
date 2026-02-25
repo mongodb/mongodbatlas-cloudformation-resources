@@ -35,6 +35,7 @@ const (
 	KafkaConnectionType   = "Kafka"
 	AWSLambdaType         = "AWSLambda"
 	HTTPSType             = "Https"
+	SchemaRegistryType    = "SchemaRegistry"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.ConnectionName, constants.Type}

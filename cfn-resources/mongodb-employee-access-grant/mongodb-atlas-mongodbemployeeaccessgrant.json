@@ -1,0 +1,78 @@
+{
+    "typeName": "MongoDB::Atlas::MongoDbEmployeeAccessGrant",
+    "description": "Grants temporary access to MongoDB employees for a specific cluster. This allows MongoDB support engineers to access cluster infrastructure, database logs, or app services sync data for troubleshooting purposes.",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/mongodb-employee-access-grant",
+    "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/mongodb-employee-access-grant/README.md",
+    "definitions": {},
+    "properties": {
+        "Profile": {
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "type": "string",
+            "default": "default"
+        },
+        "ProjectId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project. Use the [/groups](#tag/Projects/operation/listProjects) endpoint to retrieve all projects to which the authenticated user has access.\n\n**NOTE**: Groups and projects are synonymous terms. Your group id is the same as your project id. For existing groups, your group/project id remains the same. The resource and corresponding endpoints use the term groups.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$",
+            "maxLength": 24,
+            "minLength": 24
+        },
+        "ClusterName": {
+            "description": "Human-readable label that identifies this cluster.",
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+        },
+        "GrantType": {
+            "description": "Level of access to grant to MongoDB Employees. Possible values are CLUSTER_DATABASE_LOGS, CLUSTER_INFRASTRUCTURE or CLUSTER_INFRASTRUCTURE_AND_APP_SERVICES_SYNC_DATA.",
+            "type": "string"
+        },
+        "ExpirationTime": {
+            "description": "Expiration date for the employee access grant in ISO 8601 date and time format in UTC.",
+            "type": "string",
+            "format": "date-time"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "ClusterName",
+        "GrantType",
+        "ExpirationTime"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/ClusterName",
+        "/properties/Profile"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/ClusterName",
+        "/properties/Profile"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        }
+    },
+    "tagging": {
+        "taggable": false
+    }
+}

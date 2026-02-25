@@ -1,0 +1,78 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template grants temporary access to MongoDB employees for a specific cluster. This allows MongoDB support engineers to access cluster infrastructure, database logs, or app services sync data for troubleshooting purposes.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "MinLength": 24,
+      "MaxLength": 24,
+      "AllowedPattern": "^([a-f0-9]{24})$",
+      "ConstraintDescription": "Must be a 24-character hexadecimal string"
+    },
+    "ClusterName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the cluster for which to grant employee access.",
+      "MinLength": 1,
+      "MaxLength": 64
+    },
+    "GrantType": {
+      "Type": "String",
+      "Description": "Level of access to grant to MongoDB Employees.",
+      "AllowedValues": [
+        "CLUSTER_DATABASE_LOGS",
+        "CLUSTER_INFRASTRUCTURE",
+        "CLUSTER_INFRASTRUCTURE_AND_APP_SERVICES_SYNC_DATA"
+      ],
+      "Default": "CLUSTER_INFRASTRUCTURE",
+      "ConstraintDescription": "Must be one of: CLUSTER_DATABASE_LOGS, CLUSTER_INFRASTRUCTURE, or CLUSTER_INFRASTRUCTURE_AND_APP_SERVICES_SYNC_DATA"
+    },
+    "ExpirationTime": {
+      "Type": "String",
+      "Description": "Expiration date for the employee access grant in ISO 8601 date and time format in UTC (e.g., 2025-08-01T12:00:00Z).",
+      "AllowedPattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "ConstraintDescription": "Must be in RFC3339 format (YYYY-MM-DDTHH:MM:SSZ)"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys.",
+      "Default": "default"
+    }
+  },
+  "Resources": {
+    "EmployeeAccessGrant": {
+      "Type": "MongoDB::Atlas::MongoDbEmployeeAccessGrant",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "GrantType": {
+          "Ref": "GrantType"
+        },
+        "ExpirationTime": {
+          "Ref": "ExpirationTime"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ProjectId": {
+      "Description": "The project ID where the employee access grant was created",
+      "Value": {
+        "Ref": "ProjectId"
+      }
+    },
+    "ClusterName": {
+      "Description": "The cluster name for which employee access was granted",
+      "Value": {
+        "Ref": "ClusterName"
+      }
+    }
+  }
+}

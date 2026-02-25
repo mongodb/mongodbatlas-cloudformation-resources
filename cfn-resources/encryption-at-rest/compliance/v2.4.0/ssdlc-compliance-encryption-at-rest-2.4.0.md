@@ -1,13 +1,13 @@
 SSDLC Compliance Report: CloudFormation MongoDB::Atlas::encryption-at-rest 2.4.0
 =================================================================
 
-- Release Creator: rakhul-mongo
-- Created On:       2026-02-20
+- Release Creator: sivaram-mongodb
+- Created On:       2026-02-25
 
 Overview:
 
 - **Product and Release Name**
-  - CloudFormation MongoDB::Atlas::encryption-at-rest 2.4.0, 2026-02-20.
+  - CloudFormation MongoDB::Atlas::encryption-at-rest 2.4.0, 2026-02-25.
 
 - **Process Document**
   - https://www.mongodb.com/blog/post/how-mongodb-protects-against-supply-chain-vulnerabilities

@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
@@ -39,6 +40,7 @@ const (
 	defaultBackSeconds            = 30
 	defaultTimeOutInSeconds       = 1200
 	defaultReturnSuccessIfTimeOut = false
+	clusterInstanceType           = "cluster"
 )
 
 func setup() {
@@ -46,7 +48,17 @@ func setup() {
 }
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
+	if pe := validator.ValidateModel(fields, model); pe != nil {
+		return pe
+	}
+
+	if *model.InstanceType != clusterInstanceType {
+		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("InstanceType must be %s", clusterInstanceType),
+			string(types.HandlerErrorCodeInvalidRequest))
+		return &pe
+	}
+
+	return nil
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

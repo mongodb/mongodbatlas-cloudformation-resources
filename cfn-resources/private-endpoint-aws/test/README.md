@@ -2,10 +2,11 @@
 
 ### Impact
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
-- PrivateEndpoint L1 CDK constructor.
+- PrivateEndpoint L1 CDK constructor
 
 ### Resources (and parameters for local tests) needed to manually QA:
-- AWS VPC and Subnet.
+These LDAP resources must be manually created.
+- AWS VPC and Subnet
 
 ## Manual QA:
 
@@ -13,10 +14,10 @@ The following components use this resource and are potentially impacted by any c
 1. Obtain the VPC id and subnet to create the private endpoint:
    example:
 ```bash
-# Use AWS CLI to list VPCs and get the first VPC ID.
+# Use AWS CLI to list VPCs and get the first VPC ID
 vpc_id=$(aws ec2 describe-vpcs --query 'Vpcs[0].VpcId' --output text)
 
-# Use AWS CLI to list subnets in the selected VPC and get the first Subnet ID.
+# Use AWS CLI to list subnets in the selected VPC and get the first Subnet ID
 subnet_id=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" --query 'Subnets[0].SubnetId' --output text)
 ```
 
@@ -25,7 +26,7 @@ subnet_id=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" --qu
 2. Follow [general steps](../../../TESTING.md#steps) to test CFN resources.
 
 ### Success criteria when testing the resource
-1. Private Endpoint should be correctly set up in your Atlas Project as per configuration specified in the inputs/example:
+1. Private Endpoint should be correctly set up in your Atlas Project as per configuration specified in the inputs/example:   
 
 ![image](https://user-images.githubusercontent.com/122359335/227300711-ca08e118-8718-4285-a975-8ec4e01899f9.png)
 
@@ -50,8 +51,8 @@ cd ${repo_root}/cfn-resources/private-endpoint-aws
 ./test/private-endpoint.create-sample-cfn-request.sh YourProjectId YourEndpointServiceId YourVpcEndpointId > test.request.json
 echo "Sample request:"
 cat test.request.json
-cfn invoke CREATE test.request.json
-cfn invoke DELETE test.request.json
+cfn invoke CREATE test.request.json 
+cfn invoke DELETE test.request.json 
 ```
 
 Both CREATE and DELETE tests must pass.

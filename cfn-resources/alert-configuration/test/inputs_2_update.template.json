@@ -1,0 +1,29 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "Enabled": "false",
+  "EventTypeName": "OUTSIDE_STREAM_PROCESSOR_METRIC_THRESHOLD",
+  "SeverityOverride": "WARNING",
+  "Threshold": {
+    "MetricName": "STREAM_PROCESSOR_KAFKA_LAG",
+    "Mode": "AVERAGE",
+    "Operator": "LESS_THAN",
+    "Threshold": "42",
+    "Units": "RAW"
+  },
+  "Matchers": [
+    {
+      "FieldName": "INSTANCE_NAME",
+      "Operator": "EQUALS",
+      "Value": "event-replica-set"
+    }
+  ],
+  "Notifications": [
+    {
+      "TypeName": "EMAIL",
+      "DelayMin": "0",
+      "EmailAddress": "test@example.com",
+      "IntervalMin": "15"
+    }
+  ]
+}

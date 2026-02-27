@@ -291,9 +291,11 @@ func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *admin.S
 		return nil
 	}
 	return &admin.StreamProcessorMetricThreshold{
-		Operator:  threshold.Operator,
-		Threshold: threshold.Threshold,
-		Units:     threshold.Units,
+		MetricName: threshold.MetricName,
+		Mode:       threshold.Mode,
+		Operator:   threshold.Operator,
+		Threshold:  threshold.Threshold,
+		Units:      threshold.Units,
 	}
 }
 

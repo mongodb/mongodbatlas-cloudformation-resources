@@ -1,0 +1,113 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Stream Processor metric alert configuration through the MongoDB Atlas Admin API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
+      "Default": "default"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project",
+      "MinLength": 24,
+      "MaxLength": 24
+    },
+    "InstanceName": {
+      "Type": "String",
+      "Description": "Name of the Stream Processor instance to monitor",
+      "Default": "event-replica-set"
+    },
+    "EmailAddress": {
+      "Type": "String",
+      "Description": "Email address to receive alert notifications",
+      "Default": "alerts@example.com"
+    },
+    "Enabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether this alert configuration is enabled",
+      "Default": "true",
+      "AllowedValues": ["true", "false"]
+    },
+    "SeverityOverride": {
+      "Type": "String",
+      "Description": "Override the default severity level for this alert",
+      "Default": "WARNING",
+      "AllowedValues": ["CRITICAL", "ERROR", "WARNING"]
+    },
+    "ThresholdValue": {
+      "Type": "Number",
+      "Description": "Threshold value for Kafka lag (in milliseconds or count)",
+      "Default": 1000
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "StreamProcessorAlert": {
+      "Type": "MongoDB::Atlas::AlertConfiguration",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Enabled": {
+          "Ref": "Enabled"
+        },
+        "EventTypeName": "OUTSIDE_STREAM_PROCESSOR_METRIC_THRESHOLD",
+        "SeverityOverride": {
+          "Ref": "SeverityOverride"
+        },
+        "Threshold": {
+          "MetricName": "STREAM_PROCESSOR_KAFKA_LAG",
+          "Mode": "AVERAGE",
+          "Operator": "GREATER_THAN",
+          "Threshold": {
+            "Ref": "ThresholdValue"
+          },
+          "Units": "RAW"
+        },
+        "Matchers": [
+          {
+            "FieldName": "INSTANCE_NAME",
+            "Operator": "EQUALS",
+            "Value": {
+              "Ref": "InstanceName"
+            }
+          }
+        ],
+        "Notifications": [
+          {
+            "TypeName": "EMAIL",
+            "DelayMin": 0,
+            "EmailAddress": {
+              "Ref": "EmailAddress"
+            },
+            "IntervalMin": 15
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "AlertConfigurationId": {
+      "Description": "Unique identifier of the alert configuration",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessorAlert", "Id"]
+      }
+    },
+    "Created": {
+      "Description": "Date and time when the alert configuration was created",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessorAlert", "Created"]
+      }
+    },
+    "Enabled": {
+      "Description": "Flag indicating whether the alert configuration is enabled",
+      "Value": {
+        "Fn::GetAtt": ["StreamProcessorAlert", "Enabled"]
+      }
+    }
+  }
+}

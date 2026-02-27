@@ -129,11 +129,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		if util.StatusConflict(response) {
 			return progress_events.GetFailedEventByCode(
-				fmt.Sprintf("error creating Serverless Private Endpoint %s", err.Error()),
+				fmt.Sprintf("error creating Private Endpoint %s", err.Error()),
 				string(types.HandlerErrorCodeAlreadyExists),
 			), nil
 		}
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Private Endpoint %s",
 				err.Error()), response),
 			nil
 	}

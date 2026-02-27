@@ -1,9 +1,8 @@
-## MongoDB::Atlas::ServerlessPrivateEndpoint
+## MongoDB::Atlas::PrivateEndpointAWS
 
 ### Impact
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
-- Serverless PrivateEndpoint L1 CDK constructor
-- Atlas Basic Serverless PrivateEndpoint L3 CDK constructor
+- PrivateEndpoint L1 CDK constructor
 
 ### Resources (and parameters for local tests) needed to manually QA:
 These LDAP resources must be manually created.
@@ -34,8 +33,8 @@ subnet_id=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" --qu
 2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-serverless-private-endpoints)
-- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-serverless-private-endpoint/)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-private-endpoint-services)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-private-endpoint/)
 
 ## Local Testing
 
@@ -48,8 +47,8 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/project
-./test/serverless-private-endpoint.create-sample-cfn-request.sh YourProjectName YourInstanceName VpcId SubnetId > test.request.json 
+cd ${repo_root}/cfn-resources/private-endpoint-aws
+./test/private-endpoint.create-sample-cfn-request.sh YourProjectId YourEndpointServiceId YourVpcEndpointId > test.request.json
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 

@@ -22,7 +22,6 @@ import (
 	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -85,7 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			},
 		}, nil
 	}
-	return handler.ProgressEvent{}, errors.New("not implemented: Create for serverless snapshots, import an existing serverless snapshot instead")
+	return handler.ProgressEvent{}, fmt.Errorf("unsupported InstanceType: %s", *currentModel.InstanceType)
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -110,12 +109,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 		currentModel.updateModelServer(server)
-	} else {
-		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.GetServerlessBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
-		}
-		currentModel.updateModelServerless(serverless)
 	}
 
 	return handler.ProgressEvent{
@@ -187,21 +180,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			model.updateModelServer(&server.Results[i])
 			models = append(models, &model)
 		}
-	} else {
-		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackups(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
-		}
-		for i := range serverless.Results {
-			model := Model{
-				ProjectId:    currentModel.ProjectId,
-				Profile:      currentModel.Profile,
-				InstanceName: currentModel.InstanceName,
-				InstanceType: currentModel.InstanceType,
-			}
-			model.updateModelServerless(&serverless.Results[i])
-			models = append(models, &model)
-		}
 	}
 
 	return handler.ProgressEvent{
@@ -220,17 +198,6 @@ func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEv
 		}
 		for i := range server.Results {
 			if util.AreStringPtrEqual(model.SnapshotId, server.Results[i].Id) {
-				return nil
-			}
-		}
-	} else {
-		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackups(context.Background(), *model.ProjectId, *model.InstanceName).Execute()
-		if err != nil {
-			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
-			return &pe
-		}
-		for i := range serverless.Results {
-			if util.AreStringPtrEqual(model.SnapshotId, serverless.Results[i].Id) {
 				return nil
 			}
 		}
@@ -285,14 +252,4 @@ func (m *Model) updateModelServer(snapShot *admin20231115002.DiskBackupReplicaSe
 	m.MongodVersion = snapShot.MongodVersion
 	m.StorageSizeBytes = util.IntPtrToStrPtr(util.Int64PtrToIntPtr(snapShot.StorageSizeBytes))
 	m.CloudProvider = snapShot.CloudProvider
-}
-
-func (m *Model) updateModelServerless(snapShot *admin20231115002.ServerlessBackupSnapshot) {
-	m.SnapshotId = snapShot.Id
-	m.Status = snapShot.Status
-	m.CreatedAt = util.TimePtrToStringPtr(snapShot.CreatedAt)
-	m.ExpiresAt = util.TimePtrToStringPtr(snapShot.ExpiresAt)
-	m.MongodVersion = snapShot.MongodVersion
-	m.StorageSizeBytes = util.IntPtrToStrPtr(util.Int64PtrToIntPtr(snapShot.StorageSizeBytes))
-	m.CloudProvider = aws.String(constants.AWS)
 }

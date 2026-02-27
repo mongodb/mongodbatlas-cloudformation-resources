@@ -41,7 +41,6 @@ const (
 	defaultTimeOutInSeconds       = 1200
 	defaultReturnSuccessIfTimeOut = false
 	clusterInstanceType           = "cluster"
-	serverlessInstanceType        = "serverless"
 )
 
 func setup() {
@@ -53,8 +52,8 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 		return pe
 	}
 
-	if *model.InstanceType != clusterInstanceType && *model.InstanceType != serverlessInstanceType {
-		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("InstanceType must be %s or %s", clusterInstanceType, serverlessInstanceType),
+	if *model.InstanceType != clusterInstanceType {
+		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("InstanceType must be %s", clusterInstanceType),
 			string(types.HandlerErrorCodeInvalidRequest))
 		return &pe
 	}
@@ -96,21 +95,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	if *currentModel.InstanceType == serverlessInstanceType {
-		params := paramsServerless(currentModel)
-		serverless, resp, err := client.Atlas20231115014.CloudBackupsApi.CreateServerlessBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
-		}
-		currentModel.Id = serverless.Id
-	} else {
-		params := paramsServer(currentModel)
-		server, resp, err := client.Atlas20231115014.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
-		}
-		currentModel.Id = server.Id
+	params := paramsServer(currentModel)
+	server, resp, err := client.Atlas20231115014.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
+	currentModel.Id = server.Id
 
 	if aws.ToBool(currentModel.EnableSynchronousCreation) {
 		return progressevent.GetInProgressProgressEvent(
@@ -229,45 +219,22 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	models := make([]interface{}, 0)
-	if *currentModel.InstanceType == serverlessInstanceType {
-		serverless, resp, err := client.Atlas20231115014.CloudBackupsApi.ListServerlessBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	server, resp, err := client.Atlas20231115014.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+	results := server.GetResults()
+	for i := range results {
+		job := &results[i]
+		model := &Model{
+			ProjectId:    currentModel.ProjectId,
+			InstanceType: currentModel.InstanceType,
+			InstanceName: currentModel.InstanceName,
+			Profile:      currentModel.Profile,
 		}
-		instanceType := serverlessInstanceType
-		results := serverless.GetResults()
-		for i := range results {
-			job := &results[i]
-			model := &Model{
-				ProjectId:    currentModel.ProjectId,
-				InstanceType: &instanceType,
-				InstanceName: currentModel.InstanceName,
-				Profile:      currentModel.Profile,
-			}
-			if !aws.ToBool(job.Cancelled) && !aws.ToBool(job.Expired) {
-				updateModelServerless(model, job)
-				models = append(models, model)
-			}
-		}
-	} else {
-		server, resp, err := client.Atlas20231115014.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
-		}
-		instanceType := clusterInstanceType
-		results := server.GetResults()
-		for i := range results {
-			job := &results[i]
-			model := &Model{
-				ProjectId:    currentModel.ProjectId,
-				InstanceType: &instanceType,
-				InstanceName: currentModel.InstanceName,
-				Profile:      currentModel.Profile,
-			}
-			if !aws.ToBool(job.Cancelled) && !aws.ToBool(job.Expired) {
-				updateModelServer(model, job)
-				models = append(models, model)
-			}
+		if !aws.ToBool(job.Cancelled) && !aws.ToBool(job.Expired) {
+			updateModelServer(model, job)
+			models = append(models, model)
 		}
 	}
 
@@ -354,37 +321,13 @@ func isTimeOutReached(startTime string, timeOutInSeconds int) bool {
 }
 
 func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *handler.ProgressEvent {
-	if *model.InstanceType == serverlessInstanceType {
-		serverless, resp, err := client.Atlas20231115014.CloudBackupsApi.GetServerlessBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
-		if err != nil {
-			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
-			return &pe
-		}
-		updateModelServerless(model, serverless)
-	} else {
-		server, resp, err := client.Atlas20231115014.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
-		if err != nil {
-			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
-			return &pe
-		}
-		updateModelServer(model, server)
+	server, resp, err := client.Atlas20231115014.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
+	if err != nil {
+		pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
+		return &pe
 	}
+	updateModelServer(model, server)
 	return nil
-}
-
-func updateModelServerless(model *Model, job *admin20231115014.ServerlessBackupRestoreJob) {
-	model.TargetClusterName = &job.TargetClusterName
-	model.DeliveryType = &job.DeliveryType
-	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
-	model.Id = job.Id
-	model.FinishedAt = util.TimePtrToStringPtr(job.FinishedAt)
-	model.SnapshotId = job.SnapshotId
-	model.TargetProjectId = &job.TargetGroupId
-	model.Timestamp = util.TimePtrToStringPtr(job.Timestamp)
-	model.Cancelled = job.Cancelled
-	model.Expired = job.Expired
-	model.DeliveryUrl = job.GetDeliveryUrl()
-	model.Links = flattenLinks(job.GetLinks())
 }
 
 func updateModelServer(model *Model, job *admin20231115014.DiskBackupSnapshotRestoreJob) {
@@ -420,18 +363,6 @@ func paramsServer(model *Model) *admin20231115014.DiskBackupSnapshotRestoreJob {
 		DeliveryType:          *model.DeliveryType,
 		TargetClusterName:     model.TargetClusterName,
 		TargetGroupId:         model.TargetProjectId,
-		OplogTs:               util.StrPtrToIntPtr(model.OpLogTs),
-		OplogInc:              util.StrPtrToIntPtr(model.OpLogInc),
-		PointInTimeUTCSeconds: model.PointInTimeUtcSeconds,
-	}
-}
-
-func paramsServerless(model *Model) *admin20231115014.ServerlessBackupRestoreJob {
-	return &admin20231115014.ServerlessBackupRestoreJob{
-		SnapshotId:            model.SnapshotId,
-		DeliveryType:          *model.DeliveryType,
-		TargetClusterName:     *model.TargetClusterName,
-		TargetGroupId:         *model.TargetProjectId,
 		OplogTs:               util.StrPtrToIntPtr(model.OpLogTs),
 		OplogInc:              util.StrPtrToIntPtr(model.OpLogInc),
 		PointInTimeUTCSeconds: model.PointInTimeUtcSeconds,

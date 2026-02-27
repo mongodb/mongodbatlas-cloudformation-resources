@@ -127,7 +127,6 @@ const (
 	RoleCreatingMessage = "Aws Role Creating..."
 	RoleDeletingMessage = "Aws Role Deleting..."
 	ProjID              = "ProjectID"
-	Serverless          = "SERVERLESS"
 	Duplicate           = "DUPLICATE"
 
 	AppID                = "AppId"

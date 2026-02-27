@@ -28,15 +28,14 @@
       "type": "string"
     },
     "InstanceType": {
-      "description": "Type of instance specified on the Instance Name serverless or cluster. **WARNING:** `serverless` instance type is deprecated and will be removed in January 2026. For more details, see [Migrate your programmatic tools from M2, M5, or Serverless Instances to Flex Clusters](https://www.mongodb.com/docs/atlas/flex-migration/).",
+      "description": "Type of instance specified on the Instance Name.",
       "type": "string",
       "enum": [
-        "serverless",
         "cluster"
       ]
     },
     "InstanceName": {
-      "description": "The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore jobs.",
+      "description": "Human-readable label that identifies the cluster.",
       "type": "string"
     },
     "Id": {

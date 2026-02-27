@@ -1,5 +1,11 @@
 # Changelog
 
+## (2025-02-26)
+
+**(BREAKING CHANGE) REMOVED SUPPORT FOR SERVERLESS INSTANCES**
+
+Serverless instances are no longer supported. The `InstanceType` field now only accepts `"cluster"`. Serverless API calls and code paths have been removed.
+
 ## (2023-10-17)
 
 **(BREAKING CHANGE) FIELD CHANGES**

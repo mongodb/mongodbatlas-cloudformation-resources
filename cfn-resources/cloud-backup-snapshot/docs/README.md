@@ -70,19 +70,19 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### InstanceType
 
-Type of instance specified on the Instance Name serverless or cluster
+Type of instance specified on the Instance Name.
 
 _Required_: Yes
 
 _Type_: String
 
-_Allowed Values_: <code>serverless</code> | <code>cluster</code>
+_Allowed Values_: <code>cluster</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### InstanceName
 
-The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore snapshot.
+Human-readable label that identifies the cluster.
 
 _Required_: Yes
 

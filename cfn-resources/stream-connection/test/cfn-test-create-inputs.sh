@@ -197,3 +197,55 @@ jq --arg workspace_name "$workspaceName" \
    | .ProjectId?|=$project_id
    | .WorkspaceName?|=$workspace_name' \
 	"$(dirname "$0")/inputs_6_update.json" >"inputs/inputs_6_update.json"
+
+jq --arg workspace_name "$workspaceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .WorkspaceName?|=$workspace_name' \
+	"$(dirname "$0")/inputs_7_create.json" >"inputs/inputs_7_create.json"
+
+jq --arg workspace_name "$workspaceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .WorkspaceName?|=$workspace_name' \
+	"$(dirname "$0")/inputs_7_update.json" >"inputs/inputs_7_update.json"
+
+jq --arg workspace_name "$workspaceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .WorkspaceName?|=$workspace_name' \
+	"$(dirname "$0")/inputs_8_create.json" >"inputs/inputs_8_create.json"
+
+jq --arg workspace_name "$workspaceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .WorkspaceName?|=$workspace_name' \
+	"$(dirname "$0")/inputs_8_update.json" >"inputs/inputs_8_update.json"
+
+jq --arg workspace_name "$workspaceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	--arg role_arn "$awsArn" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .WorkspaceName?|=$workspace_name
+   | .Aws.RoleArn=$role_arn' \
+	"$(dirname "$0")/inputs_9_create.json" >"inputs/inputs_9_create.json"
+
+jq --arg workspace_name "$workspaceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	--arg role_arn "$awsArn" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .WorkspaceName?|=$workspace_name
+   | .Aws.RoleArn=$role_arn' \
+	"$(dirname "$0")/inputs_9_update.json" >"inputs/inputs_9_update.json"

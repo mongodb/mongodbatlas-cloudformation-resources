@@ -65,6 +65,18 @@
         "SaslOauthbearerExtensions": {
           "type": "string",
           "description": "SASL OAuth bearer extensions."
+        },
+        "SslCertificate": {
+          "type": "string",
+          "description": "SSL certificate for client authentication to Kafka."
+        },
+        "SslKey": {
+          "type": "string",
+          "description": "SSL key for client authentication to Kafka. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials."
+        },
+        "SslKeyPassword": {
+          "type": "string",
+          "description": "Password for the SSL key, if it is password protected. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials."
         }
       },
       "additionalProperties": false
@@ -96,7 +108,7 @@
     },
     "Networking": {
       "type": "object",
-      "description": "Networking configuration for AWS PrivateLink connections.",
+      "description": "Networking configuration for connections.",
       "properties": {
         "Access": {
           "type": "object",
@@ -104,20 +116,21 @@
           "properties": {
             "Type": {
               "type": "string",
-              "description": "Type of network access. PRIVATE_ENDPOINT for AWS PrivateLink.",
-              "enum": [
-                "PRIVATE_ENDPOINT",
-                "PUBLIC"
-              ]
+              "description": "Type of network access. Can be PUBLIC, VPC, PRIVATE_LINK, or TRANSIT_GATEWAY."
             },
             "ConnectionId": {
               "type": "string",
-              "description": "Unique identifier of the AWS PrivateLink connection."
+              "description": "Unique identifier of the connection."
+            },
+            "Name": {
+              "type": "string",
+              "description": "Reserved. Will be used by PRIVATE_LINK connection type."
+            },
+            "TgwRouteId": {
+              "type": "string",
+              "description": "Reserved. Will be used by TRANSIT_GATEWAY connection type."
             }
           },
-          "required": [
-            "Type"
-          ],
           "additionalProperties": false
         }
       },
@@ -133,11 +146,32 @@
         "RoleArn": {
           "type": "string",
           "description": "Amazon Resource Name (ARN) of the IAM role for AWS Lambda connection."
+        },
+        "TestBucket": {
+          "type": "string",
+          "description": "The name of an S3 bucket used to check authorization of the passed-in IAM role ARN."
         }
       },
-      "required": [
-        "RoleArn"
-      ],
+      "required": ["RoleArn"],
+      "additionalProperties": false
+    },
+    "SchemaRegistryAuthentication": {
+      "type": "object",
+      "description": "Authentication configuration for Schema Registry.",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "description": "Authentication type discriminator. Specifies the authentication mechanism for Schema Registry."
+        },
+        "Username": {
+          "type": "string",
+          "description": "Username or Public Key for authentication."
+        },
+        "Password": {
+          "type": "string",
+          "description": "Password or Private Key for authentication. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials."
+        }
+      },
       "additionalProperties": false
     }
   },
@@ -223,6 +257,20 @@
         }
       },
       "additionalProperties": false
+    },
+    "Provider": {
+      "type": "string",
+      "description": "The Schema Registry provider."
+    },
+    "SchemaRegistryAuthentication": {
+      "$ref": "#/definitions/SchemaRegistryAuthentication"
+    },
+    "SchemaRegistryUrls": {
+      "type": "array",
+      "description": "List of Schema Registry endpoint URLs. Each URL must use the http or https scheme and specify a valid host and optional port.",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "handlers": {
@@ -273,7 +321,12 @@
   ],
   "writeOnlyProperties": [
     "/properties/Authentication/Password",
-    "/properties/Authentication/ClientSecret"
+    "/properties/Authentication/ClientSecret",
+    "/properties/Authentication/SslCertificate",
+    "/properties/Authentication/SslKey",
+    "/properties/Authentication/SslKeyPassword",
+    "/properties/SchemaRegistryAuthentication/Password",
+    "/properties/Aws/TestBucket"
   ],
   "tagging": {
     "taggable": false

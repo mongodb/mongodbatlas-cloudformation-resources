@@ -1,0 +1,11 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ConnectionName": "ConnectionNameAWSTest",
+  "Type": "AWSLambda",
+  "Aws": {
+    "RoleArn": "arn:aws:iam::123456789012:role/MyUpdatedStreamRole",
+    "TestBucket": "my-updated-test-bucket"
+  }
+}

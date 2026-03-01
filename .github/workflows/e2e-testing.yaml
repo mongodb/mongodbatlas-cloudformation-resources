@@ -45,7 +45,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+      - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
@@ -79,7 +79,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+      - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
@@ -111,7 +111,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+      - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
@@ -142,7 +142,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+      - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
@@ -172,7 +172,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+      - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7

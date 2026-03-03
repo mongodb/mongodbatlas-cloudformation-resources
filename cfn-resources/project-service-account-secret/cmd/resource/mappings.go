@@ -16,7 +16,7 @@ package resource
 
 import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312014/admin"
 )
 
 func UpdateModelFromSecret(model *Model, secret *admin.ServiceAccountSecret) {

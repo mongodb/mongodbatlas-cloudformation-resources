@@ -31,7 +31,12 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#rootcerttype" title="RootCertType">RootCertType</a>" : <i>String</i>,
         "<a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>" : <i>String</i>,
         "<a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>" : <i>Boolean</i>,
-        "<a href="#tags" title="Tags">Tags</a>" : <i>[ <a href="tag.md">tag</a>, ... ]</i>
+        "<a href="#tags" title="Tags">Tags</a>" : <i>[ <a href="tag.md">tag</a>, ... ]</i>,
+        "<a href="#configservermanagementmode" title="ConfigServerManagementMode">ConfigServerManagementMode</a>" : <i>String</i>,
+        "<a href="#replicasetscalingstrategy" title="ReplicaSetScalingStrategy">ReplicaSetScalingStrategy</a>" : <i>String</i>,
+        "<a href="#acceptdatarisksandforcereplicasetreconfig" title="AcceptDataRisksAndForceReplicaSetReconfig">AcceptDataRisksAndForceReplicaSetReconfig</a>" : <i>String</i>,
+        "<a href="#retainbackups" title="RetainBackups">RetainBackups</a>" : <i>Boolean</i>,
+        "<a href="#redactclientlogdata" title="RedactClientLogData">RedactClientLogData</a>" : <i>Boolean</i>
     }
 }
 </pre>
@@ -65,6 +70,11 @@ Properties:
     <a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>: <i>Boolean</i>
     <a href="#tags" title="Tags">Tags</a>: <i>
       - <a href="tag.md">tag</a></i>
+    <a href="#configservermanagementmode" title="ConfigServerManagementMode">ConfigServerManagementMode</a>: <i>String</i>
+    <a href="#replicasetscalingstrategy" title="ReplicaSetScalingStrategy">ReplicaSetScalingStrategy</a>: <i>String</i>
+    <a href="#acceptdatarisksandforcereplicasetreconfig" title="AcceptDataRisksAndForceReplicaSetReconfig">AcceptDataRisksAndForceReplicaSetReconfig</a>: <i>String</i>
+    <a href="#retainbackups" title="RetainBackups">RetainBackups</a>: <i>Boolean</i>
+    <a href="#redactclientlogdata" title="RedactClientLogData">RedactClientLogData</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
@@ -268,6 +278,56 @@ List of settings that configure your cluster regions. For Global Clusters, each 
 _Required_: No
 
 _Type_: List of <a href="tag.md">tag</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ConfigServerManagementMode
+
+Config Server Management Mode for creating or updating a sharded cluster. When configured as ATLAS_MANAGED, Atlas may automatically switch the cluster's config server type for optimal performance and savings. When configured as FIXED_TO_DEDICATED, the cluster will always use a dedicated config server.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ReplicaSetScalingStrategy
+
+Set this field to configure the replica set scaling mode for your cluster. By default, Atlas scales under WORKLOAD_TYPE. This mode allows Atlas to scale your analytics nodes in parallel to your operational nodes. When configured as SEQUENTIAL, Atlas scales all nodes sequentially. When configured as NODE_TYPE, Atlas scales your electable nodes in parallel with your read-only and analytics nodes.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AcceptDataRisksAndForceReplicaSetReconfig
+
+If reconfiguration is necessary to regain a primary due to a regional outage, submit this field alongside your topology reconfiguration to request a new regional outage resistant topology. Forced reconfigurations during an outage of the majority of electable nodes carry a risk of data loss if replicated writes have not been replicated to the new primary node. To proceed with an operation which carries that risk, set this field to the current date in ISO 8601 timestamp format in UTC (e.g. 2024-01-01T00:00:00Z).
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### RetainBackups
+
+Flag that indicates whether to retain backup snapshots for the deleted dedicated cluster. If omitted or set to false, the backup snapshots are deleted when the cluster is deleted.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### RedactClientLogData
+
+Enable or disable log redaction. This setting configures the mongod or mongos to redact any document field contents from a message accompanying a given log event before logging. Use in conjunction with Encryption at Rest and TLS to assist compliance with regulatory requirements.
+
+_Required_: No
+
+_Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

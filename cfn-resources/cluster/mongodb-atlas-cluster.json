@@ -290,6 +290,14 @@
         "TransactionLifetimeLimitSeconds": {
           "type": "integer",
           "description": "Lifetime, in seconds, of multi-document transactions. Atlas considers the transactions that exceed this limit as expired and so aborts them through a periodic cleanup process."
+        },
+        "ChangeStreamOptionsPreAndPostImagesExpireAfterSeconds": {
+          "type": "integer",
+          "description": "The number of seconds after which pre- and post-images are expired and deleted. A value of -1 means that pre- and post-images will never expire. Available for clusters running MongoDB 6.0 or later."
+        },
+        "DefaultMaxTimeMS": {
+          "type": "integer",
+          "description": "The default time limit in milliseconds for individual read operations to complete. A value of 0 means no default time limit is applied."
         }
       },
       "additionalProperties": false
@@ -452,6 +460,26 @@
       "items": {
         "$ref": "#/definitions/tag"
       }
+    },
+    "ConfigServerManagementMode": {
+      "description": "Config Server Management Mode for creating or updating a sharded cluster. When configured as ATLAS_MANAGED, Atlas may automatically switch the cluster's config server type for optimal performance and savings. When configured as FIXED_TO_DEDICATED, the cluster will always use a dedicated config server.",
+      "type": "string"
+    },
+    "ReplicaSetScalingStrategy": {
+      "description": "Set this field to configure the replica set scaling mode for your cluster. By default, Atlas scales under WORKLOAD_TYPE. This mode allows Atlas to scale your analytics nodes in parallel to your operational nodes. When configured as SEQUENTIAL, Atlas scales all nodes sequentially. When configured as NODE_TYPE, Atlas scales your electable nodes in parallel with your read-only and analytics nodes.",
+      "type": "string"
+    },
+    "AcceptDataRisksAndForceReplicaSetReconfig": {
+      "description": "If reconfiguration is necessary to regain a primary due to a regional outage, submit this field alongside your topology reconfiguration to request a new regional outage resistant topology. Forced reconfigurations during an outage of the majority of electable nodes carry a risk of data loss if replicated writes have not been replicated to the new primary node. To proceed with an operation which carries that risk, set this field to the current date in ISO 8601 timestamp format in UTC (e.g. 2024-01-01T00:00:00Z).",
+      "type": "string"
+    },
+    "RetainBackups": {
+      "description": "Flag that indicates whether to retain backup snapshots for the deleted dedicated cluster. If omitted or set to false, the backup snapshots are deleted when the cluster is deleted.",
+      "type": "boolean"
+    },
+    "RedactClientLogData": {
+      "description": "Enable or disable log redaction. This setting configures the mongod or mongos to redact any document field contents from a message accompanying a given log event before logging. Use in conjunction with Encryption at Rest and TLS to assist compliance with regulatory requirements.",
+      "type": "boolean"
     }
   },
   "additionalProperties": false,
@@ -471,6 +499,9 @@
     "/properties/MongoDBVersion",
     "/properties/CreatedDate",
     "/properties/Id"
+  ],
+  "writeOnlyProperties": [
+    "/properties/RetainBackups"
   ],
   "createOnlyProperties": [
     "/properties/Name",

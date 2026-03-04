@@ -47,6 +47,7 @@ func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredF
 		return nil, errEvent
 	}
 
+	// temp comment to trigger build
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return nil, peErr

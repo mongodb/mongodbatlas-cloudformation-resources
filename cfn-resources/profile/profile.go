@@ -29,14 +29,16 @@ import (
 )
 
 const (
-	DefaultProfile = "default"
+	DefaultProfile  = "default"
+	GovCloudBaseURL = "https://cloud.mongodbgov.com/"
 )
 
 type Profile struct {
-	DebugClient *bool  `json:"DebugClient,omitempty"`
-	PublicKey   string `json:"PublicKey"`
-	PrivateKey  string `json:"PrivateKey"`
-	BaseURL     string `json:"BaseUrl,omitempty"`
+	DebugClient       *bool  `json:"DebugClient,omitempty"`
+	IsMongoDBGovCloud *bool  `json:"IsMongoDBGovCloud,omitempty"`
+	PublicKey         string `json:"PublicKey"`
+	PrivateKey        string `json:"PrivateKey"`
+	BaseURL           string `json:"BaseUrl,omitempty"`
 }
 
 func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) (*Profile, error) {
@@ -74,7 +76,15 @@ func (p *Profile) NewBaseURL() string {
 		return baseURL
 	}
 
-	return p.BaseURL
+	if p.BaseURL != "" {
+		return p.BaseURL
+	}
+
+	if p.IsMongoDBGovCloud != nil && *p.IsMongoDBGovCloud {
+		return GovCloudBaseURL
+	}
+
+	return ""
 }
 
 func (p *Profile) NewPublicKey() string {

@@ -1,0 +1,146 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Kafka connection with SSL client certificate authentication for a stream workspace",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id",
+      "MinLength": 24,
+      "MaxLength": 24,
+      "AllowedPattern": "^([a-f0-9]{24})$"
+    },
+    "WorkspaceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream workspace"
+    },
+    "ConnectionName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream connection",
+      "Default": "KafkaSSLConnection"
+    },
+    "BootstrapServers": {
+      "Type": "String",
+      "Description": "Comma separated list of Kafka broker addresses (e.g., 'kafka.example.com:9093')"
+    },
+    "AuthMechanism": {
+      "Type": "String",
+      "Description": "Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512",
+      "Default": "PLAIN",
+      "AllowedValues": ["PLAIN", "SCRAM-256", "SCRAM-512"]
+    },
+    "AuthUsername": {
+      "Type": "String",
+      "Description": "Username of the account to connect to the Kafka cluster"
+    },
+    "AuthPassword": {
+      "Type": "String",
+      "Description": "Password of the account to connect to the Kafka cluster. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials.",
+      "NoEcho": true
+    },
+    "SslCertificate": {
+      "Type": "String",
+      "Description": "SSL client certificate for mutual TLS authentication (PEM format). Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials.",
+      "NoEcho": true
+    },
+    "SslKey": {
+      "Type": "String",
+      "Description": "SSL client private key for mutual TLS authentication (PEM format). Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials.",
+      "NoEcho": true
+    },
+    "SslKeyPassword": {
+      "Type": "String",
+      "Description": "Password for the SSL private key, if encrypted. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials.",
+      "NoEcho": true,
+      "Default": ""
+    },
+    "SecurityProtocol": {
+      "Type": "String",
+      "Description": "Transport security protocol. Use SSL for encrypted connections.",
+      "Default": "SSL",
+      "AllowedValues": ["PLAINTEXT", "SSL"]
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "StreamConnection": {
+      "Type": "MongoDB::Atlas::StreamConnection",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ConnectionName": {
+          "Ref": "ConnectionName"
+        },
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "Type": "Kafka",
+        "BootstrapServers": {
+          "Ref": "BootstrapServers"
+        },
+        "Authentication": {
+          "Mechanism": {
+            "Ref": "AuthMechanism"
+          },
+          "Username": {
+            "Ref": "AuthUsername"
+          },
+          "Password": {
+            "Ref": "AuthPassword"
+          },
+          "SslCertificate": {
+            "Ref": "SslCertificate"
+          },
+          "SslKey": {
+            "Ref": "SslKey"
+          },
+          "SslKeyPassword": {
+            "Ref": "SslKeyPassword"
+          }
+        },
+        "Security": {
+          "Protocol": {
+            "Ref": "SecurityProtocol"
+          }
+        },
+        "Networking": {
+          "Access": {
+            "Type": "PUBLIC"
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ConnectionName": {
+      "Description": "Name of the created stream connection",
+      "Value": {
+        "Ref": "ConnectionName"
+      }
+    },
+    "ConnectionType": {
+      "Description": "Type of the stream connection",
+      "Value": "Kafka"
+    },
+    "AuthenticationMechanism": {
+      "Description": "Kafka authentication mechanism",
+      "Value": {
+        "Ref": "AuthMechanism"
+      }
+    },
+    "SecurityProtocol": {
+      "Description": "Security protocol used for connection",
+      "Value": {
+        "Ref": "SecurityProtocol"
+      }
+    }
+  }
+}

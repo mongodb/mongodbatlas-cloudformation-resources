@@ -1,0 +1,28 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "WorkspaceName": "",
+  "ConnectionName": "ConnectionNameSchemaRegistry",
+  "Type": "Kafka",
+  "BootstrapServers": "localhost:9092",
+  "Authentication": {
+    "Mechanism": "PLAIN",
+    "Username": "user1",
+    "Password": "password123"
+  },
+  "Security": {
+    "Protocol": "SSL"
+  },
+  "Networking": {
+    "Access": {
+      "Type": "PUBLIC"
+    }
+  },
+  "Provider": "Confluent",
+  "SchemaRegistryUrls": ["https://schema-registry.example.com:8081"],
+  "SchemaRegistryAuthentication": {
+    "Type": "BASIC",
+    "Username": "schema-user",
+    "Password": "schema-pass"
+  }
+}

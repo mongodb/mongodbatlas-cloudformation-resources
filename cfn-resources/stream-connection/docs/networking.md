@@ -1,6 +1,6 @@
 # MongoDB::Atlas::StreamConnection Networking
 
-Networking configuration for AWS PrivateLink connections.
+Networking configuration for connections.
 
 ## Syntax
 

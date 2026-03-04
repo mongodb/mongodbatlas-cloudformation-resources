@@ -104,59 +104,14 @@ SecretName: cfn/atlas/profile/{ProfileName}
 SecretValue: {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey", "IsMongoDBGovCloud": true}
 ```
 
-When `IsMongoDBGovCloud` is `true`, the base URL defaults to `https://cloud.mongodbgov.com/`. You can override this by also providing a `BaseUrl` field for non-production Cloud Gov environments:
+When `IsMongoDBGovCloud` is `true`, the base URL defaults to `https://cloud.mongodbgov.com/`.
 
 ### Prerequisites
 1. Review [Atlas for Government considerations](https://www.mongodb.com/docs/atlas/government/atlas-for-government/).
 2. An existing Atlas Organization with billing set up in your Cloud Gov environment.
 3. API keys with the Organization Owner or Organization Project Creator role.
 
-### Example CloudFormation Template
-
-The following template creates a Project and Cluster on Cloud Gov using AWS government regions:
-
-```json
-{
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "MongoDB Atlas Cloud Gov - Project and Cluster",
-  "Resources": {
-    "Project": {
-      "Type": "MongoDB::Atlas::Project",
-      "Properties": {
-        "Name": "cfn-project-gov-aws",
-        "OrgId": "<YOUR-ORG-ID>",
-        "Profile": "<YOUR-GOV-PROFILE-NAME>",
-        "RegionUsageRestrictions": "GOV_REGIONS_ONLY"
-      }
-    },
-    "AtlasCluster": {
-      "Type": "MongoDB::Atlas::Cluster",
-      "Properties": {
-        "ProjectId": {
-          "Fn::GetAtt": ["Project", "Id"]
-        },
-        "Name": "cfn-cluster-gov-aws",
-        "Profile": "<YOUR-GOV-PROFILE-NAME>",
-        "BackupEnabled": "true",
-        "ClusterType": "REPLICASET",
-        "ReplicationSpecs": [{
-          "AdvancedRegionConfigs": [{
-            "ElectableSpecs": {
-              "InstanceSize": "M20",
-              "NodeCount": "3"
-            },
-            "Priority": "7",
-            "RegionName": "US_GOV_WEST_1",
-            "ProviderName": "AWS"
-          }]
-        }]
-      }
-    }
-  }
-}
-```
-
-**Note**: Set `RegionUsageRestrictions` to `GOV_REGIONS_ONLY` on your project and use government-specific region names (e.g., `US_GOV_WEST_1` for AWS, `GOV_US_EAST_4` for GCP).
+**Note**: Set `RegionUsageRestrictions` to `GOV_REGIONS_ONLY` on your project and use government-specific region names (e.g., `US_GOV_WEST_1` for AWS).
 
 ## Logging 
 

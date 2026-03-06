@@ -28,7 +28,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#networking" title="Networking">Networking</a>" : <i><a href="networking.md">Networking</a></i>,
         "<a href="#aws" title="Aws">Aws</a>" : <i><a href="aws.md">Aws</a></i>,
         "<a href="#url" title="Url">Url</a>" : <i>String</i>,
-        "<a href="#headers" title="Headers">Headers</a>" : <i><a href="headers.md">Headers</a></i>
+        "<a href="#headers" title="Headers">Headers</a>" : <i><a href="headers.md">Headers</a></i>,
+        "<a href="#provider" title="Provider">Provider</a>" : <i>String</i>,
+        "<a href="#schemaregistryauthentication" title="SchemaRegistryAuthentication">SchemaRegistryAuthentication</a>" : <i><a href="schemaregistryauthentication.md">SchemaRegistryAuthentication</a></i>,
+        "<a href="#schemaregistryurls" title="SchemaRegistryUrls">SchemaRegistryUrls</a>" : <i>[ String, ... ]</i>
     }
 }
 </pre>
@@ -55,6 +58,10 @@ Properties:
     <a href="#aws" title="Aws">Aws</a>: <i><a href="aws.md">Aws</a></i>
     <a href="#url" title="Url">Url</a>: <i>String</i>
     <a href="#headers" title="Headers">Headers</a>: <i><a href="headers.md">Headers</a></i>
+    <a href="#provider" title="Provider">Provider</a>: <i>String</i>
+    <a href="#schemaregistryauthentication" title="SchemaRegistryAuthentication">SchemaRegistryAuthentication</a>: <i><a href="schemaregistryauthentication.md">SchemaRegistryAuthentication</a></i>
+    <a href="#schemaregistryurls" title="SchemaRegistryUrls">SchemaRegistryUrls</a>: <i>
+      - String</i>
 </pre>
 
 ## Properties
@@ -99,7 +106,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### InstanceName
 
-Human-readable label that identifies the stream instance. Deprecated: Use WorkspaceName instead.
+Human-readable label that identifies the stream instance. WARNING: This field is deprecated and will be removed in the next major release. Please use WorkspaceName instead.
 
 _Required_: No
 
@@ -207,7 +214,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Networking
 
-Networking configuration for AWS PrivateLink connections.
+Networking configuration for connections.
 
 _Required_: No
 
@@ -242,6 +249,36 @@ HTTP headers for HTTPS type connections.
 _Required_: No
 
 _Type_: <a href="headers.md">Headers</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Provider
+
+The Schema Registry provider.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SchemaRegistryAuthentication
+
+Authentication configuration for Schema Registry.
+
+_Required_: No
+
+_Type_: <a href="schemaregistryauthentication.md">SchemaRegistryAuthentication</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SchemaRegistryUrls
+
+List of Schema Registry endpoint URLs. Each URL must use the http or https scheme and specify a valid host and optional port.
+
+_Required_: No
+
+_Type_: List of String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

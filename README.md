@@ -104,8 +104,6 @@ SecretName: cfn/atlas/profile/{ProfileName}
 SecretValue: {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey", "IsMongoDBGovCloud": true}
 ```
 
-When `IsMongoDBGovCloud` is `true`, the base URL defaults to `https://cloud.mongodbgov.com/`.
-
 ### Prerequisites
 1. Review [Atlas for Government considerations](https://www.mongodb.com/docs/atlas/government/atlas-for-government/).
 2. An existing Atlas Organization with billing set up in your Cloud Gov environment.

@@ -91,6 +91,26 @@ Incorrect usage:
   "Profile" : "cfn/atlas/profile/ProfileName"
 ```
 
+## MongoDB Atlas for Government
+
+MongoDB Atlas CloudFormation resources support [MongoDB Atlas for Government](https://www.mongodb.com/products/platform/atlas-for-government). To use Atlas for Government (Cloud Gov), configure the `IsMongoDBGovCloud` flag in your profile secret and use government-specific regions.
+
+### Configure your Profile for Cloud Gov
+
+When creating the profile secret in AWS Secrets Manager, include the `IsMongoDBGovCloud` field set to `true`:
+
+```
+SecretName: cfn/atlas/profile/{ProfileName}
+SecretValue: {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey", "IsMongoDBGovCloud": true}
+```
+
+### Prerequisites
+1. Review [Atlas for Government considerations](https://www.mongodb.com/docs/atlas/government/atlas-for-government/).
+2. An existing Atlas Organization with billing set up in your Cloud Gov environment.
+3. API keys with the Organization Owner or Organization Project Creator role.
+
+**Note**: Set `RegionUsageRestrictions` to `GOV_REGIONS_ONLY` on your project and use government-specific region names (e.g., `US_GOV_WEST_1` for AWS).
+
 ## Logging 
 
 Logging for AWS CloudFormation Public extensions is currently disabled. AWS is evaluating if logging is useful for consumers of third party extensions, if this is something you need or would like to request please open a ticket directly with AWS Support.
@@ -215,7 +235,3 @@ Resources:
       RouteTableCIDRBlock: "10.0.0.0/16"
       VpcId: "YOUR-VPC-ID"
 ```
-
-
-
-

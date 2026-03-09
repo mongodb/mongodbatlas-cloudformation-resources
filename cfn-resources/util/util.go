@@ -153,7 +153,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}
 	}
 
-	c := Config{BaseURL: prof.BaseURL, DebugClient: prof.UseDebug()}
+	c := Config{BaseURL: prof.NewBaseURL(), DebugClient: prof.UseDebug()}
 
 	// new V2 version 20231115002 instance
 	sdk20231115002Client, err := c.NewSDKv20231115002Client(client)

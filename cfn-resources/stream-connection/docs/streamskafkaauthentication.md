@@ -18,7 +18,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#clientid" title="ClientId">ClientId</a>" : <i>String</i>,
     "<a href="#clientsecret" title="ClientSecret">ClientSecret</a>" : <i>String</i>,
     "<a href="#scope" title="Scope">Scope</a>" : <i>String</i>,
-    "<a href="#sasloauthbearerextensions" title="SaslOauthbearerExtensions">SaslOauthbearerExtensions</a>" : <i>String</i>
+    "<a href="#sasloauthbearerextensions" title="SaslOauthbearerExtensions">SaslOauthbearerExtensions</a>" : <i>String</i>,
+    "<a href="#sslcertificate" title="SslCertificate">SslCertificate</a>" : <i>String</i>,
+    "<a href="#sslkey" title="SslKey">SslKey</a>" : <i>String</i>,
+    "<a href="#sslkeypassword" title="SslKeyPassword">SslKeyPassword</a>" : <i>String</i>
 }
 </pre>
 
@@ -34,6 +37,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#clientsecret" title="ClientSecret">ClientSecret</a>: <i>String</i>
 <a href="#scope" title="Scope">Scope</a>: <i>String</i>
 <a href="#sasloauthbearerextensions" title="SaslOauthbearerExtensions">SaslOauthbearerExtensions</a>: <i>String</i>
+<a href="#sslcertificate" title="SslCertificate">SslCertificate</a>: <i>String</i>
+<a href="#sslkey" title="SslKey">SslKey</a>: <i>String</i>
+<a href="#sslkeypassword" title="SslKeyPassword">SslKeyPassword</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -121,6 +127,36 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 #### SaslOauthbearerExtensions
 
 SASL OAuth bearer extensions.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SslCertificate
+
+SSL certificate for client authentication to Kafka.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SslKey
+
+SSL key for client authentication to Kafka. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SslKeyPassword
+
+Password for the SSL key, if it is password protected. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials.
 
 _Required_: No
 

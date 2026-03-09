@@ -104,7 +104,7 @@ SecretName: cfn/atlas/profile/{ProfileName}
 SecretValue: {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey", "IsMongoDBGovCloud": true}
 ```
 
-Alternatively, you can set the `BaseUrl` field directly to the Gov Cloud URL. The following configuration is equivalent to using `IsMongoDBGovCloud`:
+Using `IsMongoDBGovCloud` is the recommended approach. Alternatively, you can set the `BaseUrl` field directly to the Gov Cloud URL. The following configuration is equivalent:
 
 ```
 SecretValue: {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey", "BaseUrl": "https://cloud.mongodbgov.com/"}

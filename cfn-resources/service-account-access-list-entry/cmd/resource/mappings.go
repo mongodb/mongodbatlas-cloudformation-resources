@@ -16,7 +16,7 @@ package resource
 
 import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312016/admin"
 )
 
 func UpdateModelFromEntry(model *Model, entry *admin.ServiceAccountIPAccessListEntry) {

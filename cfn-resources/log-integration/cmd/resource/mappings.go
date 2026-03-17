@@ -14,7 +14,7 @@
 
 package resource
 
-import "go.mongodb.org/atlas-sdk/v20250312013/admin"
+import "go.mongodb.org/atlas-sdk/v20250312016/admin"
 
 func NewLogIntegrationCreateRequest(model *Model) *admin.S3LogIntegrationRequest {
 	if model == nil {

@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"reflect"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -29,7 +29,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 )
 
-func mapClusterToModel(model *Model, cluster *admin20231115014.AdvancedClusterDescription) {
+func mapClusterToModel(model *Model, cluster *admin.ClusterDescription20240805) {
 	model.Id = cluster.Id
 	model.ProjectId = cluster.GroupId
 	model.Name = cluster.Name
@@ -38,7 +38,6 @@ func mapClusterToModel(model *Model, cluster *admin20231115014.AdvancedClusterDe
 	model.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
 	model.ClusterType = cluster.ClusterType
 	model.CreatedDate = util.TimePtrToStringPtr(cluster.CreateDate)
-	model.DiskSizeGB = cluster.DiskSizeGB
 	model.EncryptionAtRestProvider = cluster.EncryptionAtRestProvider
 	model.GlobalClusterSelfManagedSharding = cluster.GlobalClusterSelfManagedSharding
 	model.Labels = flattenLabels(cluster.GetLabels())
@@ -50,6 +49,12 @@ func mapClusterToModel(model *Model, cluster *admin20231115014.AdvancedClusterDe
 	model.ReplicationSpecs = flattenReplicationSpecs(cluster.GetReplicationSpecs())
 	model.StateName = cluster.StateName
 	model.VersionReleaseSystem = cluster.VersionReleaseSystem
+	model.ConfigServerManagementMode = cluster.ConfigServerManagementMode
+	model.ReplicaSetScalingStrategy = cluster.ReplicaSetScalingStrategy
+	model.AcceptDataRisksAndForceReplicaSetReconfig = util.TimePtrToStringPtr(cluster.AcceptDataRisksAndForceReplicaSetReconfig)
+	model.RedactClientLogData = cluster.RedactClientLogData
+	// DiskSizeGB: read from the first electable spec of the first region config
+	model.DiskSizeGB = diskSizeGBFromSpecs(cluster.GetReplicationSpecs())
 }
 
 func containsLabelOrKey(list []Labels, item Labels) bool {
@@ -62,36 +67,31 @@ func containsLabelOrKey(list []Labels, item Labels) bool {
 	return false
 }
 
-func expandBiConnector(biConnector *BiConnector) *admin20231115014.BiConnector {
+func expandBiConnector(biConnector *BiConnector) *admin.BiConnector {
 	if biConnector == nil {
 		return nil
 	}
-	return &admin20231115014.BiConnector{
+	return &admin.BiConnector{
 		Enabled:        biConnector.Enabled,
 		ReadPreference: biConnector.ReadPreference,
 	}
 }
 
-func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin20231115014.ReplicationSpec {
-	rSpecs := []admin20231115014.ReplicationSpec{}
+func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin.ReplicationSpec20240805 {
+	rSpecs := []admin.ReplicationSpec20240805{}
 
 	for i := range replicationSpecs {
-		var numShards int
-
-		rSpec := admin20231115014.ReplicationSpec{
-			NumShards:     &numShards,
+		rSpec := admin.ReplicationSpec20240805{
 			RegionConfigs: expandRegionsConfig(replicationSpecs[i].AdvancedRegionConfigs),
 		}
 
 		if util.IsStringPresent(replicationSpecs[i].ID) {
-			rSpec.Id = admin20231115014.PtrString(cast.ToString(replicationSpecs[i].ID))
+			rSpec.Id = admin.PtrString(cast.ToString(replicationSpecs[i].ID))
 		}
 
-		if replicationSpecs[i].NumShards != nil {
-			rSpec.NumShards = replicationSpecs[i].NumShards
-		}
+		// NumShards is not supported in the v20250312013 API; each shard must be a separate ReplicationSpec entry.
 		if replicationSpecs[i].ZoneName != nil {
-			rSpec.ZoneName = admin20231115014.PtrString(cast.ToString(replicationSpecs[i].ZoneName))
+			rSpec.ZoneName = admin.PtrString(cast.ToString(replicationSpecs[i].ZoneName))
 		}
 		rSpecs = append(rSpecs, rSpec)
 	}
@@ -100,13 +100,13 @@ func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin2
 	return rSpecs
 }
 
-func expandAutoScaling(scaling *AdvancedAutoScaling) *admin20231115014.AdvancedAutoScalingSettings {
-	advAutoScaling := &admin20231115014.AdvancedAutoScalingSettings{}
+func expandAutoScaling(scaling *AdvancedAutoScaling) *admin.AdvancedAutoScalingSettings {
+	advAutoScaling := &admin.AdvancedAutoScalingSettings{}
 	if scaling == nil {
 		return nil
 	}
 	if scaling.Compute != nil {
-		advAutoScaling.Compute = &admin20231115014.AdvancedComputeAutoScaling{
+		advAutoScaling.Compute = &admin.AdvancedComputeAutoScaling{
 			Enabled:          scaling.Compute.Enabled,
 			ScaleDownEnabled: scaling.Compute.ScaleDownEnabled,
 		}
@@ -121,27 +121,27 @@ func expandAutoScaling(scaling *AdvancedAutoScaling) *admin20231115014.AdvancedA
 	}
 
 	if scaling.DiskGB != nil {
-		advAutoScaling.DiskGB = &admin20231115014.DiskGBAutoScaling{Enabled: scaling.DiskGB.Enabled}
+		advAutoScaling.DiskGB = &admin.DiskGBAutoScaling{Enabled: scaling.DiskGB.Enabled}
 	}
 
 	return advAutoScaling
 }
 
-func expandRegionsConfig(regionConfigs []AdvancedRegionConfig) *[]admin20231115014.CloudRegionConfig {
-	regionsConfigs := []admin20231115014.CloudRegionConfig{}
+func expandRegionsConfig(regionConfigs []AdvancedRegionConfig) *[]admin.CloudRegionConfig20240805 {
+	regionsConfigs := []admin.CloudRegionConfig20240805{}
 	for _, regionCfg := range regionConfigs {
 		regionsConfigs = append(regionsConfigs, expandRegionConfig(regionCfg))
 	}
 	return &regionsConfigs
 }
 
-func expandRegionConfig(regionCfg AdvancedRegionConfig) admin20231115014.CloudRegionConfig {
+func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig20240805 {
 	providerName := constants.AWS
 	if regionCfg.ProviderName != nil {
 		providerName = *regionCfg.ProviderName
 	}
 
-	advRegionConfig := admin20231115014.CloudRegionConfig{
+	advRegionConfig := admin.CloudRegionConfig20240805{
 		ProviderName: &providerName,
 		RegionName:   regionCfg.RegionName,
 		Priority:     regionCfg.Priority,
@@ -168,11 +168,11 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) admin20231115014.CloudRe
 	return advRegionConfig
 }
 
-func NewHardwareSpec(spec *Specs) *admin20231115014.HardwareSpec {
+func NewHardwareSpec(spec *Specs) *admin.HardwareSpec20240805 {
 	if spec == nil {
 		return nil
 	}
-	return &admin20231115014.HardwareSpec{
+	return &admin.HardwareSpec20240805{
 		DiskIOPS:      util.StrPtrToIntPtr(spec.DiskIOPS),
 		EbsVolumeType: spec.EbsVolumeType,
 		InstanceSize:  spec.InstanceSize,
@@ -180,11 +180,11 @@ func NewHardwareSpec(spec *Specs) *admin20231115014.HardwareSpec {
 	}
 }
 
-func expandRegionConfigSpec(spec *Specs) *admin20231115014.DedicatedHardwareSpec {
+func expandRegionConfigSpec(spec *Specs) *admin.DedicatedHardwareSpec20240805 {
 	if spec == nil {
 		return nil
 	}
-	return &admin20231115014.DedicatedHardwareSpec{
+	return &admin.DedicatedHardwareSpec20240805{
 		DiskIOPS:      util.StrPtrToIntPtr(spec.DiskIOPS),
 		EbsVolumeType: spec.EbsVolumeType,
 		InstanceSize:  spec.InstanceSize,
@@ -192,8 +192,8 @@ func expandRegionConfigSpec(spec *Specs) *admin20231115014.DedicatedHardwareSpec
 	}
 }
 
-func expandLabelSlice(labels []Labels) *[]admin20231115014.ComponentLabel {
-	res := make([]admin20231115014.ComponentLabel, len(labels))
+func expandLabelSlice(labels []Labels) *[]admin.ComponentLabel {
+	res := make([]admin.ComponentLabel, len(labels))
 
 	for i := range labels {
 		var key string
@@ -204,7 +204,7 @@ func expandLabelSlice(labels []Labels) *[]admin20231115014.ComponentLabel {
 		if labels[i].Value != nil {
 			value = *labels[i].Value
 		}
-		res[i] = admin20231115014.ComponentLabel{
+		res[i] = admin.ComponentLabel{
 			Key:   &key,
 			Value: &value,
 		}
@@ -212,7 +212,7 @@ func expandLabelSlice(labels []Labels) *[]admin20231115014.ComponentLabel {
 	return &res
 }
 
-func flattenAutoScaling(scaling *admin20231115014.AdvancedAutoScalingSettings) *AdvancedAutoScaling {
+func flattenAutoScaling(scaling *admin.AdvancedAutoScalingSettings) *AdvancedAutoScaling {
 	if scaling == nil {
 		return nil
 	}
@@ -241,13 +241,12 @@ func flattenAutoScaling(scaling *admin20231115014.AdvancedAutoScalingSettings) *
 	return advAutoScaling
 }
 
-func flattenReplicationSpecs(replicationSpecs []admin20231115014.ReplicationSpec) []AdvancedReplicationSpec {
+func flattenReplicationSpecs(replicationSpecs []admin.ReplicationSpec20240805) []AdvancedReplicationSpec {
 	var rSpecs []AdvancedReplicationSpec
 
 	for ind := range replicationSpecs {
 		rSpec := AdvancedReplicationSpec{
 			ID:                    replicationSpecs[ind].Id,
-			NumShards:             replicationSpecs[ind].NumShards,
 			ZoneName:              replicationSpecs[ind].ZoneName,
 			AdvancedRegionConfigs: flattenRegionsConfig(replicationSpecs[ind].RegionConfigs),
 		}
@@ -257,7 +256,7 @@ func flattenReplicationSpecs(replicationSpecs []admin20231115014.ReplicationSpec
 	return rSpecs
 }
 
-func flattenRegionsConfig(regionConfigs *[]admin20231115014.CloudRegionConfig) []AdvancedRegionConfig {
+func flattenRegionsConfig(regionConfigs *[]admin.CloudRegionConfig20240805) []AdvancedRegionConfig {
 	if regionConfigs == nil {
 		return []AdvancedRegionConfig{}
 	}
@@ -270,7 +269,7 @@ func flattenRegionsConfig(regionConfigs *[]admin20231115014.CloudRegionConfig) [
 	return regionsConfigs
 }
 
-func flattenRegionConfig(regionCfg *admin20231115014.CloudRegionConfig) AdvancedRegionConfig {
+func flattenRegionConfig(regionCfg *admin.CloudRegionConfig20240805) AdvancedRegionConfig {
 	if regionCfg == nil {
 		return AdvancedRegionConfig{}
 	}
@@ -279,6 +278,7 @@ func flattenRegionConfig(regionCfg *admin20231115014.CloudRegionConfig) Advanced
 		AnalyticsAutoScaling: flattenAutoScaling(regionCfg.AnalyticsAutoScaling),
 		RegionName:           regionCfg.RegionName,
 		Priority:             regionCfg.Priority,
+		ProviderName:         regionCfg.ProviderName,
 	}
 	if regionCfg.AnalyticsSpecs != nil {
 		advRegConfig.AnalyticsSpecs = flattenRegionConfigSpec(regionCfg.AnalyticsSpecs)
@@ -294,7 +294,7 @@ func flattenRegionConfig(regionCfg *admin20231115014.CloudRegionConfig) Advanced
 	return advRegConfig
 }
 
-func flattenElectableSpecs(spec *admin20231115014.HardwareSpec) *Specs {
+func flattenElectableSpecs(spec *admin.HardwareSpec20240805) *Specs {
 	if spec == nil {
 		return nil
 	}
@@ -306,7 +306,7 @@ func flattenElectableSpecs(spec *admin20231115014.HardwareSpec) *Specs {
 	}
 }
 
-func flattenRegionConfigSpec(spec *admin20231115014.DedicatedHardwareSpec) *Specs {
+func flattenRegionConfigSpec(spec *admin.DedicatedHardwareSpec20240805) *Specs {
 	if spec == nil {
 		return nil
 	}
@@ -318,7 +318,7 @@ func flattenRegionConfigSpec(spec *admin20231115014.DedicatedHardwareSpec) *Spec
 	}
 }
 
-func flattenBiConnectorConfig(biConnector *admin20231115014.BiConnector) *BiConnector {
+func flattenBiConnectorConfig(biConnector *admin.BiConnector) *BiConnector {
 	if biConnector == nil {
 		return nil
 	}
@@ -334,7 +334,7 @@ type privateEndpointConnectionStrings struct {
 	SRVShardOptimizedConnectionString []string
 }
 
-func flattenConnectionStrings(clusterConnStrings *admin20231115014.ClusterConnectionStrings) (connStrings *ConnectionStrings) {
+func flattenConnectionStrings(clusterConnStrings *admin.ClusterConnectionStrings) (connStrings *ConnectionStrings) {
 	if clusterConnStrings != nil {
 		privateEndpoints := flattenPrivateEndpoint(clusterConnStrings.PrivateEndpoint)
 		connStrings = &ConnectionStrings{
@@ -350,7 +350,7 @@ func flattenConnectionStrings(clusterConnStrings *admin20231115014.ClusterConnec
 	return
 }
 
-func flattenPrivateEndpoint(pes *[]admin20231115014.ClusterDescriptionConnectionStringsPrivateEndpoint) privateEndpointConnectionStrings {
+func flattenPrivateEndpoint(pes *[]admin.ClusterDescriptionConnectionStringsPrivateEndpoint) privateEndpointConnectionStrings {
 	privateEndpoints := privateEndpointConnectionStrings{
 		PrivateEndpoints:                  make([]string, 0),
 		PrivateEndpointsSrv:               make([]string, 0),
@@ -376,30 +376,29 @@ func flattenPrivateEndpoint(pes *[]admin20231115014.ClusterDescriptionConnection
 	return privateEndpoints
 }
 
-func flattenProcessArgs(p *admin20231115014.ClusterDescriptionProcessArgs, cluster *admin20231115014.AdvancedClusterDescription) *ProcessArgs {
+// flattenProcessArgs maps the v20250312013 process args response to the CFN ProcessArgs model.
+// Note: DefaultReadConcern and FailIndexKeyTooLong were removed from the Atlas API in v20240805;
+// those schema fields are preserved for backward compatibility but are no longer populated.
+func flattenProcessArgs(p *admin.ClusterDescriptionProcessArgs20240805) *ProcessArgs {
 	res := &ProcessArgs{
-		DefaultReadConcern:               p.DefaultReadConcern,
 		DefaultWriteConcern:              p.DefaultWriteConcern,
-		FailIndexKeyTooLong:              p.FailIndexKeyTooLong,
 		JavascriptEnabled:                p.JavascriptEnabled,
+		MinimumEnabledTLSProtocol:        p.MinimumEnabledTlsProtocol,
+		TlsCipherConfigMode:              p.TlsCipherConfigMode,
+		CustomOpensslCipherConfigTls12:   p.GetCustomOpensslCipherConfigTls12(),
 		NoTableScan:                      p.NoTableScan,
 		OplogSizeMB:                      p.OplogSizeMB,
 		SampleSizeBIConnector:            p.SampleSizeBIConnector,
 		SampleRefreshIntervalBIConnector: p.SampleRefreshIntervalBIConnector,
 		OplogMinRetentionHours:           p.OplogMinRetentionHours,
 		TransactionLifetimeLimitSeconds:  util.Int64PtrToIntPtr(p.TransactionLifetimeLimitSeconds),
+		ChangeStreamOptionsPreAndPostImagesExpireAfterSeconds: p.ChangeStreamOptionsPreAndPostImagesExpireAfterSeconds,
+		DefaultMaxTimeMS: p.DefaultMaxTimeMS,
 	}
-
-	if advConfig := cluster.AdvancedConfiguration; advConfig != nil {
-		res.MinimumEnabledTLSProtocol = advConfig.MinimumEnabledTlsProtocol
-		res.TlsCipherConfigMode = advConfig.TlsCipherConfigMode
-		res.CustomOpensslCipherConfigTls12 = advConfig.GetCustomOpensslCipherConfigTls12()
-	}
-
 	return res
 }
 
-func flattenLabels(clusterLabels []admin20231115014.ComponentLabel) []Labels {
+func flattenLabels(clusterLabels []admin.ComponentLabel) []Labels {
 	labels := make([]Labels, len(clusterLabels))
 	for i := range clusterLabels {
 		labels[i] = Labels{
@@ -410,20 +409,26 @@ func flattenLabels(clusterLabels []admin20231115014.ComponentLabel) []Labels {
 	return labels
 }
 
-func expandAdvancedSettings(processArgs ProcessArgs) *admin20231115014.ClusterDescriptionProcessArgs {
-	var args admin20231115014.ClusterDescriptionProcessArgs
+// expandAdvancedSettings maps the CFN ProcessArgs model to the v20250312013 process args request.
+// Note: DefaultReadConcern and FailIndexKeyTooLong are not sent as they were removed from the API.
+func expandAdvancedSettings(processArgs ProcessArgs) *admin.ClusterDescriptionProcessArgs20240805 {
+	var args admin.ClusterDescriptionProcessArgs20240805
 
-	if processArgs.DefaultReadConcern != nil {
-		args.DefaultReadConcern = processArgs.DefaultReadConcern
-	}
-	args.FailIndexKeyTooLong = processArgs.FailIndexKeyTooLong
 	if processArgs.DefaultWriteConcern != nil {
 		args.DefaultWriteConcern = processArgs.DefaultWriteConcern
 	}
 	args.JavascriptEnabled = processArgs.JavascriptEnabled
-
 	args.NoTableScan = processArgs.NoTableScan
 
+	if processArgs.MinimumEnabledTLSProtocol != nil {
+		args.MinimumEnabledTlsProtocol = processArgs.MinimumEnabledTLSProtocol
+	}
+	if processArgs.TlsCipherConfigMode != nil {
+		args.TlsCipherConfigMode = processArgs.TlsCipherConfigMode
+	}
+	if len(processArgs.CustomOpensslCipherConfigTls12) > 0 {
+		args.CustomOpensslCipherConfigTls12 = &processArgs.CustomOpensslCipherConfigTls12
+	}
 	if processArgs.OplogSizeMB != nil {
 		args.OplogSizeMB = processArgs.OplogSizeMB
 	}
@@ -433,20 +438,24 @@ func expandAdvancedSettings(processArgs ProcessArgs) *admin20231115014.ClusterDe
 	if processArgs.SampleRefreshIntervalBIConnector != nil {
 		args.SampleRefreshIntervalBIConnector = processArgs.SampleRefreshIntervalBIConnector
 	}
-
 	if processArgs.OplogMinRetentionHours != nil {
 		args.OplogMinRetentionHours = processArgs.OplogMinRetentionHours
 	}
-
 	if processArgs.TransactionLifetimeLimitSeconds != nil {
 		limitSeconds := cast.ToInt64(*processArgs.TransactionLifetimeLimitSeconds)
 		args.TransactionLifetimeLimitSeconds = &limitSeconds
+	}
+	if processArgs.ChangeStreamOptionsPreAndPostImagesExpireAfterSeconds != nil {
+		args.ChangeStreamOptionsPreAndPostImagesExpireAfterSeconds = processArgs.ChangeStreamOptionsPreAndPostImagesExpireAfterSeconds
+	}
+	if processArgs.DefaultMaxTimeMS != nil {
+		args.DefaultMaxTimeMS = processArgs.DefaultMaxTimeMS
 	}
 
 	return &args
 }
 
-func flattenTags(clusterTags []admin20231115014.ResourceTag) (tags []Tag) {
+func flattenTags(clusterTags []admin.ResourceTag) (tags []Tag) {
 	for ind := range clusterTags {
 		tags = append(tags, Tag{
 			Key:   &clusterTags[ind].Key,
@@ -456,8 +465,8 @@ func flattenTags(clusterTags []admin20231115014.ResourceTag) (tags []Tag) {
 	return
 }
 
-func expandTags(tags []Tag) (*[]admin20231115014.ResourceTag, error) {
-	clusterTags := []admin20231115014.ResourceTag{}
+func expandTags(tags []Tag) (*[]admin.ResourceTag, error) {
+	clusterTags := []admin.ResourceTag{}
 	for ind := range tags {
 		key := tags[ind].Key
 		value := tags[ind].Value
@@ -467,7 +476,7 @@ func expandTags(tags []Tag) (*[]admin20231115014.ResourceTag, error) {
 		if value == nil {
 			return &clusterTags, fmt.Errorf("tags Value is undefined for %s", *key)
 		}
-		clusterTags = append(clusterTags, admin20231115014.ResourceTag{
+		clusterTags = append(clusterTags, admin.ResourceTag{
 			Key:   *key,
 			Value: *value,
 		})
@@ -475,7 +484,7 @@ func expandTags(tags []Tag) (*[]admin20231115014.ResourceTag, error) {
 	return &clusterTags, nil
 }
 
-func setClusterData(currentModel *Model, cluster *admin20231115014.AdvancedClusterDescription) {
+func setClusterData(currentModel *Model, cluster *admin.ClusterDescription20240805) {
 	if cluster == nil {
 		return
 	}
@@ -497,9 +506,6 @@ func setClusterData(currentModel *Model, cluster *admin20231115014.AdvancedClust
 	}
 	// Readonly
 	currentModel.CreatedDate = util.TimePtrToStringPtr(cluster.CreateDate)
-	if currentModel.DiskSizeGB != nil {
-		currentModel.DiskSizeGB = cluster.DiskSizeGB
-	}
 	if currentModel.EncryptionAtRestProvider != nil {
 		currentModel.EncryptionAtRestProvider = cluster.EncryptionAtRestProvider
 	}
@@ -536,14 +542,27 @@ func setClusterData(currentModel *Model, cluster *admin20231115014.AdvancedClust
 
 	currentModel.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
 	currentModel.Tags = flattenTags(cluster.GetTags())
+
+	// New attributes
+	currentModel.ConfigServerManagementMode = cluster.ConfigServerManagementMode
+	currentModel.ReplicaSetScalingStrategy = cluster.ReplicaSetScalingStrategy
+	currentModel.AcceptDataRisksAndForceReplicaSetReconfig = util.TimePtrToStringPtr(cluster.AcceptDataRisksAndForceReplicaSetReconfig)
+	currentModel.RedactClientLogData = cluster.RedactClientLogData
+	// DiskSizeGB: read from the first electable spec
+	currentModel.DiskSizeGB = diskSizeGBFromSpecs(cluster.GetReplicationSpecs())
+	currentModel.RetainBackups = nil
 }
 
-func setClusterRequest(currentModel *Model) (*admin20231115014.AdvancedClusterDescription, *handler.ProgressEvent) {
-	clusterRequest := &admin20231115014.AdvancedClusterDescription{
+func setClusterRequest(currentModel *Model) (*admin.ClusterDescription20240805, *handler.ProgressEvent) {
+	clusterRequest := &admin.ClusterDescription20240805{
 		Name: currentModel.Name,
 	}
 	if currentModel.ReplicationSpecs != nil {
 		adminRepSpecs := expandReplicationSpecs(currentModel.ReplicationSpecs)
+		// Apply top-level DiskSizeGB to all hardware specs in the request
+		if currentModel.DiskSizeGB != nil {
+			applyDiskSizeGBToSpecs(adminRepSpecs, currentModel.DiskSizeGB)
+		}
 		clusterRequest.ReplicationSpecs = &adminRepSpecs
 	}
 
@@ -563,10 +582,6 @@ func setClusterRequest(currentModel *Model) (*admin20231115014.AdvancedClusterDe
 		clusterRequest.BiConnector = expandBiConnector(currentModel.BiConnector)
 	}
 
-	if currentModel.DiskSizeGB != nil {
-		clusterRequest.DiskSizeGB = currentModel.DiskSizeGB
-	}
-
 	if currentModel.GlobalClusterSelfManagedSharding != nil {
 		clusterRequest.GlobalClusterSelfManagedSharding = currentModel.GlobalClusterSelfManagedSharding
 	}
@@ -576,7 +591,7 @@ func setClusterRequest(currentModel *Model) (*admin20231115014.AdvancedClusterDe
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {
-		clusterRequest.MongoDBMajorVersion = admin20231115014.PtrString(formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion))
+		clusterRequest.MongoDBMajorVersion = admin.PtrString(formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion))
 	}
 
 	if currentModel.PitEnabled != nil {
@@ -590,6 +605,7 @@ func setClusterRequest(currentModel *Model) (*admin20231115014.AdvancedClusterDe
 	if currentModel.RootCertType != nil {
 		clusterRequest.RootCertType = currentModel.RootCertType
 	}
+
 	tags, err := expandTags(currentModel.Tags)
 	if err != nil {
 		return clusterRequest, &handler.ProgressEvent{
@@ -602,14 +618,30 @@ func setClusterRequest(currentModel *Model) (*admin20231115014.AdvancedClusterDe
 
 	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 
+	if currentModel.ConfigServerManagementMode != nil {
+		clusterRequest.ConfigServerManagementMode = currentModel.ConfigServerManagementMode
+	}
+
+	if currentModel.ReplicaSetScalingStrategy != nil {
+		clusterRequest.ReplicaSetScalingStrategy = currentModel.ReplicaSetScalingStrategy
+	}
+
+	if currentModel.AcceptDataRisksAndForceReplicaSetReconfig != nil {
+		clusterRequest.AcceptDataRisksAndForceReplicaSetReconfig = util.StringPtrToTimePtr(currentModel.AcceptDataRisksAndForceReplicaSetReconfig)
+	}
+
+	if currentModel.RedactClientLogData != nil {
+		clusterRequest.RedactClientLogData = currentModel.RedactClientLogData
+	}
+
 	if currentModel.AdvancedSettings != nil {
 		clusterRequest.AdvancedConfiguration = expandClusterAdvancedConfiguration(*currentModel.AdvancedSettings)
 	}
 	return clusterRequest, nil
 }
 
-func expandClusterAdvancedConfiguration(processArgs ProcessArgs) *admin20231115014.ApiAtlasClusterAdvancedConfiguration {
-	var args admin20231115014.ApiAtlasClusterAdvancedConfiguration
+func expandClusterAdvancedConfiguration(processArgs ProcessArgs) *admin.ApiAtlasClusterAdvancedConfiguration {
+	var args admin.ApiAtlasClusterAdvancedConfiguration
 
 	if processArgs.MinimumEnabledTLSProtocol != nil {
 		args.MinimumEnabledTlsProtocol = processArgs.MinimumEnabledTLSProtocol
@@ -617,12 +649,16 @@ func expandClusterAdvancedConfiguration(processArgs ProcessArgs) *admin202311150
 	if processArgs.TlsCipherConfigMode != nil {
 		args.TlsCipherConfigMode = processArgs.TlsCipherConfigMode
 	}
-	args.CustomOpensslCipherConfigTls12 = &processArgs.CustomOpensslCipherConfigTls12
+	if len(processArgs.CustomOpensslCipherConfigTls12) > 0 {
+		args.CustomOpensslCipherConfigTls12 = &processArgs.CustomOpensslCipherConfigTls12
+	}
 
 	return &args
 }
 
-func AddReplicationSpecIDs(src, dest []admin20231115014.ReplicationSpec) *[]admin20231115014.ReplicationSpec {
+// AddReplicationSpecIDs matches existing replication spec IDs from the current cluster (src)
+// to the desired specs (dest) by zone name or provider/region, to preserve shard identity on update.
+func AddReplicationSpecIDs(src, dest []admin.ReplicationSpec20240805) *[]admin.ReplicationSpec20240805 {
 	zoneToID := map[string]string{}
 	providerRegionToID := map[string]string{}
 	usedIDs := map[string]bool{}
@@ -662,10 +698,48 @@ func AddReplicationSpecIDs(src, dest []admin20231115014.ReplicationSpec) *[]admi
 	return &dest
 }
 
-func asProviderRegion(spec admin20231115014.ReplicationSpec) string {
+func asProviderRegion(spec admin.ReplicationSpec20240805) string {
 	configs := spec.GetRegionConfigs()
 	if len(configs) == 0 {
 		return ""
 	}
 	return fmt.Sprintf("%s-%s", configs[0].GetProviderName(), configs[0].GetRegionName())
+}
+
+// diskSizeGBFromSpecs reads the DiskSizeGB from the first electable spec of the first replication spec.
+// In the v20250312013 API, DiskSizeGB is per hardware spec rather than a top-level cluster field.
+func diskSizeGBFromSpecs(replicationSpecs []admin.ReplicationSpec20240805) *float64 {
+	for _, spec := range replicationSpecs {
+		for _, rc := range spec.GetRegionConfigs() {
+			if rc.ElectableSpecs != nil && rc.ElectableSpecs.DiskSizeGB != nil {
+				return rc.ElectableSpecs.DiskSizeGB
+			}
+		}
+	}
+	return nil
+}
+
+// applyDiskSizeGBToSpecs applies the given diskSizeGB value to all hardware specs in all replication specs.
+// This maps the CFN top-level DiskSizeGB property to the per-spec field required by the v20250312013 API.
+func applyDiskSizeGBToSpecs(replicationSpecs []admin.ReplicationSpec20240805, diskSizeGB *float64) {
+	if diskSizeGB == nil {
+		return
+	}
+	for i := range replicationSpecs {
+		if replicationSpecs[i].RegionConfigs == nil {
+			continue
+		}
+		for j := range *replicationSpecs[i].RegionConfigs {
+			rc := &(*replicationSpecs[i].RegionConfigs)[j]
+			if rc.ElectableSpecs != nil {
+				rc.ElectableSpecs.DiskSizeGB = diskSizeGB
+			}
+			if rc.AnalyticsSpecs != nil {
+				rc.AnalyticsSpecs.DiskSizeGB = diskSizeGB
+			}
+			if rc.ReadOnlySpecs != nil {
+				rc.ReadOnlySpecs.DiskSizeGB = diskSizeGB
+			}
+		}
+	}
 }

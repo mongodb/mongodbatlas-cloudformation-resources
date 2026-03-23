@@ -78,7 +78,7 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@05fe4576374b728f0c523d6a13d64c25081e0803
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48
   shellcheck:
     name: shellcheck
     runs-on: ubuntu-latest
@@ -92,7 +92,7 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: 'Setup cfn-lint'
-        uses: scottbrenner/cfn-lint-action@25ee47d1ab3146bda904df745511735cc0b9a970
+        uses: scottbrenner/cfn-lint-action@9636da81fb2e0cef75725d8dda11b0148940b7ae
       - name: 'Run cfn-lint'
         run: |
           shopt -s globstar # enable globbing

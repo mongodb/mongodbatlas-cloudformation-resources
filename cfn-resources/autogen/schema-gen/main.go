@@ -349,7 +349,7 @@ func readRequestBody(method *openapi3.Operation,
 			// Read Discriminator params
 			if value.Value.Discriminator != nil {
 				for _, def := range value.Value.Discriminator.Mapping {
-					schemaKey := def[strings.LastIndex(def, "/")+1:]
+					schemaKey := def.Ref[strings.LastIndex(def.Ref, "/")+1:]
 
 					if doc.Components.Schemas[filepath.Base(schemaKey)].Value != nil && doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf != nil {
 						allOf := doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf

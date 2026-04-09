@@ -20,7 +20,7 @@ jobs:
      cluster-outage-simulation: ${{ steps.filter.outputs.cluster-outage-simulation }}
      database-user: ${{ steps.filter.outputs.database-user }}
      encryption-at-rest: ${{ steps.filter.outputs.encryption-at-rest }}
-     federated-database-instance: ${{ steps.filter.outputs.federated-database-instance }}
+     federated-database-instance: true
      federated-query-limit: ${{ steps.filter.outputs.federated-query-limit }}
      federated-settings-identity-provider: ${{ steps.filter.outputs.federated-settings-identity-provider }}
      federated-settings-org-role-mapping: ${{ steps.filter.outputs.federated-settings-org-role-mapping }}

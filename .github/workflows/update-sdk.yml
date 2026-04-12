@@ -16,7 +16,7 @@ jobs:
       - name: Update files
         run:  make tools update-atlas-sdk generate-mocks
       - name: Create PR
-        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
         with:
           token: ${{ secrets.APIX_BOT_PAT }}
           title: "chore: Updates Atlas Go SDK"

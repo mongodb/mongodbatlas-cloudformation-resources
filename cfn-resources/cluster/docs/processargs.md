@@ -89,7 +89,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### MinimumEnabledTLSProtocol
 
-Minimum Transport Layer Security (TLS) version that the cluster accepts for incoming connections. Clusters using TLS 1.0 or 1.1 should consider setting TLS 1.2 as the minimum TLS protocol version.
+Minimum Transport Layer Security (TLS) version that the cluster accepts for incoming connections. Valid values are TLS1_2 and TLS1_3.
 
 _Required_: No
 

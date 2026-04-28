@@ -99,7 +99,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              fmt.Sprintf("outage simulation status : %s", *simulationObject.State),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 65,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"status":       simulationObject.State,
 			"cluster_name": simulationObject.ClusterName,
 			"project_id":   simulationObject.GroupId,
@@ -192,7 +192,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              constants.DeleteInProgress,
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 60,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"status":       simulationObject.State,
 			"cluster_name": simulationObject.ClusterName,
 			"project_id":   simulationObject.GroupId,
@@ -241,7 +241,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		p.OperationStatus = handler.InProgress
 		p.CallbackDelaySeconds = 65
 		p.Message = constants.Pending
-		p.CallbackContext = map[string]interface{}{
+		p.CallbackContext = map[string]any{
 			"status":       state,
 			"cluster_name": *currentModel.ClusterName,
 			"project_id":   *currentModel.ProjectId,

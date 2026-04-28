@@ -212,7 +212,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err != nil {
 		return handleError(response, LIST, err)
 	}
-	tenants := make([]interface{}, 0)
+	tenants := make([]any, 0)
 	for i := range dataLakeTenants {
 		tenant := Model{Profile: currentModel.Profile}
 		tenant.getDataLakeTenant(dataLakeTenants[i])

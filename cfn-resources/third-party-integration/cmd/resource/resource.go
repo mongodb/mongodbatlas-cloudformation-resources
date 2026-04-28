@@ -270,7 +270,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	mm := make([]interface{}, 0)
+	mm := make([]any, 0)
 	if integrations != nil {
 		results := integrations.GetResults()
 		for i := range results {

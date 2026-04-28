@@ -221,7 +221,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, constants.DELETE, err)
 	}
 
-	currentModel.IsDeleted = util.Pointer(false)
+	currentModel.IsDeleted = new(false)
 
 	responseMsg, progressEvent := runDelete(ctx, conn, currentModel)
 	if responseMsg.Error != nil {
@@ -272,7 +272,7 @@ func runDelete(ctx context.Context, conn *admin.APIClient, currentModel *Model) 
 			Message:              DeleteInProgress,
 			ResourceModel:        currentModel,
 			CallbackDelaySeconds: CallBackSeconds,
-			CallbackContext: map[string]interface{}{
+			CallbackContext: map[string]any{
 				constants.StateName: DeletingState,
 			},
 		}
@@ -304,7 +304,7 @@ func deleteCallback(ctx context.Context, conn *admin.APIClient, currentModel *Mo
 		Message:              DeleteInProgress,
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			constants.StateName: DeletingState,
 		},
 	}, nil
@@ -320,7 +320,7 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	if err != nil {
 		return nil, response, err
 	}
-	model.Name = util.Pointer(org.Name)
+	model.Name = new(org.Name)
 	model.OrgId = org.Id
 	model.IsDeleted = org.IsDeleted
 	model.SkipDefaultAlertsSettings = org.SkipDefaultAlertsSettings
@@ -387,9 +387,9 @@ func setDefaultsIfNotDefined(m *Model) {
 		return
 	}
 	if m.SkipDefaultAlertsSettings == nil {
-		m.SkipDefaultAlertsSettings = util.Pointer(true)
+		m.SkipDefaultAlertsSettings = new(true)
 	}
 	if m.GenAIFeaturesEnabled == nil {
-		m.GenAIFeaturesEnabled = util.Pointer(true)
+		m.GenAIFeaturesEnabled = new(true)
 	}
 }

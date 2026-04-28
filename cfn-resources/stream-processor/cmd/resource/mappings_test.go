@@ -224,9 +224,9 @@ func TestNewStreamProcessorUpdateReq(t *testing.T) {
 
 func TestGetStreamProcessorModel(t *testing.T) {
 	validDLQ := &admin.StreamsDLQ{
-		Coll:           admin.PtrString("dlq-collection"),
-		ConnectionName: admin.PtrString("dlq-connection"),
-		Db:             admin.PtrString("dlq-db"),
+		Coll:           new("dlq-collection"),
+		ConnectionName: new("dlq-connection"),
+		Db:             new("dlq-db"),
 	}
 	currentModelWithDLQ := &resource.Model{
 		Options: &resource.StreamsOptions{

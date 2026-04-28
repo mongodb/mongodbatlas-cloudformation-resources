@@ -20,7 +20,6 @@ import (
 
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project-service-account/cmd/resource"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -42,10 +41,10 @@ func TestNewGroupServiceAccountCreateReq(t *testing.T) {
 		{
 			name: "Valid Input - Roles Sorted",
 			input: &resource.Model{
-				Name:                    ptr.String("test"),
-				Description:             ptr.String("desc"),
+				Name:                    new("test"),
+				Description:             new("desc"),
 				Roles:                   []string{"GROUP_OWNER", "GROUP_READ_ONLY"},
-				SecretExpiresAfterHours: ptr.Int(720),
+				SecretExpiresAfterHours: new(720),
 			},
 			expected: &admin.GroupServiceAccountRequest{
 				Name:                    "test",
@@ -89,26 +88,26 @@ func TestNewGroupServiceAccountUpdateReq(t *testing.T) {
 		{
 			name: "Valid Input - Roles Sorted",
 			input: &resource.Model{
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       []string{"GROUP_OWNER", "GROUP_READ_ONLY"},
 			},
 			expected: &admin.GroupServiceAccountUpdateRequest{
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       &[]string{"GROUP_OWNER", "GROUP_READ_ONLY"},
 			},
 		},
 		{
 			name: "Empty Roles",
 			input: &resource.Model{
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       []string{},
 			},
 			expected: &admin.GroupServiceAccountUpdateRequest{
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       nil,
 			},
 		},
@@ -158,15 +157,15 @@ func TestGetGroupServiceAccountModel(t *testing.T) {
 		{
 			name: "Valid SDK Input - Preserve ProjectId/Profile",
 			inputSDK: &admin.GroupServiceAccount{
-				ClientId:    ptr.String(clientID),
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				ClientId:    new(clientID),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       &[]string{"GROUP_OWNER"},
 				CreatedAt:   &now,
 			},
 			inputModel: &resource.Model{
-				ProjectId: ptr.String(projectID),
-				Profile:   ptr.String("default"),
+				ProjectId: new(projectID),
+				Profile:   new("default"),
 			},
 			validate: func(t *testing.T, result *resource.Model) {
 				t.Helper()
@@ -178,8 +177,8 @@ func TestGetGroupServiceAccountModel(t *testing.T) {
 		{
 			name: "Valid SDK Input - Preserve Roles Order",
 			inputSDK: &admin.GroupServiceAccount{
-				ClientId:  ptr.String(clientID),
-				Name:      ptr.String("test"),
+				ClientId:  new(clientID),
+				Name:      new("test"),
 				Roles:     &[]string{"GROUP_OWNER", "GROUP_READ_ONLY"},
 				CreatedAt: &now,
 			},
@@ -194,16 +193,16 @@ func TestGetGroupServiceAccountModel(t *testing.T) {
 		{
 			name: "Valid SDK Input - With Secrets",
 			inputSDK: &admin.GroupServiceAccount{
-				ClientId:  ptr.String(clientID),
-				Name:      ptr.String("test"),
+				ClientId:  new(clientID),
+				Name:      new("test"),
 				CreatedAt: &now,
 				Secrets: &[]admin.ServiceAccountSecret{
 					{
 						Id:                secretID,
 						CreatedAt:         now,
 						ExpiresAt:         now.Add(720 * time.Hour),
-						MaskedSecretValue: ptr.String("****"),
-						Secret:            ptr.String("secret-value"),
+						MaskedSecretValue: new("****"),
+						Secret:            new("secret-value"),
 					},
 				},
 			},
@@ -219,8 +218,8 @@ func TestGetGroupServiceAccountModel(t *testing.T) {
 		{
 			name: "Nil Secrets",
 			inputSDK: &admin.GroupServiceAccount{
-				ClientId:  ptr.String(clientID),
-				Name:      ptr.String("test"),
+				ClientId:  new(clientID),
+				Name:      new("test"),
 				CreatedAt: &now,
 				Secrets:   nil,
 			},

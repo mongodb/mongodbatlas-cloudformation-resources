@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -279,19 +280,14 @@ func ToStringMapE(ep any) (map[string]any, error) {
 	return eMap, nil
 }
 
+//go:fix inline
 func Pointer[T any](x T) *T {
-	return &x
+	return new(x)
 }
 
 // Contains checks if a string is present in a slice
 func Contains(s []string, str string) bool {
-	for _, v := range s {
-		if v == str {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(s, str)
 }
 
 func SafeString(s *string) string {
@@ -342,10 +338,6 @@ func StringPtrToTimePtr(p *string) *time.Time {
 
 func StringToTime(t string) (time.Time, error) {
 	return time.Parse(time.RFC3339Nano, t)
-}
-
-func IntPtr(i int) *int {
-	return &i
 }
 
 func Int64PtrToIntPtr(i64 *int64) *int {

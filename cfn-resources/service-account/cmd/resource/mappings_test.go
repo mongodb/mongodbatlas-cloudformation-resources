@@ -20,7 +20,6 @@ import (
 
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/service-account/cmd/resource"
 	"github.com/stretchr/testify/assert"
 )
@@ -39,10 +38,10 @@ func TestNewOrgServiceAccountCreateReq(t *testing.T) {
 		{
 			name: "Valid Input - Roles Sorted",
 			input: &resource.Model{
-				Name:                    ptr.String("test"),
-				Description:             ptr.String("desc"),
+				Name:                    new("test"),
+				Description:             new("desc"),
 				Roles:                   []string{"ORG_MEMBER", "ORG_GROUP_CREATOR"},
-				SecretExpiresAfterHours: ptr.Int(720),
+				SecretExpiresAfterHours: new(720),
 			},
 			expected: &admin.OrgServiceAccountRequest{
 				Name:                    "test",
@@ -82,26 +81,26 @@ func TestNewOrgServiceAccountUpdateReq(t *testing.T) {
 		{
 			name: "Valid Input - Roles Sorted",
 			input: &resource.Model{
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       []string{"ORG_MEMBER", "ORG_GROUP_CREATOR"},
 			},
 			expected: &admin.OrgServiceAccountUpdateRequest{
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       &[]string{"ORG_GROUP_CREATOR", "ORG_MEMBER"},
 			},
 		},
 		{
 			name: "Empty Roles",
 			input: &resource.Model{
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       []string{},
 			},
 			expected: &admin.OrgServiceAccountUpdateRequest{
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       nil,
 			},
 		},
@@ -149,15 +148,15 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 		{
 			name: "Valid SDK Input - Preserve OrgId/Profile",
 			inputSDK: &admin.OrgServiceAccount{
-				ClientId:    ptr.String(clientID),
-				Name:        ptr.String("test"),
-				Description: ptr.String("desc"),
+				ClientId:    new(clientID),
+				Name:        new("test"),
+				Description: new("desc"),
 				Roles:       &[]string{"ORG_MEMBER"},
 				CreatedAt:   &now,
 			},
 			inputModel: &resource.Model{
-				OrgId:   ptr.String(orgID),
-				Profile: ptr.String("default"),
+				OrgId:   new(orgID),
+				Profile: new("default"),
 			},
 			validate: func(t *testing.T, result *resource.Model) {
 				t.Helper()
@@ -169,8 +168,8 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 		{
 			name: "Valid SDK Input - Preserve Roles Order",
 			inputSDK: &admin.OrgServiceAccount{
-				ClientId:  ptr.String(clientID),
-				Name:      ptr.String("test"),
+				ClientId:  new(clientID),
+				Name:      new("test"),
 				Roles:     &[]string{"ORG_MEMBER", "ORG_GROUP_CREATOR"},
 				CreatedAt: &now,
 			},
@@ -185,16 +184,16 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 		{
 			name: "Valid SDK Input - With Secrets",
 			inputSDK: &admin.OrgServiceAccount{
-				ClientId:  ptr.String(clientID),
-				Name:      ptr.String("test"),
+				ClientId:  new(clientID),
+				Name:      new("test"),
 				CreatedAt: &now,
 				Secrets: &[]admin.ServiceAccountSecret{
 					{
 						Id:                secretID,
 						CreatedAt:         now,
 						ExpiresAt:         now.Add(720 * time.Hour),
-						MaskedSecretValue: ptr.String("****"),
-						Secret:            ptr.String("secret-value"),
+						MaskedSecretValue: new("****"),
+						Secret:            new("secret-value"),
 					},
 				},
 			},
@@ -210,8 +209,8 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 		{
 			name: "Nil Secrets",
 			inputSDK: &admin.OrgServiceAccount{
-				ClientId:  ptr.String(clientID),
-				Name:      ptr.String("test"),
+				ClientId:  new(clientID),
+				Name:      new("test"),
 				CreatedAt: &now,
 				Secrets:   nil,
 			},

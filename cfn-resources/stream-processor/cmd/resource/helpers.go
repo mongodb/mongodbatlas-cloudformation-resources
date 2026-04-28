@@ -95,7 +95,7 @@ func getAllStreamProcessors(ctx context.Context, atlasClient *admin.APIClient, p
 			GroupId:      projectID,
 			TenantName:   workspaceName,
 			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),
-			PageNum:      util.Pointer(pageNum),
+			PageNum:      new(pageNum),
 		}).Execute()
 
 		if err != nil {

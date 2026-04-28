@@ -57,11 +57,11 @@ const (
 
 func replicationSpec(nodeCount int, region, zoneName string) resource.AdvancedReplicationSpec {
 	return resource.AdvancedReplicationSpec{
-		NumShards: util.IntPtr(1),
+		NumShards: new(1),
 		ZoneName:  &zoneName,
 		AdvancedRegionConfigs: []resource.AdvancedRegionConfig{{
 			RegionName:   &region,
-			Priority:     util.IntPtr(7),
+			Priority:     new(7),
 			ProviderName: util.StringPtr("AWS"),
 			ElectableSpecs: &resource.Specs{
 				EbsVolumeType: util.StringPtr("STANDARD"),
@@ -273,7 +273,7 @@ func readFromAtlas(t *testing.T, c *localTestContext) (project *admin20231115014
 
 func getClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
-	for i := 0; i < len(stackOutputs); i++ {
+	for i := range stackOutputs {
 		if *stackOutputs[i].OutputKey == "MongoDBAtlasClusterID" {
 			return *stackOutputs[i].OutputValue
 		}
@@ -283,7 +283,7 @@ func getClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 
 func getFlexClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
-	for i := 0; i < len(stackOutputs); i++ {
+	for i := range stackOutputs {
 		if *stackOutputs[i].OutputKey == "MongoDBAtlasFlexClusterID" {
 			return *stackOutputs[i].OutputValue
 		}

@@ -55,7 +55,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	var invites []interface{}
+	var invites []any
 	for i := range invitations {
 		invite := invitationAPIRequestToModel(currentModel, &invitations[i])
 		invites = append(invites, invite)

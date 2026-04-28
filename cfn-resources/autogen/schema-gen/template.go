@@ -17,17 +17,17 @@ package main
 import "github.com/getkin/kin-openapi/openapi3"
 
 type CfnSchema struct {
-	Definitions          interface{} `json:"definitions,omitempty"`
-	Properties           interface{} `json:"properties"`
-	Description          string      `json:"description"`
-	TypeName             string      `json:"typeName"`
-	SourceURL            string      `json:"sourceUrl"`
-	FileName             string      `json:"-"`
-	Handlers             Handlers    `json:"handlers"`
-	PrimaryIdentifier    []string    `json:"primaryIdentifier"`
-	ReadOnlyProperties   []string    `json:"readOnlyProperties,omitempty"`
-	Required             []string    `json:"required,omitempty"`
-	AdditionalProperties bool        `json:"additionalProperties"`
+	Definitions          any      `json:"definitions,omitempty"`
+	Properties           any      `json:"properties"`
+	Description          string   `json:"description"`
+	TypeName             string   `json:"typeName"`
+	SourceURL            string   `json:"sourceUrl"`
+	FileName             string   `json:"-"`
+	Handlers             Handlers `json:"handlers"`
+	PrimaryIdentifier    []string `json:"primaryIdentifier"`
+	ReadOnlyProperties   []string `json:"readOnlyProperties,omitempty"`
+	Required             []string `json:"required,omitempty"`
+	AdditionalProperties bool     `json:"additionalProperties"`
 }
 
 type RequiredParams struct {
@@ -72,7 +72,7 @@ type Property struct {
 	Description          string          `json:"description,omitempty"`
 	Ref                  string          `json:"$ref,omitempty"`
 	Pattern              string          `json:"pattern,omitempty"`
-	Enum                 []interface{}   `json:"enum,omitempty"`
+	Enum                 []any           `json:"enum,omitempty"`
 	Required             []string        `json:"-"`
 	MinLength            uint64          `json:"minLength,omitempty"`
 	InsertionOrder       bool            `json:"insertionOrder,omitempty"`
@@ -83,7 +83,7 @@ type Property struct {
 type Items struct {
 	Ref         string          `json:"$ref,omitempty"`
 	Type        *openapi3.Types `json:"type,omitempty"`
-	Enum        []interface{}   `json:"enum,omitempty"`
+	Enum        []any           `json:"enum,omitempty"`
 	UniqueItems bool            `json:"uniqueItems,omitempty"`
 }
 

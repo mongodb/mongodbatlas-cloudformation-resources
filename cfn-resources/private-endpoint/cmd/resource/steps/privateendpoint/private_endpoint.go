@@ -58,7 +58,7 @@ type AtlasPrivateEndpointInput struct {
 	SubnetIDs           []string
 }
 
-func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interface{}) error {
+func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]any) error {
 	s.ID = fmt.Sprint(m["ID"])
 	eventStatusParam := fmt.Sprint(m["StateName"])
 	eventStatus, err := constants.ParseEventStatus(eventStatusParam)
@@ -101,7 +101,7 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 	return nil
 }
 
-func GetCallback(privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string, state constants.EventStatus) (map[string]interface{}, error) {
+func GetCallback(privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string, state constants.EventStatus) (map[string]any, error) {
 	endpointCallBacks := make([]AtlasPrivateEndpointCallBack, len(privateEndpointInput))
 
 	for i, pe := range privateEndpointInput {
@@ -127,8 +127,8 @@ func GetCallback(privateEndpointInput []AtlasPrivateEndpointInput, endpointServi
 	return getMapFromCallBackContext(callBackContext)
 }
 
-func getMapFromCallBackContext(callBackContext privateEndpointCreationCallBackContext) (map[string]interface{}, error) {
-	var callBackMap map[string]interface{}
+func getMapFromCallBackContext(callBackContext privateEndpointCreationCallBackContext) (map[string]any, error) {
+	var callBackMap map[string]any
 	data, _ := json.Marshal(callBackContext)
 	err := json.Unmarshal(data, &callBackMap)
 

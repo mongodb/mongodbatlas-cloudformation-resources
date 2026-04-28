@@ -211,7 +211,7 @@ func inProgressEvent(message string, model *Model) handler.ProgressEvent {
 		Message:              message,
 		ResourceModel:        model,
 		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			constants.ID: model.Id,
 		}}
 }

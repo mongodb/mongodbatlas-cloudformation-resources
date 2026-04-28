@@ -222,7 +222,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			resp), nil
 	}
 
-	models := make([]interface{}, 0)
+	models := make([]any, 0)
 	if federatedSettingsOrganizationRoleMappings.Results != nil {
 		for i := range *federatedSettingsOrganizationRoleMappings.Results {
 			roleMappings := *federatedSettingsOrganizationRoleMappings.Results

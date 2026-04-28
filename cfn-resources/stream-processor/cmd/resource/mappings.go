@@ -124,9 +124,9 @@ func GetStreamProcessorModel(streamProcessor *admin.StreamsProcessorWithStats, c
 		model.DeleteOnCreateTimeout = nil
 	}
 
-	model.ProcessorName = util.Pointer(streamProcessor.Name)
-	model.Id = util.Pointer(streamProcessor.Id)
-	model.State = util.Pointer(streamProcessor.State)
+	model.ProcessorName = new(streamProcessor.Name)
+	model.Id = new(streamProcessor.Id)
+	model.State = new(streamProcessor.State)
 
 	if currentModel != nil && currentModel.Pipeline != nil {
 		model.Pipeline = currentModel.Pipeline

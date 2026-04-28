@@ -199,7 +199,7 @@ func readPauseClusterFromAtlas(t *testing.T, c *pauseTestContext) *admin20231115
 
 func getPauseClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
-	for i := 0; i < len(stackOutputs); i++ {
+	for i := range stackOutputs {
 		if *stackOutputs[i].OutputKey == "MongoDBAtlasClusterID" {
 			return *stackOutputs[i].OutputValue
 		}

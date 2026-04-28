@@ -319,7 +319,7 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 			DatadogRegion:            notificationList[ind].DatadogRegion,
 			EmailAddress:             notificationList[ind].EmailAddress,
 			EmailEnabled:             notificationList[ind].EmailEnabled,
-			IntervalMin:              util.Pointer(int(*notificationList[ind].IntervalMin)),
+			IntervalMin:              new(int(*notificationList[ind].IntervalMin)),
 			MicrosoftTeamsWebhookUrl: notificationList[ind].MicrosoftTeamsWebhookUrl,
 			MobileNumber:             notificationList[ind].MobileNumber,
 			OpsGenieApiKey:           notificationList[ind].OpsGenieApiKey,

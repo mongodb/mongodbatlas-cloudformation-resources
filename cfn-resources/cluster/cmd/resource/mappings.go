@@ -84,14 +84,14 @@ func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin2
 		}
 
 		if util.IsStringPresent(replicationSpecs[i].ID) {
-			rSpec.Id = admin20231115014.PtrString(cast.ToString(replicationSpecs[i].ID))
+			rSpec.Id = new(cast.ToString(replicationSpecs[i].ID))
 		}
 
 		if replicationSpecs[i].NumShards != nil {
 			rSpec.NumShards = replicationSpecs[i].NumShards
 		}
 		if replicationSpecs[i].ZoneName != nil {
-			rSpec.ZoneName = admin20231115014.PtrString(cast.ToString(replicationSpecs[i].ZoneName))
+			rSpec.ZoneName = new(cast.ToString(replicationSpecs[i].ZoneName))
 		}
 		rSpecs = append(rSpecs, rSpec)
 	}
@@ -576,7 +576,7 @@ func setClusterRequest(currentModel *Model) (*admin20231115014.AdvancedClusterDe
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {
-		clusterRequest.MongoDBMajorVersion = admin20231115014.PtrString(formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion))
+		clusterRequest.MongoDBMajorVersion = new(formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion))
 	}
 
 	if currentModel.PitEnabled != nil {

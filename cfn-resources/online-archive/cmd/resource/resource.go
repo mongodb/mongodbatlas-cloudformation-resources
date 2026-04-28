@@ -78,7 +78,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.InProgress,
 		Message:         "Create Complete",
 		ResourceModel:   currentModel,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"stateName": currentModel.State,
 			"id":        currentModel.ArchiveId,
 		},
@@ -190,7 +190,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.InProgress,
 		Message:         "Create Complete",
 		ResourceModel:   currentModel,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"stateName": currentModel.State,
 			"id":        currentModel.ArchiveId,
 		},
@@ -343,7 +343,7 @@ func validateProgress(ctx context.Context, client *util.MongoDBClient, currentMo
 		p.OperationStatus = handler.InProgress
 		p.CallbackDelaySeconds = 60
 		p.Message = "Pending"
-		p.CallbackContext = map[string]interface{}{
+		p.CallbackContext = map[string]any{
 			"stateName": archive.State,
 			"id":        currentModel.ArchiveId,
 		}

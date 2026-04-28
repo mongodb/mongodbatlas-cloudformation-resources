@@ -234,7 +234,7 @@ func newEventTrigger(model *Model) (*appservices.EventTriggerRequest, error) {
 		if dTrigger.Match != nil {
 			jsonData := []byte(*dTrigger.Match)
 			// convert the JSON string to a map
-			var m interface{}
+			var m any
 			if err := json.Unmarshal(jsonData, &m); err != nil {
 				return nil, errors.New("error unmarshalling Match field - " + err.Error())
 			}
@@ -244,7 +244,7 @@ func newEventTrigger(model *Model) (*appservices.EventTriggerRequest, error) {
 		if dTrigger.Project != nil {
 			jsonData := []byte(*dTrigger.Project)
 			// convert the JSON string to a map
-			var m interface{}
+			var m any
 			if err := json.Unmarshal(jsonData, &m); err != nil {
 				return nil, errors.New("error unmarshalling Project field - " + err.Error())
 			}
@@ -322,7 +322,7 @@ func newEventProcessor(model *Model, et appservices.EventTriggerRequest) (appser
 			ep.AWSEVENTBRIDGE.AWSConfig.Region = awsEventBridge.AWSConfig.Region
 		}
 	}
-	var inInterface map[string]interface{}
+	var inInterface map[string]any
 	inrec, err := json.Marshal(ep)
 	if err != nil {
 		log.Printf("error in marshal %v", err)

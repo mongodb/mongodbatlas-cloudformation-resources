@@ -39,7 +39,7 @@ type privateEndpointCreationCallBackContext struct {
 	ID        string
 }
 
-func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interface{}) error {
+func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]any) error {
 	s.ID = fmt.Sprint(m["ID"])
 	eventStatusParam := fmt.Sprint(m["StateName"])
 	eventStatus, err := constants.ParseEventStatus(eventStatusParam)
@@ -80,7 +80,7 @@ func Create(client util.MongoDBClient, region string, groupID string) handler.Pr
 		ID:        *privateEndpointResponse.Id,
 	}
 
-	var callBackMap map[string]interface{}
+	var callBackMap map[string]any
 	data, _ := json.Marshal(callBackContext)
 	err = json.Unmarshal(data, &callBackMap)
 	if err != nil {
@@ -117,7 +117,7 @@ func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req 
 			ID:        *privateEndpointResponse.Id,
 		}
 
-		var callBackMap map[string]interface{}
+		var callBackMap map[string]any
 		data, _ := json.Marshal(callBackContext)
 		err = json.Unmarshal(data, &callBackMap)
 		if err != nil {

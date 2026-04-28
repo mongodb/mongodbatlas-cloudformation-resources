@@ -84,12 +84,12 @@ func getStackEventsString(svc *cfn.Client, stackID string) string {
 		}
 		status := string(event.ResourceStatus)
 		if strings.Contains(status, "FAILED") || strings.Contains(status, "ROLLBACK") {
-			eventsStr.WriteString(fmt.Sprintf("[%s] %s - %s: %s - %s\n",
+			fmt.Fprintf(&eventsStr, "[%s] %s - %s: %s - %s\n",
 				event.Timestamp.Format("15:04:05"),
 				util.SafeString(event.LogicalResourceId),
 				util.SafeString(event.ResourceType),
 				status,
-				util.SafeString(event.ResourceStatusReason)))
+				util.SafeString(event.ResourceStatusReason))
 			count++
 		}
 	}

@@ -39,7 +39,7 @@ ifdef files
 	if [ -n "$$bad_fmt" ]; then echo "ERROR: gofmt issues:"; echo "$$bad_fmt"; exit 1; fi
 	@bad_imports=$$(cd cfn-resources && goimports -l $(files_rel)); \
 	if [ -n "$$bad_imports" ]; then echo "ERROR: goimports issues:"; echo "$$bad_imports"; exit 1; fi
-	(cd cfn-resources && golangci-lint run $(addsuffix ...,$(sort $(dir $(files_rel)))))
+	(cd cfn-resources && golangci-lint run --timeout 5m $(addsuffix ...,$(sort $(dir $(files_rel)))))
 	(cd cfn-resources && go fix -diff $(addprefix ./,$(addsuffix ...,$(sort $(dir $(files_rel))))))
 else
 	@bad_fmt=$$(cd cfn-resources && gofmt -l -s .); \

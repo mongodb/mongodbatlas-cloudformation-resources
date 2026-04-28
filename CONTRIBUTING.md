@@ -92,7 +92,20 @@ make update-atlas-sdk
 ## Prerequisites
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli)
 - (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) > v1.0
-- (Optional - only need if building from source) [Go](https://golang.org/doc/install) v1.23
+- (Optional - only need if building from source) [Go](https://golang.org/doc/install) (version pinned in [`cfn-resources/go.mod`](cfn-resources/go.mod))
+
+## Development Setup
+
+The Go module lives in `cfn-resources/`, but `make` targets are run from the repository root and `cd` into `cfn-resources/` as needed.
+
+- Run `make tools` once to install the dev tools (`golangci-lint`, `goimports`, `shfmt`, `actionlint`, `mockery`, etc.). Tools install into `$(go env GOPATH)/bin`; the Makefile prepends it to `PATH` for subsequent targets.
+- Run `make link-git-hooks` to install the pre-commit hook. The hook calls `make verify files=$STAGED_GO_FILES` against staged Go files.
+- Run `make fix` to apply formatting (`gofmt`, `goimports`), `golangci-lint --fix`, `go mod tidy`, and `go fix ./...`. This is the default `make` target.
+- Run `make verify` to run the same checks read-only. CI runs this; missing `go fix` rewrites or formatter drift fail the build. Pass `files="path/one.go path/two.go"` to scope the checks.
+- Run `make unit-test` to run the Go unit tests (excludes the e2e packages).
+- Run `make generate-mocks` after changing a mocked interface (output lands in `cfn-resources/testutil/mocksvc`).
+
+The `golangci-lint` version is pinned in the `Makefile` (`GOLANGCI_VERSION`) and is the single source of truth; the CI workflow picks it up via `make tools`.
 
 ## Testing the Provider
 Please see README for each resource for details on unit and integrated AWS testing.

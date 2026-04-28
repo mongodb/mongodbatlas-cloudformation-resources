@@ -24,12 +24,13 @@ test:
 	(cd cfn-resources && ./cfn-testing-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
 
 .PHONY: fix
-fix: ## Format, lint-fix, tidy, and apply go fix
+fix: ## Format, lint-fix, tidy, apply go fix, and build
 	(cd cfn-resources && gofmt -s -w .)
 	(cd cfn-resources && goimports -w .)
 	(cd cfn-resources && golangci-lint run --fix --timeout 5m)
 	(cd cfn-resources && go mod tidy)
 	(cd cfn-resources && go fix ./...)
+	(cd cfn-resources && go build ./...)
 
 .PHONY: verify
 verify: ## Verify Go code without modifying files. Usage: make verify [files="file1.go file2.go"]

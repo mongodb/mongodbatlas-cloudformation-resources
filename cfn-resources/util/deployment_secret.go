@@ -42,7 +42,7 @@ func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, pub
 		Properties: &properties,
 	}
 	log.Printf("deploySecret: %v", deploySecret)
-	deploySecretString, _ := json.Marshal(deploySecret) //nolint:gosec
+	deploySecretString, _ := json.Marshal(deploySecret) //nolint:gosec // intentional: marshaling secret struct to store in AWS Secrets Manager
 	log.Printf("deploySecretString: %s", deploySecretString)
 
 	log.Println("===============================================")

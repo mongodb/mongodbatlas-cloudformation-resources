@@ -1,5 +1,5 @@
 tags="logging callback metrics scheduler"
-cgo=0 
+cgo=0
 goos=linux
 goarch=amd64
 
@@ -8,7 +8,12 @@ ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLo
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
 MOCKERY_VERSION=v3.5.3
-GOLANGCI_VERSION=v2.11.4 # Also update golangci-lint GH action in code-health.yaml when updating this version
+GOLANGCI_VERSION=v2.11.4
+
+export PATH := $(shell go env GOPATH)/bin:$(PATH)
+export SHELL := env PATH=$(PATH) /bin/bash
+
+default: fix
 
 .PHONY: submit
 submit:
@@ -18,9 +23,37 @@ submit:
 test:
 	(cd cfn-resources && ./cfn-testing-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
 
-.PHONY: fmt
-fmt: ## Format changed go and sh
-	@scripts/fmt.sh
+.PHONY: fix
+fix: ## Format, lint-fix, tidy, and apply go fix
+	(cd cfn-resources && gofmt -s -w .)
+	(cd cfn-resources && goimports -w .)
+	(cd cfn-resources && golangci-lint run --fix --timeout 5m)
+	(cd cfn-resources && go mod tidy)
+	(cd cfn-resources && go fix ./...)
+
+.PHONY: verify
+verify: ## Verify Go code without modifying files. Usage: make verify [files="file1.go file2.go"]
+ifdef files
+	$(eval files_rel := $(patsubst cfn-resources/%,%,$(files)))
+	@bad_fmt=$$(cd cfn-resources && gofmt -l -s $(files_rel)); \
+	if [ -n "$$bad_fmt" ]; then echo "ERROR: gofmt issues:"; echo "$$bad_fmt"; exit 1; fi
+	@bad_imports=$$(cd cfn-resources && goimports -l $(files_rel)); \
+	if [ -n "$$bad_imports" ]; then echo "ERROR: goimports issues:"; echo "$$bad_imports"; exit 1; fi
+	(cd cfn-resources && golangci-lint run $(addsuffix ...,$(sort $(dir $(files_rel)))))
+	(cd cfn-resources && go fix -diff $(addprefix ./,$(addsuffix ...,$(sort $(dir $(files_rel))))))
+else
+	@bad_fmt=$$(cd cfn-resources && gofmt -l -s .); \
+	if [ -n "$$bad_fmt" ]; then echo "ERROR: gofmt issues:"; echo "$$bad_fmt"; exit 1; fi
+	@bad_imports=$$(cd cfn-resources && goimports -l .); \
+	if [ -n "$$bad_imports" ]; then echo "ERROR: goimports issues:"; echo "$$bad_imports"; exit 1; fi
+	(cd cfn-resources && golangci-lint run --timeout 5m)
+	(cd cfn-resources && go mod tidy -diff)
+	(cd cfn-resources && go fix -diff ./...)
+endif
+
+.PHONY: build
+build: ## Compile all packages
+	(cd cfn-resources && go build -v ./...)
 
 .PHONY: tools
 tools:  ## Install dev tools
@@ -41,10 +74,6 @@ link-git-hooks: ## Install git hooks
 	find .git/hooks -type l -exec rm {} \;
 	find .githooks -type f -exec ln -sf ../../{} .git/hooks/ \;
 
-.PHONY: lint
-lint: ## Run linter
-	@scripts/lint.sh
-
 .PHONY: unit-test
 unit-test:
 	(cd cfn-resources && go test $$(go list ./... | grep -v /e2e))
@@ -60,7 +89,7 @@ generate-mocks: # uses mockery to generate mocks in folder `cfn-resources/testut
 # resulting file placed in cfn-resources/resource-versions.md
 # aws regions must defined by using AWS_REGIONS env variable, example: `export AWS_REGIONS=af-south-1,ap-east-1`
 .PHONY: generate-resource-versions-markdown
-generate-resource-versions-markdown: 
+generate-resource-versions-markdown:
 	(cd cfn-resources && go run tool/markdown-generator/*.go)
 
 .PHONY: gen-sbom-and-ssdlc-report

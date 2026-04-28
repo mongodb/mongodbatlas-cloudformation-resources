@@ -18,7 +18,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/service-account-access-list-entry/cmd/resource"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
@@ -31,16 +30,16 @@ func TestUpdateModelFromEntry(t *testing.T) {
 
 	t.Run("CIDR Block entry", func(t *testing.T) {
 		model := &resource.Model{
-			OrgId:    ptr.String(orgID),
-			ClientId: ptr.String(clientID),
+			OrgId:    new(orgID),
+			ClientId: new(clientID),
 		}
 
 		entry := &admin.ServiceAccountIPAccessListEntry{
-			CidrBlock:       ptr.String("203.0.113.0/24"),
-			CreatedAt:       ptr.Time(now),
-			LastUsedAddress: ptr.String("203.0.113.42"),
-			LastUsedAt:      ptr.Time(now.Add(-1 * time.Hour)),
-			RequestCount:    ptr.Int(127),
+			CidrBlock:       new("203.0.113.0/24"),
+			CreatedAt:       new(now),
+			LastUsedAddress: new("203.0.113.42"),
+			LastUsedAt:      new(now.Add(-1 * time.Hour)),
+			RequestCount:    new(127),
 		}
 
 		resource.UpdateModelFromEntry(model, entry)
@@ -57,15 +56,15 @@ func TestUpdateModelFromEntry(t *testing.T) {
 
 	t.Run("IP Address entry", func(t *testing.T) {
 		model := &resource.Model{
-			OrgId:    ptr.String(orgID),
-			ClientId: ptr.String(clientID),
+			OrgId:    new(orgID),
+			ClientId: new(clientID),
 		}
 
 		entry := &admin.ServiceAccountIPAccessListEntry{
-			IpAddress:    ptr.String("203.0.113.10"),
-			CidrBlock:    ptr.String("203.0.113.10/32"),
-			CreatedAt:    ptr.Time(now),
-			RequestCount: ptr.Int(0),
+			IpAddress:    new("203.0.113.10"),
+			CidrBlock:    new("203.0.113.10/32"),
+			CreatedAt:    new(now),
+			RequestCount: new(0),
 		}
 
 		resource.UpdateModelFromEntry(model, entry)

@@ -120,7 +120,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 
 func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
-	allModels := make([]interface{}, 0)
+	allModels := make([]any, 0)
 	const itemsPerPage = 100
 
 	for pageNum := 1; ; pageNum++ {

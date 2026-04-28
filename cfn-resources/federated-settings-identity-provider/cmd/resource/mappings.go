@@ -56,22 +56,22 @@ func GetFederatedSettingsIdentityProviderModel(api *admin.FederationIdentityProv
 		model.OktaIdpId = oktaID
 	}
 
-	model.IdpId = util.Pointer(api.GetId())
-	model.Name = util.Pointer(api.GetDisplayName())
-	model.IssuerUri = util.Pointer(api.GetIssuerUri())
-	model.Protocol = util.Pointer(api.GetProtocol())
-	model.Description = util.Pointer(api.GetDescription())
-	model.AuthorizationType = util.Pointer(api.GetAuthorizationType())
-	model.IdpType = util.Pointer(api.GetIdpType())
+	model.IdpId = new(api.GetId())
+	model.Name = new(api.GetDisplayName())
+	model.IssuerUri = new(api.GetIssuerUri())
+	model.Protocol = new(api.GetProtocol())
+	model.Description = new(api.GetDescription())
+	model.AuthorizationType = new(api.GetAuthorizationType())
+	model.IdpType = new(api.GetIdpType())
 
 	protocol := api.GetProtocol()
 	switch protocol {
 	case ProtocolSAML:
-		model.RequestBinding = util.Pointer(api.GetRequestBinding())
-		model.ResponseSignatureAlgorithm = util.Pointer(api.GetResponseSignatureAlgorithm())
+		model.RequestBinding = new(api.GetRequestBinding())
+		model.ResponseSignatureAlgorithm = new(api.GetResponseSignatureAlgorithm())
 		model.SsoDebugEnabled = api.SsoDebugEnabled
-		model.SsoUrl = util.Pointer(api.GetSsoUrl())
-		model.Status = util.Pointer(api.GetStatus())
+		model.SsoUrl = new(api.GetSsoUrl())
+		model.Status = new(api.GetStatus())
 
 		associatedDomains := api.GetAssociatedDomains()
 		if len(associatedDomains) == 0 && currentModel != nil && len(currentModel.AssociatedDomains) > 0 {
@@ -79,9 +79,9 @@ func GetFederatedSettingsIdentityProviderModel(api *admin.FederationIdentityProv
 		}
 		model.AssociatedDomains = associatedDomains
 	case ProtocolOIDC:
-		model.Audience = util.Pointer(api.GetAudience())
-		model.ClientId = util.Pointer(api.GetClientId())
-		model.GroupsClaim = util.Pointer(api.GetGroupsClaim())
+		model.Audience = new(api.GetAudience())
+		model.ClientId = new(api.GetClientId())
+		model.GroupsClaim = new(api.GetGroupsClaim())
 
 		requestedScopes := api.GetRequestedScopes()
 		if len(requestedScopes) == 0 && currentModel != nil && len(currentModel.RequestedScopes) > 0 {
@@ -89,7 +89,7 @@ func GetFederatedSettingsIdentityProviderModel(api *admin.FederationIdentityProv
 		}
 		model.RequestedScopes = requestedScopes
 
-		model.UserClaim = util.Pointer(api.GetUserClaim())
+		model.UserClaim = new(api.GetUserClaim())
 
 		associatedDomains := api.GetAssociatedDomains()
 		if len(associatedDomains) == 0 && currentModel != nil && len(currentModel.AssociatedDomains) > 0 {
@@ -108,17 +108,17 @@ func ExpandOIDCCreateRequest(model *Model) *admin.FederationOidcIdentityProvider
 	requestedScopes := getStringSliceOrEmpty(model.RequestedScopes)
 
 	return &admin.FederationOidcIdentityProviderUpdate{
-		Audience:          util.Pointer(util.SafeString(model.Audience)),
+		Audience:          new(util.SafeString(model.Audience)),
 		AssociatedDomains: &associatedDomains,
-		AuthorizationType: util.Pointer(util.SafeString(model.AuthorizationType)),
-		ClientId:          util.Pointer(util.SafeString(model.ClientId)),
-		Description:       util.Pointer(util.SafeString(model.Description)),
-		DisplayName:       util.Pointer(util.SafeString(model.Name)),
-		GroupsClaim:       util.Pointer(util.SafeString(model.GroupsClaim)),
-		IdpType:           util.Pointer(util.SafeString(model.IdpType)),
-		IssuerUri:         util.Pointer(util.SafeString(model.IssuerUri)),
-		Protocol:          util.Pointer(util.SafeString(model.Protocol)),
+		AuthorizationType: new(util.SafeString(model.AuthorizationType)),
+		ClientId:          new(util.SafeString(model.ClientId)),
+		Description:       new(util.SafeString(model.Description)),
+		DisplayName:       new(util.SafeString(model.Name)),
+		GroupsClaim:       new(util.SafeString(model.GroupsClaim)),
+		IdpType:           new(util.SafeString(model.IdpType)),
+		IssuerUri:         new(util.SafeString(model.IssuerUri)),
+		Protocol:          new(util.SafeString(model.Protocol)),
 		RequestedScopes:   &requestedScopes,
-		UserClaim:         util.Pointer(util.SafeString(model.UserClaim)),
+		UserClaim:         new(util.SafeString(model.UserClaim)),
 	}
 }

@@ -106,7 +106,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 	params := admin.UpdateCompliancePolicyApiParams{
 		GroupId:                        projectID,
 		DataProtectionSettings20231001: dataProtectionSettings,
-		OverwriteBackupPolicies:        util.Pointer(false),
+		OverwriteBackupPolicies:        new(false),
 	}
 
 	_, apiResp, err = client.AtlasSDK.CloudBackupsApi.UpdateCompliancePolicyWithParams(ctx, &params).Execute()
@@ -161,7 +161,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 	params := admin.UpdateCompliancePolicyApiParams{
 		GroupId:                        projectID,
 		DataProtectionSettings20231001: dataProtectionSettings,
-		OverwriteBackupPolicies:        util.Pointer(false),
+		OverwriteBackupPolicies:        new(false),
 	}
 
 	_, apiResp, err = client.AtlasSDK.CloudBackupsApi.UpdateCompliancePolicyWithParams(ctx, &params).Execute()

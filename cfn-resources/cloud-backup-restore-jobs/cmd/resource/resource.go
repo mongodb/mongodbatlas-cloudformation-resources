@@ -105,7 +105,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if aws.ToBool(currentModel.EnableSynchronousCreation) {
 		return progressevent.GetInProgressProgressEvent(
 				"Create in progress",
-				map[string]interface{}{
+				map[string]any{
 					constants.StateName: "in_progress",
 					"id":                currentModel.Id,
 					"startTime":         util.TimeToString(time.Now()),
@@ -218,7 +218,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	models := make([]interface{}, 0)
+	models := make([]any, 0)
 	server, resp, err := client.Atlas20231115014.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
@@ -252,11 +252,11 @@ func (model *Model) validateAsynchronousProperties() error {
 		}
 
 		if model.SynchronousCreationOptions.CallbackDelaySeconds == nil {
-			model.SynchronousCreationOptions.CallbackDelaySeconds = util.IntPtr(defaultBackSeconds)
+			model.SynchronousCreationOptions.CallbackDelaySeconds = new(defaultBackSeconds)
 		}
 
 		if model.SynchronousCreationOptions.TimeOutInSeconds == nil {
-			model.SynchronousCreationOptions.TimeOutInSeconds = util.IntPtr(defaultTimeOutInSeconds)
+			model.SynchronousCreationOptions.TimeOutInSeconds = new(defaultTimeOutInSeconds)
 		}
 
 		if model.SynchronousCreationOptions.ReturnSuccessIfTimeOut == nil {
@@ -295,7 +295,7 @@ func createCallback(client *util.MongoDBClient, currentModel *Model, jobID, star
 
 	return progressevent.GetInProgressProgressEvent(
 		"Create in progress",
-		map[string]interface{}{
+		map[string]any{
 			constants.StateName: "in_progress",
 			"id":                currentModel.Id,
 			"startTime":         startTime,

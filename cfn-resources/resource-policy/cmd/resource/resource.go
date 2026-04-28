@@ -167,7 +167,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(apiResp, constants.LIST, err)
 	}
 
-	response := make([]interface{}, 0)
+	response := make([]any, 0)
 	for i := range resourcePolicies {
 		model := GetResourcePolicyModel(&resourcePolicies[i], nil)
 		model.OrgId = currentModel.OrgId

@@ -59,7 +59,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	_, _ = logger.Debugf("containerResponse:%v", containerResponse)
 
 	containers := containerResponse.Results
-	mm := make([]interface{}, 0)
+	mm := make([]any, 0)
 	for i := range containers {
 		mm = append(mm, completeByConnection(&containers[i], *currentModel.ProjectId, *currentModel.Profile))
 	}

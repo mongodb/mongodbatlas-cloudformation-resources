@@ -73,7 +73,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              "Create in progress",
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 10,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"RequestId": currentModel.RequestId,
 		},
 	}, nil
@@ -197,7 +197,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, req handler.Requ
 			OperationStatus: handler.InProgress,
 			Message:         "Create in progress",
 			ResourceModel:   model,
-			CallbackContext: map[string]interface{}{
+			CallbackContext: map[string]any{
 				"RequestId": requestID,
 			},
 		}

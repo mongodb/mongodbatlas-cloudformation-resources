@@ -124,13 +124,13 @@ func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 	ctx := context.Background()
 	projectID := *model.ProjectId
 
-	response := make([]interface{}, 0)
+	response := make([]any, 0)
 	const itemsPerPage = 100
 	for pageNum := 1; ; pageNum++ {
 		listParams := &admin.ListGroupServiceAccountsApiParams{
 			GroupId:      projectID,
 			ItemsPerPage: util.Pointer(itemsPerPage),
-			PageNum:      util.Pointer(pageNum),
+			PageNum:      new(pageNum),
 		}
 		serviceAccounts, apiResp, err := client.AtlasSDK.ServiceAccountsApi.ListGroupServiceAccountsWithParams(ctx, listParams).Execute()
 		if err != nil {

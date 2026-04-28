@@ -70,9 +70,9 @@ func ValidateUsernames(c TeamUsersAPI, usernames []string) ([]admin20231115002.C
 	return validUsers, nil, nil
 }
 
-func InitUserSet(users []admin20231115002.CloudAppUser) map[string]interface{} {
-	usersSet := make(map[string]interface{}, len(users))
-	for i := 0; i < len(users); i++ {
+func InitUserSet(users []admin20231115002.CloudAppUser) map[string]any {
+	usersSet := make(map[string]any, len(users))
+	for i := range users {
 		usersSet[users[i].GetId()] = true
 	}
 	return usersSet

@@ -650,7 +650,7 @@ func SearchIndexExists(ctx context.Context, atlasV2 *admin.APIClient, currentMod
 	index, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		if util.StatusNotFound(resp) {
-			return &admin.SearchIndexResponse{Status: admin.PtrString("DELETED")}, nil
+			return &admin.SearchIndexResponse{Status: new("DELETED")}, nil
 		}
 	}
 	return index, err

@@ -72,11 +72,11 @@ func TestUpdateLogIntegrationModel(t *testing.T) {
 	response := &admin.LogIntegrationResponse{
 		Id:         "integration-123",
 		Type:       "S3",
-		BucketName: admin.PtrString("test-bucket"),
-		IamRoleId:  admin.PtrString("arn:aws:iam::123456789012:role/test-role"),
-		PrefixPath: admin.PtrString("/logs"),
+		BucketName: new("test-bucket"),
+		IamRoleId:  new("arn:aws:iam::123456789012:role/test-role"),
+		PrefixPath: new("/logs"),
 		LogTypes:   &[]string{"AUDIT", "FTDC"},
-		KmsKey:     admin.PtrString("arn:aws:kms:us-east-1:123456789012:key/test-key"),
+		KmsKey:     new("arn:aws:kms:us-east-1:123456789012:key/test-key"),
 	}
 
 	resource.UpdateLogIntegrationModel(model, response)

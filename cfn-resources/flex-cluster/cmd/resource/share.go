@@ -96,8 +96,8 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 		listOptions := &admin.ListFlexClustersApiParams{
 			GroupId:      *model.ProjectId,
 			ItemsPerPage: admin.PtrInt(itemsPerPage),
-			PageNum:      admin.PtrInt(pageNum),
-			IncludeCount: admin.PtrBool(true),
+			PageNum:      new(pageNum),
+			IncludeCount: new(true),
 		}
 		flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
 		if pe := util.HandleClusterError(err, resp); pe != nil {

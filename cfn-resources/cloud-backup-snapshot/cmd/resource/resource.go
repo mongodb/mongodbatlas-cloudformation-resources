@@ -78,7 +78,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:              fmt.Sprintf("Create cloud provider snapshots : %s", *snapshot.Status),
 			ResourceModel:        currentModel,
 			CallbackDelaySeconds: 65,
-			CallbackContext: map[string]interface{}{
+			CallbackContext: map[string]any{
 				"status":      snapshot.Status,
 				"snapshot_id": snapshot.Id,
 			},
@@ -163,7 +163,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	models := make([]interface{}, 0)
+	models := make([]any, 0)
 
 	if *currentModel.InstanceType == clusterInstanceType {
 		server, resp, err := client.Atlas20231115002.CloudBackupsApi.ListReplicaSetBackups(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
@@ -233,7 +233,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 	p.OperationStatus = handler.InProgress
 	p.CallbackDelaySeconds = 35
 	p.Message = "Pending"
-	p.CallbackContext = map[string]interface{}{
+	p.CallbackContext = map[string]any{
 		"status":      status,
 		"snapshot_id": *currentModel.SnapshotId,
 	}

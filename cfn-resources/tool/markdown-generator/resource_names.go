@@ -50,7 +50,7 @@ func extractTypeNameFromFile(filePath string) (string, error) {
 		return "", err
 	}
 
-	var config map[string]interface{}
+	var config map[string]any
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		return "", err

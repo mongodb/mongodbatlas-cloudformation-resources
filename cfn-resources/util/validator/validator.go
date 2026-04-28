@@ -24,7 +24,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-func ValidateModel(fields []string, model interface{}) *handler.ProgressEvent {
+func ValidateModel(fields []string, model any) *handler.ProgressEvent {
 	requiredFields := ""
 
 	for _, field := range fields {
@@ -42,7 +42,7 @@ func ValidateModel(fields []string, model interface{}) *handler.ProgressEvent {
 	return &progressEvent
 }
 
-func fieldIsEmpty(model interface{}, field string) bool {
+func fieldIsEmpty(model any, field string) bool {
 	var f reflect.Value
 	if strings.Contains(field, ".") {
 		fields := strings.Split(field, ".")

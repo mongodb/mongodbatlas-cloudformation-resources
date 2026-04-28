@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -205,7 +206,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		if privateEndpointResponse != nil {
 			return progressevent.GetInProgressProgressEvent("Delete in progress",
-				map[string]interface{}{"stateName": "DELETING"}, currentModel, 20), nil
+				map[string]any{"stateName": "DELETING"}, currentModel, 20), nil
 		}
 	}
 
@@ -248,7 +249,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              "Delete in progress",
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 20,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"stateName": "DELETING",
 		}}, nil
 }
@@ -275,7 +276,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			response), nil
 	}
 
-	mm := make([]interface{}, 0, len(privateEndpointResponse))
+	mm := make([]any, 0, len(privateEndpointResponse))
 	for i := range privateEndpointResponse {
 		var m Model
 		m.completeByConnection(&privateEndpointResponse[i])
@@ -351,13 +352,7 @@ func CompareSlices(a []string, b []string) bool {
 	}
 
 	for _, v := range a {
-		found := false
-		for _, c := range b {
-			if v == c {
-				found = true
-				break
-			}
-		}
+		found := slices.Contains(b, v)
 		if !found {
 			return false
 		}

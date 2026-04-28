@@ -283,7 +283,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create Atlas API Request Object
 	orgID := cast.ToString(currentModel.OrgId)
 	projectID := cast.ToString(currentModel.ProjectId)
-	var models []interface{}
+	var models []any
 	var resp *http.Response
 	var err error
 	// API call to get teams for project id
@@ -296,7 +296,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 
 		teamsProjectList := teamsAssigned.Results
-		for i := 0; i < len(teamsProjectList); i++ {
+		for i := range teamsProjectList {
 			models = append(models, convertProjectTeamToModel(teamsProjectList[i]))
 		}
 	} else {
@@ -308,7 +308,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 		teams := paginatedResp.Results
-		for i := 0; i < len(teams); i++ {
+		for i := range teams {
 			models = append(models, convertTeamResponseToModel(&teams[i], nil))
 		}
 	}

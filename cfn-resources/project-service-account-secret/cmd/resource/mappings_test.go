@@ -18,7 +18,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project-service-account-secret/cmd/resource"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
@@ -33,17 +32,17 @@ func TestUpdateModelFromSecret(t *testing.T) {
 	clientID := "mdb_sa_id_698eac1419a6b89540c8e7b6"
 
 	model := &resource.Model{
-		ProjectId: ptr.String(projectID),
-		ClientId:  ptr.String(clientID),
+		ProjectId: new(projectID),
+		ClientId:  new(clientID),
 	}
 
 	secret := &admin.ServiceAccountSecret{
 		Id:                secretID,
-		Secret:            ptr.String(secretValue),
-		MaskedSecretValue: ptr.String(maskedValue),
+		Secret:            new(secretValue),
+		MaskedSecretValue: new(maskedValue),
 		CreatedAt:         now,
 		ExpiresAt:         now.Add(720 * time.Hour),
-		LastUsedAt:        ptr.Time(now.Add(-1 * time.Hour)),
+		LastUsedAt:        new(now.Add(-1 * time.Hour)),
 	}
 
 	resource.UpdateModelFromSecret(model, secret)

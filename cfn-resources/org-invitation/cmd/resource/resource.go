@@ -211,7 +211,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	var invites []interface{}
+	var invites []any
 	// iterate invites
 	for i := range invitations {
 		invite := &Model{}

@@ -195,7 +195,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			response), nil
 	}
 
-	mm := make([]interface{}, 0)
+	mm := make([]any, 0)
 	for _, customDBRole := range customDBRoleResponse {
 		var m Model
 		m.completeByAtlasRole(customDBRole)

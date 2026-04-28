@@ -16,7 +16,7 @@ package progressevent
 
 import "github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 
-func GetInProgressProgressEvent(message string, callBackContext map[string]interface{}, model interface{}, delaySeconds int64) handler.ProgressEvent {
+func GetInProgressProgressEvent(message string, callBackContext map[string]any, model any, delaySeconds int64) handler.ProgressEvent {
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              message,

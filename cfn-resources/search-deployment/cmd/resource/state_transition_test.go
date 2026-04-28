@@ -38,9 +38,9 @@ type stateTransitionTestCase struct {
 }
 
 var prevModelStateTransition = resource.Model{
-	Profile:     admin.PtrString(profile),
-	ClusterName: admin.PtrString(clusterName),
-	ProjectId:   admin.PtrString(dummyProjectID),
+	Profile:     new(profile),
+	ClusterName: new(clusterName),
+	ProjectId:   new(dummyProjectID),
 }
 
 func TestStateTransitionProgressEvents(t *testing.T) {
@@ -48,8 +48,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		{
 			name: "State in WORKING with target IDLE should return in progress event",
 			respModel: &admin.ApiSearchDeploymentResponse{
-				Id:        admin.PtrString(dummyDeploymentID),
-				StateName: admin.PtrString("UPDATING"),
+				Id:        new(dummyDeploymentID),
+				StateName: new("UPDATING"),
 				Specs:     &[]admin.ApiSearchDeploymentSpec{{InstanceSize: instanceSize, NodeCount: nodeCount}},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},
@@ -59,8 +59,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		{
 			name: "State in IDLE with target IDLE should return success event",
 			respModel: &admin.ApiSearchDeploymentResponse{
-				Id:        admin.PtrString(dummyDeploymentID),
-				StateName: admin.PtrString("IDLE"),
+				Id:        new(dummyDeploymentID),
+				StateName: new("IDLE"),
 				Specs:     &[]admin.ApiSearchDeploymentSpec{{InstanceSize: instanceSize, NodeCount: nodeCount}},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},
@@ -77,8 +77,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		{
 			name: "State in WORKING with target DELETED should return in progress event",
 			respModel: &admin.ApiSearchDeploymentResponse{
-				Id:        admin.PtrString(dummyDeploymentID),
-				StateName: admin.PtrString("UPDATING"),
+				Id:        new(dummyDeploymentID),
+				StateName: new("UPDATING"),
 				Specs:     &[]admin.ApiSearchDeploymentSpec{{InstanceSize: instanceSize, NodeCount: nodeCount}},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},
@@ -88,8 +88,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		{
 			name: "State in IDLE with target DELETED should return in progress event",
 			respModel: &admin.ApiSearchDeploymentResponse{
-				Id:        admin.PtrString(dummyDeploymentID),
-				StateName: admin.PtrString("IDLE"),
+				Id:        new(dummyDeploymentID),
+				StateName: new("IDLE"),
 				Specs:     &[]admin.ApiSearchDeploymentSpec{{InstanceSize: instanceSize, NodeCount: nodeCount}},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},

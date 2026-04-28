@@ -45,7 +45,7 @@ func HandleCreate(client *util.MongoDBClient, currentModel *Model) handler.Progr
 		)
 	}
 
-	currentModel.IdpId = util.Pointer(created.GetId())
+	currentModel.IdpId = new(created.GetId())
 
 	return HandleRead(client, currentModel)
 }

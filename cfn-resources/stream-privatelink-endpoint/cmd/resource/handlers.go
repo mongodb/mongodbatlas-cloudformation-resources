@@ -148,7 +148,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 		listOptions := &admin.ListPrivateLinkConnectionsApiParams{
 			GroupId:      projectID,
 			ItemsPerPage: util.Pointer(itemsPerPage),
-			PageNum:      util.Pointer(pageNum),
+			PageNum:      new(pageNum),
 		}
 		connections, apiResp, err := client.AtlasSDK.StreamsApi.ListPrivateLinkConnectionsWithParams(ctx, listOptions).Execute()
 		if err != nil {

@@ -28,15 +28,15 @@ type TestStep struct {
 	Operation TestOperation
 }
 
-type TestCheckFunc func(model interface{}) error
+type TestCheckFunc func(model any) error
 
 // TestT is the interface used to handle the test lifecycle of a test.
 //
 // Users should just use a *testing.T object, which implements this.
 type TestT interface {
-	Error(args ...interface{})
-	Fatal(args ...interface{})
-	Skip(args ...interface{})
+	Error(args ...any)
+	Fatal(args ...any)
+	Skip(args ...any)
 	Name() string
 	Parallel()
 }

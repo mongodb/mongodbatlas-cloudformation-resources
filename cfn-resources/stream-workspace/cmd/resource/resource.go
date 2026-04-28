@@ -170,7 +170,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return HandleError(apiResp, constants.LIST, err)
 	}
 
-	response := make([]interface{}, 0)
+	response := make([]any, 0)
 	for i := range accumulatedStreamWorkspaces {
 		model := GetStreamWorkspaceModel(&accumulatedStreamWorkspaces[i], nil)
 		model.ProjectId = currentModel.ProjectId
@@ -192,8 +192,8 @@ func getAllStreamWorkspaces(ctx context.Context, conn *admin.APIClient, projectI
 	for allStreamWorkspacesRetrieved := false; !allStreamWorkspacesRetrieved; {
 		streamWorkspaces, resp, err := conn.StreamsApi.ListStreamWorkspacesWithParams(ctx, &admin.ListStreamWorkspacesApiParams{
 			GroupId:      projectID,
-			ItemsPerPage: util.Pointer(DefaultItemsPerPage),
-			PageNum:      util.Pointer(pageNum),
+			ItemsPerPage: new(DefaultItemsPerPage),
+			PageNum:      new(pageNum),
 		}).Execute()
 
 		if err != nil {

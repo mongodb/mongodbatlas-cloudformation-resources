@@ -78,6 +78,8 @@ for resource in ${resources}; do
 		test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${_CFN_TEST_LOG_BUCKET}" --version-id "${version}")
 		arn=$(echo "${test_type_resp}" | jq -r '.TypeVersionArn')
 		sleep 60
+		dt=$(aws cloudformation describe-type --arn "${arn}")
+		status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
 	fi
 
 	while [[ "$status" == "IN_PROGRESS" ]]; do

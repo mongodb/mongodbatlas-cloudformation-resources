@@ -80,7 +80,7 @@ for resource in ${resources}; do
 		sleep 60
 		dt=$(aws cloudformation describe-type --arn "${arn}")
 		status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
-		echo "status=${status}"
+		echo "status after NOT_TESTED re-trigger=${status}"
 	fi
 
 	while [[ "$status" == "IN_PROGRESS" ]]; do

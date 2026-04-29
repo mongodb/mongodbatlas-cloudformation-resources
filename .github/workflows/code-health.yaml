@@ -9,15 +9,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-    - name: Set up Go
-      uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
-      with:
-        go-version-file: 'cfn-resources/go.mod'
-    - name: Build
-      run: | 
-        cd cfn-resources
-        go build -v ./...
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: Setup and verify
+        run: make tools verify
   mock-generation:
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +30,7 @@ jobs:
         run: |
           FILES=$(git ls-files -o -m --directory --exclude-standard --no-empty-directory)
           LINES=$(echo "$FILES" | awk 'NF' | wc -l)
-          
+
           if [ "$LINES" -ne 0 ]; then
             echo "Detected files that need to be committed:"
             echo "$FILES" | while IFS= read -r line; do echo "  $line"; done
@@ -41,24 +38,20 @@ jobs:
             echo "Mock skeletons are not up-to-date, you may have forgotten to run mockery before committing your changes."
             exit 1
           fi
-  lint:
+  github-linters:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
-          cache: false # see https://github.com/golangci/golangci-lint-action/issues/807
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20
-        with:
-          version: v2.11.4 # Also update GOLANGCI_VERSION variable in Makefile when updating this version
-          working-directory: cfn-resources
       - name: actionlint
-        run: | 
-           make tools 
-           actionlint -verbose -color
+        run: |
+          make tools
+          actionlint -verbose -color
         shell: bash
+      - name: Run ShellCheck
+        uses: bewuethr/shellcheck-action@80bac2daa9fcf95d648200a793d00060857e6dc4
   check-copyright:
     runs-on: ubuntu-latest
     steps:
@@ -79,13 +72,6 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48
-  shellcheck:
-    name: shellcheck
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - name: Run ShellCheck
-        uses: bewuethr/shellcheck-action@80bac2daa9fcf95d648200a793d00060857e6dc4
   cfn-lint:
     runs-on: ubuntu-latest
     steps:

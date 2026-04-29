@@ -144,11 +144,11 @@ func fillModelForFlex(pe *handler.ProgressEvent, c *Model) {
 			BackingProviderName: f.ProviderSettings.BackingProviderName,
 			RegionName:          f.ProviderSettings.RegionName,
 			ProviderName:        f.ProviderSettings.ProviderName,
-			Priority:            util.Pointer(defaultPriority),
+			Priority:            new(defaultPriority),
 		}
 		replicationSpec := AdvancedReplicationSpec{
 			AdvancedRegionConfigs: []AdvancedRegionConfig{regionConfig},
-			ZoneName:              util.Pointer(defaultZoneName),
+			ZoneName:              new(defaultZoneName),
 		}
 		c.ReplicationSpecs = []AdvancedReplicationSpec{replicationSpec}
 	} else {

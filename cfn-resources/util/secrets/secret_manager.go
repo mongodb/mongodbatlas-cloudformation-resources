@@ -22,11 +22,10 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/awsconfig"
 )
 
-func Create(req *handler.Request, secretName string, data interface{}, description *string) (name *string, arn *string, err error) {
+func Create(req *handler.Request, secretName string, data any, description *string) (name *string, arn *string, err error) {
 	secretString, err := json.Marshal(data)
 	if err != nil {
 		return nil, nil, err
@@ -54,7 +53,7 @@ func Create(req *handler.Request, secretName string, data interface{}, descripti
 	return result.Name, result.ARN, nil
 }
 
-func PutSecret(req *handler.Request, secretName string, data interface{}, description *string) (name *string, arn *string, err error) {
+func PutSecret(req *handler.Request, secretName string, data any, description *string) (name *string, arn *string, err error) {
 	secretString, err := json.Marshal(data)
 	if err != nil {
 		return nil, nil, err
@@ -100,7 +99,7 @@ func Delete(req *handler.Request, secretName string) (err error) {
 
 	_, err = sm.DeleteSecret(context.Background(), &secretsmanager.DeleteSecretInput{
 		SecretId:                   aws.String(secretName),
-		ForceDeleteWithoutRecovery: util.Pointer(true),
+		ForceDeleteWithoutRecovery: new(true),
 	})
 	if err != nil {
 		log.Printf("error delete secret: %v", err.Error())

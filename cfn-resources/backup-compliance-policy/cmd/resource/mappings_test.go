@@ -101,8 +101,8 @@ func TestSetBackupCompliancePolicyData(t *testing.T) {
 			policy: &admin.DataProtectionSettings20231001{
 				ProjectId:             util.StringPtr("proj-123"),
 				AuthorizedEmail:       "admin@example.com",
-				CopyProtectionEnabled: util.Pointer(true),
-				RestoreWindowDays:     util.IntPtr(7),
+				CopyProtectionEnabled: new(true),
+				RestoreWindowDays:     new(7),
 				State:                 util.StringPtr("ACTIVE"),
 			},
 			check: func(t *testing.T, m *resource.Model) {
@@ -178,10 +178,10 @@ func TestExpandDataProtectionSettings(t *testing.T) {
 		"with booleans and integers": {
 			model: &resource.Model{
 				AuthorizedEmail:         util.StringPtr("test@example.com"),
-				CopyProtectionEnabled:   util.Pointer(true),
-				EncryptionAtRestEnabled: util.Pointer(true),
-				PitEnabled:              util.Pointer(false),
-				RestoreWindowDays:       util.IntPtr(14),
+				CopyProtectionEnabled:   new(true),
+				EncryptionAtRestEnabled: new(true),
+				PitEnabled:              new(false),
+				RestoreWindowDays:       new(14),
 			},
 			check: func(t *testing.T, s *admin.DataProtectionSettings20231001) {
 				t.Helper()
@@ -195,20 +195,20 @@ func TestExpandDataProtectionSettings(t *testing.T) {
 			model: &resource.Model{
 				AuthorizedEmail: util.StringPtr("admin@example.com"),
 				PolicyItemHourly: &resource.ScheduledPolicyItem{
-					FrequencyInterval: util.IntPtr(6),
+					FrequencyInterval: new(6),
 					RetentionUnit:     util.StringPtr("days"),
-					RetentionValue:    util.IntPtr(3),
+					RetentionValue:    new(3),
 				},
 				PolicyItemDaily: &resource.ScheduledPolicyItem{
-					FrequencyInterval: util.IntPtr(1),
+					FrequencyInterval: new(1),
 					RetentionUnit:     util.StringPtr("weeks"),
-					RetentionValue:    util.IntPtr(1),
+					RetentionValue:    new(1),
 				},
 				PolicyItemWeekly: []resource.ScheduledPolicyItem{
 					{
-						FrequencyInterval: util.IntPtr(1),
+						FrequencyInterval: new(1),
 						RetentionUnit:     util.StringPtr("months"),
-						RetentionValue:    util.IntPtr(2),
+						RetentionValue:    new(2),
 					},
 				},
 			},
@@ -240,9 +240,9 @@ func TestRoundTripConversion(t *testing.T) {
 			AuthorizedEmail:         "security@example.com",
 			AuthorizedUserFirstName: "Test",
 			AuthorizedUserLastName:  "User",
-			CopyProtectionEnabled:   util.Pointer(true),
-			PitEnabled:              util.Pointer(false),
-			RestoreWindowDays:       util.IntPtr(7),
+			CopyProtectionEnabled:   new(true),
+			PitEnabled:              new(false),
+			RestoreWindowDays:       new(7),
 			State:                   util.StringPtr("ACTIVE"),
 			UpdatedDate:             &time.Time{},
 			UpdatedUser:             util.StringPtr("admin"),

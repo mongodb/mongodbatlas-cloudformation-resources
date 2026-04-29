@@ -155,9 +155,9 @@ func testDeleteStack(t *testing.T, c *localTestContext) {
 
 func getProjectIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
-	for i := 0; i < len(stackOutputs); i++ {
+	for i := range stackOutputs {
 		if *aws.String(*stackOutputs[i].OutputKey) == "ProjectId" {
-			return *aws.String(*stackOutputs[1].OutputValue)
+			return *aws.String(*stackOutputs[i].OutputValue)
 		}
 	}
 	return ""

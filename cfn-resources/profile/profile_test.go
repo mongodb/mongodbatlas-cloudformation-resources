@@ -18,7 +18,6 @@ import (
 	"testing"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -53,17 +52,17 @@ func Test_NewBaseURL(t *testing.T) {
 		},
 		{
 			name:     "IsMongoDBGovCloud true returns gov URL",
-			profile:  profile.Profile{IsMongoDBGovCloud: util.Pointer(true)},
+			profile:  profile.Profile{IsMongoDBGovCloud: new(true)},
 			expected: profile.GovCloudBaseURL,
 		},
 		{
 			name:     "IsMongoDBGovCloud false returns empty string",
-			profile:  profile.Profile{IsMongoDBGovCloud: util.Pointer(false)},
+			profile:  profile.Profile{IsMongoDBGovCloud: new(false)},
 			expected: "",
 		},
 		{
 			name:     "BaseURL takes precedence over IsMongoDBGovCloud",
-			profile:  profile.Profile{BaseURL: "https://custom.example.com/", IsMongoDBGovCloud: util.Pointer(true)},
+			profile:  profile.Profile{BaseURL: "https://custom.example.com/", IsMongoDBGovCloud: new(true)},
 			expected: "https://custom.example.com/",
 		},
 		{
@@ -74,13 +73,13 @@ func Test_NewBaseURL(t *testing.T) {
 		},
 		{
 			name:     "env var takes precedence over IsMongoDBGovCloud",
-			profile:  profile.Profile{IsMongoDBGovCloud: util.Pointer(true)},
+			profile:  profile.Profile{IsMongoDBGovCloud: new(true)},
 			envURL:   "https://env.example.com/",
 			expected: "https://env.example.com/",
 		},
 		{
 			name:     "env var takes precedence over both BaseURL and IsMongoDBGovCloud",
-			profile:  profile.Profile{BaseURL: "https://custom.example.com/", IsMongoDBGovCloud: util.Pointer(true)},
+			profile:  profile.Profile{BaseURL: "https://custom.example.com/", IsMongoDBGovCloud: new(true)},
 			envURL:   "https://env.example.com/",
 			expected: "https://env.example.com/",
 		},

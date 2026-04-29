@@ -112,7 +112,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:              "Create in progress",
 			ResourceModel:        currentModel,
 			CallbackDelaySeconds: 20,
-			CallbackContext: map[string]interface{}{
+			CallbackContext: map[string]any{
 				"state": status,
 			}}, nil
 	}
@@ -143,7 +143,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              "Create in progress",
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 10,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"state": "Pending",
 		}}, nil
 }
@@ -232,7 +232,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:      handler.InProgress,
 			Message:              "Delete in progress",
 			CallbackDelaySeconds: 20,
-			CallbackContext: map[string]interface{}{
+			CallbackContext: map[string]any{
 				"state": "deleting",
 			}}, nil
 	}
@@ -254,7 +254,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              "Delete in progress",
 		CallbackDelaySeconds: 20,
 		ResourceModel:        currentModel,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"state": "deleting",
 		}}, nil
 }

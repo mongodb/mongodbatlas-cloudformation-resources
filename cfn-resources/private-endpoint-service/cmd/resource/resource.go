@@ -141,7 +141,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		if privateEndpointResponse != nil {
 			return progressevent.GetInProgressProgressEvent("Delete in progress",
-				map[string]interface{}{"stateName": ProgressStatusDeleting}, currentModel, 20), nil
+				map[string]any{"stateName": ProgressStatusDeleting}, currentModel, 20), nil
 		}
 	}
 	if err != nil {
@@ -169,7 +169,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              "Delete in progress",
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 20,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"stateName": ProgressStatusDeleting,
 		}}, nil
 }
@@ -198,7 +198,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			response), nil
 	}
 
-	mm := make([]interface{}, 0, len(privateEndpointResponse))
+	mm := make([]any, 0, len(privateEndpointResponse))
 	for i := range privateEndpointResponse {
 		var m Model
 		m.completeByConnection(privateEndpointResponse[i])
@@ -336,8 +336,8 @@ func validateCreationCompletion(client *util.MongoDBClient, currentModel *Model,
 	}
 }
 
-func (callBackContext *privateEndpointCreationCallBackContext) convertToInterface() (map[string]interface{}, error) {
-	var callBackMap map[string]interface{}
+func (callBackContext *privateEndpointCreationCallBackContext) convertToInterface() (map[string]any, error) {
+	var callBackMap map[string]any
 	data, _ := json.Marshal(callBackContext)
 	err := json.Unmarshal(data, &callBackMap)
 	if err != nil {
@@ -347,7 +347,7 @@ func (callBackContext *privateEndpointCreationCallBackContext) convertToInterfac
 	return callBackMap, nil
 }
 
-func (callBackContext *privateEndpointCreationCallBackContext) fillStruct(m map[string]interface{}) {
+func (callBackContext *privateEndpointCreationCallBackContext) fillStruct(m map[string]any) {
 	callBackContext.ID = fmt.Sprint(m["ID"])
 	callBackContext.StateName = fmt.Sprint(m["StateName"])
 }

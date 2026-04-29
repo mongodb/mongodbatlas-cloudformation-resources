@@ -51,7 +51,7 @@ We're here to help! This is simply a reminder of what we are going to look for b
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] I have checked that this change does not generate any credentials and that **they are NOT accidentally logged anywhere**.
 - [ ] I have added any necessary documentation (if appropriate)
-- [ ] I have run `make fmt` and formatted my code
+- [ ] I have run `make fix` and verified my code
 - [ ] For CFN Resources: I have released by changes in the private registry and proved by change
   works in Atlas
 

@@ -112,18 +112,18 @@ func CreateCluster(t *testing.T, atlasClient *admin20231115014.APIClient, projec
 	t.Helper()
 	clusterParams := &admin20231115014.AdvancedClusterDescription{
 		Name:        &clusterName,
-		ClusterType: admin20231115014.PtrString("REPLICASET"),
+		ClusterType: new("REPLICASET"),
 		ReplicationSpecs: &[]admin20231115014.ReplicationSpec{
 			{
-				NumShards: admin20231115014.PtrInt(1),
+				NumShards: new(1),
 				RegionConfigs: &[]admin20231115014.CloudRegionConfig{
 					{
-						ProviderName: admin20231115014.PtrString("AWS"),
-						RegionName:   admin20231115014.PtrString("US_EAST_1"),
-						Priority:     admin20231115014.PtrInt(7),
+						ProviderName: new("AWS"),
+						RegionName:   new("US_EAST_1"),
+						Priority:     new(7),
 						ElectableSpecs: &admin20231115014.HardwareSpec{
-							InstanceSize: admin20231115014.PtrString("M10"),
-							NodeCount:    admin20231115014.PtrInt(3),
+							InstanceSize: new("M10"),
+							NodeCount:    new(3),
 						},
 					},
 				},

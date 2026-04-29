@@ -183,7 +183,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err != nil {
 		return handleError(apiResp, constants.LIST, err)
 	}
-	response := make([]interface{}, 0)
+	response := make([]any, 0)
 	for _, stream := range accumulatedStreamInstances {
 		response = append(response, newCFNModelFromStreamInstance(currentModel, stream))
 	}

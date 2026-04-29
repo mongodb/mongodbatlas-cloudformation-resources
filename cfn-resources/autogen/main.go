@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"unicode"
 
 	"github.com/dave/jennifer/jen"
@@ -288,11 +289,11 @@ func getLiteralsWithKeys(arr []string) []jen.Code {
 }
 
 func prepareModel(arr []string) string {
-	str := ""
+	var str strings.Builder
 	for _, p := range arr {
-		str += "\t" + p + ":" + "currentModel." + p + ",\n"
+		str.WriteString("\t" + p + ":" + "currentModel." + p + ",\n")
 	}
-	return str
+	return str.String()
 }
 func capitalize(key string) string {
 	r := []rune(key)

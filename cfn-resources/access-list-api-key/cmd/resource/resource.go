@@ -268,7 +268,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(response, LIST, err)
 	}
 
-	accessListModels := make([]interface{}, 0)
+	accessListModels := make([]any, 0)
 	apiResults := accessListResponse.GetResults()
 	for i := range apiResults {
 		l := apiResults[i]

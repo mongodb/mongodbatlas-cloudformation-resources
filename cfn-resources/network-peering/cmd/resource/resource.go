@@ -116,7 +116,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.Id = peerResponse.Id
 	return progressevent.GetInProgressProgressEvent("Creating",
-		map[string]interface{}{
+		map[string]any{
 			"stateName": StatusInitiating,
 			"id":        &peerResponse.Id,
 		},
@@ -244,7 +244,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	return progressevent.GetInProgressProgressEvent("Deleting",
-		map[string]interface{}{
+		map[string]any{
 			"stateName": StatusDeleted,
 		},
 		currentModel,
@@ -271,7 +271,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	models := make([]interface{}, 0)
+	models := make([]any, 0)
 	networkPeeringConnections := peerResponse.Results
 	for i := range networkPeeringConnections {
 		var model Model
@@ -307,7 +307,7 @@ func validateDeletionProcess(client *util.MongoDBClient, currentModel *Model) ha
 	}
 
 	return progressevent.GetInProgressProgressEvent("Deleting",
-		map[string]interface{}{
+		map[string]any{
 			"stateName": state,
 		},
 		currentModel,
@@ -333,7 +333,7 @@ func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) ha
 	}
 
 	return progressevent.GetInProgressProgressEvent("Creating",
-		map[string]interface{}{
+		map[string]any{
 			"stateName": state,
 			"id":        &currentModel.Id,
 		},

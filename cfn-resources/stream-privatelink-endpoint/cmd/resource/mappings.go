@@ -29,7 +29,7 @@ func UpdateModel(model *Model, apiResp *admin.StreamsPrivateLinkConnection) {
 		model.Id = apiResp.Id
 	}
 	if apiResp.Provider != "" {
-		model.ProviderName = util.Pointer(apiResp.Provider)
+		model.ProviderName = new(apiResp.Provider)
 	}
 	if apiResp.Vendor != nil {
 		model.Vendor = apiResp.Vendor

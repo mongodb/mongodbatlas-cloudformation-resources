@@ -204,7 +204,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(apiResp, constants.LIST, err)
 	}
 
-	response := make([]interface{}, 0)
+	response := make([]any, 0)
 	for i := range accumulatedStreamConns {
 		model := GetStreamConnectionModel(&accumulatedStreamConns[i], nil)
 		model.ProjectId = currentModel.ProjectId
@@ -231,7 +231,7 @@ func getAllStreamConnections(ctx context.Context, conn *admin.APIClient, project
 			GroupId:      projectID,
 			TenantName:   workspaceOrInstanceName,
 			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),
-			PageNum:      util.Pointer(pageNum),
+			PageNum:      new(pageNum),
 		}).Execute()
 
 		if err != nil {

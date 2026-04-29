@@ -142,7 +142,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	resultList := make([]interface{}, 0)
+	resultList := make([]any, 0)
 
 	for i := range output.Results {
 		model := Model{

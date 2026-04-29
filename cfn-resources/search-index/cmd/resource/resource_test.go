@@ -17,7 +17,6 @@ package resource_test
 import (
 	"testing"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-index/cmd/resource"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -89,12 +88,12 @@ func TestNewTokenizerModel(t *testing.T) {
 		{
 			name: "All parameters",
 			tokenizer: &resource.ApiAtlasFTSAnalyzersTokenizer{
-				MaxGram:        ptr.Int(15),
-				MinGram:        ptr.Int(3),
-				Type:           ptr.String("edgeGram"),
-				Group:          ptr.Int(1),
-				Pattern:        ptr.String("\\W+"),
-				MaxTokenLength: ptr.Int(255),
+				MaxGram:        new(15),
+				MinGram:        new(3),
+				Type:           new("edgeGram"),
+				Group:          new(1),
+				Pattern:        new("\\W+"),
+				MaxTokenLength: new(255),
 			},
 			expected: map[string]any{
 				"maxGram":        15,
@@ -108,8 +107,8 @@ func TestNewTokenizerModel(t *testing.T) {
 		{
 			name: "Partial parameters",
 			tokenizer: &resource.ApiAtlasFTSAnalyzersTokenizer{
-				Type:           ptr.String("standard"),
-				MaxTokenLength: ptr.Int(100),
+				Type:           new("standard"),
+				MaxTokenLength: new(100),
 			},
 			expected: map[string]any{
 				"type":           "standard",
@@ -119,7 +118,7 @@ func TestNewTokenizerModel(t *testing.T) {
 		{
 			name: "Only type",
 			tokenizer: &resource.ApiAtlasFTSAnalyzersTokenizer{
-				Type: ptr.String("keyword"),
+				Type: new("keyword"),
 			},
 			expected: map[string]any{
 				"type": "keyword",
@@ -128,9 +127,9 @@ func TestNewTokenizerModel(t *testing.T) {
 		{
 			name: "With pattern and group",
 			tokenizer: &resource.ApiAtlasFTSAnalyzersTokenizer{
-				Type:    ptr.String("regexSplit"),
-				Pattern: ptr.String("[\\s,]+"),
-				Group:   ptr.Int(0),
+				Type:    new("regexSplit"),
+				Pattern: new("[\\s,]+"),
+				Group:   new(0),
 			},
 			expected: map[string]any{
 				"type":    "regexSplit",
@@ -163,43 +162,43 @@ func TestConvertStringToStoredSource(t *testing.T) {
 		},
 		{
 			name:        "Empty string",
-			input:       ptr.String(""),
+			input:       new(""),
 			expected:    nil,
 			expectError: false,
 		},
 		{
 			name:        "Boolean true",
-			input:       ptr.String("true"),
+			input:       new("true"),
 			expected:    true,
 			expectError: false,
 		},
 		{
 			name:        "Boolean false",
-			input:       ptr.String("false"),
+			input:       new("false"),
 			expected:    false,
 			expectError: false,
 		},
 		{
 			name:        "JSON object with include",
-			input:       ptr.String(`{"include":["name","price"]}`),
+			input:       new(`{"include":["name","price"]}`),
 			expected:    map[string]any{"include": []any{"name", "price"}},
 			expectError: false,
 		},
 		{
 			name:        "JSON object with exclude",
-			input:       ptr.String(`{"exclude":["_id"]}`),
+			input:       new(`{"exclude":["_id"]}`),
 			expected:    map[string]any{"exclude": []any{"_id"}},
 			expectError: false,
 		},
 		{
 			name:        "Complex JSON object",
-			input:       ptr.String(`{"include":["name","address"],"exclude":["internal"]}`),
+			input:       new(`{"include":["name","address"],"exclude":["internal"]}`),
 			expected:    map[string]any{"include": []any{"name", "address"}, "exclude": []any{"internal"}},
 			expectError: false,
 		},
 		{
 			name:        "Invalid JSON",
-			input:       ptr.String(`{invalid`),
+			input:       new(`{invalid`),
 			expected:    nil,
 			expectError: true,
 		},
@@ -233,14 +232,14 @@ func TestBuildFields(t *testing.T) {
 		},
 		{
 			name:        "Empty fields",
-			model:       &resource.Model{Fields: ptr.String("")},
+			model:       &resource.Model{Fields: new("")},
 			expected:    nil,
 			expectError: false,
 		},
 		{
 			name: "Valid fields array",
 			model: &resource.Model{
-				Fields: ptr.String(`[{"type":"vector","path":"plot_embedding","numDimensions":1536,"similarity":"euclidean"}]`),
+				Fields: new(`[{"type":"vector","path":"plot_embedding","numDimensions":1536,"similarity":"euclidean"}]`),
 			},
 			expected: &[]any{
 				map[string]any{
@@ -255,7 +254,7 @@ func TestBuildFields(t *testing.T) {
 		{
 			name: "Invalid JSON fields",
 			model: &resource.Model{
-				Fields: ptr.String(`[invalid json]`),
+				Fields: new(`[invalid json]`),
 			},
 			expected:    nil,
 			expectError: true,
@@ -293,11 +292,11 @@ func TestBuildAnalyzers(t *testing.T) {
 			model: &resource.Model{
 				Analyzers: []resource.ApiAtlasFTSAnalyzersViewManual{
 					{
-						Name:         ptr.String("myAnalyzer"),
+						Name:         new("myAnalyzer"),
 						CharFilters:  []string{`{"type":"icuNormalize"}`},
 						TokenFilters: []string{`{"type":"lowercase"}`},
 						Tokenizer: &resource.ApiAtlasFTSAnalyzersTokenizer{
-							Type: ptr.String("standard"),
+							Type: new("standard"),
 						},
 					},
 				},
@@ -310,10 +309,10 @@ func TestBuildAnalyzers(t *testing.T) {
 			model: &resource.Model{
 				Analyzers: []resource.ApiAtlasFTSAnalyzersViewManual{
 					{
-						Name:        ptr.String("myAnalyzer"),
+						Name:        new("myAnalyzer"),
 						CharFilters: []string{`invalid json`},
 						Tokenizer: &resource.ApiAtlasFTSAnalyzersTokenizer{
-							Type: ptr.String("standard"),
+							Type: new("standard"),
 						},
 					},
 				},
@@ -356,10 +355,10 @@ func TestBuildSynonyms(t *testing.T) {
 			model: &resource.Model{
 				Synonyms: []resource.ApiAtlasFTSSynonymMappingDefinitionView{
 					{
-						Analyzer: ptr.String("lucene.standard"),
-						Name:     ptr.String("mySynonyms"),
+						Analyzer: new("lucene.standard"),
+						Name:     new("mySynonyms"),
 						Source: &resource.SynonymSource{
-							Collection: ptr.String("synonyms"),
+							Collection: new("synonyms"),
 						},
 					},
 				},
@@ -397,19 +396,19 @@ func TestBuildStoredSource(t *testing.T) {
 		},
 		{
 			name:        "Boolean true",
-			model:       &resource.Model{StoredSource: ptr.String("true")},
+			model:       &resource.Model{StoredSource: new("true")},
 			expected:    true,
 			expectError: false,
 		},
 		{
 			name:        "Boolean false",
-			model:       &resource.Model{StoredSource: ptr.String("false")},
+			model:       &resource.Model{StoredSource: new("false")},
 			expected:    false,
 			expectError: false,
 		},
 		{
 			name:        "JSON object",
-			model:       &resource.Model{StoredSource: ptr.String(`{"include":["name"]}`)},
+			model:       &resource.Model{StoredSource: new(`{"include":["name"]}`)},
 			expected:    map[string]any{"include": []any{"name"}},
 			expectError: false,
 		},
@@ -444,8 +443,8 @@ func TestBuildTypeSets(t *testing.T) {
 			model: &resource.Model{
 				TypeSets: []resource.TypeSet{
 					{
-						Name:  ptr.String("myTypeSet"),
-						Types: ptr.String(`[{"type":"string"}]`),
+						Name:  new("myTypeSet"),
+						Types: new(`[{"type":"string"}]`),
 					},
 				},
 			},

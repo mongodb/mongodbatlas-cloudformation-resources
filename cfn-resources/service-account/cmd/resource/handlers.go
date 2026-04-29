@@ -133,7 +133,7 @@ func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 		return handleError(apiResp, constants.LIST, err)
 	}
 
-	response := make([]interface{}, 0)
+	response := make([]any, 0)
 	if serviceAccounts != nil && serviceAccounts.Results != nil {
 		for i := range *serviceAccounts.Results {
 			itemModel := &Model{}

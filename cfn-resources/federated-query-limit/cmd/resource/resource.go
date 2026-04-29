@@ -202,7 +202,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
 		return handleError(response, LIST, err)
 	}
-	queryLimits := make([]interface{}, 0)
+	queryLimits := make([]any, 0)
 	for i := range listQueryLimitsAPIResult {
 		queryLimit := Model{
 			ProjectId: currentModel.ProjectId,

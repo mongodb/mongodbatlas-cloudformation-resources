@@ -239,7 +239,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	groupID := *currentModel.ProjectId
 
-	dbUserModels := make([]interface{}, 0)
+	dbUserModels := make([]any, 0)
 
 	databaseUsers, resp, err := client.AtlasSDK.DatabaseUsersApi.ListDatabaseUsers(context.Background(), groupID).Execute()
 	if err != nil {

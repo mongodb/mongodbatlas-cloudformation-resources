@@ -49,7 +49,7 @@ func TestMappings(t *testing.T) {
 		"NewModelDBRoleToExecute": {
 			testFunc: func(t *testing.T) {
 				t.Helper()
-				input := &admin.DBRoleToExecute{Role: ptr.String(testRoleValue), Type: ptr.String(testRoleTypeValue)}
+				input := &admin.DBRoleToExecute{Role: new(testRoleValue), Type: new(testRoleTypeValue)}
 				result := resource.NewModelDBRoleToExecute(input)
 				assert.Equal(t, testRoleValue, *result.Role)
 				assert.Equal(t, testRoleTypeValue, *result.Type)
@@ -60,8 +60,8 @@ func TestMappings(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				t.Helper()
 				input := &admin.StreamsKafkaAuthentication{
-					Mechanism: ptr.String(testMechanism), Username: ptr.String(testUsername),
-					Password: ptr.String("test-password-placeholder"),
+					Mechanism: new(testMechanism), Username: new(testUsername),
+					Password: new("test-password-placeholder"),
 				}
 				result := resource.NewModelAuthentication(input, nil)
 				assert.Equal(t, testMechanism, *result.Mechanism)
@@ -74,7 +74,7 @@ func TestMappings(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				t.Helper()
 				input := &admin.StreamsKafkaSecurity{
-					BrokerPublicCertificate: ptr.String(testCert), Protocol: ptr.String(testProtocol),
+					BrokerPublicCertificate: new(testCert), Protocol: new(testProtocol),
 				}
 				result := resource.NewModelSecurity(input)
 				assert.Equal(t, testCert, *result.BrokerPublicCertificate)
@@ -85,7 +85,7 @@ func TestMappings(t *testing.T) {
 		"NewDBRoleToExecute": {
 			testFunc: func(t *testing.T) {
 				t.Helper()
-				input := &resource.DBRoleToExecute{Role: ptr.String(testCustomRole), Type: ptr.String(testCustomType)}
+				input := &resource.DBRoleToExecute{Role: new(testCustomRole), Type: new(testCustomType)}
 				result := resource.NewDBRoleToExecute(input)
 				assert.Equal(t, testCustomRole, *result.Role)
 				assert.Equal(t, testCustomType, *result.Type)
@@ -96,12 +96,12 @@ func TestMappings(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				t.Helper()
 				streamsConn := &admin.StreamsConnection{
-					Name: ptr.String(testConnection), Type: ptr.String(resource.KafkaConnectionType),
-					BootstrapServers: ptr.String(testBootstrap),
+					Name: new(testConnection), Type: ptr.String(resource.KafkaConnectionType),
+					BootstrapServers: new(testBootstrap),
 					Authentication: &admin.StreamsKafkaAuthentication{
-						Mechanism: ptr.String(testMechanism), Username: ptr.String(testUser),
+						Mechanism: new(testMechanism), Username: new(testUser),
 					},
-					Security: &admin.StreamsKafkaSecurity{Protocol: ptr.String(testProtocol)},
+					Security: &admin.StreamsKafkaSecurity{Protocol: new(testProtocol)},
 				}
 				result := resource.GetStreamConnectionModel(streamsConn, nil)
 				assert.Equal(t, testConnection, *result.ConnectionName)
@@ -113,9 +113,9 @@ func TestMappings(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				t.Helper()
 				streamsConn := &admin.StreamsConnection{
-					Name: ptr.String(testConnection), Type: ptr.String(resource.ClusterConnectionType),
-					ClusterName:     ptr.String(testCluster),
-					DbRoleToExecute: &admin.DBRoleToExecute{Role: ptr.String("admin"), Type: ptr.String("Custom")},
+					Name: new(testConnection), Type: ptr.String(resource.ClusterConnectionType),
+					ClusterName:     new(testCluster),
+					DbRoleToExecute: &admin.DBRoleToExecute{Role: new("admin"), Type: new("Custom")},
 				}
 				result := resource.GetStreamConnectionModel(streamsConn, nil)
 				assert.Equal(t, testConnection, *result.ConnectionName)
@@ -127,7 +127,7 @@ func TestMappings(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				t.Helper()
 				streamsConn := &admin.StreamsConnection{
-					Name: ptr.String(testSampleName), Type: ptr.String("Sample"),
+					Name: new(testSampleName), Type: new("Sample"),
 				}
 				result := resource.GetStreamConnectionModel(streamsConn, nil)
 				assert.Equal(t, testSampleName, *result.ConnectionName)
@@ -139,9 +139,9 @@ func TestMappings(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				t.Helper()
 				streamsConn := &admin.StreamsConnection{
-					Name: ptr.String(testConnection), Type: ptr.String(resource.AWSLambdaType),
+					Name: new(testConnection), Type: ptr.String(resource.AWSLambdaType),
 					Aws: &admin.StreamsAWSConnectionConfig{
-						RoleArn: ptr.String(testRoleArn),
+						RoleArn: new(testRoleArn),
 					},
 				}
 				result := resource.GetStreamConnectionModel(streamsConn, nil)
@@ -159,8 +159,8 @@ func TestMappings(t *testing.T) {
 					"Content-Type":  "application/json",
 				}
 				streamsConn := &admin.StreamsConnection{
-					Name: ptr.String(testConnection), Type: ptr.String(resource.HTTPSType),
-					Url:     ptr.String(testURL),
+					Name: new(testConnection), Type: ptr.String(resource.HTTPSType),
+					Url:     new(testURL),
 					Headers: &testHeaders,
 				}
 				result := resource.GetStreamConnectionModel(streamsConn, nil)

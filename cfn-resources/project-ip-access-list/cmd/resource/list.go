@@ -81,7 +81,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	currentModel.AccessList = mm
 	// create list with 1
-	models := []interface{}{}
+	models := []any{}
 	models = append(models, currentModel)
 
 	return handler.ProgressEvent{

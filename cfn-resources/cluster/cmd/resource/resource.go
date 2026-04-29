@@ -162,7 +162,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func handleUnpausingUpdate(client *util.MongoDBClient, currentCluster *admin20231115014.AdvancedClusterDescription, currentModel *Model) *handler.ProgressEvent {
 	if (currentCluster.Paused != nil && *currentCluster.Paused) && (currentModel.Paused == nil || !*currentModel.Paused) {
 		_, resp, err := client.Atlas20231115014.ClustersApi.UpdateCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name,
-			&admin20231115014.AdvancedClusterDescription{Paused: admin20231115014.PtrBool(false)}).Execute()
+			&admin20231115014.AdvancedClusterDescription{Paused: new(false)}).Execute()
 		return util.HandleClusterError(err, resp)
 	}
 	return nil
@@ -183,7 +183,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel, constants.DeletedState)
 	}
 	params := &admin20231115014.DeleteClusterApiParams{
-		RetainBackups: util.Pointer(false),
+		RetainBackups: new(false),
 		GroupId:       *currentModel.ProjectId,
 		ClusterName:   *currentModel.Name,
 	}
@@ -213,9 +213,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for pageNum := 1; ; pageNum++ {
 		listOptions := &admin20231115014.ListClustersApiParams{
 			ItemsPerPage: admin20231115014.PtrInt(itemsPerPage),
-			PageNum:      admin20231115014.PtrInt(pageNum),
+			PageNum:      new(pageNum),
 			GroupId:      *currentModel.ProjectId,
-			IncludeCount: admin20231115014.PtrBool(true),
+			IncludeCount: new(true),
 		}
 
 		clustersResponse, resp, err := client.Atlas20231115014.ClustersApi.ListClustersWithParams(context.Background(), listOptions).Execute()
@@ -290,7 +290,7 @@ func (m *Model) HasAdvanceSettings() bool {
 		m.AdvancedSettings.OplogMinRetentionHours != nil)
 }
 
-func formatMongoDBMajorVersion(val interface{}) string {
+func formatMongoDBMajorVersion(val any) string {
 	if strings.Contains(val.(string), ".") {
 		return val.(string)
 	}

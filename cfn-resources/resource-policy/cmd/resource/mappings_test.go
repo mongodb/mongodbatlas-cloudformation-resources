@@ -19,7 +19,6 @@ import (
 
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
-	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/resource-policy/cmd/resource"
 	"github.com/stretchr/testify/assert"
 )
@@ -42,10 +41,10 @@ func TestNewResourcePolicyCreateReq(t *testing.T) {
 		{
 			name: "Valid Input",
 			input: &resource.Model{
-				Name: ptr.String(name),
+				Name: new(name),
 				Policies: []resource.ApiAtlasPolicy{
 					{
-						Body: ptr.String(body),
+						Body: new(body),
 					},
 				},
 			},
@@ -90,16 +89,16 @@ func TestGetResourcePolicyModel(t *testing.T) {
 		{
 			name: "Valid Input",
 			inputSDK: &admin.ApiAtlasResourcePolicy{
-				Id:      ptr.String(id),
-				Name:    ptr.String(name),
-				OrgId:   ptr.String(orgID),
-				Version: ptr.String(version),
+				Id:      new(id),
+				Name:    new(name),
+				OrgId:   new(orgID),
+				Version: new(version),
 			},
 			expected: &resource.Model{
-				Id:      ptr.String(id),
-				Name:    ptr.String(name),
-				OrgId:   ptr.String(orgID),
-				Version: ptr.String(version),
+				Id:      new(id),
+				Name:    new(name),
+				OrgId:   new(orgID),
+				Version: new(version),
 			},
 		},
 	}
@@ -130,15 +129,15 @@ func TestNewResourcePolicyUpdateReq(t *testing.T) {
 		{
 			name: "Valid Input",
 			input: &resource.Model{
-				Name: ptr.String(name),
+				Name: new(name),
 				Policies: []resource.ApiAtlasPolicy{
 					{
-						Body: ptr.String(body),
+						Body: new(body),
 					},
 				},
 			},
 			expected: &admin.ApiAtlasResourcePolicyEdit{
-				Name: ptr.String(name),
+				Name: new(name),
 				Policies: &[]admin.ApiAtlasPolicyCreate{
 					{
 						Body: body,

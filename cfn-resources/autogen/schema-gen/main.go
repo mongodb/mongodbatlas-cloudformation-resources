@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -242,13 +243,13 @@ func main() {
 	<-reqDone
 }
 
-func sortProperties[V any](properties map[string]V) (props map[string]interface{}) {
+func sortProperties[V any](properties map[string]V) (props map[string]any) {
 	var propertyNames []string
 	for name := range properties {
 		propertyNames = append(propertyNames, name)
 	}
 	sort.Strings(propertyNames)
-	props = make(map[string]interface{}, len(properties))
+	props = make(map[string]any, len(properties))
 	for _, name := range propertyNames {
 		props[name] = properties[name]
 	}
@@ -705,9 +706,7 @@ func mergeDefinitionMaps(map1 map[string]Definitions, map2 map[string]Definition
 	if map2 == nil {
 		return map1
 	}
-	for k, v := range map2 {
-		map1[k] = v
-	}
+	maps.Copy(map1, map2)
 	return map1
 }
 

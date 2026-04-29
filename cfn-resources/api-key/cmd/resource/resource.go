@@ -263,7 +263,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	apiKeyList := pagedAPIKeysList.GetResults()
-	apiKeys := make([]interface{}, len(apiKeyList))
+	apiKeys := make([]any, len(apiKeyList))
 	for i := range apiKeyList {
 		var model Model
 		model.readAPIKeyDetails(apiKeyList[i])
@@ -334,7 +334,7 @@ func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.
 	return assignAPIRequest.Execute()
 }
 
-func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (map[string]interface{}, *http.Response, error) {
+func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (map[string]any, *http.Response, error) {
 	unAssignAPIRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
 		context.Background(),
 		*projectAssignment.ProjectId,
@@ -344,7 +344,7 @@ func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util
 	return unAssignAPIRequest.Execute()
 }
 
-func updateProjectAssignments(atlasClient *util.MongoDBClient, currentModel *Model, existingModel *Model) (result interface{}, response *http.Response, err error) {
+func updateProjectAssignments(atlasClient *util.MongoDBClient, currentModel *Model, existingModel *Model) (result any, response *http.Response, err error) {
 	// update projectAssignments
 	newAssignments, updateAssignments, removeAssignments := getChangesInProjectAssignments(currentModel.ProjectAssignments, existingModel.ProjectAssignments)
 
@@ -438,7 +438,7 @@ func areStringArraysEqualIgnoreOrder(arr1, arr2 []string) bool {
 	copy(sortedArr2, arr2)
 	sort.Strings(sortedArr2)
 
-	for i := 0; i < len(sortedArr1); i++ {
+	for i := range sortedArr1 {
 		if sortedArr1[i] != sortedArr2[i] {
 			return false
 		}

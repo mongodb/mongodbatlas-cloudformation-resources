@@ -119,7 +119,7 @@ func ExecuteGoTemplate(templatePath string, data any) (string, error) {
 	var cfnGoTemplateStr bytes.Buffer
 	name := path.Base(templatePath)
 	cfnGoTemplate := template.New(name).Funcs(map[string]any{
-		"marshal": func(v interface{}) template.HTML {
+		"marshal": func(v any) template.HTML {
 			a, _ := json.Marshal(v)
 			return template.HTML(a) //nolint:gosec // no security risk in these tests
 		},

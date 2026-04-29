@@ -241,7 +241,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err != nil {
 		return handleError(response, err)
 	}
-	endpoints := make([]interface{}, len(pe.GetResults()))
+	endpoints := make([]any, len(pe.GetResults()))
 	for i, e := range pe.GetResults() {
 		eID := e.GetEndpointId()
 		endpoints[i] = Model{

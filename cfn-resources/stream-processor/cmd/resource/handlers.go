@@ -316,7 +316,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 		return handleError(apiResp, constants.LIST, err)
 	}
 
-	response := make([]interface{}, 0, len(accumulatedProcessors))
+	response := make([]any, 0, len(accumulatedProcessors))
 	for i := range accumulatedProcessors {
 		modelItem, err := GetStreamProcessorModel(&accumulatedProcessors[i], model)
 		if err != nil {

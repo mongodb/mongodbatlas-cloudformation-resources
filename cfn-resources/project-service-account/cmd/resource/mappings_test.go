@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312018/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project-service-account/cmd/resource"
 	"github.com/stretchr/testify/assert"

@@ -20,7 +20,7 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/service-account-access-list-entry/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312018/admin"
 )
 
 func TestUpdateModelFromEntry(t *testing.T) {

@@ -4,6 +4,9 @@ on:
    - cron: "30 8 * * TUE" # Every Tuesday at 8:30 AM 
  workflow_dispatch:
   
+permissions:
+  contents: read
+
 jobs:
   update-sdk:
     runs-on: ubuntu-latest

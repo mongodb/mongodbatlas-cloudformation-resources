@@ -14,13 +14,10 @@ jobs:
       pull-requests: read
       repository-projects: read
     outputs:
-      # TODO: TEMPORARY This change will be reverted in the last commit before merging.
-      # Forces only the `flex-cluster` e2e test to run so the workflow-permissions PR
-      # (CLOUDP-409151) can be verified with a focused run. Revert to restore real change detection.
-      cluster: 'false'
-      flex-cluster: 'true'
-      project: 'false'
-      search-deployment: 'false'
+      cluster: ${{ steps.filter.outputs.cluster }}
+      flex-cluster: ${{ steps.filter.outputs.flex-cluster }}
+      project: ${{ steps.filter.outputs.project }}
+      search-deployment: ${{ steps.filter.outputs.search-deployment }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         if: ${{ github.event_name == 'push' }}

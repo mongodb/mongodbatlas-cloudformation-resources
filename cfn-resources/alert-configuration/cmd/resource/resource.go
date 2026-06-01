@@ -175,10 +175,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// server returns an error 500
 	projectID := *currentModel.ProjectId
 	id := *currentModel.Id
-	alertReq, res, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), projectID, id).Execute()
+	alertReq, getRes, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), projectID, id).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), getRes), nil
 	}
+	defer getRes.Body.Close()
 
 	alertReq = ConvertToMongoModel(alertReq, currentModel)
 
@@ -186,6 +187,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	alertReq.Created = nil
 	alertReq.Updated = nil
 	var alertModel *admin.GroupAlertsConfig
+	var res *http.Response
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
 	// so have to use different method to change enabled.

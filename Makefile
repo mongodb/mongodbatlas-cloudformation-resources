@@ -62,7 +62,7 @@ tools:  ## Install dev tools
 	go install github.com/rhysd/actionlint/cmd/actionlint@latest
 	go install go.uber.org/mock/mockgen@latest
 	go install github.com/vektra/mockery/v3@$(MOCKERY_VERSION)
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(GOLANGCI_VERSION)
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_VERSION)
 
 .PHONY: link-git-hooks
 link-git-hooks: ## Install git hooks

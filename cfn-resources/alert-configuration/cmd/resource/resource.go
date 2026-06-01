@@ -175,11 +175,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// server returns an error 500
 	projectID := *currentModel.ProjectId
 	id := *currentModel.Id
-	alertReq, getRes, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), projectID, id).Execute()
+	alertReq, getResp, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), projectID, id).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), getRes), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), getResp), nil
 	}
-	defer getRes.Body.Close()
+	defer getResp.Body.Close()
 
 	alertReq = ConvertToMongoModel(alertReq, currentModel)
 
@@ -187,22 +187,22 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	alertReq.Created = nil
 	alertReq.Updated = nil
 	var alertModel *admin.GroupAlertsConfig
-	var res *http.Response
+	var updateResp *http.Response
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
 	// so have to use different method to change enabled.
 	if reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(true)}) ||
 		reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(false)}) {
-		alertModel, res, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfig(context.Background(), projectID, id, &admin.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
+		alertModel, updateResp, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfig(context.Background(), projectID, id, &admin.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
 	} else {
-		alertModel, res, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfig(context.Background(), projectID, id, alertReq).Execute()
+		alertModel, updateResp, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfig(context.Background(), projectID, id, alertReq).Execute()
 	}
 
 	if err != nil {
 		_, _ = logger.Warnf("Update - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), updateResp), nil
 	}
-	defer res.Body.Close()
+	defer updateResp.Body.Close()
 
 	currentModel = convertToUIModel(alertModel, currentModel)
 

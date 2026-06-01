@@ -166,7 +166,7 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 			},
 		},
 		{
-			name: "Valid SDK Input - Roles Always Sorted From API",
+			name: "Valid SDK Input - Preserve Roles Order",
 			inputSDK: &admin.OrgServiceAccount{
 				ClientId:  new(clientID),
 				Name:      new("test"),

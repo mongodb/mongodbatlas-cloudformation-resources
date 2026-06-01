@@ -124,38 +124,6 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	}
 }
 
-func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	ctx := context.Background()
-	orgID := model.OrgId
-
-	serviceAccounts, apiResp, err := client.AtlasSDK.ServiceAccountsApi.ListOrgServiceAccounts(ctx, *orgID).Execute()
-	if err != nil {
-		return handleError(apiResp, constants.LIST, err)
-	}
-
-	response := make([]any, 0)
-	if serviceAccounts != nil && serviceAccounts.Results != nil {
-		for i := range *serviceAccounts.Results {
-			itemModel := &Model{}
-			resourceModel := GetOrgServiceAccountModel(&(*serviceAccounts.Results)[i], itemModel)
-			resourceModel.OrgId = model.OrgId
-			resourceModel.Profile = model.Profile
-			if resourceModel.Secrets != nil {
-				for j := range resourceModel.Secrets {
-					resourceModel.Secrets[j].Secret = nil
-				}
-			}
-			response = append(response, resourceModel)
-		}
-	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         constants.Complete,
-		ResourceModels:  response,
-	}
-}
-
 func handleError(response *http.Response, method constants.CfnFunctions, err error) handler.ProgressEvent {
 	errMsg := fmt.Sprintf("%s error: %s", method, err.Error())
 	return progress_events.GetFailedEventByResponse(errMsg, response)

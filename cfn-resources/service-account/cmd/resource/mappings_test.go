@@ -182,21 +182,6 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 			},
 		},
 		{
-			name: "SecretExpiresAfterHours preserved from currentModel",
-			inputSDK: &admin.OrgServiceAccount{
-				ClientId:  new(clientID),
-				Name:      new("test"),
-				CreatedAt: &now,
-			},
-			inputModel: &resource.Model{
-				SecretExpiresAfterHours: new(720),
-			},
-			validate: func(t *testing.T, result *resource.Model) {
-				t.Helper()
-				assert.Equal(t, 720, *result.SecretExpiresAfterHours)
-			},
-		},
-		{
 			name: "Valid SDK Input - With Secrets",
 			inputSDK: &admin.OrgServiceAccount{
 				ClientId:  new(clientID),

@@ -175,32 +175,34 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// server returns an error 500
 	projectID := *currentModel.ProjectId
 	id := *currentModel.Id
-	alertReq, res, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), projectID, id).Execute()
+	alertReq, getResp, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), projectID, id).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), getResp), nil
 	}
+	defer getResp.Body.Close()
 
-	alertReq = convertToMongoModel(alertReq, currentModel)
+	alertReq = ConvertToMongoModel(alertReq, currentModel)
 
 	// Removing the computed attributes to recreate the original request
 	alertReq.Created = nil
 	alertReq.Updated = nil
 	var alertModel *admin.GroupAlertsConfig
+	var updateResp *http.Response
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
 	// so have to use different method to change enabled.
 	if reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(true)}) ||
 		reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(false)}) {
-		alertModel, res, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfig(context.Background(), projectID, id, &admin.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
+		alertModel, updateResp, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfig(context.Background(), projectID, id, &admin.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
 	} else {
-		alertModel, res, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfig(context.Background(), projectID, id, alertReq).Execute()
+		alertModel, updateResp, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfig(context.Background(), projectID, id, alertReq).Execute()
 	}
 
 	if err != nil {
 		_, _ = logger.Warnf("Update - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), updateResp), nil
 	}
-	defer res.Body.Close()
+	defer updateResp.Body.Close()
 
 	currentModel = convertToUIModel(alertModel, currentModel)
 
@@ -341,7 +343,7 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 	return &notifications, nil
 }
 
-func convertToMongoModel(reqModel *admin.GroupAlertsConfig, currentModel *Model) *admin.GroupAlertsConfig {
+func ConvertToMongoModel(reqModel *admin.GroupAlertsConfig, currentModel *Model) *admin.GroupAlertsConfig {
 	if reqModel == nil {
 		reqModel = &admin.GroupAlertsConfig{}
 	}
@@ -356,12 +358,8 @@ func convertToMongoModel(reqModel *admin.GroupAlertsConfig, currentModel *Model)
 	if currentModel.Matchers != nil {
 		reqModel.Matchers = expandAlertConfigurationMatchers(currentModel.Matchers)
 	}
-	if currentModel.MetricThreshold != nil {
-		reqModel.MetricThreshold = expandAlertConfigurationMetricThresholdConfig(currentModel)
-	}
-	if currentModel.Threshold != nil {
-		reqModel.Threshold = expandAlertConfigurationThreshold(currentModel.Threshold)
-	}
+	reqModel.MetricThreshold = expandAlertConfigurationMetricThresholdConfig(currentModel)
+	reqModel.Threshold = expandAlertConfigurationThreshold(currentModel.Threshold)
 	if currentModel.Notifications != nil {
 		reqModel.Notifications, _ = expandAlertConfigurationNotification(currentModel.Notifications)
 	}

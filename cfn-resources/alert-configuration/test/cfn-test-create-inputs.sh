@@ -11,9 +11,10 @@ set -o pipefail
 function usage {
 	echo "usage:$0 <project_name>"
 	echo "Creates a new project"
+	exit 1
 }
 
-if [ "$#" -ne 2 ]; then usage; fi
+if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
 #set profile - relevant for contract tests which define a custom profile

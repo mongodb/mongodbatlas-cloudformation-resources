@@ -31,7 +31,7 @@ fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 # Create Stream Instance/Workspace (this is a LONG-RUNNING operation, can take 10-30+ minutes)
-workspaceName="stream-workspace-$(date +%s)-$RANDOM"
+workspaceName="ct-stream-workspace-$(date +%s)-$RANDOM"
 cloudProvider="AWS"
 
 echo -e "Creating Stream Instance/Workspace \"${workspaceName}\" (this may take 10-30+ minutes)...\n"
@@ -49,8 +49,8 @@ done
 
 # For inputs_3 (DLQ testing), we need a cluster and stream connection
 # Create cluster for DLQ connection (if needed)
-clusterName="cluster-$(date +%s)-$RANDOM"
-connectionName="stream-connection-$(date +%s)-$RANDOM"
+clusterName="ct-cluster-$(date +%s)-$RANDOM"
+connectionName="ct-stream-conn-$(date +%s)-$RANDOM"
 
 echo -e "Creating Cluster \"${clusterName}\" for DLQ connection...\n"
 atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
@@ -106,8 +106,8 @@ rm -f "${sampleConnectionConfig}"
 
 # Create Kafka connections for inputs_4 and inputs_5 (Kafka to Cluster and Cluster to Kafka)
 # Using placeholder values matching Terraform tests (as per MongoDB team guidance)
-kafkaSourceConnectionName="KafkaConnectionSrc-$(date +%s)-$RANDOM"
-kafkaSinkConnectionName="KafkaConnectionDest-$(date +%s)-$RANDOM"
+kafkaSourceConnectionName="ct-kafka-src-$(date +%s)-$RANDOM"
+kafkaSinkConnectionName="ct-kafka-dest-$(date +%s)-$RANDOM"
 
 echo -e "Creating Kafka Source Connection \"${kafkaSourceConnectionName}\" for inputs_4...\n"
 kafkaSourceConnectionConfig=$(mktemp).json

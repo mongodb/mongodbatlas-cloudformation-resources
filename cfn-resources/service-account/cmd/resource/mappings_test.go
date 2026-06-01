@@ -182,7 +182,7 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 			},
 		},
 		{
-			name: "SecretExpiresAfterHours always nil in response",
+			name: "SecretExpiresAfterHours preserved from currentModel",
 			inputSDK: &admin.OrgServiceAccount{
 				ClientId:  new(clientID),
 				Name:      new("test"),
@@ -193,7 +193,7 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 			},
 			validate: func(t *testing.T, result *resource.Model) {
 				t.Helper()
-				assert.Nil(t, result.SecretExpiresAfterHours)
+				assert.Equal(t, 720, *result.SecretExpiresAfterHours)
 			},
 		},
 		{

@@ -41,7 +41,6 @@ func GetOrgServiceAccountModel(account *admin.OrgServiceAccount, currentModel *M
 			sort.Strings(roles)
 			model.Roles = roles
 		}
-		model.SecretExpiresAfterHours = nil
 		model.ClientId = account.ClientId
 		model.CreatedAt = util.TimePtrToStringPtr(account.CreatedAt)
 

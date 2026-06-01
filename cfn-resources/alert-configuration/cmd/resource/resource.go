@@ -180,7 +180,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	alertReq = convertToMongoModel(alertReq, currentModel)
+	alertReq = ConvertToMongoModel(alertReq, currentModel)
 
 	// Removing the computed attributes to recreate the original request
 	alertReq.Created = nil
@@ -341,7 +341,7 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 	return &notifications, nil
 }
 
-func convertToMongoModel(reqModel *admin.GroupAlertsConfig, currentModel *Model) *admin.GroupAlertsConfig {
+func ConvertToMongoModel(reqModel *admin.GroupAlertsConfig, currentModel *Model) *admin.GroupAlertsConfig {
 	if reqModel == nil {
 		reqModel = &admin.GroupAlertsConfig{}
 	}
@@ -356,12 +356,8 @@ func convertToMongoModel(reqModel *admin.GroupAlertsConfig, currentModel *Model)
 	if currentModel.Matchers != nil {
 		reqModel.Matchers = expandAlertConfigurationMatchers(currentModel.Matchers)
 	}
-	if currentModel.MetricThreshold != nil {
-		reqModel.MetricThreshold = expandAlertConfigurationMetricThresholdConfig(currentModel)
-	}
-	if currentModel.Threshold != nil {
-		reqModel.Threshold = expandAlertConfigurationThreshold(currentModel.Threshold)
-	}
+	reqModel.MetricThreshold = expandAlertConfigurationMetricThresholdConfig(currentModel)
+	reqModel.Threshold = expandAlertConfigurationThreshold(currentModel.Threshold)
 	if currentModel.Notifications != nil {
 		reqModel.Notifications, _ = expandAlertConfigurationNotification(currentModel.Notifications)
 	}

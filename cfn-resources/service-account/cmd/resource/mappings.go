@@ -36,15 +36,12 @@ func GetOrgServiceAccountModel(account *admin.OrgServiceAccount, currentModel *M
 		model.Name = account.Name
 		model.Description = account.Description
 		if account.Roles != nil {
-			roles := *account.Roles
-			// Preserve order from currentModel if it exists (required for CFN contract tests)
-			// Otherwise preserve API response order
-			if currentModel != nil && currentModel.Roles != nil && len(currentModel.Roles) > 0 {
-				model.Roles = currentModel.Roles
-			} else {
-				model.Roles = roles
-			}
+			roles := make([]string, len(*account.Roles))
+			copy(roles, *account.Roles)
+			sort.Strings(roles)
+			model.Roles = roles
 		}
+		model.SecretExpiresAfterHours = nil
 		model.ClientId = account.ClientId
 		model.CreatedAt = util.TimePtrToStringPtr(account.CreatedAt)
 

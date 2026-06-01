@@ -10,6 +10,7 @@ set -o pipefail
 
 function usage {
 	echo "usage:$0 <service_account_name>"
+	exit 1
 }
 
 if [ "$#" -ne 1 ]; then usage; fi

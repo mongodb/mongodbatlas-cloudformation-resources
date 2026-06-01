@@ -166,7 +166,7 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 			},
 		},
 		{
-			name: "Valid SDK Input - Preserve Roles Order",
+			name: "Valid SDK Input - Roles Always Sorted From API",
 			inputSDK: &admin.OrgServiceAccount{
 				ClientId:  new(clientID),
 				Name:      new("test"),
@@ -179,6 +179,21 @@ func TestGetOrgServiceAccountModel(t *testing.T) {
 			validate: func(t *testing.T, result *resource.Model) {
 				t.Helper()
 				assert.Equal(t, []string{"ORG_GROUP_CREATOR", "ORG_MEMBER"}, result.Roles)
+			},
+		},
+		{
+			name: "SecretExpiresAfterHours always nil in response",
+			inputSDK: &admin.OrgServiceAccount{
+				ClientId:  new(clientID),
+				Name:      new("test"),
+				CreatedAt: &now,
+			},
+			inputModel: &resource.Model{
+				SecretExpiresAfterHours: new(720),
+			},
+			validate: func(t *testing.T, result *resource.Model) {
+				t.Helper()
+				assert.Nil(t, result.SecretExpiresAfterHours)
 			},
 		},
 		{

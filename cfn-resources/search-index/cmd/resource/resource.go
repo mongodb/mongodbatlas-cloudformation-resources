@@ -573,9 +573,7 @@ func ConvertStringToStoredSource(storedSource *string) (any, error) {
 	return data, nil
 }
 
-// validateProgress polls the search index until it reaches targetState (cluster-style:
-// wait until the target is reached), bounded by retries so a stuck index cannot loop
-// indefinitely. A FAILED status ends the wait with a failure.
+// validateProgress polls until the index reaches targetState, capped at retries to prevent infinite loops.
 func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, attempts int, targetStates ...string) (handler.ProgressEvent, error) {
 	index, err := SearchIndexExists(ctx, client, currentModel)
 	if err != nil {

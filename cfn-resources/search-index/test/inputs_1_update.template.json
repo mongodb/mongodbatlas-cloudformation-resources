@@ -16,7 +16,7 @@
       "Analyzer": "lucene.simple",
       "Name": "synonym_test_updated",
       "Source": {
-        "Collection": "someCollection"
+        "Collection": "listingsAndReviews"
       }
     }
   ],

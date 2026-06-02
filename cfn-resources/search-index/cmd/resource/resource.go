@@ -161,7 +161,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
-	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
+	_, preUpdatePending := req.CallbackContext["preUpdateCheck"]
+	if _, ok := req.CallbackContext["stateName"]; ok && iOK && !preUpdatePending {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
 		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
@@ -176,8 +177,35 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
+	existingIndex, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+	if err != nil {
+		if util.StatusNotFound(resp) {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
+		}
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
+	}
+	if existingIndex.Status != nil && *existingIndex.Status != "STEADY" && *existingIndex.Status != "FAILED" {
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              "Index not ready for update",
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: 120,
+			CallbackContext: map[string]any{
+				"stateName":      existingIndex.Status,
+				"id":             currentModel.IndexId,
+				"preUpdateCheck": true,
+			},
+		}, nil
+	}
+
 	updatedSearchIndex, res, err := atlasV2.AtlasSearchApi.UpdateClusterSearchIndex(
-		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndexRequest).Execute()
+		ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndexRequest).Execute()
 	if err != nil {
 		if util.StatusNotFound(res) {
 			return handler.ProgressEvent{

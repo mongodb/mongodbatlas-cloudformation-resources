@@ -11,6 +11,7 @@ set -o pipefail
 function usage {
 	echo "usage:$0 <project_name>"
 	echo "Creates a new project and an Cluster for testing"
+	exit 1
 }
 
 if [ "$#" -ne 1 ]; then usage; fi

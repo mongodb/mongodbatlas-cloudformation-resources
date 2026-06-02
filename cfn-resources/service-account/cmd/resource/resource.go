@@ -74,9 +74,9 @@ func Delete(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 }
 
 func List(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
-	client, setupErr := setupRequest(req, model, ListRequiredFields)
-	if setupErr != nil {
-		return *setupErr, nil
-	}
-	return handleList(client, model), nil
+	return handler.ProgressEvent{
+		OperationStatus:  handler.Failed,
+		Message:          "List operation is not supported",
+		HandlerErrorCode: "NotFound",
+	}, nil
 }

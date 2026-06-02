@@ -12,7 +12,7 @@
     {
       "CharFilters": ["{\"type\": \"htmlStrip\"}"],
       "Name": "test_updated",
-      "TokenFilters": ["{\"type\": \"lowercase\"}", "{\"type\": \"stopword\"}"],
+      "TokenFilters": ["{\"type\": \"lowercase\"}"],
       "Tokenizer": {
         "Type": "standard",
         "MaxTokenLength": "300"

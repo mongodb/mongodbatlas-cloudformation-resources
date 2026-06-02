@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"slices"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -48,6 +49,9 @@ const (
 	retries = 30
 )
 
+// readyStates are the index statuses indicating a completed build.
+var readyStates = []string{"READY", "STEADY"}
+
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -67,7 +71,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, atlasV2, currentModel, "STEADY", cast.ToInt(req.CallbackContext["attempts"]))
+		return validateProgress(ctx, atlasV2, currentModel, cast.ToInt(req.CallbackContext["attempts"]), readyStates...)
 	}
 
 	searchIndexRequest, err := newSearchIndexCreateRequest(currentModel)
@@ -160,7 +164,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, atlasV2, currentModel, "STEADY", cast.ToInt(req.CallbackContext["attempts"]))
+		return validateProgress(ctx, atlasV2, currentModel, cast.ToInt(req.CallbackContext["attempts"]), readyStates...)
 	}
 
 	searchIndexRequest, err := newSearchIndexUpdateRequest(currentModel)
@@ -219,7 +223,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, atlasV2, currentModel, constants.DeletedState, cast.ToInt(req.CallbackContext["attempts"]))
+		return validateProgress(ctx, atlasV2, currentModel, cast.ToInt(req.CallbackContext["attempts"]), constants.DeletedState)
 	}
 
 	resp, err := atlasV2.AtlasSearchApi.DeleteClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
@@ -572,7 +576,7 @@ func ConvertStringToStoredSource(storedSource *string) (any, error) {
 // validateProgress polls the search index until it reaches targetState (cluster-style:
 // wait until the target is reached), bounded by retries so a stuck index cannot loop
 // indefinitely. A FAILED status ends the wait with a failure.
-func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, targetState string, attempts int) (handler.ProgressEvent, error) {
+func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, attempts int, targetStates ...string) (handler.ProgressEvent, error) {
 	index, err := SearchIndexExists(ctx, client, currentModel)
 	if err != nil {
 		_, _ = logger.Debugf("Error in validateProgress() err: %+v", err)
@@ -589,7 +593,7 @@ func validateProgress(ctx context.Context, client *admin.APIClient, currentModel
 			ResourceModel:    currentModel,
 		}, nil
 	}
-	if !util.AreStringPtrEqual(index.Status, &targetState) {
+	if index.Status == nil || !slices.Contains(targetStates, *index.Status) {
 		if attempts >= retries {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -614,7 +618,7 @@ func validateProgress(ctx context.Context, client *admin.APIClient, currentModel
 	p.OperationStatus = handler.Success
 	p.Message = constants.Complete
 	// A delete (target DELETED) must not return a resource model.
-	if targetState != constants.DeletedState {
+	if !slices.Contains(targetStates, constants.DeletedState) {
 		p.ResourceModel = currentModel
 	}
 	return p, nil

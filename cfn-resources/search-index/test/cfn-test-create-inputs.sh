@@ -40,13 +40,13 @@ echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delet
 ClusterName="${projectName}"
 clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${ClusterName}" -r '.results[]? | select(.name==$NAME) | .id')
 if [ -z "$clusterId" ]; then
-	atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
+	atlas clusters create "${ClusterName}" --projectId "${projectId}" --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json
 	atlas clusters watch "${ClusterName}" --projectId "${projectId}"
 	echo -e "Created Cluster \"${ClusterName}\""
 
-	atlas clusters loadSampleData "${ClusterName}" --projectId "${projectId}"
-	echo "Waiting for sample data to be available..."
-	sleep 180
+	sampleJobId=$(atlas clusters sampleData load "${ClusterName}" --projectId "${projectId}" --output=json | jq -r '._id')
+	echo "Waiting for sample data load job ${sampleJobId} to complete..."
+	atlas clusters sampleData watch "${sampleJobId}" --projectId "${projectId}"
 fi
 
 cluster_name=${ClusterName}

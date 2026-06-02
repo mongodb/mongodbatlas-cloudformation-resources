@@ -161,11 +161,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
-	_, preUpdatePending := req.CallbackContext["preUpdateCheck"]
-	if _, ok := req.CallbackContext["stateName"]; ok && iOK && !preUpdatePending {
+	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
 		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
+	}
+	// Restore IndexId from a pre-check retry callback (id present, stateName absent).
+	if iOK {
+		id := cast.ToString(indexID)
+		currentModel.IndexId = &id
 	}
 	searchIndexRequest, err := newSearchIndexUpdateRequest(currentModel)
 	if err != nil {
@@ -197,9 +201,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			ResourceModel:        currentModel,
 			CallbackDelaySeconds: 120,
 			CallbackContext: map[string]any{
-				"stateName":      existingIndex.Status,
-				"id":             currentModel.IndexId,
-				"preUpdateCheck": true,
+				"id": currentModel.IndexId,
 			},
 		}, nil
 	}

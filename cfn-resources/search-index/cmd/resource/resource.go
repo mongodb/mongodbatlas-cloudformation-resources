@@ -25,6 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
@@ -72,12 +73,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	newSearchIndex, _, err := atlasV2.AtlasSearchApi.CreateClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndexRequest).Execute()
+	newSearchIndex, createResp, err := atlasV2.AtlasSearchApi.CreateClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndexRequest).Execute()
 	if err != nil {
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), createResp), nil
 	}
 
 	currentModel.Status = newSearchIndex.Status
@@ -117,16 +115,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	searchIndex, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
-		if util.StatusNotFound(resp) {
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-		}
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	currentModel.Status = searchIndex.Status
 	currentModel.Type = searchIndex.Type
@@ -183,16 +172,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	existingIndex, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
-		if util.StatusNotFound(resp) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-		}
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	if existingIndex.Status != nil && *existingIndex.Status != "STEADY" && *existingIndex.Status != "FAILED" {
 		return handler.ProgressEvent{
@@ -209,16 +189,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	updatedSearchIndex, res, err := atlasV2.AtlasSearchApi.UpdateClusterSearchIndex(
 		ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndexRequest).Execute()
 	if err != nil {
-		if util.StatusNotFound(res) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-		}
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	currentModel.Status = updatedSearchIndex.Status
 	return handler.ProgressEvent{
@@ -264,18 +235,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
 	}
 
-	resp, err := atlasV2.AtlasSearchApi.DeleteClusterSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+	resp, err := atlasV2.AtlasSearchApi.DeleteClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
-		if util.StatusInternalServerError(resp) || util.StatusNotFound(resp) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          string(types.HandlerErrorCodeNotFound),
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-		}
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.InProgress,
@@ -309,13 +271,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return validateProgress(ctx, atlasV2, currentModel, "IDLE")
 	}
 
-	indices, _, err := atlasV2.AtlasSearchApi.ListSearchIndex(
-		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.CollectionName, *currentModel.Database).Execute()
+	indices, listResp, err := atlasV2.AtlasSearchApi.ListSearchIndex(
+		ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.CollectionName, *currentModel.Database).Execute()
 	if err != nil {
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), listResp), nil
 	}
 	response := make([]any, 0, len(indices))
 	for i := range indices {
@@ -642,7 +601,7 @@ func status(currentModel *Model) handler.Status {
 func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	index, err := SearchIndexExists(ctx, client, currentModel)
 	if err != nil {
-		_, _ = logger.Debugf("Error Cluster validate progress() err: %+v", err)
+		_, _ = logger.Debugf("Error in validateProgress() err: %+v", err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,

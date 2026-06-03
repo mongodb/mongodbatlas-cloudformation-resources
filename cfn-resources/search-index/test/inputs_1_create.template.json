@@ -11,14 +11,5 @@
   "Mappings": {
     "Dynamic": "true"
   },
-  "Synonyms": [
-    {
-      "Analyzer": "lucene.standard",
-      "Name": "synonym_test",
-      "Source": {
-        "Collection": "someCollection"
-      }
-    }
-  ],
   "StoredSource": "{\"include\":[\"name\",\"address\",\"price\"]}"
 }

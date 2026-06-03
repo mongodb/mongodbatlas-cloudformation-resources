@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"slices"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -25,6 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
@@ -39,6 +41,16 @@ var ReadRequiredFields = []string{constants.ProjectID, constants.ClusterName, co
 var UpdateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
 var ListRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.CollectionName, constants.Database}
+
+const (
+	// callBackSeconds is the delay between async handler re-invocations.
+	callBackSeconds = 120
+	// retries caps validateProgress polls (~3h at callBackSeconds) before failing.
+	retries = 90
+)
+
+// readyStates are the index statuses indicating a completed build.
+var readyStates = []string{"READY", "STEADY"}
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
@@ -59,7 +71,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
+		return validateProgress(ctx, atlasV2, currentModel, cast.ToInt(req.CallbackContext["attempts"]), readyStates...)
 	}
 
 	searchIndexRequest, err := newSearchIndexCreateRequest(currentModel)
@@ -72,25 +84,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	newSearchIndex, _, err := atlasV2.AtlasSearchApi.CreateClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndexRequest).Execute()
+	newSearchIndex, createResp, err := atlasV2.AtlasSearchApi.CreateClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndexRequest).Execute()
 	if err != nil {
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), createResp), nil
 	}
 
 	currentModel.Status = newSearchIndex.Status
 	currentModel.IndexId = newSearchIndex.IndexID
 	return handler.ProgressEvent{
-		OperationStatus: status(currentModel),
+		OperationStatus: handler.InProgress,
 		Message:         "Create Complete",
 		ResourceModel:   currentModel,
 		CallbackContext: map[string]any{
 			"stateName": newSearchIndex.Status,
 			"id":        currentModel.IndexId,
 		},
-		CallbackDelaySeconds: 120,
+		CallbackDelaySeconds: callBackSeconds,
 	}, nil
 }
 
@@ -117,16 +126,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	searchIndex, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
-		if util.StatusNotFound(resp) {
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-		}
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	currentModel.Status = searchIndex.Status
 	currentModel.Type = searchIndex.Type
@@ -164,8 +164,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
+		return validateProgress(ctx, atlasV2, currentModel, cast.ToInt(req.CallbackContext["attempts"]), readyStates...)
 	}
+
 	searchIndexRequest, err := newSearchIndexUpdateRequest(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -177,29 +178,20 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	updatedSearchIndex, res, err := atlasV2.AtlasSearchApi.UpdateClusterSearchIndex(
-		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndexRequest).Execute()
+		ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndexRequest).Execute()
 	if err != nil {
-		if util.StatusNotFound(res) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-		}
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	currentModel.Status = updatedSearchIndex.Status
 	return handler.ProgressEvent{
-		OperationStatus: status(currentModel),
+		OperationStatus: handler.InProgress,
 		Message:         "Update Complete",
 		ResourceModel:   currentModel,
 		CallbackContext: map[string]any{
 			"stateName": updatedSearchIndex.Status,
 			"id":        currentModel.IndexId,
 		},
-		CallbackDelaySeconds: 120,
+		CallbackDelaySeconds: callBackSeconds,
 	}, nil
 }
 
@@ -231,21 +223,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
+		return validateProgress(ctx, atlasV2, currentModel, cast.ToInt(req.CallbackContext["attempts"]), constants.DeletedState)
 	}
 
-	resp, err := atlasV2.AtlasSearchApi.DeleteClusterSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+	resp, err := atlasV2.AtlasSearchApi.DeleteClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
-		if util.StatusInternalServerError(resp) || util.StatusNotFound(resp) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          string(types.HandlerErrorCodeNotFound),
-				HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-		}
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.InProgress,
@@ -255,7 +238,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			"id":        currentModel.IndexId,
 		},
 		ResourceModel:        currentModel,
-		CallbackDelaySeconds: 120,
+		CallbackDelaySeconds: callBackSeconds,
 	}, nil
 }
 
@@ -275,17 +258,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	ctx := context.Background()
 
-	if _, ok := req.CallbackContext["stateName"]; ok {
-		return validateProgress(ctx, atlasV2, currentModel, "IDLE")
-	}
-
-	indices, _, err := atlasV2.AtlasSearchApi.ListSearchIndex(
-		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.CollectionName, *currentModel.Database).Execute()
+	indices, listResp, err := atlasV2.AtlasSearchApi.ListSearchIndex(
+		ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.CollectionName, *currentModel.Database).Execute()
 	if err != nil {
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
+		return progressevent.GetFailedEventByResponse(err.Error(), listResp), nil
 	}
 	response := make([]any, 0, len(indices))
 	for i := range indices {
@@ -597,50 +573,50 @@ func ConvertStringToStoredSource(storedSource *string) (any, error) {
 	return data, nil
 }
 
-func status(currentModel *Model) handler.Status {
-	switch *currentModel.Status {
-	case string(handler.Success):
-		return handler.Success
-	case string(handler.Failed):
-		return handler.Failed
-	case string(handler.InProgress):
-		return handler.InProgress
-	}
-	return handler.InProgress
-}
-
-func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
+// validateProgress polls until the index reaches targetState, capped at retries to prevent infinite loops.
+func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, attempts int, targetStates ...string) (handler.ProgressEvent, error) {
 	index, err := SearchIndexExists(ctx, client, currentModel)
 	if err != nil {
-		_, _ = logger.Debugf("Error Cluster validate progress() err: %+v", err)
+		_, _ = logger.Debugf("Error in validateProgress() err: %+v", err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError)}, nil
 	}
-	if util.AreStringPtrEqual(index.Status, &targetState) {
+	if util.AreStringPtrEqual(index.Status, admin.PtrString(string(handler.Failed))) {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Search index reached FAILED state",
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
+			ResourceModel:    currentModel,
+		}, nil
+	}
+	if index.Status == nil || !slices.Contains(targetStates, *index.Status) {
+		if attempts >= retries {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Timed out waiting for search index to stabilize",
+				HandlerErrorCode: string(types.HandlerErrorCodeServiceInternalError),
+				ResourceModel:    currentModel,
+			}, nil
+		}
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
 		p.OperationStatus = handler.InProgress
-		p.CallbackDelaySeconds = 120
-		p.Message = "Pending"
+		p.CallbackDelaySeconds = callBackSeconds
+		p.Message = constants.Pending
 		p.CallbackContext = map[string]any{
 			"stateName": index.Status,
 			"id":        currentModel.IndexId,
+			"attempts":  attempts + 1,
 		}
 		return p, nil
 	}
 	p := handler.NewProgressEvent()
-	if util.AreStringPtrEqual(index.Status, admin.PtrString(string(handler.Failed))) {
-		p.OperationStatus = handler.Failed
-		p.Message = "Failed"
-		p.HandlerErrorCode = string(types.HandlerErrorCodeInvalidRequest)
-		p.ResourceModel = currentModel
-		return p, nil
-	}
 	p.OperationStatus = handler.Success
-	p.Message = "Complete"
-	if util.IsStringPresent(index.Status) && *index.Status != "DELETED" {
+	p.Message = constants.Complete
+	// A delete (target DELETED) must not return a resource model.
+	if !slices.Contains(targetStates, constants.DeletedState) {
 		p.ResourceModel = currentModel
 	}
 	return p, nil
@@ -650,7 +626,7 @@ func SearchIndexExists(ctx context.Context, atlasV2 *admin.APIClient, currentMod
 	index, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		if util.StatusNotFound(resp) {
-			return &admin.SearchIndexResponse{Status: new("DELETED")}, nil
+			return &admin.SearchIndexResponse{Status: new(constants.DeletedState)}, nil
 		}
 	}
 	return index, err

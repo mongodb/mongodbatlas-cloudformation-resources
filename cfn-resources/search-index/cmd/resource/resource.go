@@ -45,8 +45,8 @@ var ListRequiredFields = []string{constants.ProjectID, constants.ClusterName, co
 const (
 	// callBackSeconds is the delay between async handler re-invocations.
 	callBackSeconds = 120
-	// retries caps validateProgress polls (~1h at callBackSeconds) before failing.
-	retries = 30
+	// retries caps validateProgress polls (~3h at callBackSeconds) before failing.
+	retries = 90
 )
 
 // readyStates are the index statuses indicating a completed build.

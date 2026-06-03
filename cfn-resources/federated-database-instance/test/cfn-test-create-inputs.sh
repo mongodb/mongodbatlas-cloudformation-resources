@@ -63,7 +63,7 @@ echo "$keyRegion"
 
 echo -e "--------------------------------create aws bucket document starts ----------------------------\n"
 bucketName="mongodb-atlas-cfn-test-df-${keyRegion}"
-aws s3 ls "s3://${bucketName}" 2>/dev/null || aws s3 mb "s3://${bucketName}" --output json
+aws s3 ls "s3://${bucketName}" > /dev/null 2>&1 || aws s3 mb "s3://${bucketName}" --output json
 echo -e "--------------------------------create aws bucket document  ends ----------------------------\n"
 
 roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')

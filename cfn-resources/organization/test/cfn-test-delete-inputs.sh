@@ -10,6 +10,7 @@ set -o pipefail
 
 function usage {
 	echo "usage:$0 "
+	exit 1
 }
 
 

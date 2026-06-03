@@ -16,16 +16,12 @@ package resource
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
@@ -36,14 +32,6 @@ var ReadRequiredFields = []string{constants.ProjectID, constants.TenantName}
 var UpdateRequiredFields = []string{constants.ProjectID, constants.TenantName}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.TenantName}
 var ListRequiredFields = []string{constants.ProjectID}
-
-const (
-	CREATE = "CREATE"
-	READ   = "READ"
-	UPDATE = "UPDATE"
-	DELETE = "DELETE"
-	LIST   = "LIST"
-)
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-data-federation")
@@ -76,7 +64,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}).Execute()
 
 	if err != nil {
-		return handleError(response, CREATE, err)
+		return progress_events.GetFailedEventByResponse(err.Error(), response), nil
 	}
 	readModel := Model{ProjectId: currentModel.ProjectId, TenantName: currentModel.TenantName, Profile: currentModel.Profile}
 	readModel.getDataLakeTenant(*dataLakeTenant)
@@ -108,7 +96,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	dataLakeTenant, response, err := client.Atlas20231115014.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
 	if err != nil {
-		return handleError(response, READ, err)
+		return progress_events.GetFailedEventByResponse(err.Error(), response), nil
 	}
 	currentModel.getDataLakeTenant(*dataLakeTenant)
 
@@ -140,15 +128,17 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, checkExistsResponse, checkExistsErr := client.Atlas20231115014.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 	if checkExistsErr != nil {
-		return handleError(checkExistsResponse, UPDATE, checkExistsErr)
+		return progress_events.GetFailedEventByResponse(checkExistsErr.Error(), checkExistsResponse), nil
 	}
 
 	updateFederatedDatabaseAPIRequest := client.Atlas20231115014.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
-	updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
+	if currentModel.SkipRoleValidation != nil {
+		updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
+	}
 	dataLakeTenant, response, err := updateFederatedDatabaseAPIRequest.Execute()
 
 	if err != nil {
-		return handleError(response, UPDATE, err)
+		return progress_events.GetFailedEventByResponse(err.Error(), response), nil
 	}
 	readModel := Model{ProjectId: currentModel.ProjectId, TenantName: currentModel.TenantName, Profile: currentModel.Profile}
 	readModel.getDataLakeTenant(*dataLakeTenant)
@@ -180,7 +170,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, response, err := client.Atlas20231115014.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
 	if err != nil {
-		return handleError(response, DELETE, err)
+		return progress_events.GetFailedEventByResponse(err.Error(), response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -210,7 +200,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	dataLakeTenants, response, err := client.Atlas20231115014.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
 
 	if err != nil {
-		return handleError(response, LIST, err)
+		return progress_events.GetFailedEventByResponse(err.Error(), response), nil
 	}
 	tenants := make([]any, 0)
 	for i := range dataLakeTenants {
@@ -223,25 +213,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		Message:         "List Completed",
 		ResourceModels:  tenants}, nil
-}
-
-func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
-	_, _ = logger.Warnf("%s failed, error: %s", method, err.Error())
-	if response.StatusCode == http.StatusConflict {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          fmt.Sprintf("%s:%s", method, err.Error()),
-			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
-	}
-	if response.StatusCode == http.StatusNotFound {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          fmt.Sprintf("%s:%s", method, err.Error()),
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-	}
-
-	return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error during execution : %s", err.Error()),
-		response), nil
 }
 
 func (model *Model) setDataLakeTenant() (dataLakeTenant admin20231115014.DataLakeTenant) {

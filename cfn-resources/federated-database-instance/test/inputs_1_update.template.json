@@ -17,5 +17,5 @@
       }
     ]
   },
-  "SkipRoleValidation": "true"
+  "SkipRoleValidation": true
 }

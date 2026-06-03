@@ -124,8 +124,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 	conn = newOrgClient.AtlasSDK
-	if _, _, errUpdate := conn.OrganizationsApi.UpdateOrgSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
-		return handleError(response, constants.CREATE, errUpdate)
+	if _, updateResp, errUpdate := conn.OrganizationsApi.UpdateOrgSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
+		return handleError(updateResp, constants.CREATE, errUpdate)
 	}
 
 	return handler.ProgressEvent{
@@ -238,6 +238,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *progressEvent, nil
 	}
 	if responseMsg.Error != nil {
+		if util.StatusUnauthorized(responseMsg.Response) {
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         DeleteCompleted,
+				ResourceModel:   nil}, nil
+		}
 		return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
 	}
 

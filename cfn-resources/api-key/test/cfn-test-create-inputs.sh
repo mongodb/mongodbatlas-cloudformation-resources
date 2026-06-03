@@ -10,6 +10,7 @@ set -o pipefail
 
 function usage {
 	echo "Creates a template for org apikey creation"
+	exit 1
 }
 
 if [[ "$*" == help ]]; then usage; fi
@@ -39,6 +40,7 @@ fi
 
 # create aws secret key
 awsSecretName="mongodb/atlas/apikey/${projectName}"
+aws secretsmanager delete-secret --secret-id "${awsSecretName}" --force-delete-without-recovery 2>/dev/null || true
 if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here"; then
 	echo "aws secret created with name : ${awsSecretName}"
 else

@@ -9,6 +9,6 @@ set -o nounset
 set -o pipefail
 
 # setting projectName
-projectName="ct-api-key-$(date +%s)-$RANDOM"
+projectName="ct-api-key-$(date +%s | tail -c 5)${RANDOM}"
 
 ./test/cfn-test-create-inputs.sh "$projectName"

@@ -125,7 +125,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	conn = newOrgClient.AtlasSDK
 	if _, _, errUpdate := conn.OrganizationsApi.UpdateOrgSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
-		return handleError(response, constants.CREATE, err)
+		return handleError(response, constants.CREATE, errUpdate)
 	}
 
 	return handler.ProgressEvent{
@@ -147,7 +147,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	model, response, err := currentModel.getOrgDetails(context.Background(), newOrgClient.AtlasSDK, currentModel)
+	ctx := context.Background()
+	model, response, err := currentModel.getOrgDetails(ctx, newOrgClient.AtlasSDK, currentModel)
 	if err != nil {
 		return handleError(response, constants.READ, err)
 	}
@@ -338,30 +339,20 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	return model, response, nil
 }
 
-func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
-	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
-	_, _ = logger.Warn(errMsg)
+func handleError(response *http.Response, _ constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
 	if util.StatusConflict(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          errMsg,
+			Message:          fmt.Sprintf("%v", err),
 			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
 	}
-
-	if util.StatusUnauthorized(response) {
+	if util.StatusUnauthorized(response) || util.StatusBadRequest(response) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Not found",
+			Message:          fmt.Sprintf("%v", err),
 			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
-
-	if util.StatusBadRequest(response) {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          errMsg,
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
-	}
-	return progress_events.GetFailedEventByResponse(errMsg, response), nil
+	return progress_events.GetFailedEventByResponse(fmt.Sprintf("%v", err), response), nil
 }
 
 func setAPIkeyInputs(currentModel *Model) (apiKeyInput *admin.CreateAtlasOrganizationApiKey) {

@@ -132,7 +132,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	updateFederatedDatabaseAPIRequest := client.Atlas20231115014.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
-	updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
+	if currentModel.SkipRoleValidation != nil {
+		updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
+	}
 	dataLakeTenant, response, err := updateFederatedDatabaseAPIRequest.Execute()
 
 	if err != nil {

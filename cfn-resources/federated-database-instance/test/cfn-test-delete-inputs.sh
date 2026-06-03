@@ -26,5 +26,6 @@ if [ -z "$keyRegion" ]; then
 	keyRegion=$(aws configure get region)
 fi
 
-bucketName="mongodb-atlas-cfn-test-df-${keyRegion}"
+accountId=$(aws sts get-caller-identity --query Account --output text)
+bucketName="mongodb-atlas-cfn-test-df-${keyRegion}-${accountId}"
 aws s3 rb "s3://${bucketName}" --force

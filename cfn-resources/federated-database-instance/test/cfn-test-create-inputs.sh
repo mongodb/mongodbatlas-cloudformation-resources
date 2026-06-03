@@ -62,8 +62,10 @@ keyRegionUnderScore=$(echo "$keyRegionUnderScore" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
 
 echo -e "--------------------------------create aws bucket document starts ----------------------------\n"
-bucketName="mongodb-atlas-cfn-test-df-${keyRegion}"
-aws s3api head-bucket --bucket "${bucketName}" 2>/dev/null || aws s3 mb "s3://${bucketName}" --output json
+accountId=$(aws sts get-caller-identity --query Account --output text)
+bucketName="mongodb-atlas-cfn-test-df-${keyRegion}-${accountId}"
+# s3:HeadBucket is not available to the CI user; use s3 ls (s3:ListBucket) for the existence check.
+aws s3 ls "s3://${bucketName}" > /dev/null 2>&1 || aws s3 mb "s3://${bucketName}" --output json
 echo -e "--------------------------------create aws bucket document  ends ----------------------------\n"
 
 roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')

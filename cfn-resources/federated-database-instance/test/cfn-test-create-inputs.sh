@@ -18,11 +18,13 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
+set -o errexit
 set -o nounset
 set -o pipefail
 
 function usage {
 	echo "usage:$0 <project_name>"
+	exit 1
 }
 
 if [ "$#" -ne 1 ]; then usage; fi
@@ -61,7 +63,7 @@ echo "$keyRegion"
 
 echo -e "--------------------------------create aws bucket document starts ----------------------------\n"
 bucketName="mongodb-atlas-cfn-test-df-${keyRegion}"
-aws s3 rb "s3://${bucketName}" --force
+aws s3 rb "s3://${bucketName}" --force 2>/dev/null || true
 aws s3 mb "s3://${bucketName}" --output json
 echo -e "--------------------------------create aws bucket document  ends ----------------------------\n"
 

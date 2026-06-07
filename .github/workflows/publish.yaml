@@ -41,7 +41,7 @@ jobs:
     name: publish-${{ matrix.region }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -50,7 +50,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PUBLISHING }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING }}
@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: terraform-provider-mongodbatlas-checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
           repository: mongodb/terraform-provider-mongodbatlas
           ref: master

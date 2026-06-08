@@ -54,7 +54,7 @@ jobs:
      stream-workspace: ${{ steps.filter.outputs.stream-workspace }}
      third-party-integration: ${{ steps.filter.outputs.third-party-integration }}
    steps:
-   - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+   - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
      if: ${{ github.event_name == 'push' }}
    - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
      id: filter
@@ -141,7 +141,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -150,7 +150,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -179,7 +179,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.alert-configuration == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -188,7 +188,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -219,7 +219,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -228,7 +228,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -260,7 +260,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.auditing == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
     - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -269,7 +269,7 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -303,7 +303,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.backup-compliance-policy == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
     - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -312,7 +312,7 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -344,7 +344,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.cloud-backup-restore-jobs == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -353,7 +353,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -385,7 +385,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.cluster-outage-simulation == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -394,7 +394,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -426,7 +426,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.database-user == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -435,7 +435,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -466,7 +466,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.encryption-at-rest == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -475,7 +475,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -507,7 +507,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -516,7 +516,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -548,7 +548,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-query-limit == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -557,7 +557,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -590,7 +590,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-settings-identity-provider == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -599,7 +599,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -633,7 +633,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-settings-org-role-mapping == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -642,7 +642,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -675,7 +675,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.flex-cluster == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
     - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -684,7 +684,7 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
         use-installer: true
-    - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -717,7 +717,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.log-integration == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -726,7 +726,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -758,7 +758,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.mongodb-employee-access-grant == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
     - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -767,7 +767,7 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
         use-installer: true
-    - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -799,7 +799,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -808,7 +808,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -839,7 +839,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.organization == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -848,7 +848,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -881,7 +881,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.service-account == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -890,7 +890,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -922,7 +922,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.service-account-project-assignment == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -931,7 +931,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -963,7 +963,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.service-account-secret == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -972,7 +972,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1004,7 +1004,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.service-account-access-list-entry == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1013,7 +1013,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1045,7 +1045,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1054,7 +1054,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1086,7 +1086,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-service == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1095,7 +1095,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1127,7 +1127,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.privatelink-endpoint-service-data-federation-online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1136,7 +1136,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1168,7 +1168,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
     - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -1177,7 +1177,7 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1211,7 +1211,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.project-service-account-secret == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1220,7 +1220,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1252,7 +1252,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.project-service-account == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
     - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -1261,7 +1261,7 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1293,7 +1293,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.project-service-account-access-list-entry == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1302,7 +1302,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1334,7 +1334,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.resource-policy == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1343,7 +1343,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1377,7 +1377,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.search-deployment == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1386,7 +1386,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1417,7 +1417,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.search-index == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1426,7 +1426,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1457,7 +1457,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1466,7 +1466,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1500,7 +1500,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1509,7 +1509,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1538,7 +1538,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-privatelink-endpoint == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1547,7 +1547,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1578,7 +1578,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-processor == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1587,7 +1587,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1618,7 +1618,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-workspace == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1627,7 +1627,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -1659,7 +1659,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.third-party-integration == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -1668,7 +1668,7 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}

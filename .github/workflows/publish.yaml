@@ -20,7 +20,10 @@ on:
         type: number
         default: 15
         required: true
-  
+
+permissions:
+  contents: read
+
 jobs:
   publish:
     env:

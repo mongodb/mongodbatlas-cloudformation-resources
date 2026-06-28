@@ -142,7 +142,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -150,12 +150,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -180,7 +180,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -188,12 +188,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -220,7 +220,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -228,12 +228,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -261,7 +261,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-    - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
       with:
         go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
@@ -269,12 +269,12 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+    - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
       with:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
@@ -304,7 +304,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-    - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
       with:
         go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
@@ -312,12 +312,12 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+    - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
       with:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
@@ -345,7 +345,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -353,12 +353,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -386,7 +386,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -394,12 +394,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -427,7 +427,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -435,12 +435,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -467,7 +467,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -475,12 +475,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -508,7 +508,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -516,12 +516,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -549,7 +549,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -557,12 +557,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -591,7 +591,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -599,12 +599,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -634,7 +634,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -642,12 +642,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -676,7 +676,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-    - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
       with:
         go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
@@ -684,12 +684,12 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
         use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+    - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
       with:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
@@ -718,7 +718,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -726,12 +726,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -759,7 +759,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-    - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
       with:
         go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
@@ -767,12 +767,12 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
         use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+    - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
       with:
         python-version: '3.9'
         cache: 'pip'
@@ -800,7 +800,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -808,12 +808,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -840,7 +840,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -848,12 +848,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -882,7 +882,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -890,12 +890,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -923,7 +923,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -931,12 +931,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip'
@@ -964,7 +964,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -972,12 +972,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1005,7 +1005,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1013,12 +1013,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1046,7 +1046,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1054,12 +1054,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1087,7 +1087,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1095,12 +1095,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1128,7 +1128,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1136,12 +1136,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1169,7 +1169,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-    - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
       with:
         go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
@@ -1177,12 +1177,12 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+    - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
       with:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
@@ -1212,7 +1212,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1220,12 +1220,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1253,7 +1253,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-    - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
       with:
         go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
@@ -1261,12 +1261,12 @@ jobs:
     - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+    - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
       with:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
@@ -1294,7 +1294,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1302,12 +1302,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1335,7 +1335,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1343,12 +1343,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1378,7 +1378,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1386,12 +1386,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1418,7 +1418,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1426,12 +1426,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1458,7 +1458,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1466,12 +1466,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1501,7 +1501,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1509,12 +1509,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1539,7 +1539,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1547,12 +1547,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1579,7 +1579,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1587,12 +1587,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1619,7 +1619,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1627,12 +1627,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
@@ -1660,7 +1660,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
@@ -1668,12 +1668,12 @@ jobs:
       - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies

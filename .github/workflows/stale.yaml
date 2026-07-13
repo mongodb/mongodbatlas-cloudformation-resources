@@ -14,7 +14,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899
+      - uses: actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629
         id: stale
         with:
           stale-issue-message: 'This issue has gone 30 days without any activity and meets the project’s definition of "stale". This will be auto-closed if there is no new activity over the next 30 days. If the issue is still relevant and active, you can simply comment with a "bump" to keep it open, or add the label "not_stale". Thanks for keeping our repository healthy!'

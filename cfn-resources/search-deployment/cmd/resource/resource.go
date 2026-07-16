@@ -20,7 +20,7 @@ import (
 	"net/http"
 	"strings"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiReq := NewSearchDeploymentReq(currentModel)
-	apiResp, resp, err := connV2.AtlasSearchApi.CreateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
+	apiResp, resp, err := connV2.AtlasSearchAPI.CreateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
 		return handleError(resp, err)
 	}
@@ -93,7 +93,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	apiResp, resp, err := connV2.AtlasSearchAPI.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		return handleError(resp, err)
 	}
@@ -137,7 +137,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiReq := NewSearchDeploymentReq(currentModel)
-	apiResp, res, err := connV2.AtlasSearchApi.UpdateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
+	apiResp, res, err := connV2.AtlasSearchAPI.UpdateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
 		// Update should return NotFound if resource doesn't exist - this is already handled by handleError
 		return handleError(res, err)
@@ -177,7 +177,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	if resp, err := connV2.AtlasSearchApi.DeleteClusterSearchDeployment(context.Background(), projectID, clusterName).Execute(); err != nil {
+	if resp, err := connV2.AtlasSearchAPI.DeleteClusterSearchDeployment(context.Background(), projectID, clusterName).Execute(); err != nil {
 		return handleError(resp, err)
 	}
 

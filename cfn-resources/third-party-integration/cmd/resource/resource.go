@@ -25,7 +25,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 var RequiredFields = []string{constants.IntegrationType, constants.ProjectID}
@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	requestBody := modelToIntegration(currentModel)
-	integrations, resModel, err := client.AtlasSDK.ThirdPartyIntegrationsApi.CreateGroupIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
+	integrations, resModel, err := client.AtlasSDK.ThirdPartyIntegrationsAPI.CreateGroupIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusConflict {
 			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", string(types.HandlerErrorCodeAlreadyExists)), nil
@@ -114,7 +114,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	integration, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.GetGroupIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
+	integration, res, err := client.AtlasSDK.ThirdPartyIntegrationsAPI.GetGroupIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -145,13 +145,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	integration, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.GetGroupIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
+	integration, res, err := client.AtlasSDK.ThirdPartyIntegrationsAPI.GetGroupIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	updateIntegrationFromSchema(currentModel, integration)
-	integrations, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.UpdateGroupIntegration(context.Background(), *IntegrationType, *ProjectID, integration).Execute()
+	integrations, res, err := client.AtlasSDK.ThirdPartyIntegrationsAPI.UpdateGroupIntegration(context.Background(), *IntegrationType, *ProjectID, integration).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -238,7 +238,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.DeleteGroupIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
+	res, err := client.AtlasSDK.ThirdPartyIntegrationsAPI.DeleteGroupIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -265,7 +265,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	ProjectID := currentModel.ProjectId
-	integrations, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.ListGroupIntegrations(context.Background(), *ProjectID).Execute()
+	integrations, res, err := client.AtlasSDK.ThirdPartyIntegrationsAPI.ListGroupIntegrations(context.Background(), *ProjectID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}

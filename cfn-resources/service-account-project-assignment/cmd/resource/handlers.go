@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 const (
@@ -48,7 +48,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 
 	apiReq := admin.NewGroupServiceAccountRoleAssignment(model.Roles)
 
-	apiResp, resp, err := client.AtlasSDK.ServiceAccountsApi.InviteGroupServiceAccount(ctx, *model.ClientId, *model.ProjectId, apiReq).Execute()
+	apiResp, resp, err := client.AtlasSDK.ServiceAccountsAPI.InviteGroupServiceAccount(ctx, *model.ClientId, *model.ProjectId, apiReq).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest {
 			if apiError.ErrorCode == InvalidRoleAssignmentError && strings.Contains(err.Error(), ServiceAccountAlreadyInGroupError) {
@@ -70,7 +70,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 
-	apiResp, resp, err := client.AtlasSDK.ServiceAccountsApi.GetGroupServiceAccount(ctx, *model.ProjectId, *model.ClientId).Execute()
+	apiResp, resp, err := client.AtlasSDK.ServiceAccountsAPI.GetGroupServiceAccount(ctx, *model.ProjectId, *model.ClientId).Execute()
 	if err != nil {
 		return HandleError(resp, constants.READ, err)
 	}
@@ -90,7 +90,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 	apiReq := admin.NewGroupServiceAccountUpdateRequest()
 	apiReq.SetRoles(model.Roles)
 
-	apiResp, resp, err := client.AtlasSDK.ServiceAccountsApi.UpdateGroupServiceAccount(ctx, *model.ClientId, *model.ProjectId, apiReq).Execute()
+	apiResp, resp, err := client.AtlasSDK.ServiceAccountsAPI.UpdateGroupServiceAccount(ctx, *model.ClientId, *model.ProjectId, apiReq).Execute()
 	if err != nil {
 		return HandleError(resp, constants.UPDATE, err)
 	}
@@ -107,7 +107,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 
-	resp, err := client.AtlasSDK.ServiceAccountsApi.DeleteGroupServiceAccount(ctx, *model.ClientId, *model.ProjectId).Execute()
+	resp, err := client.AtlasSDK.ServiceAccountsAPI.DeleteGroupServiceAccount(ctx, *model.ClientId, *model.ProjectId).Execute()
 	if err != nil {
 		return HandleError(resp, constants.DELETE, err)
 	}
@@ -124,7 +124,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 	const itemsPerPage = 100
 
 	for pageNum := 1; ; pageNum++ {
-		listResp, resp, err := client.AtlasSDK.ServiceAccountsApi.
+		listResp, resp, err := client.AtlasSDK.ServiceAccountsAPI.
 			GetServiceAccountGroups(ctx, *model.OrgId, *model.ClientId).
 			ItemsPerPage(itemsPerPage).
 			PageNum(pageNum).

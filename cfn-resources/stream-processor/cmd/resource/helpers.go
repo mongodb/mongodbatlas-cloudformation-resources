@@ -20,7 +20,7 @@ import (
 	"net/http"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 
@@ -91,7 +91,7 @@ func getAllStreamProcessors(ctx context.Context, atlasClient *admin.APIClient, p
 	accumulatedProcessors := make([]admin.StreamsProcessorWithStats, 0)
 
 	for allRecordsRetrieved := false; !allRecordsRetrieved; {
-		processorsResp, apiResp, err := atlasClient.StreamsApi.GetStreamProcessorsWithParams(ctx, &admin.GetStreamProcessorsApiParams{
+		processorsResp, apiResp, err := atlasClient.StreamsAPI.GetStreamProcessorsWithParams(ctx, &admin.GetStreamProcessorsApiParams{
 			GroupId:      projectID,
 			TenantName:   workspaceName,
 			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),
@@ -120,7 +120,7 @@ func getStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, proje
 		ProcessorName: processorName,
 	}
 
-	streamProcessor, resp, err := atlasClient.StreamsApi.GetStreamProcessorWithParams(ctx, requestParams).Execute()
+	streamProcessor, resp, err := atlasClient.StreamsAPI.GetStreamProcessorWithParams(ctx, requestParams).Execute()
 	if err != nil {
 		if util.StatusNotFound(resp) {
 			return nil, &handler.ProgressEvent{
@@ -138,7 +138,7 @@ func getStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, proje
 }
 
 func startStreamProcessor(ctx context.Context, atlasClient *admin.APIClient, projectID, workspaceName, processorName string) *handler.ProgressEvent {
-	_, err := atlasClient.StreamsApi.StartStreamProcessorWithParams(ctx,
+	_, err := atlasClient.StreamsAPI.StartStreamProcessorWithParams(ctx,
 		&admin.StartStreamProcessorApiParams{
 			GroupId:       projectID,
 			TenantName:    workspaceName,

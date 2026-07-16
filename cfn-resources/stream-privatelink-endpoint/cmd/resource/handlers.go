@@ -17,7 +17,7 @@ package resource
 import (
 	"context"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -35,7 +35,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 	projectID := util.SafeString(model.ProjectId)
 	streamPrivatelinkEndpointReq := NewStreamPrivatelinkEndpointReq(model)
 
-	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsApi.CreatePrivateLinkConnection(ctx, projectID, streamPrivatelinkEndpointReq).Execute()
+	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsAPI.CreatePrivateLinkConnection(ctx, projectID, streamPrivatelinkEndpointReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -65,7 +65,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 	projectID := util.SafeString(model.ProjectId)
 	connectionID := util.SafeString(model.Id)
 
-	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsApi.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
+	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsAPI.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
 	if err != nil {
 		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
@@ -111,7 +111,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 	ctx := context.Background()
 	projectID := util.SafeString(model.ProjectId)
 
-	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsApi.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
+	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsAPI.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
 	if err != nil {
 		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
@@ -130,7 +130,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 		}
 	}
 
-	deleteResp, err := client.AtlasSDK.StreamsApi.DeletePrivateLinkConnection(ctx, projectID, connectionID).Execute()
+	deleteResp, err := client.AtlasSDK.StreamsAPI.DeletePrivateLinkConnection(ctx, projectID, connectionID).Execute()
 	if err != nil {
 		return handleError(deleteResp, constants.DELETE, err)
 	}
@@ -150,7 +150,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 			ItemsPerPage: util.Pointer(itemsPerPage),
 			PageNum:      new(pageNum),
 		}
-		connections, apiResp, err := client.AtlasSDK.StreamsApi.ListPrivateLinkConnectionsWithParams(ctx, listOptions).Execute()
+		connections, apiResp, err := client.AtlasSDK.StreamsAPI.ListPrivateLinkConnectionsWithParams(ctx, listOptions).Execute()
 		if err != nil {
 			return handleError(apiResp, constants.LIST, err)
 		}

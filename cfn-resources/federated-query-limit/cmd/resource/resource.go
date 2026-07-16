@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -158,7 +158,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	response, err := client.AtlasSDK.DataFederationApi.DeleteDataFederationLimit(
+	response, err := client.AtlasSDK.DataFederationAPI.DeleteDataFederationLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -192,7 +192,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	listQueryLimitsAPIResult, response, err := client.AtlasSDK.DataFederationApi.ListDataFederationLimits(
+	listQueryLimitsAPIResult, response, err := client.AtlasSDK.DataFederationAPI.ListDataFederationLimits(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -231,7 +231,7 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 }
 
 func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*admin.DataFederationTenantQueryLimit, *http.Response, error) {
-	getQueryLimitAPIRequest := client.AtlasSDK.DataFederationApi.GetDataFederationLimit(
+	getQueryLimitAPIRequest := client.AtlasSDK.DataFederationAPI.GetDataFederationLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -243,7 +243,7 @@ func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*a
 
 func createOrUpdateQueryLimit(currentModel *Model, client *util.MongoDBClient, method string) (handler.ProgressEvent, error) {
 	queryLimitInput := currentModel.setQueryLimit()
-	queryLimit, response, err := client.AtlasSDK.DataFederationApi.SetDataFederationLimit(
+	queryLimit, response, err := client.AtlasSDK.DataFederationAPI.SetDataFederationLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,

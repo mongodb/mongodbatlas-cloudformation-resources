@@ -19,7 +19,7 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/alert-configuration/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 func TestConvertToMongoModel_ClearsAtlasReturnedThreshold(t *testing.T) {
@@ -27,7 +27,7 @@ func TestConvertToMongoModel_ClearsAtlasReturnedThreshold(t *testing.T) {
 
 	t.Run("only MetricThreshold in model clears Threshold", func(t *testing.T) {
 		atlasReq := &admin.GroupAlertsConfig{
-			MetricThreshold: &admin.FlexClusterMetricThreshold{MetricName: metricThresholdName},
+			MetricThreshold: &admin.StreamProcessorMetricThreshold{MetricName: &metricThresholdName},
 			Threshold:       &admin.StreamProcessorMetricThreshold{},
 		}
 		model := &resource.Model{
@@ -41,7 +41,7 @@ func TestConvertToMongoModel_ClearsAtlasReturnedThreshold(t *testing.T) {
 	t.Run("only Threshold in model clears MetricThreshold", func(t *testing.T) {
 		thresholdMetricName := "STREAM_PROCESSOR_KAFKA_LAG"
 		atlasReq := &admin.GroupAlertsConfig{
-			MetricThreshold: &admin.FlexClusterMetricThreshold{MetricName: metricThresholdName},
+			MetricThreshold: &admin.StreamProcessorMetricThreshold{MetricName: &metricThresholdName},
 			Threshold:       &admin.StreamProcessorMetricThreshold{},
 		}
 		model := &resource.Model{

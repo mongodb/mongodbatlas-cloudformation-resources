@@ -29,7 +29,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 func setup() {
@@ -84,7 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	newSearchIndex, createResp, err := atlasV2.AtlasSearchApi.CreateClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndexRequest).Execute()
+	newSearchIndex, createResp, err := atlasV2.AtlasSearchAPI.CreateClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndexRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), createResp), nil
 	}
@@ -124,7 +124,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	atlasV2 := client.AtlasSDK
 
-	searchIndex, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+	searchIndex, resp, err := atlasV2.AtlasSearchAPI.GetClusterSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -177,7 +177,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	updatedSearchIndex, res, err := atlasV2.AtlasSearchApi.UpdateClusterSearchIndex(
+	updatedSearchIndex, res, err := atlasV2.AtlasSearchAPI.UpdateClusterSearchIndex(
 		ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndexRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -226,7 +226,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(ctx, atlasV2, currentModel, cast.ToInt(req.CallbackContext["attempts"]), constants.DeletedState)
 	}
 
-	resp, err := atlasV2.AtlasSearchApi.DeleteClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+	resp, err := atlasV2.AtlasSearchAPI.DeleteClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -258,7 +258,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	ctx := context.Background()
 
-	indices, listResp, err := atlasV2.AtlasSearchApi.ListSearchIndex(
+	indices, listResp, err := atlasV2.AtlasSearchAPI.ListSearchIndex(
 		ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.CollectionName, *currentModel.Database).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), listResp), nil
@@ -360,7 +360,7 @@ func BuildTypeSets(currentModel *Model) (*[]admin.SearchTypeSets, error) {
 			for _, t := range typesList {
 				typesAny = append(typesAny, t)
 			}
-			ts.Types = &typesAny
+			ts.Types = typesAny
 		}
 		typeSets = append(typeSets, ts)
 	}
@@ -623,7 +623,7 @@ func validateProgress(ctx context.Context, client *admin.APIClient, currentModel
 }
 
 func SearchIndexExists(ctx context.Context, atlasV2 *admin.APIClient, currentModel *Model) (*admin.SearchIndexResponse, error) {
-	index, resp, err := atlasV2.AtlasSearchApi.GetClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
+	index, resp, err := atlasV2.AtlasSearchAPI.GetClusterSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		if util.StatusNotFound(resp) {
 			return &admin.SearchIndexResponse{Status: new(constants.DeletedState)}, nil

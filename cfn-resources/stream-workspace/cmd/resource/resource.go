@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 var CreateRequiredFields = []string{"WorkspaceName", constants.ProjectID, constants.DataProcessRegion}
@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	streamWorkspaceCreateReq := NewStreamWorkspaceCreateReq(currentModel)
 
-	createdStreamWorkspace, resp, err := conn.StreamsApi.CreateStreamWorkspace(ctx, *currentModel.ProjectId, streamWorkspaceCreateReq).Execute()
+	createdStreamWorkspace, resp, err := conn.StreamsAPI.CreateStreamWorkspace(ctx, *currentModel.ProjectId, streamWorkspaceCreateReq).Execute()
 	if err != nil {
 		return HandleError(resp, constants.CREATE, err)
 	}
@@ -88,7 +88,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	ctx := context.Background()
 
-	streamWorkspace, resp, err := conn.StreamsApi.GetStreamWorkspace(ctx, *currentModel.ProjectId, *currentModel.WorkspaceName).Execute()
+	streamWorkspace, resp, err := conn.StreamsAPI.GetStreamWorkspace(ctx, *currentModel.ProjectId, *currentModel.WorkspaceName).Execute()
 	if err != nil {
 		if util.StatusNotFound(resp) {
 			return handler.ProgressEvent{
@@ -118,7 +118,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 
 	streamWorkspaceUpdateReq := NewStreamWorkspaceUpdateReq(currentModel)
-	updatedStreamWorkspace, resp, err := conn.StreamsApi.UpdateStreamWorkspace(ctx, *currentModel.ProjectId, *currentModel.WorkspaceName, streamWorkspaceUpdateReq).Execute()
+	updatedStreamWorkspace, resp, err := conn.StreamsAPI.UpdateStreamWorkspace(ctx, *currentModel.ProjectId, *currentModel.WorkspaceName, streamWorkspaceUpdateReq).Execute()
 	if err != nil {
 		if util.StatusNotFound(resp) {
 			return handler.ProgressEvent{
@@ -146,7 +146,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	ctx := context.Background()
 
-	resp, err := conn.StreamsApi.DeleteStreamWorkspace(ctx, *currentModel.ProjectId, *currentModel.WorkspaceName).Execute()
+	resp, err := conn.StreamsAPI.DeleteStreamWorkspace(ctx, *currentModel.ProjectId, *currentModel.WorkspaceName).Execute()
 	if err != nil {
 		return HandleError(resp, constants.DELETE, err)
 	}
@@ -190,7 +190,7 @@ func getAllStreamWorkspaces(ctx context.Context, conn *admin.APIClient, projectI
 	accumulatedStreamWorkspaces := make([]admin.StreamsTenant, 0)
 
 	for allStreamWorkspacesRetrieved := false; !allStreamWorkspacesRetrieved; {
-		streamWorkspaces, resp, err := conn.StreamsApi.ListStreamWorkspacesWithParams(ctx, &admin.ListStreamWorkspacesApiParams{
+		streamWorkspaces, resp, err := conn.StreamsAPI.ListStreamWorkspacesWithParams(ctx, &admin.ListStreamWorkspacesApiParams{
 			GroupId:      projectID,
 			ItemsPerPage: new(DefaultItemsPerPage),
 			PageNum:      new(pageNum),

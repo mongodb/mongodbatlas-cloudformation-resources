@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"maps"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 
@@ -98,7 +98,7 @@ func cleanupOnCreateTimeout(ctx context.Context, client *util.MongoDBClient, cal
 		return nil
 	}
 
-	_, err := client.AtlasSDK.StreamsApi.DeleteStreamProcessor(ctx, callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName).Execute()
+	_, err := client.AtlasSDK.StreamsAPI.DeleteStreamProcessor(ctx, callbackCtx.ProjectID, callbackCtx.WorkspaceName, callbackCtx.ProcessorName).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Cleanup delete failed: %v", err)
 		return err
@@ -205,7 +205,7 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 			}
 		}
 
-		streamProcessorResp, apiResp, err := client.AtlasSDK.StreamsApi.UpdateStreamProcessorWithParams(ctx, modifyAPIRequestParams).Execute()
+		streamProcessorResp, apiResp, err := client.AtlasSDK.StreamsAPI.UpdateStreamProcessorWithParams(ctx, modifyAPIRequestParams).Execute()
 		if err != nil {
 			return handleError(apiResp, constants.UPDATE, err)
 		}
@@ -233,7 +233,7 @@ func handleUpdateCallback(ctx context.Context, client *util.MongoDBClient, curre
 			}
 		}
 
-		_, err := client.AtlasSDK.StreamsApi.StopStreamProcessorWithParams(ctx,
+		_, err := client.AtlasSDK.StreamsAPI.StopStreamProcessorWithParams(ctx,
 			&admin.StopStreamProcessorApiParams{
 				GroupId:       callbackCtx.ProjectID,
 				TenantName:    callbackCtx.WorkspaceName,

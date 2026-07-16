@@ -20,7 +20,7 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 var callbackContext = map[string]any{"callbackFlex": true}
@@ -43,7 +43,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
 		Tags:                         expandTags(model.Tags),
 	}
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), *model.ProjectId, flexReq).Execute()
+	flexResp, resp, err := client.AtlasSDK.FlexClustersAPI.CreateFlexCluster(context.Background(), *model.ProjectId, flexReq).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}
@@ -51,7 +51,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 }
 
 func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
+	flexResp, resp, err := client.AtlasSDK.FlexClustersAPI.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}
@@ -71,7 +71,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
 		Tags:                         expandTags(model.Tags),
 	}
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.UpdateFlexCluster(context.Background(), *model.ProjectId, *model.Name, updateReq).Execute()
+	flexResp, resp, err := client.AtlasSDK.FlexClustersAPI.UpdateFlexCluster(context.Background(), *model.ProjectId, *model.Name, updateReq).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}
@@ -82,7 +82,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 	if IsCallback(req) {
 		return validateProgress(client, model, true)
 	}
-	resp, err := client.AtlasSDK.FlexClustersApi.DeleteFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
+	resp, err := client.AtlasSDK.FlexClustersAPI.DeleteFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}
@@ -99,7 +99,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 			PageNum:      new(pageNum),
 			IncludeCount: new(true),
 		}
-		flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
+		flexListResp, resp, err := client.AtlasSDK.FlexClustersAPI.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
 		if pe := util.HandleClusterError(err, resp); pe != nil {
 			return *pe
 		}

@@ -14,7 +14,7 @@
 
 package resource
 
-import "go.mongodb.org/atlas-sdk/v20250312013/admin"
+import "go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 func NewCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeploymentResponse) Model {
 	respSpecs := apiResp.GetSpecs()
@@ -39,12 +39,12 @@ func NewCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeployment
 
 func NewSearchDeploymentReq(model *Model) admin.ApiSearchDeploymentRequest {
 	modelSpecs := model.Specs
-	requestSpecs := make([]admin.ApiSearchDeploymentSpec, len(modelSpecs))
+	requestSpecs := make([]admin.ApiSearchDeploymentRequestSpec, len(modelSpecs))
 	for i, spec := range modelSpecs {
 		// Both spec fields are required in CFN model and will be defined
-		requestSpecs[i] = admin.ApiSearchDeploymentSpec{
+		requestSpecs[i] = admin.ApiSearchDeploymentRequestSpec{
 			InstanceSize: *spec.InstanceSize,
-			NodeCount:    *spec.NodeCount,
+			NodeCount:    spec.NodeCount,
 		}
 	}
 	return admin.ApiSearchDeploymentRequest{Specs: requestSpecs}

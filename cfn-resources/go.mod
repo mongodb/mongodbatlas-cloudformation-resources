@@ -14,7 +14,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.43.1
 	github.com/aws/smithy-go v1.27.4
 	github.com/dave/jennifer v1.7.1
-	github.com/getkin/kin-openapi v0.142.0
+	github.com/getkin/kin-openapi v0.144.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/mongodb-forks/digest v1.1.0
 	github.com/mongodb-labs/go-client-mongodb-atlas-app-services v1.0.0

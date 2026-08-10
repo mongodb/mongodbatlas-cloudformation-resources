@@ -5,8 +5,8 @@
 # CloudFormation Go plugin generates. cfn-lint exits non-zero on warnings, so
 # this fails the `cfn-lint` job on every PR.
 #
-# Migrating the handlers to `provided.al2023` is tracked separately. Per
-# cfn-lint's runtime lifecycle data, Lambda blocks function creation on
-# `provided.al2` on 2027-02-01, so the migration needs to land before then.
+# Migrating the handlers to `provided.al2023` is tracked in CLOUDP-433207, which
+# also removes this ignore. Per cfn-lint's runtime lifecycle data, Lambda blocks
+# function creation on `provided.al2` on 2027-02-01, so it must land before then.
 ignore_checks:
   - W2531

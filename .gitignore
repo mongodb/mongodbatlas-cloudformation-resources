@@ -24,6 +24,7 @@ update.json
 !/.gitignore
 !*.rpdk-config
 !.mockery.yaml
+!.cfnlintrc.yaml
 .taskcat_overrides.yml
 **/makebuild
 **/functions/packages

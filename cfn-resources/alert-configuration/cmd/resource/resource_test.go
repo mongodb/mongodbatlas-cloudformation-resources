@@ -19,7 +19,7 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/alert-configuration/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312023/admin"
 )
 
 func TestConvertToMongoModel_ClearsAtlasReturnedThreshold(t *testing.T) {

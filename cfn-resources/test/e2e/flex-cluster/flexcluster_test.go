@@ -22,7 +22,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 	"github.com/stretchr/testify/assert"
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 type localTestContext struct {
@@ -100,7 +100,7 @@ func (c *localTestContext) setUp(t *testing.T) {
 func testCreateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.CreateStack(t, c.cfnClient, stackName, c.template)
-	resp, httpResp, err := c.atlasClient.FlexClustersApi.GetFlexCluster(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
+	resp, httpResp, err := c.atlasClient.FlexClustersAPI.GetFlexCluster(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Flex Cluster from Atlas: %v", err)
 	assert.Equal(t, 200, httpResp.StatusCode)
 	assert.NotNil(t, resp)
@@ -116,7 +116,7 @@ func testUpdateStack(t *testing.T, c *localTestContext) {
 	c.template, err = newCFNTemplate(c.templateData)
 	utility.FailNowIfError(t, "Error while reading updated CFN Template: %v", err)
 	utility.UpdateStack(t, c.cfnClient, stackName, c.template)
-	resp, httpResp, err := c.atlasClient.FlexClustersApi.GetFlexCluster(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
+	resp, httpResp, err := c.atlasClient.FlexClustersAPI.GetFlexCluster(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Flex Cluster from Atlas: %v", err)
 	assert.Equal(t, 200, httpResp.StatusCode)
 	assert.NotNil(t, resp)
@@ -129,7 +129,7 @@ func testUpdateStack(t *testing.T, c *localTestContext) {
 func testDeleteStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.DeleteStack(t, c.cfnClient, stackName)
-	resp, _, _ := c.atlasClient.FlexClustersApi.GetFlexCluster(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
+	resp, _, _ := c.atlasClient.FlexClustersAPI.GetFlexCluster(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
 	assert.Nil(t, resp)
 }
 

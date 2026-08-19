@@ -20,7 +20,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -37,7 +37,7 @@ func HandleCreate(client *util.MongoDBClient, currentModel *Model) handler.Progr
 	federationSettingsID := util.SafeString(currentModel.FederationSettingsId)
 
 	createRequest := ExpandOIDCCreateRequest(currentModel)
-	created, res, err := client.AtlasSDK.FederatedAuthenticationApi.CreateIdentityProvider(context.Background(), federationSettingsID, createRequest).Execute()
+	created, res, err := client.AtlasSDK.FederatedAuthenticationAPI.CreateIdentityProvider(context.Background(), federationSettingsID, createRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error creating federation settings identity provider (%s): %s", federationSettingsID, err.Error()),
@@ -54,7 +54,7 @@ func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.Progres
 	federationSettingsID := util.SafeString(currentModel.FederationSettingsId)
 	idpID := util.SafeString(currentModel.IdpId)
 
-	idp, res, err := client.AtlasSDK.FederatedAuthenticationApi.GetIdentityProvider(context.Background(), federationSettingsID, idpID).Execute()
+	idp, res, err := client.AtlasSDK.FederatedAuthenticationAPI.GetIdentityProvider(context.Background(), federationSettingsID, idpID).Execute()
 	if err != nil {
 		if util.StatusNotFound(res) {
 			return progressevent.GetFailedEventByCode("Resource not found", string(types.HandlerErrorCodeNotFound))
@@ -101,7 +101,7 @@ func HandleUpdate(client *util.MongoDBClient, prevModel *Model, currentModel *Mo
 		UserClaim:                  currentModel.UserClaim,
 	}
 
-	updated, updRes, err := client.AtlasSDK.FederatedAuthenticationApi.UpdateIdentityProvider(context.Background(), federationSettingsID, idpID, updateReq).Execute()
+	updated, updRes, err := client.AtlasSDK.FederatedAuthenticationAPI.UpdateIdentityProvider(context.Background(), federationSettingsID, idpID, updateReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error updating federation settings identity provider (%s): %s", federationSettingsID, err.Error()),
@@ -121,7 +121,7 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 	federationSettingsID := util.SafeString(currentModel.FederationSettingsId)
 	idpID := util.SafeString(currentModel.IdpId)
 
-	res, err := client.AtlasSDK.FederatedAuthenticationApi.DeleteIdentityProvider(context.Background(), federationSettingsID, idpID).Execute()
+	res, err := client.AtlasSDK.FederatedAuthenticationAPI.DeleteIdentityProvider(context.Background(), federationSettingsID, idpID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error deleting federation settings identity provider (%s): %s, error: %s", federationSettingsID, idpID, err.Error()),
@@ -143,7 +143,7 @@ func HandleList(client *util.MongoDBClient, currentModel *Model) handler.Progres
 		Protocol:             &allProtocols,
 		IdpType:              &allIdpTypes,
 	}
-	providers, res, err := client.AtlasSDK.FederatedAuthenticationApi.ListIdentityProvidersWithParams(context.Background(), params).Execute()
+	providers, res, err := client.AtlasSDK.FederatedAuthenticationAPI.ListIdentityProvidersWithParams(context.Background(), params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error listing federation settings identity providers (%s): %s", federationSettingsID, err.Error()),

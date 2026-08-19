@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 
@@ -76,7 +76,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		}
 	}
 
-	_, apiResp, err := client.AtlasSDK.StreamsApi.CreateStreamProcessor(ctx, projectID, workspaceName, streamProcessorReq).Execute()
+	_, apiResp, err := client.AtlasSDK.StreamsAPI.CreateStreamProcessor(ctx, projectID, workspaceName, streamProcessorReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -117,7 +117,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 	projectID := util.SafeString(model.ProjectId)
 	processorName := util.SafeString(model.ProcessorName)
 
-	streamProcessor, apiResp, err := client.AtlasSDK.StreamsApi.GetStreamProcessorWithParams(context.Background(),
+	streamProcessor, apiResp, err := client.AtlasSDK.StreamsAPI.GetStreamProcessorWithParams(context.Background(),
 		&admin.GetStreamProcessorApiParams{
 			GroupId:       projectID,
 			TenantName:    workspaceName,
@@ -177,7 +177,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 		ProcessorName: processorName,
 	}
 
-	currentStreamProcessor, apiResp, err := client.AtlasSDK.StreamsApi.GetStreamProcessorWithParams(ctx, requestParams).Execute()
+	currentStreamProcessor, apiResp, err := client.AtlasSDK.StreamsAPI.GetStreamProcessorWithParams(ctx, requestParams).Execute()
 	if err != nil {
 		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
@@ -206,7 +206,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 	}
 
 	if currentState == StartedState {
-		_, err := client.AtlasSDK.StreamsApi.StopStreamProcessorWithParams(ctx,
+		_, err := client.AtlasSDK.StreamsAPI.StopStreamProcessorWithParams(ctx,
 			&admin.StopStreamProcessorApiParams{
 				GroupId:       projectID,
 				TenantName:    workspaceName,
@@ -246,7 +246,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, prevModel *M
 		}
 	}
 
-	streamProcessorResp, apiResp, err := client.AtlasSDK.StreamsApi.UpdateStreamProcessorWithParams(ctx, modifyAPIRequestParams).Execute()
+	streamProcessorResp, apiResp, err := client.AtlasSDK.StreamsAPI.UpdateStreamProcessorWithParams(ctx, modifyAPIRequestParams).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
@@ -284,7 +284,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 	projectID := util.SafeString(model.ProjectId)
 	processorName := util.SafeString(model.ProcessorName)
 
-	apiResp, err := client.AtlasSDK.StreamsApi.DeleteStreamProcessor(ctx, projectID, workspaceName, processorName).Execute()
+	apiResp, err := client.AtlasSDK.StreamsAPI.DeleteStreamProcessor(ctx, projectID, workspaceName, processorName).Execute()
 	if err != nil {
 		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{

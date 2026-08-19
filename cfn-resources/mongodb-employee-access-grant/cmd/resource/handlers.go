@@ -23,13 +23,13 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 
-	cluster, resp, err := client.AtlasSDK.ClustersApi.GetCluster(ctx, *model.ProjectId, *model.ClusterName).Execute()
+	cluster, resp, err := client.AtlasSDK.ClustersAPI.GetCluster(ctx, *model.ProjectId, *model.ClusterName).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}
@@ -48,7 +48,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		ExpirationTime: expirationTime,
 	}
 
-	_, err = client.AtlasSDK.ClustersApi.GrantMongoEmployeeAccess(ctx, *model.ProjectId, *model.ClusterName, grantReq).Execute()
+	_, err = client.AtlasSDK.ClustersAPI.GrantMongoEmployeeAccess(ctx, *model.ProjectId, *model.ClusterName, grantReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByCode("Error granting MongoDB employee access: "+err.Error(), string(types.HandlerErrorCodeInternalFailure))
 	}
@@ -59,7 +59,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 
-	cluster, resp, err := client.AtlasSDK.ClustersApi.GetCluster(ctx, *model.ProjectId, *model.ClusterName).Execute()
+	cluster, resp, err := client.AtlasSDK.ClustersAPI.GetCluster(ctx, *model.ProjectId, *model.ClusterName).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}
@@ -81,7 +81,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 
-	cluster, resp, err := client.AtlasSDK.ClustersApi.GetCluster(ctx, *model.ProjectId, *model.ClusterName).Execute()
+	cluster, resp, err := client.AtlasSDK.ClustersAPI.GetCluster(ctx, *model.ProjectId, *model.ClusterName).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}
@@ -100,7 +100,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 		ExpirationTime: expirationTime,
 	}
 
-	_, err = client.AtlasSDK.ClustersApi.GrantMongoEmployeeAccess(ctx, *model.ProjectId, *model.ClusterName, grantReq).Execute()
+	_, err = client.AtlasSDK.ClustersAPI.GrantMongoEmployeeAccess(ctx, *model.ProjectId, *model.ClusterName, grantReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByCode("Error updating MongoDB employee access grant: "+err.Error(), string(types.HandlerErrorCodeInternalFailure))
 	}
@@ -111,7 +111,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	ctx := context.Background()
 
-	cluster, resp, err := client.AtlasSDK.ClustersApi.GetCluster(ctx, *model.ProjectId, *model.ClusterName).Execute()
+	cluster, resp, err := client.AtlasSDK.ClustersAPI.GetCluster(ctx, *model.ProjectId, *model.ClusterName).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}
@@ -120,7 +120,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 		return progressevent.GetFailedEventByCode(constants.ResourceNotFound, string(types.HandlerErrorCodeNotFound))
 	}
 
-	resp, err = client.AtlasSDK.ClustersApi.RevokeMongoEmployeeAccess(ctx, *model.ProjectId, *model.ClusterName).Execute()
+	resp, err = client.AtlasSDK.ClustersAPI.RevokeMongoEmployeeAccess(ctx, *model.ProjectId, *model.ClusterName).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe
 	}

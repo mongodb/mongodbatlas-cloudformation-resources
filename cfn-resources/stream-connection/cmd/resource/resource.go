@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -100,7 +100,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := currentModel.ProjectId
 	streamConnectionReq := newStreamConnectionReq(currentModel)
 
-	streamConnResp, apiResp, err := conn.StreamsApi.CreateStreamConnection(ctx, *projectID, *workspaceOrInstanceName, streamConnectionReq).Execute()
+	streamConnResp, apiResp, err := conn.StreamsAPI.CreateStreamConnection(ctx, *projectID, *workspaceOrInstanceName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -124,7 +124,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	projectID := currentModel.ProjectId
 	connectionName := currentModel.ConnectionName
-	streamConnResp, apiResp, err := conn.StreamsApi.GetStreamConnection(context.Background(), *projectID, *workspaceOrInstanceName, *connectionName).Execute()
+	streamConnResp, apiResp, err := conn.StreamsAPI.GetStreamConnection(context.Background(), *projectID, *workspaceOrInstanceName, *connectionName).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.READ, err)
 	}
@@ -150,7 +150,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := currentModel.ProjectId
 	connectionName := currentModel.ConnectionName
 	streamConnectionReq := newStreamConnectionReq(currentModel)
-	streamConnResp, apiResp, err := conn.StreamsApi.UpdateStreamConnection(ctx, *projectID, *workspaceOrInstanceName, *connectionName, streamConnectionReq).Execute()
+	streamConnResp, apiResp, err := conn.StreamsAPI.UpdateStreamConnection(ctx, *projectID, *workspaceOrInstanceName, *connectionName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
@@ -176,7 +176,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := currentModel.ProjectId
 	connectionName := currentModel.ConnectionName
-	apiResp, err := conn.StreamsApi.DeleteStreamConnection(ctx, *projectID, *workspaceOrInstanceName, *connectionName).Execute()
+	apiResp, err := conn.StreamsAPI.DeleteStreamConnection(ctx, *projectID, *workspaceOrInstanceName, *connectionName).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}
@@ -227,7 +227,7 @@ func getAllStreamConnections(ctx context.Context, conn *admin.APIClient, project
 	accumulatedStreamConns := make([]admin.StreamsConnection, 0)
 
 	for allRecordsRetrieved := false; !allRecordsRetrieved; {
-		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
+		streamConns, apiResp, err := conn.StreamsAPI.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
 			GroupId:      projectID,
 			TenantName:   workspaceOrInstanceName,
 			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),

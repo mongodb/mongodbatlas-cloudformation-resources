@@ -19,7 +19,7 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-deployment/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 type sdkToCFNModelTestCase struct {
@@ -127,10 +127,10 @@ func TestCFNModelToSDK(t *testing.T) {
 				},
 			},
 			expectedSDKReq: admin.ApiSearchDeploymentRequest{
-				Specs: []admin.ApiSearchDeploymentSpec{
+				Specs: []admin.ApiSearchDeploymentRequestSpec{
 					{
 						InstanceSize: instanceSize,
-						NodeCount:    nodeCount,
+						NodeCount:    new(nodeCount),
 					},
 				},
 			},
@@ -146,7 +146,7 @@ func TestCFNModelToSDK(t *testing.T) {
 				Specs:       []resource.ApiSearchDeploymentSpec{},
 			},
 			expectedSDKReq: admin.ApiSearchDeploymentRequest{
-				Specs: []admin.ApiSearchDeploymentSpec{},
+				Specs: []admin.ApiSearchDeploymentRequestSpec{},
 			},
 		},
 	}

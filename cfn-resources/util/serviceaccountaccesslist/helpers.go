@@ -18,7 +18,7 @@ import (
 	"context"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 const ItemsPerPage = 500
@@ -51,8 +51,8 @@ func FindAccessListEntry(
 		}
 
 		if page.Results != nil {
-			for i := range *page.Results {
-				entry := &(*page.Results)[i]
+			for i := range page.Results {
+				entry := &page.Results[i]
 				entryIP := ""
 				entryCIDR := ""
 				if entry.IpAddress != nil {
@@ -68,7 +68,7 @@ func FindAccessListEntry(
 			}
 		}
 
-		if page.Results == nil || len(*page.Results) == 0 || len(*page.Results) < ItemsPerPage {
+		if len(page.Results) < ItemsPerPage {
 			break
 		}
 
@@ -97,10 +97,10 @@ func ListAllAccessListEntries(
 		}
 
 		if page.Results != nil {
-			allEntries = append(allEntries, *page.Results...)
+			allEntries = append(allEntries, page.Results...)
 		}
 
-		if page.Results == nil || len(*page.Results) == 0 || len(*page.Results) < ItemsPerPage {
+		if len(page.Results) < ItemsPerPage {
 			break
 		}
 

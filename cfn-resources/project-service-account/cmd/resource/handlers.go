@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -36,7 +36,7 @@ func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 		return progress_events.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest))
 	}
 
-	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.CreateGroupServiceAccount(ctx, *projectID, serviceAccountReq).Execute()
+	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.CreateGroupServiceAccount(ctx, *projectID, serviceAccountReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -55,7 +55,7 @@ func handleRead(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 	projectID := model.ProjectId
 	clientID := model.ClientId
 
-	serviceAccount, apiResp, err := client.AtlasSDK.ServiceAccountsApi.GetGroupServiceAccount(ctx, *projectID, *clientID).Execute()
+	serviceAccount, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.GetGroupServiceAccount(ctx, *projectID, *clientID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.READ, err)
 	}
@@ -84,7 +84,7 @@ func handleUpdate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	if err != nil {
 		return progress_events.GetFailedEventByCode(err.Error(), string(types.HandlerErrorCodeInvalidRequest))
 	}
-	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.UpdateGroupServiceAccount(ctx, *clientID, *projectID, serviceAccountReq).Execute()
+	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.UpdateGroupServiceAccount(ctx, *clientID, *projectID, serviceAccountReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
@@ -109,7 +109,7 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	projectID := model.ProjectId
 	clientID := model.ClientId
 
-	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteGroupServiceAccount(ctx, *clientID, *projectID).Execute()
+	apiResp, err := client.AtlasSDK.ServiceAccountsAPI.DeleteGroupServiceAccount(ctx, *clientID, *projectID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}
@@ -132,7 +132,7 @@ func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 			ItemsPerPage: util.Pointer(itemsPerPage),
 			PageNum:      new(pageNum),
 		}
-		serviceAccounts, apiResp, err := client.AtlasSDK.ServiceAccountsApi.ListGroupServiceAccountsWithParams(ctx, listParams).Execute()
+		serviceAccounts, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.ListGroupServiceAccountsWithParams(ctx, listParams).Execute()
 		if err != nil {
 			return handleError(apiResp, constants.LIST, err)
 		}

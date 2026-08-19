@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 type localTestContext struct {
@@ -183,7 +183,7 @@ func testDeleteStack(t *testing.T, c *localTestContext) {
 	a := assert.New(t)
 	_, resp, _ := c.atlasClient20231115014.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
 	a.Equal(404, resp.StatusCode)
-	_, flexResp, _ := c.atlasClient.FlexClustersApi.GetFlexCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.FlexName).Execute()
+	_, flexResp, _ := c.atlasClient.FlexClustersAPI.GetFlexCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.FlexName).Execute()
 	a.Equal(404, flexResp.StatusCode)
 }
 
@@ -263,7 +263,7 @@ func readFromAtlas(t *testing.T, c *localTestContext) (project *admin20231115014
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
 	cluster, getClusterResponse, err = c.atlasClient20231115014.ClustersApi.GetCluster(context, projectID, c.clusterTmplObj.Name).Execute()
 	utility.FailNowIfError(t, "Err while retrieving Cluster from Atlas: %v", err)
-	flexCluster, getFlexClusterResponse, err = c.atlasClient.FlexClustersApi.GetFlexCluster(context, projectID, c.clusterTmplObj.FlexName).Execute()
+	flexCluster, getFlexClusterResponse, err = c.atlasClient.FlexClustersAPI.GetFlexCluster(context, projectID, c.clusterTmplObj.FlexName).Execute()
 	utility.FailNowIfError(t, "Err while retrieving Flex Cluster from Atlas: %v", err)
 	assert.Equal(t, 200, getProjectResponse.StatusCode)
 	assert.Equal(t, 200, getClusterResponse.StatusCode)

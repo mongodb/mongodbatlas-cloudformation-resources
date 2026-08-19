@@ -14,17 +14,17 @@
 
 package resource
 
-import "go.mongodb.org/atlas-sdk/v20250312013/admin"
+import "go.mongodb.org/atlas-sdk/v20250312022/admin"
 
-func NewLogIntegrationCreateRequest(model *Model) *admin.S3LogIntegrationRequest {
+func NewLogIntegrationCreateRequest(model *Model) *admin.LogIntegrationRequest {
 	if model == nil {
 		return nil
 	}
-	req := &admin.S3LogIntegrationRequest{
+	req := &admin.LogIntegrationRequest{
 		Type:       *model.Type,
-		BucketName: *model.BucketName,
-		IamRoleId:  *model.IamRoleId,
-		PrefixPath: *model.PrefixPath,
+		BucketName: model.BucketName,
+		IamRoleId:  model.IamRoleId,
+		PrefixPath: model.PrefixPath,
 		LogTypes:   model.LogTypes,
 	}
 	if model.KmsKey != nil && *model.KmsKey != "" {
@@ -42,7 +42,7 @@ func NewLogIntegrationUpdateRequest(model *Model) *admin.LogIntegrationRequest {
 		BucketName: model.BucketName,
 		IamRoleId:  model.IamRoleId,
 		PrefixPath: model.PrefixPath,
-		LogTypes:   &model.LogTypes,
+		LogTypes:   model.LogTypes,
 	}
 	if model.KmsKey != nil && *model.KmsKey != "" {
 		req.KmsKey = model.KmsKey
@@ -61,6 +61,6 @@ func UpdateLogIntegrationModel(model *Model, logIntegrationResp *admin.LogIntegr
 	model.Type = &logIntegrationResp.Type
 	model.KmsKey = logIntegrationResp.KmsKey
 	if logIntegrationResp.LogTypes != nil {
-		model.LogTypes = *logIntegrationResp.LogTypes
+		model.LogTypes = logIntegrationResp.LogTypes
 	}
 }

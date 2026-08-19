@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"strings"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -91,7 +91,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	var res *http.Response
-	alertConfig, res, err := atlasV2.AlertConfigurationsApi.CreateAlertConfig(context.Background(), projectID, &alertConfigRequest).Execute()
+	alertConfig, res, err := atlasV2.AlertConfigurationsAPI.CreateAlertConfig(context.Background(), projectID, &alertConfigRequest).Execute()
 	defer res.Body.Close()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
@@ -131,7 +131,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
-	alertConfig, resp, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	alertConfig, resp, err := atlasV2.AlertConfigurationsAPI.GetAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	defer resp.Body.Close()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
@@ -175,7 +175,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// server returns an error 500
 	projectID := *currentModel.ProjectId
 	id := *currentModel.Id
-	alertReq, getResp, err := atlasV2.AlertConfigurationsApi.GetAlertConfig(context.Background(), projectID, id).Execute()
+	alertReq, getResp, err := atlasV2.AlertConfigurationsAPI.GetAlertConfig(context.Background(), projectID, id).Execute()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), getResp), nil
 	}
@@ -193,9 +193,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// so have to use different method to change enabled.
 	if reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(true)}) ||
 		reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(false)}) {
-		alertModel, updateResp, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfig(context.Background(), projectID, id, &admin.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
+		alertModel, updateResp, err = atlasV2.AlertConfigurationsAPI.ToggleAlertConfig(context.Background(), projectID, id, &admin.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
 	} else {
-		alertModel, updateResp, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfig(context.Background(), projectID, id, alertReq).Execute()
+		alertModel, updateResp, err = atlasV2.AlertConfigurationsAPI.UpdateAlertConfig(context.Background(), projectID, id, alertReq).Execute()
 	}
 
 	if err != nil {
@@ -237,7 +237,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
 	}
 
-	res, err := atlasV2.AlertConfigurationsApi.DeleteAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	res, err := atlasV2.AlertConfigurationsAPI.DeleteAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)
@@ -257,7 +257,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func isExist(currentModel *Model, client *admin.APIClient) bool {
-	alert, _, err := client.AlertConfigurationsApi.GetAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	alert, _, err := client.AlertConfigurationsAPI.GetAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	return err == nil && alert != nil
 }
 
@@ -274,13 +274,13 @@ func expandAlertConfigurationMatchers(matchers []Matcher) *[]admin.StreamsMatche
 	return &mts
 }
 
-func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin.FlexClusterMetricThreshold {
+func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin.StreamProcessorMetricThreshold {
 	threshold := currentModel.MetricThreshold
 	if threshold == nil {
 		return nil
 	}
-	return &admin.FlexClusterMetricThreshold{
-		MetricName: cast.ToString(threshold.MetricName),
+	return &admin.StreamProcessorMetricThreshold{
+		MetricName: threshold.MetricName,
 		Operator:   threshold.Operator,
 		Threshold:  threshold.Threshold,
 		Units:      threshold.Units,

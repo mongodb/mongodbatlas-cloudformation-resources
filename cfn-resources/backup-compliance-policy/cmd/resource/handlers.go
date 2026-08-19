@@ -22,7 +22,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -51,7 +51,7 @@ func isPendingActionError(err error) bool {
 }
 
 func handlePendingAction(ctx context.Context, client *util.MongoDBClient, model *Model, projectID string) handler.ProgressEvent {
-	policy, _, getErr := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	policy, _, getErr := client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	if getErr == nil && policy != nil {
 		SetBackupCompliancePolicyData(model, policy)
 	}
@@ -88,7 +88,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 	ctx := context.Background()
 	projectID := *model.ProjectId
 
-	existingPolicy, apiResp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	existingPolicy, apiResp, err := client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	if err != nil {
 		if !util.StatusNotFound(apiResp) {
 			return handleError(apiResp, constants.CREATE, err)
@@ -109,7 +109,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		OverwriteBackupPolicies:        new(false),
 	}
 
-	_, apiResp, err = client.AtlasSDK.CloudBackupsApi.UpdateCompliancePolicyWithParams(ctx, &params).Execute()
+	_, apiResp, err = client.AtlasSDK.CloudBackupsAPI.UpdateCompliancePolicyWithParams(ctx, &params).Execute()
 	if err != nil {
 		if isPendingActionError(err) {
 			return handlePendingAction(ctx, client, model, projectID)
@@ -117,7 +117,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 		return handleError(apiResp, constants.CREATE, err)
 	}
 
-	policy, apiResp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	policy, apiResp, err := client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -129,7 +129,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 	ctx := context.Background()
 	projectID := *model.ProjectId
 
-	policy, apiResp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	policy, apiResp, err := client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	if pe := checkPolicyNotFound(policy, apiResp, err, projectID, constants.READ); pe != nil {
 		return *pe
 	}
@@ -151,7 +151,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 	ctx := context.Background()
 	projectID := *model.ProjectId
 
-	policy, apiResp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	policy, apiResp, err := client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	if pe := checkPolicyNotFound(policy, apiResp, err, projectID, constants.UPDATE); pe != nil {
 		return *pe
 	}
@@ -164,7 +164,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 		OverwriteBackupPolicies:        new(false),
 	}
 
-	_, apiResp, err = client.AtlasSDK.CloudBackupsApi.UpdateCompliancePolicyWithParams(ctx, &params).Execute()
+	_, apiResp, err = client.AtlasSDK.CloudBackupsAPI.UpdateCompliancePolicyWithParams(ctx, &params).Execute()
 	if err != nil {
 		if isPendingActionError(err) {
 			return handlePendingAction(ctx, client, model, projectID)
@@ -172,7 +172,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
-	policy, apiResp, err = client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	policy, apiResp, err = client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
@@ -188,12 +188,12 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 	ctx := context.Background()
 	projectID := *model.ProjectId
 
-	policy, apiResp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	policy, apiResp, err := client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	if pe := checkPolicyNotFound(policy, apiResp, err, projectID, constants.DELETE); pe != nil {
 		return *pe
 	}
 
-	apiResp, err = client.AtlasSDK.CloudBackupsApi.DisableCompliancePolicy(ctx, projectID).Execute()
+	apiResp, err = client.AtlasSDK.CloudBackupsAPI.DisableCompliancePolicy(ctx, projectID).Execute()
 	if err == nil {
 		return inProgressEvent(model, nil)
 	}
@@ -228,7 +228,7 @@ func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) 
 	ctx := context.Background()
 	projectID := *model.ProjectId
 
-	policy, apiResp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	policy, apiResp, err := client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	if err != nil {
 		if !util.StatusNotFound(apiResp) {
 			return handleError(apiResp, constants.LIST, err)
@@ -274,7 +274,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool, o
 	ctx := context.Background()
 	projectID := *model.ProjectId
 
-	policy, resp, err := client.AtlasSDK.CloudBackupsApi.GetCompliancePolicy(ctx, projectID).Execute()
+	policy, resp, err := client.AtlasSDK.CloudBackupsAPI.GetCompliancePolicy(ctx, projectID).Execute()
 	notFound := util.StatusNotFound(resp)
 	policyDeleted := notFound || (policy != nil && policy.GetProjectId() == "")
 

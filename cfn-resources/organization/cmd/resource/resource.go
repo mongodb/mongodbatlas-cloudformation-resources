@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -100,7 +100,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.FederatedSettingsId != nil {
 		orgInput.FederationSettingsId = currentModel.FederatedSettingsId
 	}
-	org, response, err := conn.OrganizationsApi.CreateOrg(ctx, orgInput).Execute()
+	org, response, err := conn.OrganizationsAPI.CreateOrg(ctx, orgInput).Execute()
 	if err != nil {
 		return handleError(response, constants.CREATE, err)
 	}
@@ -124,7 +124,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 	conn = newOrgClient.AtlasSDK
-	if _, updateResp, errUpdate := conn.OrganizationsApi.UpdateOrgSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
+	if _, updateResp, errUpdate := conn.OrganizationsAPI.UpdateOrgSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
 		return handleError(updateResp, constants.CREATE, errUpdate)
 	}
 
@@ -176,11 +176,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setDefaultsIfNotDefined(currentModel)
 	atlasOrg := admin.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name, SkipDefaultAlertsSettings: currentModel.SkipDefaultAlertsSettings}
 
-	if _, response, err := conn.OrganizationsApi.UpdateOrg(ctx, *currentModel.OrgId, &atlasOrg).Execute(); err != nil {
+	if _, response, err := conn.OrganizationsAPI.UpdateOrg(ctx, *currentModel.OrgId, &atlasOrg).Execute(); err != nil {
 		return handleError(response, constants.UPDATE, err)
 	}
 
-	if _, response, err := conn.OrganizationsApi.UpdateOrgSettings(ctx, *currentModel.OrgId, newOrganizationSettings(currentModel)).Execute(); err != nil {
+	if _, response, err := conn.OrganizationsAPI.UpdateOrgSettings(ctx, *currentModel.OrgId, newOrganizationSettings(currentModel)).Execute(); err != nil {
 		return handleError(response, constants.UPDATE, err)
 	}
 
@@ -255,7 +255,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Encapsulate the delete+wait logic so the same flow can be used on retry.
 func runDelete(ctx context.Context, conn *admin.APIClient, currentModel *Model) (*DeleteResponse, *handler.ProgressEvent) {
-	deleteRequest := conn.OrganizationsApi.DeleteOrg(ctx, *currentModel.OrgId)
+	deleteRequest := conn.OrganizationsAPI.DeleteOrg(ctx, *currentModel.OrgId)
 
 	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
 	// we need to make the call in a goroutine and return a progress event
@@ -323,7 +323,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, currentModel *Model) (responseModel *Model, response *http.Response, err error) {
-	org, response, err := conn.OrganizationsApi.GetOrg(ctx, *currentModel.OrgId).Execute()
+	org, response, err := conn.OrganizationsAPI.GetOrg(ctx, *currentModel.OrgId).Execute()
 	if err != nil {
 		return nil, response, err
 	}
@@ -332,7 +332,7 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	model.IsDeleted = org.IsDeleted
 	model.SkipDefaultAlertsSettings = org.SkipDefaultAlertsSettings
 
-	settings, _, err := conn.OrganizationsApi.GetOrgSettings(ctx, org.GetId()).Execute()
+	settings, _, err := conn.OrganizationsAPI.GetOrgSettings(ctx, org.GetId()).Execute()
 	if err != nil {
 		return nil, response, err
 	}

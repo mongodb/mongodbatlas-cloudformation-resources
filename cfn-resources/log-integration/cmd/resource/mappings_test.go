@@ -21,7 +21,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 func TestNewLogIntegrationCreateRequest(t *testing.T) {
@@ -38,9 +38,9 @@ func TestNewLogIntegrationCreateRequest(t *testing.T) {
 
 	require.NotNil(t, result)
 	assert.Equal(t, util.SafeString(model.Type), result.Type)
-	assert.Equal(t, util.SafeString(model.BucketName), result.BucketName)
-	assert.Equal(t, util.SafeString(model.IamRoleId), result.IamRoleId)
-	assert.Equal(t, util.SafeString(model.PrefixPath), result.PrefixPath)
+	assert.Equal(t, model.BucketName, result.BucketName)
+	assert.Equal(t, model.IamRoleId, result.IamRoleId)
+	assert.Equal(t, model.PrefixPath, result.PrefixPath)
 	assert.Equal(t, model.LogTypes, result.LogTypes)
 	assert.Equal(t, util.StringPtr("arn:aws:kms:us-east-1:123456789012:key/test-key"), result.KmsKey)
 }
@@ -63,7 +63,7 @@ func TestNewLogIntegrationUpdateRequest(t *testing.T) {
 	assert.Equal(t, model.IamRoleId, result.IamRoleId)
 	assert.Equal(t, model.PrefixPath, result.PrefixPath)
 	require.NotNil(t, result.LogTypes)
-	assert.Equal(t, model.LogTypes, *result.LogTypes)
+	assert.Equal(t, model.LogTypes, result.LogTypes)
 	assert.Equal(t, util.StringPtr("arn:aws:kms:us-east-1:123456789012:key/test-key"), result.KmsKey)
 }
 
@@ -75,7 +75,7 @@ func TestUpdateLogIntegrationModel(t *testing.T) {
 		BucketName: new("test-bucket"),
 		IamRoleId:  new("arn:aws:iam::123456789012:role/test-role"),
 		PrefixPath: new("/logs"),
-		LogTypes:   &[]string{"AUDIT", "FTDC"},
+		LogTypes:   []string{"AUDIT", "FTDC"},
 		KmsKey:     new("arn:aws:kms:us-east-1:123456789012:key/test-key"),
 	}
 
@@ -87,5 +87,5 @@ func TestUpdateLogIntegrationModel(t *testing.T) {
 	assert.Equal(t, response.IamRoleId, model.IamRoleId)
 	assert.Equal(t, response.PrefixPath, model.PrefixPath)
 	assert.Equal(t, response.KmsKey, model.KmsKey)
-	assert.Equal(t, *response.LogTypes, model.LogTypes)
+	assert.Equal(t, response.LogTypes, model.LogTypes)
 }

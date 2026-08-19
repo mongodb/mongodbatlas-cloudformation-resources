@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312022/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -67,7 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	resp, err := client.AtlasSDK.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
+	resp, err := client.AtlasSDK.MaintenanceWindowsAPI.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -157,7 +157,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	resp, err := client.AtlasSDK.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
+	resp, err := client.AtlasSDK.MaintenanceWindowsAPI.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -198,7 +198,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, nil
 	}
 
-	resp, err := client.AtlasSDK.MaintenanceWindowsApi.ResetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
+	resp, err := client.AtlasSDK.MaintenanceWindowsAPI.ResetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -234,7 +234,7 @@ func (m Model) toProtectedHours() *admin.ProtectedHours {
 }
 
 func get(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanceWindow, *handler.ProgressEvent) {
-	maintenanceWindow, resp, err := client.AtlasSDK.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
+	maintenanceWindow, resp, err := client.AtlasSDK.MaintenanceWindowsAPI.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
 		ev := progress_events.GetFailedEventByResponse(err.Error(), resp)
@@ -255,7 +255,7 @@ func isResponseEmpty(maintenanceWindow *admin.GroupMaintenanceWindow) bool {
 }
 
 func deferMaintenanceWindow(client *util.MongoDBClient, projectID string) *handler.ProgressEvent {
-	_, err := client.AtlasSDK.MaintenanceWindowsApi.DeferMaintenanceWindow(context.Background(), projectID).Execute()
+	_, err := client.AtlasSDK.MaintenanceWindowsAPI.DeferMaintenanceWindow(context.Background(), projectID).Execute()
 	if err != nil {
 		return &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -267,7 +267,7 @@ func deferMaintenanceWindow(client *util.MongoDBClient, projectID string) *handl
 }
 
 func toggleAutoDefer(client *util.MongoDBClient, projectID string) *handler.ProgressEvent {
-	_, err := client.AtlasSDK.MaintenanceWindowsApi.ToggleMaintenanceAutoDefer(context.Background(), projectID).Execute()
+	_, err := client.AtlasSDK.MaintenanceWindowsAPI.ToggleMaintenanceAutoDefer(context.Background(), projectID).Execute()
 	if err != nil {
 		return &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,

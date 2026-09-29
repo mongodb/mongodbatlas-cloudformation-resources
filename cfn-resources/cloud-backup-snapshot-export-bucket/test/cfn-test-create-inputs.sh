@@ -11,6 +11,10 @@ function usage {
 	echo "Creates a new cloud backup export bucket role for the test"
 }
 
+# Cloud Tag Policy compliance, see CLOUDP-441536
+tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
+tagEnv="${MONGODB_TAG_ENV:-test}"
+
 region=$AWS_DEFAULT_REGION
 awsRegion=$AWS_DEFAULT_REGION
 if [ -z "$region" ]; then
@@ -52,7 +56,7 @@ jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 
 awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 if [ -z "$awsRoleID" ]; then
-	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" --tags Key=mongodb-owner,Value="${tagOwner}" Key=mongodb-env,Value="${tagEnv}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 	aws iam put-role-policy --role-name "${roleName}" --policy-name "${policyName}" --policy-document "file://$(dirname "$0")/policy.json"
 	echo -e "No role found, hence creating the role: ${awsRoleID}\n"
 
@@ -80,6 +84,7 @@ bucketName="cloud-backup-snapshot-${CFN_TEST_TAG}-${awsRegion}"
 
 aws s3 rb "s3://${bucketName}" --force
 aws s3 mb "s3://${bucketName}" --output json
+aws s3api put-bucket-tagging --bucket "${bucketName}" --tagging "TagSet=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
 
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi

@@ -18,6 +18,10 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+# Cloud Tag Policy compliance, see CLOUDP-441536
+tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
+tagEnv="${MONGODB_TAG_ENV:-test}"
+
 #set profile
 profile="default"
 if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
@@ -41,7 +45,7 @@ fi
 # create aws secret key
 awsSecretName="mongodb/atlas/apikey/${projectName}"
 aws secretsmanager delete-secret --secret-id "${awsSecretName}" --force-delete-without-recovery 2>/dev/null || true
-if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here"; then
+if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here" --tags Key=mongodb-owner,Value="${tagOwner}" Key=mongodb-env,Value="${tagEnv}"; then
 	echo "aws secret created with name : ${awsSecretName}"
 else
 	echo "aws secret create failed with name : ${awsSecretName}"

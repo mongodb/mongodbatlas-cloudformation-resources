@@ -22,6 +22,11 @@ if [ -n "${MONGODB_ATLAS_PROFILE:-}" ]; then
     profile=${MONGODB_ATLAS_PROFILE}
 fi
 
+# Cloud Tag Policy compliance, see CLOUDP-441536
+tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
+tagEnv="${MONGODB_TAG_ENV:-test}"
+tagSpecs="ResourceType=vpc-endpoint,Tags=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
+
 # Initialize variables to store VPC ID, subnet ID 1, and subnet ID 2
 vpc_id=""
 subnet_id_1=""
@@ -110,6 +115,7 @@ aws_private_endpoint_id=$(aws ec2 create-vpc-endpoint \
   --region "$region" \
   --subnet-ids "$subnet_id_1" \
   --vpc-endpoint-type Interface \
+  --tag-specifications "$tagSpecs" \
   --output json | jq -r '.VpcEndpoint.VpcEndpointId')
 
 atlas privateendpoints aws interfaces create "$private_endpoint_id" --privateEndpointId "$aws_private_endpoint_id" --projectId "$projectId"
@@ -120,6 +126,7 @@ aws_private_endpoint_id2=$(aws ec2 create-vpc-endpoint \
   --region "$region" \
   --subnet-ids "$subnet_id_2" \
   --vpc-endpoint-type Interface \
+  --tag-specifications "$tagSpecs" \
   --output json | jq -r '.VpcEndpoint.VpcEndpointId')
 
 

@@ -6,6 +6,11 @@
 
 set -euo pipefail
 
+# Cloud Tag Policy compliance, see CLOUDP-441536
+tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
+tagEnv="${MONGODB_TAG_ENV:-test}"
+
+
 rm -rf inputs
 mkdir inputs
 
@@ -78,7 +83,7 @@ if [ -n "$awsRoleId" ]; then
 fi
 
 # Create IAM role
-awsRoleId=$(aws iam create-role --role-name "${iamRoleName}" --assume-role-policy-document file://"$(dirname "$0")"/lambda-trust-policy.json | jq --arg roleName "${iamRoleName}" -r '.Role | select(.RoleName==$roleName) | .RoleId')
+awsRoleId=$(aws iam create-role --role-name "${iamRoleName}" --assume-role-policy-document file://"$(dirname "$0")"/lambda-trust-policy.json --tags Key=mongodb-owner,Value="${tagOwner}" Key=mongodb-env,Value="${tagEnv}" | jq --arg roleName "${iamRoleName}" -r '.Role | select(.RoleName==$roleName) | .RoleId')
 echo "Created AWS IAM role: ${awsRoleId}"
 
 # Get role ARN

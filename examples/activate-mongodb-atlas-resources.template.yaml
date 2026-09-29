@@ -12,6 +12,14 @@ Parameters:
   Region:
     Description: The AWS Region where resources will be activated.
     Type: String
+  MongoDBTagOwner:
+    Description: Owner email for the Cloud Tag Policy (mongodb-owner)
+    Type: String
+    Default: "api-experience-integrations-team@mongodb.com"
+  MongoDBTagEnv:
+    Description: Environment for the Cloud Tag Policy (mongodb-env)
+    Type: String
+    Default: "test"
     AllowedValues:
       - "us-east-1"
       - "us-east-2"
@@ -352,6 +360,11 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       MaxSessionDuration: 8400
+      Tags:
+        - Key: mongodb-owner
+          Value: !Ref MongoDBTagOwner
+        - Key: mongodb-env
+          Value: !Ref MongoDBTagEnv
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:

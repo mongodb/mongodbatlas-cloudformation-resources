@@ -3,6 +3,16 @@ Description: >
   This CloudFormation template creates a role assumed by CloudFormation
   during CRUDL operations to mutate resources on behalf of the customer.
 
+Parameters:
+  MongoDBTagOwner:
+    Description: Owner email for the Cloud Tag Policy (mongodb-owner)
+    Type: String
+    Default: "api-experience-integrations-team@mongodb.com"
+  MongoDBTagEnv:
+    Description: Environment for the Cloud Tag Policy (mongodb-env)
+    Type: String
+    Default: "test"
+
 Resources:
   ExecutionRole:
     Type: AWS::IAM::Role
@@ -19,6 +29,11 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       Path: "/"
+      Tags:
+        - Key: mongodb-owner
+          Value: !Ref MongoDBTagOwner
+        - Key: mongodb-env
+          Value: !Ref MongoDBTagEnv
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:

@@ -24,6 +24,16 @@
       "Type": "String",
       "Default": "subnet-",
       "Description": "AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+    },
+    "MongoDBTagOwner": {
+      "Type": "String",
+      "Default": "api-experience-integrations-team@mongodb.com",
+      "Description": "Owner email for the Cloud Tag Policy (mongodb-owner)"
+    },
+    "MongoDBTagEnv": {
+      "Type": "String",
+      "Default": "test",
+      "Description": "Environment for the Cloud Tag Policy (mongodb-env)"
     }
   },
   "Mappings": {},
@@ -61,7 +71,17 @@
         "VpcEndpointType": "Interface",
         "VpcId": {
           "Ref": "AWSVpcId"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "mongodb-owner",
+            "Value": { "Ref": "MongoDBTagOwner" }
+          },
+          {
+            "Key": "mongodb-env",
+            "Value": { "Ref": "MongoDBTagEnv" }
+          }
+        ]
       }
     },
     "AtlasPrivateEndpoint": {

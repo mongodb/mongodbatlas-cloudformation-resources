@@ -7,6 +7,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # Cloud Tag Policy compliance, see CLOUDP-441536
+  MONGODB_TAG_OWNER: api-experience-integrations-team@mongodb.com
+  MONGODB_TAG_ENV: test
+
 jobs:
   change-detection:
    runs-on: ubuntu-latest

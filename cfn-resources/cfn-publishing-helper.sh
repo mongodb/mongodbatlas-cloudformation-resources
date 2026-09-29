@@ -41,6 +41,11 @@ version="${2:-00000001}"
 
 # Default, find all the directory names with the json custom resource schema files.
 resources="${1:-project}"
+
+# Cloud Tag Policy compliance, see CLOUDP-441536
+tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
+tagEnv="${MONGODB_TAG_ENV:-test}"
+
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
@@ -48,6 +53,7 @@ if aws s3api head-bucket --bucket "${_CFN_TEST_LOG_BUCKET}"; then
 	echo "found bucket with ${_CFN_TEST_LOG_BUCKET}"
 else
 	aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+	aws s3api put-bucket-tagging --bucket "${_CFN_TEST_LOG_BUCKET}" --tagging "TagSet=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
 fi
 
 for resource in ${resources}; do

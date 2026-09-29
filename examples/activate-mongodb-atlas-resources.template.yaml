@@ -12,14 +12,6 @@ Parameters:
   Region:
     Description: The AWS Region where resources will be activated.
     Type: String
-  MongoDBTagOwner:
-    Description: Owner email for the Cloud Tag Policy (mongodb-owner)
-    Type: String
-    Default: "api-experience-integrations-team@mongodb.com"
-  MongoDBTagEnv:
-    Description: Environment for the Cloud Tag Policy (mongodb-env)
-    Type: String
-    Default: "test"
     AllowedValues:
       - "us-east-1"
       - "us-east-2"
@@ -44,6 +36,14 @@ Parameters:
       - "eu-south-1"
       - "me-south-1"
       - "af-south-1"
+  MongoDBTagOwner:
+    Description: Owner email for the Cloud Tag Policy (mongodb-owner)
+    Type: String
+    Default: "api-experience-integrations-team@mongodb.com"
+  MongoDBTagEnv:
+    Description: Environment for the Cloud Tag Policy (mongodb-env)
+    Type: String
+    Default: "test"
 Resources:
   ActivateAlertConfigurationType:
     Type: AWS::CloudFormation::TypeActivation

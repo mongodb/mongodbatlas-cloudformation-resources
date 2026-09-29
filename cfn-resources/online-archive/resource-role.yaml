@@ -23,6 +23,11 @@ Resources:
                 aws:SourceArn:
                   Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/MongoDB-Atlas-OnlineArchive/*
       Path: "/"
+      Tags:
+        - Key: mongodb-owner
+          Value: api-experience-integrations-team@mongodb.com
+        - Key: mongodb-env
+          Value: test
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:

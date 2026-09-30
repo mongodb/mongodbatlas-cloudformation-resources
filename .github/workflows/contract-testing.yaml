@@ -9,8 +9,8 @@ permissions:
 
 env:
   # Cloud Tag Policy compliance, see CLOUDP-441536
-  MONGODB_TAG_OWNER: ${{ vars.MONGODB_TAG_OWNER || 'api-experience-integrations-team@mongodb.com' }}
-  MONGODB_TAG_ENV: ${{ vars.MONGODB_TAG_ENV || 'test' }}
+  MONGODB_TAG_OWNER: ${{ vars.MONGODB_TAG_OWNER }}
+  MONGODB_TAG_ENV: ${{ vars.MONGODB_TAG_ENV }}
 
 jobs:
   change-detection:

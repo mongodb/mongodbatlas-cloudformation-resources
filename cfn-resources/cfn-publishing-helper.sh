@@ -53,8 +53,8 @@ if aws s3api head-bucket --bucket "${_CFN_TEST_LOG_BUCKET}"; then
 	echo "found bucket with ${_CFN_TEST_LOG_BUCKET}"
 else
 	aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
-	aws s3api put-bucket-tagging --bucket "${_CFN_TEST_LOG_BUCKET}" --tagging "TagSet=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
 fi
+aws s3api put-bucket-tagging --bucket "${_CFN_TEST_LOG_BUCKET}" --tagging "TagSet=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
 
 for resource in ${resources}; do
 	echo "Working on resource:${resource}"

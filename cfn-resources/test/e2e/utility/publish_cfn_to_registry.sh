@@ -49,10 +49,14 @@ jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../../../"$resource_directory"
 
-# `cfn generate` (inside make build) regenerates resource-role.yaml from its own
-# template, dropping the Cloud Tag Policy tags (CLOUDP-441536). Restore the
-# committed, tagged version before the role stack is created by cfn submit.
-make build && git checkout -- resource-role.yaml && cfn submit --set-default
+# Cloud Tag Policy tags, see CLOUDP-441536. `cfn generate` (inside make build)
+# regenerates resource-role.yaml from its own template, dropping any tags, so
+# re-add them before cfn submit creates the role stack. Inject instead of
+# restoring the committed file: the generated one carries the e2e type name in
+# the trust policy's SourceArn condition.
+tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
+tagEnv="${MONGODB_TAG_ENV:-test}"
+make build && awk -v owner="${tagOwner}" -v tagEnv="${tagEnv}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml > resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml && cfn submit --set-default
 cd ../test/e2e/"$resource_directory"
 
 

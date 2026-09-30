@@ -58,7 +58,7 @@ echo "roleName: ${roleName} , policyName: ${policyName}"
 
 echo "--------------------------------create key and key policy document starts ----------------------------"
 
-keyARN=$(aws kms create-key --tags Key=mongodb-owner,Value="${tagOwner}" Key=mongodb-env,Value="${tagEnv}" | jq '.KeyMetadata|.Arn')
+keyARN=$(aws kms create-key --tags TagKey=mongodb-owner,TagValue="${tagOwner}" TagKey=mongodb-env,TagValue="${tagEnv}" | jq '.KeyMetadata|.Arn')
 # shellcheck disable=SC2089
 prefix='{ "Version": "2012-10-17", "Statement": ['
 echo "--------------------------------printing key  starts ----------------------------"

@@ -49,7 +49,10 @@ jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../../../"$resource_directory"
 
-make build && cfn submit --set-default
+# `cfn generate` (inside make build) regenerates resource-role.yaml from its own
+# template, dropping the Cloud Tag Policy tags (CLOUDP-441536). Restore the
+# committed, tagged version before the role stack is created by cfn submit.
+make build && git checkout -- resource-role.yaml && cfn submit --set-default
 cd ../test/e2e/"$resource_directory"
 
 

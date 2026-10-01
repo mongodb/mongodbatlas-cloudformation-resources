@@ -38,10 +38,12 @@ This file contains the steps to follow to test any changes to the CFN resources.
 
 ##### Create a stack
 - Ensure all steps above are complete
-- Publish the resource to the AWS Private registry
+- Publish the resource to the AWS Private registry (from the `cfn-resources/` directory)
   ```bash
-  cfn submit --set-default
+  ./cfn-submit-helper.sh <resource-folder>
   ```
+
+  > **Note:** use the helper script instead of `cfn submit --set-default` directly. It injects the required `mongodb-owner`/`mongodb-env` tags (see CLOUDP-441536) into the role template before the role stack is created, which raw `cfn submit` does not do.
 - Getting test parameters: 
   - Option 1 [Recommended]: Re-use params from `cfn-resources/[resource-folder]/inputs/inputs_1_create.template.json` generated as part of prerequisites
   - Option 2: Run again  `cfn-testing-helper` to create new parameters.  This will create some required resources for you in your configured Atlas account

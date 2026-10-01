@@ -26,8 +26,12 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 fi
 
 # Cloud Tag Policy compliance, see CLOUDP-441536
-tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
-tagEnv="${MONGODB_TAG_ENV:-test}"
+if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy, CLOUDP-441536)"
+	exit 1
+fi
+tagOwner="${MONGODB_TAG_OWNER}"
+tagEnv="${MONGODB_TAG_ENV}"
 
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')

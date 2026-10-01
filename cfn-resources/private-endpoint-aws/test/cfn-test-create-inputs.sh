@@ -23,8 +23,12 @@ if [ -n "${MONGODB_ATLAS_PROFILE:-}" ]; then
 fi
 
 # Cloud Tag Policy compliance, see CLOUDP-441536
-tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
-tagEnv="${MONGODB_TAG_ENV:-test}"
+if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy, CLOUDP-441536)"
+	exit 1
+fi
+tagOwner="${MONGODB_TAG_OWNER}"
+tagEnv="${MONGODB_TAG_ENV}"
 tagSpecs="ResourceType=vpc-endpoint,Tags=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
 
 # Initialize variables to store VPC ID, subnet ID 1, and subnet ID 2

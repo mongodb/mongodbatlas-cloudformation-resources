@@ -43,8 +43,8 @@ version="${2:-00000001}"
 resources="${1:-project}"
 
 # Cloud Tag Policy compliance, see CLOUDP-441536
-tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
-tagEnv="${MONGODB_TAG_ENV:-test}"
+tagOwner="${MONGODB_TAG_OWNER:-}"
+tagEnv="${MONGODB_TAG_ENV:-}"
 
 echo "$(basename "$0") running for the following resources: ${resources}"
 
@@ -56,7 +56,11 @@ else
 	# Tag only on creation: this script runs with set -e in the publish path, so a
 	# tagging permission failure here must not block publishing (CLOUDP-441536).
 	# Pre-existing buckets get tagged once by an admin instead.
-	aws s3api put-bucket-tagging --bucket "${_CFN_TEST_LOG_BUCKET}" --tagging "TagSet=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
+	if [ -n "${tagOwner}" ] && [ -n "${tagEnv}" ]; then
+		aws s3api put-bucket-tagging --bucket "${_CFN_TEST_LOG_BUCKET}" --tagging "TagSet=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
+	else
+		echo "MONGODB_TAG_OWNER/MONGODB_TAG_ENV not set; bucket will be created without Cloud Tag Policy tags"
+	fi
 fi
 
 for resource in ${resources}; do

@@ -10,6 +10,12 @@ This file contains the steps to follow to test any changes to the CFN resources.
  - Configure an Atlas profile secret in AWS account with your API keys. Refer to [README](README.md) for more information on how to do this
  - Have Docker running on your machine
  - Refer to the prerequisites for your resource in the `cfn-resources/[resource-folder]/test`
+ - Export the Cloud Tag Policy variables required by the test input scripts (see CLOUDP-441536):
+
+   ```bash
+   export MONGODB_TAG_OWNER=<your-team-email>
+   export MONGODB_TAG_ENV=test
+   ```
 
 
 ### Steps

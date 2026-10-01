@@ -19,8 +19,12 @@ rm -rf inputs
 mkdir inputs
 
 # Cloud Tag Policy compliance, see CLOUDP-441536
-tagOwner="${MONGODB_TAG_OWNER:-api-experience-integrations-team@mongodb.com}"
-tagEnv="${MONGODB_TAG_ENV:-test}"
+if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy, CLOUDP-441536)"
+	exit 1
+fi
+tagOwner="${MONGODB_TAG_OWNER}"
+tagEnv="${MONGODB_TAG_ENV}"
 
 #set profile
 profile="default"

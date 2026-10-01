@@ -36,14 +36,6 @@ Parameters:
       - "eu-south-1"
       - "me-south-1"
       - "af-south-1"
-  MongoDBTagOwner:
-    Description: Owner email for the Cloud Tag Policy (mongodb-owner)
-    Type: String
-    Default: "api-experience-integrations-team@mongodb.com"
-  MongoDBTagEnv:
-    Description: Environment for the Cloud Tag Policy (mongodb-env)
-    Type: String
-    Default: "test"
 Resources:
   ActivateAlertConfigurationType:
     Type: AWS::CloudFormation::TypeActivation
@@ -360,11 +352,6 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       MaxSessionDuration: 8400
-      Tags:
-        - Key: mongodb-owner
-          Value: !Ref MongoDBTagOwner
-        - Key: mongodb-env
-          Value: !Ref MongoDBTagEnv
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:

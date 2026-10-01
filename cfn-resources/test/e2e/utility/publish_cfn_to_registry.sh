@@ -49,15 +49,14 @@ jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../../../"$resource_directory"
 
-# Re-add the Cloud Tag Policy tags (CLOUDP-441536) that cfn generate strips from the generated role file.
-tagOwner="${MONGODB_TAG_OWNER:-}"
-tagEnv="${MONGODB_TAG_ENV:-}"
-if [ -n "${tagOwner}" ] && [ -n "${tagEnv}" ]; then
-	make build && awk -v owner="${tagOwner}" -v tagEnv="${tagEnv}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml > resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml && cfn submit --set-default
-else
-	echo "MONGODB_TAG_OWNER/MONGODB_TAG_ENV not set; role stack will be created without Cloud Tag Policy tags"
-	make build && cfn submit --set-default
+# Re-add the Cloud Tag Policy tags that cfn generate strips from the generated role file.
+if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy, CLOUDP-441536)"
+	exit 1
 fi
+tagOwner="${MONGODB_TAG_OWNER}"
+tagEnv="${MONGODB_TAG_ENV}"
+make build && awk -v owner="${tagOwner}" -v tagEnv="${tagEnv}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml > resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml && cfn submit --set-default
 cd ../test/e2e/"$resource_directory"
 
 

@@ -86,6 +86,16 @@
       "Type": "String",
       "Description": "Email address of the security contact for the organization.",
       "Default": ""
+    },
+    "MongoDBTagOwner": {
+      "Type": "String",
+      "Description": "Owner email for the Cloud Tag Policy (mongodb-owner)",
+      "Default": "api-experience-integrations-team@mongodb.com"
+    },
+    "MongoDBTagEnv": {
+      "Type": "String",
+      "Description": "Environment for the Cloud Tag Policy (mongodb-env)",
+      "Default": "test"
     }
   },
   "Mappings": {},
@@ -104,7 +114,17 @@
           ]
         },
         "Description": "APIKeys Profile will store as Secret in AWS Secrets Manager.",
-        "SecretString": "{\"key\":\"value\"}"
+        "SecretString": "{\"key\":\"value\"}",
+        "Tags": [
+          {
+            "Key": "mongodb-owner",
+            "Value": { "Ref": "MongoDBTagOwner" }
+          },
+          {
+            "Key": "mongodb-env",
+            "Value": { "Ref": "MongoDBTagEnv" }
+          }
+        ]
       }
     },
     "Organization": {

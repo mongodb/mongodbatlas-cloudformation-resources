@@ -35,6 +35,16 @@
       "Type": "String",
       "Description": "Purpose or explanation provided when someone created this organization API key.",
       "Default": "for cfn testing..."
+    },
+    "MongoDBTagOwner": {
+      "Type": "String",
+      "Description": "Owner email for the Cloud Tag Policy (mongodb-owner)",
+      "Default": "api-experience-integrations-team@mongodb.com"
+    },
+    "MongoDBTagEnv": {
+      "Type": "String",
+      "Description": "Environment for the Cloud Tag Policy (mongodb-env)",
+      "Default": "test"
     }
   },
   "Mappings": {},
@@ -44,7 +54,17 @@
       "Properties": {
         "Name": {"Ref":"AwsSecretName"},
         "Description": "APIKey will store as Secret in AWS Secrets Manager.",
-        "SecretString": "{\"key\":\"value\"}"
+        "SecretString": "{\"key\":\"value\"}",
+        "Tags": [
+          {
+            "Key": "mongodb-owner",
+            "Value": { "Ref": "MongoDBTagOwner" }
+          },
+          {
+            "Key": "mongodb-env",
+            "Value": { "Ref": "MongoDBTagEnv" }
+          }
+        ]
       }
     },
     "APIKey": {

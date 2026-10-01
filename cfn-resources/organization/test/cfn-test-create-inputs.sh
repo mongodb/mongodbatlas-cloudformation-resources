@@ -18,6 +18,14 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+# Cloud Tag Policy compliance
+if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
+	exit 1
+fi
+tagOwner="${MONGODB_TAG_OWNER}"
+tagEnv="${MONGODB_TAG_ENV}"
+
 orgName="${1}"
 
 profile="dev-cloud-profile"
@@ -38,7 +46,7 @@ orgOwnerId="${MONGODB_ATLAS_ORG_OWNER_ID}"
 # create aws secret key
 awsSecretName="cfn/atlas/profile/${orgName}"
 aws secretsmanager delete-secret --secret-id "${awsSecretName}" --force-delete-without-recovery 2>/dev/null || true
-if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here"; then
+if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here" --tags Key=mongodb-owner,Value="${tagOwner}" Key=mongodb-env,Value="${tagEnv}"; then
 	echo "aws secret created with name : ${awsSecretName}"
 else
 	echo "aws secret create failed with name : ${awsSecretName}"

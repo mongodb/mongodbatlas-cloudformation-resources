@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
 
+env:
+  MONGODB_TAG_OWNER: ${{ vars.MONGODB_TAG_OWNER }}
+  MONGODB_TAG_ENV: ${{ vars.MONGODB_TAG_ENV }}
+
 jobs:
   change-detection:
    runs-on: ubuntu-latest

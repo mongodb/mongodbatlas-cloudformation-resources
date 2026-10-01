@@ -22,6 +22,15 @@ if [ -n "${MONGODB_ATLAS_PROFILE:-}" ]; then
     profile=${MONGODB_ATLAS_PROFILE}
 fi
 
+# Cloud Tag Policy compliance
+if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
+	exit 1
+fi
+tagOwner="${MONGODB_TAG_OWNER}"
+tagEnv="${MONGODB_TAG_ENV}"
+tagSpecs="ResourceType=vpc-endpoint,Tags=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
+
 # Initialize variables to store VPC ID, subnet ID 1, and subnet ID 2
 vpc_id=""
 subnet_id_1=""
@@ -110,6 +119,7 @@ aws_private_endpoint_id=$(aws ec2 create-vpc-endpoint \
   --region "$region" \
   --subnet-ids "$subnet_id_1" \
   --vpc-endpoint-type Interface \
+  --tag-specifications "$tagSpecs" \
   --output json | jq -r '.VpcEndpoint.VpcEndpointId')
 
 atlas privateendpoints aws interfaces create "$private_endpoint_id" --privateEndpointId "$aws_private_endpoint_id" --projectId "$projectId"
@@ -120,6 +130,7 @@ aws_private_endpoint_id2=$(aws ec2 create-vpc-endpoint \
   --region "$region" \
   --subnet-ids "$subnet_id_2" \
   --vpc-endpoint-type Interface \
+  --tag-specifications "$tagSpecs" \
   --output json | jq -r '.VpcEndpoint.VpcEndpointId')
 
 

@@ -18,9 +18,9 @@ function usage {
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
-# Cloud Tag Policy compliance, see CLOUDP-441536
+# Cloud Tag Policy compliance
 if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
-	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy, CLOUDP-441536)"
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
 	exit 1
 fi
 tagOwner="${MONGODB_TAG_OWNER}"

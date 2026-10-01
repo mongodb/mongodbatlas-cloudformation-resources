@@ -51,7 +51,7 @@ cd ../../../"$resource_directory"
 
 # Re-add the Cloud Tag Policy tags that cfn generate strips from the generated role file.
 if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
-	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy, CLOUDP-441536)"
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
 	exit 1
 fi
 tagOwner="${MONGODB_TAG_OWNER}"

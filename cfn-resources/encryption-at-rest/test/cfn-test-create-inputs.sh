@@ -25,9 +25,9 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
-# Cloud Tag Policy compliance, see CLOUDP-441536
+# Cloud Tag Policy compliance
 if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
-	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy, CLOUDP-441536)"
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
 	exit 1
 fi
 tagOwner="${MONGODB_TAG_OWNER}"

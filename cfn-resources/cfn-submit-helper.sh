@@ -24,7 +24,7 @@ _DRY_RUN=${DRY_RUN:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 
-# Cloud Tag Policy compliance, see CLOUDP-441536
+# Cloud Tag Policy compliance
 tagOwner="${MONGODB_TAG_OWNER:-}"
 tagEnv="${MONGODB_TAG_ENV:-}"
 
@@ -79,7 +79,7 @@ for resource in ${resources}; do
 	${command}
 
 	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
-	# Re-add the Cloud Tag Policy tags (CLOUDP-441536) missing from the S3 role template,
+	# Re-add the Cloud Tag Policy tags missing from the S3 role template,
 	# right before cfn submit creates the role stack (also covers SUBMIT_ONLY runs).
 	if [ -n "${tagOwner}" ] && [ -n "${tagEnv}" ]; then
 		awk -v owner="${tagOwner}" -v tagEnv="${tagEnv}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml >resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml

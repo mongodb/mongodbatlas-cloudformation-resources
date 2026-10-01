@@ -42,7 +42,7 @@ version="${2:-00000001}"
 # Default, find all the directory names with the json custom resource schema files.
 resources="${1:-project}"
 
-# Cloud Tag Policy compliance, see CLOUDP-441536
+# Cloud Tag Policy compliance
 tagOwner="${MONGODB_TAG_OWNER:-}"
 tagEnv="${MONGODB_TAG_ENV:-}"
 
@@ -54,7 +54,7 @@ if aws s3api head-bucket --bucket "${_CFN_TEST_LOG_BUCKET}"; then
 else
 	aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
 	# Tag only on creation: this script runs with set -e in the publish path, so a
-	# tagging permission failure here must not block publishing (CLOUDP-441536).
+	# tagging permission failure here must not block publishing.
 	# Pre-existing buckets get tagged once by an admin instead.
 	if [ -n "${tagOwner}" ] && [ -n "${tagEnv}" ]; then
 		aws s3api put-bucket-tagging --bucket "${_CFN_TEST_LOG_BUCKET}" --tagging "TagSet=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"

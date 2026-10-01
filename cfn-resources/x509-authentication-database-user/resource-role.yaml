@@ -23,11 +23,6 @@ Resources:
                 aws:SourceArn:
                   Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/MongoDB-Atlas-X509AuthenticationDatabaseUser/*
       Path: "/"
-      Tags:
-        - Key: mongodb-owner
-          Value: api-experience-integrations-team@mongodb.com
-        - Key: mongodb-env
-          Value: test
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:

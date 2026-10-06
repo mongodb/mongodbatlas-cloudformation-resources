@@ -18,6 +18,14 @@ function usage {
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
+# Cloud Tag Policy compliance
+if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
+	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
+	exit 1
+fi
+tagOwner="${MONGODB_TAG_OWNER}"
+tagEnv="${MONGODB_TAG_ENV}"
+
 region=$AWS_DEFAULT_REGION
 awsRegion=$AWS_DEFAULT_REGION
 if [ -z "$region" ]; then
@@ -65,14 +73,16 @@ awsRoleID=$(aws iam get-role --role-name "${roleName}" 2>/dev/null | jq -r '.Rol
 if [ -z "$awsRoleID" ]; then
 	awsRoleID=$(aws iam create-role \
 		--role-name "${roleName}" \
-		--assume-role-policy-document "file://$(dirname "$0")/trust-policy.json" | jq -r '.Role.RoleId')
+		--assume-role-policy-document "file://$(dirname "$0")/trust-policy.json" \
+		--tags Key=mongodb-owner,Value="${tagOwner}" Key=mongodb-env,Value="${tagEnv}" | jq -r '.Role.RoleId')
 	echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
 else
 	aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}" 2>/dev/null || true
 	aws iam delete-role --role-name "${roleName}"
 	awsRoleID=$(aws iam create-role \
 		--role-name "${roleName}" \
-		--assume-role-policy-document "file://$(dirname "$0")/trust-policy.json" | jq -r '.Role.RoleId')
+		--assume-role-policy-document "file://$(dirname "$0")/trust-policy.json" \
+		--tags Key=mongodb-owner,Value="${tagOwner}" Key=mongodb-env,Value="${tagEnv}" | jq -r '.Role.RoleId')
 	echo -e "FOUND role id, deleted and recreated with new trust policy. Created id: ${awsRoleID}\n"
 fi
 echo "--------------------------------AWS Role creation ends----------------------------"
@@ -84,6 +94,7 @@ if aws s3 ls "s3://${bucketName}" 2>/dev/null; then
 	aws s3 rb "s3://${bucketName}" --force
 fi
 aws s3 mb "s3://${bucketName}" --region "${awsRegion}"
+aws s3api put-bucket-tagging --bucket "${bucketName}" --tagging "TagSet=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
 echo "Created S3 bucket: ${bucketName}"
 echo "--------------------------------Attaching S3 policy to IAM role----------------------------"
 bucketArn="arn:aws:s3:::${bucketName}"

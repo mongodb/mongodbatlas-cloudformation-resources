@@ -24,6 +24,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # Cloud Tag Policy compliance, see CLOUDP-441536
+  MONGODB_TAG_OWNER: ${{ vars.MONGODB_TAG_OWNER }}
+  MONGODB_TAG_ENV: ${{ vars.MONGODB_TAG_ENV }}
+
 jobs:
   publish:
     env:

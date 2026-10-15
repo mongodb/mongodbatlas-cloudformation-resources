@@ -15,6 +15,11 @@ Resources:
                 - "resources.cloudformation.amazonaws.com"
             Action: sts:AssumeRole
       Path: "/"
+      Tags:
+        - Key: mongodb-owner
+          Value: api-experience-integrations-team@mongodb.com
+        - Key: mongodb-env
+          Value: test
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:
@@ -75,6 +80,11 @@ Resources:
                 - resources.cloudformation.amazonaws.com
             Action: sts:AssumeRole
       Path: "/"
+      Tags:
+        - Key: mongodb-owner
+          Value: api-experience-integrations-team@mongodb.com
+        - Key: mongodb-env
+          Value: test
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:
@@ -101,6 +111,11 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Path: "/"
+      Tags:
+        - Key: mongodb-owner
+          Value: api-experience-integrations-team@mongodb.com
+        - Key: mongodb-env
+          Value: test
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
       Policies:
@@ -121,6 +136,11 @@ Resources:
       Runtime: python3.7
       Handler: index.handler
       Role: !GetAtt RegisterTypeRole.Arn
+      Tags:
+        - Key: mongodb-owner
+          Value: api-experience-integrations-team@mongodb.com
+        - Key: mongodb-env
+          Value: test
       Code:
         ZipFile: !Sub |
           import cfnresponse

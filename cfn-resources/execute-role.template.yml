@@ -15,6 +15,11 @@ Resources:
                 - "resources.cloudformation.amazonaws.com"
             Action: sts:AssumeRole
       Path: "/"
+      Tags:
+        - Key: mongodb-owner
+          Value: api-experience-integrations-team@mongodb.com
+        - Key: mongodb-env
+          Value: test
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:

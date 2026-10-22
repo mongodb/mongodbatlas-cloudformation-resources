@@ -21,6 +21,7 @@ jobs:
      auditing: ${{ steps.filter.outputs.auditing }}
      backup-compliance-policy: ${{ steps.filter.outputs.backup-compliance-policy }}
      cloud-backup-restore-jobs: ${{ steps.filter.outputs.cloud-backup-restore-jobs }}
+     cloud-provider-access-setup: ${{ steps.filter.outputs.cloud-provider-access-setup }}
      cluster-outage-simulation: ${{ steps.filter.outputs.cluster-outage-simulation }}
      database-user: ${{ steps.filter.outputs.database-user }}
      encryption-at-rest: ${{ steps.filter.outputs.encryption-at-rest }}
@@ -72,6 +73,8 @@ jobs:
           - 'cfn-resources/backup-compliance-policy/**'
         cloud-backup-restore-jobs:
           - 'cfn-resources/cloud-backup-restore-jobs/**'
+        cloud-provider-access-setup:
+          - 'cfn-resources/cloud-provider-access-setup/**'
         cluster-outage-simulation:
           - 'cfn-resources/cluster-outage-simulation/**'
         database-user:
@@ -374,6 +377,46 @@ jobs:
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/cloud-backup-restore-jobs
+          make create-test-resources
+
+          cat inputs/inputs_1_create.json
+
+          make run-contract-testing
+          make delete-test-resources
+  cloud-provider-access-setup:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.cloud-provider-access-setup == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
+      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          pushd cfn-resources/cloud-provider-access-setup
           make create-test-resources
 
           cat inputs/inputs_1_create.json

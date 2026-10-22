@@ -1,0 +1,38 @@
+# Cloud Provider Access Authorization
+
+## Impact
+
+The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
+
+- Cloud Provider Access authorization L1 CDK constructor
+
+## Prerequisites
+
+### Resources needed to run the manual QA
+
+- An Atlas project.
+- A Cloud Provider Access role registration in that project, created by the `MongoDB::Atlas::CloudProviderAccessSetup` resource or by `atlas cloudProviders accessRoles aws create`.
+- An AWS IAM role whose trust policy allows the Atlas AWS account returned by the registration and requires the registration external id.
+
+All of these resources are created as part of `cfn-testing-helper.sh`, except for the contract-test deviation described below.
+
+## Manual QA
+
+Please follow the steps in [TESTING.md](../../../TESTING.md).
+
+### Success criteria when testing the resource
+
+- Creating the resource authorizes the role, and the Atlas project's Cloud Provider Access page shows the role as authorized.
+- Reading the resource returns the authorization date and the feature usages.
+- Changing `IamAssumedRoleArn` re-authorizes the same role in place. The role id does not change and the resource is not replaced.
+- Deleting the resource removes the whole Cloud Provider Access role registration. The paired `MongoDB::Atlas::CloudProviderAccessSetup` resource is then orphaned.
+- Deleting a role that a feature uses fails with `AWS_IAM_ROLE_IN_USE`. Disable the feature first, for example by disabling Encryption at Rest.
+
+### Contract-test deviation
+
+The CloudFormation v1 contract test `contract_delete_create` expects a deleted resource to be creatable again. Atlas has no operation that revokes an authorization while keeping the role registered, so after the delete the re-create fails with `CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND`. This failure is expected and is covered by an exception request to AWS.
+
+## Important Links
+
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-authorizegroupcloudprovideraccessrole)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security/set-up-unified-aws-access/)

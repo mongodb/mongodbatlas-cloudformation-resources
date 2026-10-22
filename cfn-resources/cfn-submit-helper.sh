@@ -79,12 +79,15 @@ for resource in ${resources}; do
 	${command}
 
 	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
-	# Re-add the Cloud Tag Policy tags missing from the S3 role template,
-	# right before cfn submit creates the role stack (also covers SUBMIT_ONLY runs).
-	if [ -n "${tagOwner}" ] && [ -n "${tagEnv}" ]; then
+	if [ -z "${tagOwner}" ] || [ -z "${tagEnv}" ]; then
+		echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
+		exit 1
+	fi
+	# Re-add the Cloud Tag Policy tags missing from the S3 role template, right before
+	# cfn submit creates the role stack (also covers SUBMIT_ONLY runs). Skipped when the
+	# file is already tagged, so repeated runs cannot add a duplicate Tags key.
+	if ! grep -q 'Key: mongodb-owner' resource-role.yaml; then
 		awk -v owner="${tagOwner}" -v tagEnv="${tagEnv}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml >resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml
-	else
-		echo "MONGODB_TAG_OWNER/MONGODB_TAG_ENV not set; role stack will be created without Cloud Tag Policy tags"
 	fi
 	# ensure error is thrown if registration to private registry fails
 	cfn submit "${CFN_SUBMIT_CFN_FLAGS}"

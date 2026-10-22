@@ -1,0 +1,69 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template registers the Atlas side of the AWS Cloud Provider Access trust handshake, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id."
+    },
+    "ProviderName": {
+      "Type": "String",
+      "Default": "AWS",
+      "AllowedValues": [
+        "AWS"
+      ],
+      "Description": "Cloud provider of the access role. Only AWS is supported."
+    },
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys."
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "CloudProviderAccessSetup": {
+      "Type": "MongoDB::Atlas::CloudProviderAccessSetup",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ProviderName": {
+          "Ref": "ProviderName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "RoleId": {
+      "Description": "Id of the Cloud Provider Access role. Use it with MongoDB::Atlas::EncryptionAtRest.",
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudProviderAccessSetup",
+          "RoleId"
+        ]
+      }
+    },
+    "AtlasAWSAccountArn": {
+      "Description": "Atlas principal that assumes the customer's IAM role. Use it in the IAM role trust policy.",
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudProviderAccessSetup",
+          "AtlasAWSAccountArn"
+        ]
+      }
+    },
+    "AtlasAssumedRoleExternalId": {
+      "Description": "External ID that the IAM role trust policy must require.",
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudProviderAccessSetup",
+          "AtlasAssumedRoleExternalId"
+        ]
+      }
+    }
+  }
+}

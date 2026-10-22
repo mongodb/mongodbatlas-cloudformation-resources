@@ -1,0 +1,86 @@
+// Copyright 2026 MongoDB Inc
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package resource
+
+import (
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+)
+
+// NewCFNCloudProviderAccessSetup builds the resource model from a create or read API response.
+func NewCFNCloudProviderAccessSetup(model *Model, role *admin.CloudProviderAccessRole) Model {
+	result := newBaseModel(model)
+	result.RoleId = role.RoleId
+	result.AtlasAWSAccountArn = role.AtlasAWSAccountArn
+	result.AtlasAssumedRoleExternalId = role.AtlasAssumedRoleExternalId
+	result.CreatedDate = util.TimePtrToStringPtr(role.CreatedDate)
+	result.FeatureUsages = newFeatureUsages(role.FeatureUsages)
+	return result
+}
+
+// NewCFNCloudProviderAccessSetupFromAWSIAMRole builds the resource model from one AWS entry of the
+// list API response.
+func NewCFNCloudProviderAccessSetupFromAWSIAMRole(model *Model, role *admin.CloudProviderAccessAWSIAMRole) Model {
+	result := newBaseModel(model)
+	result.RoleId = role.RoleId
+	result.AtlasAWSAccountArn = role.AtlasAWSAccountArn
+	result.AtlasAssumedRoleExternalId = role.AtlasAssumedRoleExternalId
+	result.CreatedDate = util.TimePtrToStringPtr(role.CreatedDate)
+	result.FeatureUsages = newFeatureUsages(role.FeatureUsages)
+	return result
+}
+
+func newBaseModel(model *Model) Model {
+	// Read receives the stored resource state, but ProviderName is create-only and not part of the
+	// primary identifier, so fall back to the only supported provider when it is not present.
+	providerName := model.ProviderName
+	if providerName == nil {
+		providerName = aws.String(awsProviderName)
+	}
+	return Model{
+		Profile:      model.Profile,
+		ProjectId:    model.ProjectId,
+		ProviderName: providerName,
+	}
+}
+
+func newFeatureUsages(usages *[]admin.CloudProviderAccessFeatureUsage) []FeatureUsage {
+	if usages == nil || len(*usages) == 0 {
+		return nil
+	}
+	result := make([]FeatureUsage, 0, len(*usages))
+	for i := range *usages {
+		result = append(result, FeatureUsage{FeatureType: (*usages)[i].FeatureType})
+	}
+	return result
+}
+
+// FindAWSRole returns the AWS role with the given id from a list response, or nil when the project
+// has no such registration.
+func FindAWSRole(roles *admin.CloudProviderAccessRoles, roleID string) *admin.CloudProviderAccessAWSIAMRole {
+	if roles == nil {
+		return nil
+	}
+	awsRoles := roles.GetAwsIamRoles()
+	for i := range awsRoles {
+		if awsRoles[i].GetRoleId() == roleID {
+			return &awsRoles[i]
+		}
+	}
+	return nil
+}

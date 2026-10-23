@@ -9,7 +9,7 @@ permissions:
 
 env:
   MONGODB_TAG_OWNER: ${{ vars.MONGODB_TAG_OWNER }}
-  MONGODB_TAG_ENV: ${{ vars.MONGODB_TAG_ENV }}
+  MONGODB_TAG_ENV: dev
 
 jobs:
   change-detection:

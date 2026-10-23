@@ -8,8 +8,7 @@ require_tag_policy_vars() {
 	fi
 }
 
-# Creates an S3 bucket with the Cloud Tag Policy tags in the create request, which
-# creation-time enforcement requires. LocationConstraint must be omitted for us-east-1.
+# LocationConstraint must be omitted for us-east-1.
 create_tagged_bucket() {
 	local bucket="$1" region="$2"
 	local tags="Tags=[{Key=mongodb-owner,Value=${MONGODB_TAG_OWNER}},{Key=mongodb-env,Value=${MONGODB_TAG_ENV}}]"

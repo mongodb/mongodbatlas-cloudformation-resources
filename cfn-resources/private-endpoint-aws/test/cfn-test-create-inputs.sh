@@ -22,14 +22,10 @@ if [ -n "${MONGODB_ATLAS_PROFILE:-}" ]; then
     profile=${MONGODB_ATLAS_PROFILE}
 fi
 
-# Cloud Tag Policy compliance
-if [ -z "${MONGODB_TAG_OWNER:-}" ] || [ -z "${MONGODB_TAG_ENV:-}" ]; then
-	echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
-	exit 1
-fi
-tagOwner="${MONGODB_TAG_OWNER}"
-tagEnv="${MONGODB_TAG_ENV}"
-tagSpecs="ResourceType=vpc-endpoint,Tags=[{Key=mongodb-owner,Value=${tagOwner}},{Key=mongodb-env,Value=${tagEnv}}]"
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../tag-policy.sh"
+require_tag_policy_vars
+tagSpecs="ResourceType=vpc-endpoint,Tags=[{Key=mongodb-owner,Value=${MONGODB_TAG_OWNER}},{Key=mongodb-env,Value=${MONGODB_TAG_ENV}}]"
 
 # Initialize variables to store VPC ID, subnet ID 1, and subnet ID 2
 vpc_id=""

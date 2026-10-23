@@ -18,15 +18,13 @@
 set -eo
 # shellcheck source=/dev/null
 . ./cfn-submit-helper.config
+# shellcheck source=/dev/null
+source "$(dirname "$0")/tag-policy.sh"
 env | grep CFN_SUBMIT_
 
 _DRY_RUN=${DRY_RUN:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
-
-# Cloud Tag Policy compliance
-tagOwner="${MONGODB_TAG_OWNER:-}"
-tagEnv="${MONGODB_TAG_ENV:-}"
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
@@ -79,15 +77,12 @@ for resource in ${resources}; do
 	${command}
 
 	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
-	if [ -z "${tagOwner}" ] || [ -z "${tagEnv}" ]; then
-		echo "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set (Cloud Tag Policy)" >&2
-		exit 1
-	fi
+	require_tag_policy_vars
 	# Re-add the Cloud Tag Policy tags missing from the S3 role template, right before
 	# cfn submit creates the role stack (also covers SUBMIT_ONLY runs). Skipped when the
 	# file is already tagged, so repeated runs cannot add a duplicate Tags key.
 	if ! grep -q 'Key: mongodb-owner' resource-role.yaml; then
-		awk -v owner="${tagOwner}" -v tagEnv="${tagEnv}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml >resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml
+		awk -v owner="${MONGODB_TAG_OWNER}" -v tagEnv="${MONGODB_TAG_ENV}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml >resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml
 	fi
 	# ensure error is thrown if registration to private registry fails
 	cfn submit "${CFN_SUBMIT_CFN_FLAGS}"

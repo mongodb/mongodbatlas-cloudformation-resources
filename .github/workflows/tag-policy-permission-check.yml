@@ -2,6 +2,7 @@ name: 'Tag policy permission check'
 
 on:
   workflow_dispatch: {} # temporary: validates s3:TagResource for the CI test user
+  pull_request: {} # temporary: runs on the throwaway PR that hosts this check
 
 permissions:
   contents: read

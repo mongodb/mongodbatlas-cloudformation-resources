@@ -25,6 +25,12 @@
 set -eu
 set -eux
 
+# Sourced before any cd: the path is resolved relative to this script, and later
+# cd calls would otherwise break the relative path.
+# shellcheck source=/dev/null
+source "$(cd "$(dirname "$0")/../../.." && pwd)/tag-policy.sh"
+require_tag_policy_vars
+
 resource_directory=$RESOURCE_DIRECTORY_NAME
 
 echo "Updating .rpdk-config with the E2E resource type $RESOURCE_TYPE_NAME_FOR_E2E"
@@ -50,9 +56,6 @@ echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../../../"$resource_directory"
 
 # Re-add the Cloud Tag Policy tags that cfn generate strips from the generated role file.
-# shellcheck source=/dev/null
-source "$(dirname "$0")/../../../tag-policy.sh"
-require_tag_policy_vars
 make build && awk -v owner="${MONGODB_TAG_OWNER}" -v tagEnv="${MONGODB_TAG_ENV}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml > resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml && cfn submit --set-default
 cd ../test/e2e/"$resource_directory"
 

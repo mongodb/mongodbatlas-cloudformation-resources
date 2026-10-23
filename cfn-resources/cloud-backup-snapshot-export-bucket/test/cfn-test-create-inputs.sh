@@ -83,8 +83,7 @@ echo -e "--------------------------------authorize mongodb  Role ends ----------
 bucketName="mongodb-atlas-cfn-test-backup-${CFN_TEST_TAG}-${awsRegion}"
 
 aws s3 rb "s3://${bucketName}" --force
-aws s3 mb "s3://${bucketName}" --output json
-aws s3api put-bucket-tagging --bucket "${bucketName}" --tagging "TagSet=[{Key=mongodb-owner,Value=${MONGODB_TAG_OWNER}},{Key=mongodb-env,Value=${MONGODB_TAG_ENV}}]"
+create_tagged_bucket "${bucketName}" "${region}"
 
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi

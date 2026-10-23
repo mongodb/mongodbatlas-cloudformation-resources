@@ -89,8 +89,7 @@ echo "--------------------------------Creating S3 Bucket------------------------
 if aws s3 ls "s3://${bucketName}" 2>/dev/null; then
 	aws s3 rb "s3://${bucketName}" --force
 fi
-aws s3 mb "s3://${bucketName}" --region "${awsRegion}"
-aws s3api put-bucket-tagging --bucket "${bucketName}" --tagging "TagSet=[{Key=mongodb-owner,Value=${MONGODB_TAG_OWNER}},{Key=mongodb-env,Value=${MONGODB_TAG_ENV}}]"
+create_tagged_bucket "${bucketName}" "${awsRegion}"
 echo "Created S3 bucket: ${bucketName}"
 echo "--------------------------------Attaching S3 policy to IAM role----------------------------"
 bucketArn="arn:aws:s3:::${bucketName}"

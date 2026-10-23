@@ -69,8 +69,9 @@ echo -e "--------------------------------create aws bucket document starts -----
 accountId=$(aws sts get-caller-identity --query Account --output text)
 bucketName="mongodb-atlas-cfn-test-df-${keyRegion}-${accountId}"
 # s3:HeadBucket is not available to the CI user; use s3 ls (s3:ListBucket) for the existence check.
-aws s3 ls "s3://${bucketName}" > /dev/null 2>&1 || aws s3 mb "s3://${bucketName}" --output json
-aws s3api put-bucket-tagging --bucket "${bucketName}" --tagging "TagSet=[{Key=mongodb-owner,Value=${MONGODB_TAG_OWNER}},{Key=mongodb-env,Value=${MONGODB_TAG_ENV}}]"
+if ! aws s3 ls "s3://${bucketName}" > /dev/null 2>&1; then
+	create_tagged_bucket "${bucketName}" "${keyRegion}"
+fi
 echo -e "--------------------------------create aws bucket document  ends ----------------------------\n"
 
 roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')

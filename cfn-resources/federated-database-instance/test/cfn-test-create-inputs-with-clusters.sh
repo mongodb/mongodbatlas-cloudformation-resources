@@ -87,8 +87,7 @@ echo -e "--------------------------------create key and key policy document star
 echo -e "--------------------------------create aws bucket document starts ----------------------------\n"
 bucketName="mongodb-atlas-cfn-test-df-clusters-${projectName}-${keyRegion}"
 aws s3 rb "s3://${bucketName}" --force
-aws s3 mb "s3://${bucketName}" --output json
-aws s3api put-bucket-tagging --bucket "${bucketName}" --tagging "TagSet=[{Key=mongodb-owner,Value=${MONGODB_TAG_OWNER}},{Key=mongodb-env,Value=${MONGODB_TAG_ENV}}]"
+create_tagged_bucket "${bucketName}" "${keyRegion}"
 
 echo -e "--------------------------------create aws bucket document  ends ----------------------------\n"
 

@@ -26,7 +26,7 @@ region=$(echo "$region" | sed -e "s/-/_/g")
 region=$(echo "$region" | tr '[:lower:]' '[:upper:]')
 echo "$region"
 
-roleName="mongodb-test-cloud-backup-export-bucket-role-${region}"
+roleName="mongodb-atlas-cfn-test-backup-role-${region}"
 policyName="atlas-cloud-backup-export-bucket-S3-role-policy-${region}"
 
 echo "roleName: ${roleName} , policyName: ${policyName}"
@@ -80,7 +80,7 @@ echo -e "--------------------------------authorize mongodb  Role ends ----------
 
 #create the s3 bucket
 
-bucketName="cloud-backup-snapshot-${CFN_TEST_TAG}-${awsRegion}"
+bucketName="mongodb-atlas-cfn-test-backup-${CFN_TEST_TAG}-${awsRegion}"
 
 aws s3 rb "s3://${bucketName}" --force
 aws s3 mb "s3://${bucketName}" --output json

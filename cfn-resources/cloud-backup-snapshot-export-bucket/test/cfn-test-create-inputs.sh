@@ -16,10 +16,10 @@ source "$(dirname "$0")/../../tag-policy.sh"
 require_tag_policy_vars
 
 region=$AWS_DEFAULT_REGION
-awsRegion=$AWS_DEFAULT_REGION
 if [ -z "$region" ]; then
 	region=$(aws configure get region)
 fi
+awsRegion=$region
 
 # shellcheck disable=SC2001
 region=$(echo "$region" | sed -e "s/-/_/g")
@@ -83,7 +83,7 @@ echo -e "--------------------------------authorize mongodb  Role ends ----------
 bucketName="mongodb-atlas-cfn-test-backup-${CFN_TEST_TAG}-${awsRegion}"
 
 aws s3 rb "s3://${bucketName}" --force
-create_tagged_bucket "${bucketName}" "${region}"
+create_tagged_bucket "${bucketName}" "${awsRegion}"
 
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi

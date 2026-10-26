@@ -56,7 +56,13 @@ echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../../../"$resource_directory"
 
 # Re-add the Cloud Tag Policy tags that cfn generate strips from the generated role file.
-make build && awk -v owner="${MONGODB_TAG_OWNER}" -v tagEnv="${MONGODB_TAG_ENV}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml > resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml && cfn submit --set-default
+make build
+awk -v owner="${MONGODB_TAG_OWNER}" -v tagEnv="${MONGODB_TAG_ENV}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml > resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml
+if ! grep -q 'Key: mongodb-owner' resource-role.yaml; then
+	echo "Failed to inject tags into resource-role.yaml: the Path anchor was not found" >&2
+	exit 1
+fi
+cfn submit --set-default
 cd ../test/e2e/"$resource_directory"
 
 

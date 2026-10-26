@@ -83,6 +83,10 @@ for resource in ${resources}; do
 	# file is already tagged, so repeated runs cannot add a duplicate Tags key.
 	if ! grep -q 'Key: mongodb-owner' resource-role.yaml; then
 		awk -v owner="${MONGODB_TAG_OWNER}" -v tagEnv="${MONGODB_TAG_ENV}" '/^      Path: "\/"$/ { print; print "      Tags:"; print "        - Key: mongodb-owner"; print "          Value: " owner; print "        - Key: mongodb-env"; print "          Value: " tagEnv; next } { print }' resource-role.yaml >resource-role.yaml.tmp && mv resource-role.yaml.tmp resource-role.yaml
+		if ! grep -q 'Key: mongodb-owner' resource-role.yaml; then
+			echo "Failed to inject tags into resource-role.yaml: the Path anchor was not found" >&2
+			exit 1
+		fi
 	fi
 	# ensure error is thrown if registration to private registry fails
 	cfn submit "${CFN_SUBMIT_CFN_FLAGS}"

@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::CloudProviderAccessSetup",
-  "description": "Registers the Atlas side of the AWS Cloud Provider Access trust handshake and returns the Atlas principal ARN, the per-registration external ID, and the role id that the customer's AWS::IAM::Role trust policy and MongoDB::Atlas::CloudProviderAccessAuthorization need.",
+  "description": "Registers the Atlas side of the AWS Cloud Provider Access trust handshake. It returns the Atlas principal ARN and the per-registration external ID for the customer's AWS::IAM::Role trust policy, and the role id for MongoDB::Atlas::CloudProviderAccessAuthorization and MongoDB::Atlas::EncryptionAtRest.",
   "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/cloud-provider-access-setup",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-provider-access-setup/README.md",
   "tagging": {
@@ -34,7 +34,10 @@
     },
     "RoleId": {
       "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies the Cloud Provider Access role. Atlas generates it when the role is registered."
+      "description": "Unique 24-hexadecimal digit string that identifies the Cloud Provider Access role. Atlas generates it when the role is registered. Use it with MongoDB::Atlas::CloudProviderAccessAuthorization and MongoDB::Atlas::EncryptionAtRest.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
     },
     "AtlasAWSAccountArn": {
       "type": "string",

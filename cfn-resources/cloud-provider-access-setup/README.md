@@ -33,22 +33,26 @@ the same role and returns `SUCCESS`. An invocation that already knows the `RoleI
 replacement, even when the read fails; a failed read keeps the identifier so CloudFormation can roll the
 registration back.
 
-This does not provide full create idempotency. If Atlas creates the registration but its response is lost
-before CloudFormation receives the `RoleId`, replaying the original request can create an orphaned
-registration. The Atlas create endpoint accepts no idempotency key or caller-supplied role identifier, and
-matching on project/provider cannot distinguish independently managed registrations. Safe recovery for that
-case remains unresolved and is required by the
-[CloudFormation handler contract](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-test-contract.html).
+This does not provide full create idempotency. If Atlas creates the registration but its response is lost before
+CloudFormation receives the `RoleId`, replaying the original request can create an orphaned registration. The Atlas
+create endpoint accepts no idempotency key or caller-supplied role identifier, and matching on project/provider
+cannot distinguish independently managed registrations, so this is an accepted risk rather than something the
+handler can detect. It does not block publishing, because the contract's create-create assertion accepts a
+replayed create that returns a new role id, and the orphaned registration can be removed from the project's Cloud
+Provider Access roles in Atlas.
 
 ## Delete
 
-Deleting this resource removes the whole Cloud Provider Access role registration, not just an authorization.
-Atlas refuses the delete with `AWS_IAM_ROLE_IN_USE` while a feature still uses the role, for example Encryption
-at Rest. Remove the dependent feature first, then delete the resource. When the registration is already gone,
-delete returns `NotFound`, which CloudFormation treats as success.
+Deleting this resource removes the whole Cloud Provider Access role registration, not just an authorization. The
+paired `MongoDB::Atlas::CloudProviderAccessAuthorization` resource does the same, so deleting that resource also
+removes the registration this resource tracks. Atlas refuses the delete with `AWS_IAM_ROLE_IN_USE` while a feature
+still uses the role, for example Encryption at Rest; the resource's `FeatureUsages` attribute lists the features
+that currently use it. Remove the dependent feature first, then delete the resource. When the registration is
+already gone, delete returns `NotFound`, which CloudFormation treats as success.
 
-Re-creating a deleted registration is not possible for the same role id. A new deploy registers a new role with a
-new role id and a new external ID, so the customer's IAM role trust policy has to be updated too.
+Re-creating a deleted registration is not possible for the same role id: a replacement or a new deploy registers a
+new role with a new role id and a new external ID, so the customer's IAM role trust policy has to be updated too.
+That update requires `iam:UpdateAssumeRolePolicy` on the identity that manages the customer's IAM role.
 
 ## Import
 

@@ -1,6 +1,6 @@
 # MongoDB::Atlas::CloudProviderAccessSetup
 
-Registers the Atlas side of the AWS Cloud Provider Access trust handshake and returns the Atlas principal ARN, the per-registration external ID, and the role id that the customer's AWS::IAM::Role trust policy and MongoDB::Atlas::CloudProviderAccessAuthorization need.
+Registers the Atlas side of the AWS Cloud Provider Access trust handshake. It returns the Atlas principal ARN and the per-registration external ID for the customer's AWS::IAM::Role trust policy, and the role id for MongoDB::Atlas::CloudProviderAccessAuthorization and MongoDB::Atlas::EncryptionAtRest.
 
 ## Syntax
 
@@ -65,7 +65,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### RoleId
 
-Unique 24-hexadecimal digit string that identifies the Cloud Provider Access role. Atlas generates it when the role is registered.
+Unique 24-hexadecimal digit string that identifies the Cloud Provider Access role. Atlas generates it when the role is registered. Use it with MongoDB::Atlas::CloudProviderAccessAuthorization and MongoDB::Atlas::EncryptionAtRest.
 
 #### AtlasAWSAccountArn
 

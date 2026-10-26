@@ -134,6 +134,114 @@ func TestCreateFailsWhenRegistrationHasNoRoleId(t *testing.T) {
 	assert.Equal(t, string(types.HandlerErrorCodeInternalFailure), event.HandlerErrorCode)
 }
 
+func TestDeleteRegistration(t *testing.T) {
+	const otherRoleID = "111111111111111111111111"
+
+	listPath := "GET /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess"
+	deletePath := "DELETE /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess/AWS/" + roleID
+
+	testCases := []struct {
+		name             string
+		roleIDs          []string
+		deleteBody       string
+		expectedStatus   handler.Status
+		expectedCode     string
+		expectedContains string
+		expectedRequests []string
+		deleteStatus     int
+	}{
+		{
+			name:             "A role that a feature still uses fails with ResourceConflict",
+			roleIDs:          []string{roleID},
+			deleteStatus:     http.StatusBadRequest,
+			deleteBody:       `{"errorCode":"AWS_IAM_ROLE_IN_USE","detail":"Cannot remove the AWS IAM role because it is still in use."}`,
+			expectedStatus:   handler.Failed,
+			expectedCode:     string(types.HandlerErrorCodeResourceConflict),
+			expectedContains: roleID,
+			expectedRequests: []string{listPath, deletePath},
+		},
+		{
+			name:             "A registration removed between the list and the delete is tolerated",
+			roleIDs:          []string{roleID},
+			deleteStatus:     http.StatusNotFound,
+			deleteBody:       `{"errorCode":"CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND","detail":"not found"}`,
+			expectedStatus:   handler.Success,
+			expectedRequests: []string{listPath, deletePath},
+		},
+		{
+			name:             "A registration that is already gone is NotFound",
+			roleIDs:          []string{otherRoleID},
+			expectedStatus:   handler.Failed,
+			expectedCode:     string(types.HandlerErrorCodeNotFound),
+			expectedContains: roleID,
+			expectedRequests: []string{listPath},
+		},
+		{
+			name:             "A registration that is present is removed",
+			roleIDs:          []string{otherRoleID, roleID},
+			deleteStatus:     http.StatusNoContent,
+			expectedStatus:   handler.Success,
+			expectedRequests: []string{listPath, deletePath},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var requests []string
+			client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
+				requests = append(requests, req.Method+" "+req.URL.Path)
+				if req.Method == http.MethodGet {
+					return atlasResponse(http.StatusOK, awsRolesJSON(tc.roleIDs...)), nil
+				}
+				return atlasResponse(tc.deleteStatus, tc.deleteBody), nil
+			})
+			model := resource.Model{
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
+				RoleId:    aws.String(roleID),
+			}
+
+			event := resource.HandleDelete(client, &model)
+
+			assert.Equal(t, tc.expectedStatus, event.OperationStatus)
+			assert.Equal(t, tc.expectedCode, event.HandlerErrorCode)
+			if tc.expectedContains != "" {
+				assert.Contains(t, event.Message, tc.expectedContains)
+			}
+			assert.Equal(t, tc.expectedRequests, requests)
+		})
+	}
+}
+
+func TestListReturnsTheProjectRoles(t *testing.T) {
+	const otherRoleID = "111111111111111111111111"
+
+	client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
+		require.Equal(t, http.MethodGet, req.Method)
+		return atlasResponse(http.StatusOK, awsRolesJSON(otherRoleID, roleID)), nil
+	})
+	model := resource.Model{
+		Profile:   aws.String(profile),
+		ProjectId: aws.String(projectID),
+	}
+
+	event := resource.HandleList(client, &model)
+
+	require.Equal(t, handler.Success, event.OperationStatus)
+	require.Len(t, event.ResourceModels, 2)
+
+	first, ok := event.ResourceModels[0].(resource.Model)
+	require.True(t, ok)
+	assert.Equal(t, aws.String(otherRoleID), first.RoleId)
+	assert.Equal(t, aws.String(profile), first.Profile)
+	assert.Equal(t, aws.String(projectID), first.ProjectId)
+
+	second, ok := event.ResourceModels[1].(resource.Model)
+	require.True(t, ok)
+	assert.Equal(t, aws.String(roleID), second.RoleId)
+	assert.Equal(t, aws.String(externalID), second.AtlasAssumedRoleExternalId)
+}
+
 func cloudProviderAccessClient(t *testing.T, transport roundTripFunc) *util.MongoDBClient {
 	t.Helper()
 	client, err := admin.NewClient(
@@ -161,4 +269,13 @@ func atlasResponse(status int, body string) *http.Response {
 func roleResponseJSON() string {
 	return `{"providerName":"AWS","roleId":"` + roleID + `","atlasAWSAccountArn":"` + atlasAccountArn +
 		`","atlasAssumedRoleExternalId":"` + externalID + `","createdDate":"2026-10-21T12:00:00Z"}`
+}
+
+func awsRolesJSON(roleIDs ...string) string {
+	roles := make([]string, 0, len(roleIDs))
+	for _, id := range roleIDs {
+		roles = append(roles, `{"providerName":"AWS","roleId":"`+id+`","atlasAWSAccountArn":"`+atlasAccountArn+
+			`","atlasAssumedRoleExternalId":"`+externalID+`","createdDate":"2026-10-21T12:00:00Z"}`)
+	}
+	return `{"awsIamRoles":[` + strings.Join(roles, ",") + `]}`
 }

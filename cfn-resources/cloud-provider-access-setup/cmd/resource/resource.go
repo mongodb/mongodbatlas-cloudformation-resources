@@ -186,6 +186,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
+	return HandleDelete(client, currentModel), nil
+}
+
+// HandleDelete removes the role registration, tolerating a registration that is already gone.
+func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	ctx := context.Background()
 
 	// Deleting removes the whole role registration, not just an authorization. The delete endpoint
@@ -196,13 +201,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(
-			fmt.Sprintf("error listing Cloud Provider Access roles: %s", err.Error()), response), nil
+			fmt.Sprintf("error listing Cloud Provider Access roles: %s", err.Error()), response)
 	}
 
 	if FindAWSRole(roles, *currentModel.RoleId) == nil {
 		return progress_events.GetFailedEventByCode(
 			fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId),
-			string(types.HandlerErrorCodeNotFound)), nil
+			string(types.HandlerErrorCodeNotFound))
 	}
 
 	response, err = client.AtlasSDK.CloudProviderAccessApi.
@@ -212,18 +217,18 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		// The role was removed between the list and the delete. The registration is gone, which is
 		// the end state this handler wants, so tolerate the 404.
 		if util.StatusNotFound(response) {
-			return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}, nil
+			return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}
 		}
 		if admin.IsErrorCode(err, roleInUseErrorCode) {
 			return progress_events.GetFailedEventByCode(
 				fmt.Sprintf(roleInUseMessage, *currentModel.RoleId),
-				string(types.HandlerErrorCodeResourceConflict)), nil
+				string(types.HandlerErrorCodeResourceConflict))
 		}
 		return progress_events.GetFailedEventByResponse(
-			fmt.Sprintf("error deleting Cloud Provider Access role: %s", err.Error()), response), nil
+			fmt.Sprintf("error deleting Cloud Provider Access role: %s", err.Error()), response)
 	}
 
-	return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}, nil
+	return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}
 }
 
 // List handles the List event from the Cloudformation service.
@@ -242,12 +247,17 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
+	return HandleList(client, currentModel), nil
+}
+
+// HandleList returns the project's AWS Cloud Provider Access roles.
+func HandleList(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	roles, response, err := client.AtlasSDK.CloudProviderAccessApi.
 		ListCloudProviderAccess(context.Background(), *currentModel.ProjectId).
 		Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(
-			fmt.Sprintf("error listing Cloud Provider Access roles: %s", err.Error()), response), nil
+			fmt.Sprintf("error listing Cloud Provider Access roles: %s", err.Error()), response)
 	}
 
 	awsRoles := roles.GetAwsIamRoles()
@@ -260,5 +270,5 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		Message:         "List Complete",
 		ResourceModels:  models,
-	}, nil
+	}
 }

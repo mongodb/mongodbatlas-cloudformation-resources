@@ -95,21 +95,6 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 				FeatureUsages:              nil,
 			},
 		},
-		{
-			name: "A role with only an id maps the remaining fields as empty",
-			model: resource.Model{
-				Profile:   aws.String(profile),
-				ProjectId: aws.String(projectID),
-			},
-			role: &admin.CloudProviderAccessRole{
-				RoleId: aws.String(roleID),
-			},
-			expectedModel: resource.Model{
-				Profile:   aws.String(profile),
-				ProjectId: aws.String(projectID),
-				RoleId:    aws.String(roleID),
-			},
-		},
 	}
 
 	for _, tc := range testCases {

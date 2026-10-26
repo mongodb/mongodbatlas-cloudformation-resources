@@ -72,37 +72,21 @@ func TestIsAuthorized(t *testing.T) {
 	assert.True(t, resource.IsAuthorized(&admin20231115014.CloudProviderAccessRole{AuthorizedDate: &authorizedDate}))
 }
 
-func TestFeatureUsagesFromRole_AlwaysNonNil(t *testing.T) {
-	usages := resource.FeatureUsagesFromRole(&admin20231115014.CloudProviderAccessRole{})
-
-	require.NotNil(t, usages)
-	assert.Empty(t, usages)
-}
-
-func TestFeatureUsagesFromRole_MapsFeatureId(t *testing.T) {
-	featureType := "PUSH_BASED_LOG_EXPORT"
-	groupID := "66d979971ec97b7de1ef8777"
-	bucketName := "atlas-logs-export"
+func TestFeatureUsagesFromRole_MapsFeatureType(t *testing.T) {
+	encryptionAtRest := "ENCRYPTION_AT_REST"
+	logExport := "PUSH_BASED_LOG_EXPORT"
 	usages := resource.FeatureUsagesFromRole(&admin20231115014.CloudProviderAccessRole{
 		FeatureUsages: &[]admin20231115014.CloudProviderAccessFeatureUsage{
-			{
-				FeatureType: &featureType,
-				FeatureId: &admin20231115014.CloudProviderAccessFeatureUsagePushBasedLogExportFeatureId{
-					GroupId:    &groupID,
-					BucketName: &bucketName,
-				},
-			},
+			{FeatureType: &encryptionAtRest},
+			{FeatureType: &logExport},
 		},
 	})
 
-	require.Len(t, usages, 1)
+	require.Len(t, usages, 2)
 	require.NotNil(t, usages[0].FeatureType)
-	assert.Equal(t, featureType, *usages[0].FeatureType)
-	require.NotNil(t, usages[0].FeatureId)
-	require.NotNil(t, usages[0].FeatureId.GroupId)
-	assert.Equal(t, groupID, *usages[0].FeatureId.GroupId)
-	require.NotNil(t, usages[0].FeatureId.BucketName)
-	assert.Equal(t, bucketName, *usages[0].FeatureId.BucketName)
+	assert.Equal(t, encryptionAtRest, *usages[0].FeatureType)
+	require.NotNil(t, usages[1].FeatureType)
+	assert.Equal(t, logExport, *usages[1].FeatureType)
 }
 
 func TestSetModelFromRole_KeepsIdentifierAndSetsReadOnly(t *testing.T) {
@@ -112,11 +96,13 @@ func TestSetModelFromRole_KeepsIdentifierAndSetsReadOnly(t *testing.T) {
 	authorizedDate := time.Date(2026, 10, 21, 12, 0, 0, 0, time.UTC)
 
 	model := &resource.Model{ProjectId: &projectID, RoleId: &roleID, IamAssumedRoleArn: &arn}
+	featureType := "ENCRYPTION_AT_REST"
 	role := &admin20231115014.CloudProviderAccessRole{
 		ProviderName:      "AWS",
 		RoleId:            &roleID,
 		IamAssumedRoleArn: &arn,
 		AuthorizedDate:    &authorizedDate,
+		FeatureUsages:     &[]admin20231115014.CloudProviderAccessFeatureUsage{{FeatureType: &featureType}},
 	}
 
 	resource.SetModelFromRole(model, role)
@@ -127,5 +113,7 @@ func TestSetModelFromRole_KeepsIdentifierAndSetsReadOnly(t *testing.T) {
 	assert.Equal(t, roleID, *model.RoleId)
 	require.NotNil(t, model.AuthorizedDate)
 	assert.Equal(t, authorizedDate.UTC().Format(time.RFC3339Nano), *model.AuthorizedDate)
-	assert.NotNil(t, model.FeatureUsages)
+	require.Len(t, model.FeatureUsages, 1)
+	require.NotNil(t, model.FeatureUsages[0].FeatureType)
+	assert.Equal(t, featureType, *model.FeatureUsages[0].FeatureType)
 }

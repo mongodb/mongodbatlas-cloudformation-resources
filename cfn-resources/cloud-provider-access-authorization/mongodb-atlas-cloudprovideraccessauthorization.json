@@ -9,24 +9,6 @@
         "FeatureType": {
           "type": "string",
           "description": "Human-readable label that describes one MongoDB Cloud feature linked to this AWS IAM role."
-        },
-        "FeatureId": {
-          "$ref": "#/definitions/FeatureUsageId"
-        }
-      },
-      "additionalProperties": false
-    },
-    "FeatureUsageId": {
-      "description": "Identifying characteristics about the AWS Simple Storage Service (S3) export bucket linked to this AWS IAM role.",
-      "type": "object",
-      "properties": {
-        "GroupId": {
-          "type": "string",
-          "description": "Unique 24-hexadecimal digit string that identifies your project."
-        },
-        "BucketName": {
-          "type": "string",
-          "description": "Name of the AWS S3 bucket to which your logs are exported."
         }
       },
       "additionalProperties": false

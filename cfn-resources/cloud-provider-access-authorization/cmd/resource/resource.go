@@ -340,20 +340,14 @@ func SetModelFromRole(model *Model, role *admin20231115014.CloudProviderAccessRo
 	model.FeatureUsages = FeatureUsagesFromRole(role)
 }
 
-// FeatureUsagesFromRole always returns a non-nil slice so the read-only
-// FeatureUsages property is never null.
+// FeatureUsagesFromRole maps the feature type of each usage. The Atlas API models
+// featureId as a polymorphic object that the typed SDK only covers for push-based
+// log export, so it is deliberately not exposed.
 func FeatureUsagesFromRole(role *admin20231115014.CloudProviderAccessRole) []FeatureUsage {
 	usages := role.GetFeatureUsages()
 	result := make([]FeatureUsage, 0, len(usages))
 	for i := range usages {
-		featureID := usages[i].GetFeatureId()
-		result = append(result, FeatureUsage{
-			FeatureType: usages[i].FeatureType,
-			FeatureId: &FeatureUsageId{
-				GroupId:    featureID.GroupId,
-				BucketName: featureID.BucketName,
-			},
-		})
+		result = append(result, FeatureUsage{FeatureType: usages[i].FeatureType})
 	}
 	return result
 }

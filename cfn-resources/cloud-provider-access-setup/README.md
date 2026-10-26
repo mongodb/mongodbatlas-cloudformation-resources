@@ -25,6 +25,21 @@ See the [resource docs](docs/README.md).
 
 See the examples [CFN Template](/examples/cloud-provider-access-setup/cloud-provider-access-setup.json) for example resource.
 
+## Create retries
+
+Create registers the role and returns `IN_PROGRESS` with the registered `RoleId`, which also travels in the
+callback context. CloudFormation re-invokes the handler with the callback context, and that invocation reads
+the same role and returns `SUCCESS`. An invocation that already knows the `RoleId` never registers a
+replacement, even when the read fails; a failed read keeps the identifier so CloudFormation can roll the
+registration back.
+
+This does not provide full create idempotency. If Atlas creates the registration but its response is lost
+before CloudFormation receives the `RoleId`, replaying the original request can create an orphaned
+registration. The Atlas create endpoint accepts no idempotency key or caller-supplied role identifier, and
+matching on project/provider cannot distinguish independently managed registrations. Safe recovery for that
+case remains unresolved and is required by the
+[CloudFormation handler contract](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-test-contract.html).
+
 ## Delete
 
 Deleting this resource removes the whole Cloud Provider Access role registration, not just an authorization.

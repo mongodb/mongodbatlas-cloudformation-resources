@@ -22,6 +22,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -39,6 +40,9 @@ const (
 	// has to be removed before the role can be deleted.
 	roleInUseMessage = "Cloud Provider Access role %s cannot be deleted because an Atlas feature still uses it. " +
 		"Remove the dependent feature, for example by disabling Encryption at Rest for the project, then retry the delete."
+	// roleIDCallbackKey carries the registered role id across the create callback. CloudFormation
+	// passes the callback context between invocations, so it is the reliable carrier of the id.
+	roleIDCallbackKey = "roleId"
 )
 
 var (
@@ -76,8 +80,33 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	// The Atlas API has no idempotency token, so a retried create registers another role.
-	// Atlas allows several roles per project, so a second create returns a new role id.
+	return HandleCreate(req.CallbackContext, client, currentModel), nil
+}
+
+// HandleCreate registers a role once and then reads the registered role on the callback. The role id
+// travels in the callback context, which is the state CloudFormation carries between invocations; the
+// returned model is the fallback when the callback context is absent.
+func HandleCreate(callbackContext map[string]any, client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
+	if !util.IsStringPresent(currentModel.RoleId) {
+		if roleID, ok := callbackContext[roleIDCallbackKey].(string); ok && roleID != "" {
+			currentModel.RoleId = aws.String(roleID)
+		}
+	}
+
+	if util.IsStringPresent(currentModel.RoleId) {
+		event := HandleRead(client, currentModel)
+		if event.OperationStatus == handler.Success {
+			event.Message = "Create Complete"
+		} else {
+			// Preserve the identifier so CloudFormation can roll back this registration.
+			event.ResourceModel = currentModel
+		}
+		return event
+	}
+
+	// Atlas cannot deduplicate a create whose response was lost before RoleId was
+	// checkpointed. Do not adopt another role by project/provider: several independent
+	// registrations may exist in the same project.
 	roleRequest := &admin.CloudProviderAccessRoleRequest{ProviderName: awsProviderName}
 
 	role, response, err := client.AtlasSDK.CloudProviderAccessApi.
@@ -85,14 +114,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(
-			fmt.Sprintf("error creating Cloud Provider Access role: %s", err.Error()), response), nil
+			fmt.Sprintf("error creating Cloud Provider Access role: %s", err.Error()), response)
 	}
 
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Create Complete",
-		ResourceModel:   NewCFNCloudProviderAccessSetup(currentModel, role),
-	}, nil
+	registered := NewCFNCloudProviderAccessSetup(currentModel, role)
+	if !util.IsStringPresent(registered.RoleId) {
+		// Without the role id the registration cannot be tracked or read back, and a retry would
+		// register another role, so fail instead of returning an unusable checkpoint.
+		return progress_events.GetFailedEventByCode(
+			"Cloud Provider Access role registration did not return a role id",
+			string(types.HandlerErrorCodeInternalFailure))
+	}
+
+	return progress_events.GetInProgressProgressEvent(
+		"Cloud Provider Access role registered; verifying registration",
+		map[string]any{roleIDCallbackKey: *registered.RoleId},
+		registered, 1)
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -111,6 +148,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
+	return HandleRead(client, currentModel), nil
+}
+
+// HandleRead reads a registration without changing its identity.
+func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	role, response, err := client.AtlasSDK.CloudProviderAccessApi.
 		GetCloudProviderAccess(context.Background(), *currentModel.ProjectId, *currentModel.RoleId).
 		Execute()
@@ -118,17 +160,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		if util.StatusNotFound(response) {
 			return progress_events.GetFailedEventByCode(
 				fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId),
-				string(types.HandlerErrorCodeNotFound)), nil
+				string(types.HandlerErrorCodeNotFound))
 		}
 		return progress_events.GetFailedEventByResponse(
-			fmt.Sprintf("error reading Cloud Provider Access role: %s", err.Error()), response), nil
+			fmt.Sprintf("error reading Cloud Provider Access role: %s", err.Error()), response)
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
 		ResourceModel:   NewCFNCloudProviderAccessSetup(currentModel, role),
-	}, nil
+	}
 }
 
 // Update handles the Update event from the Cloudformation service.

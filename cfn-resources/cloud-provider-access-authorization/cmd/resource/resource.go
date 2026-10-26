@@ -309,32 +309,6 @@ func IsAuthorized(role *admin.CloudProviderAccessRole) bool {
 	return role != nil && role.HasAuthorizedDate()
 }
 
-func SetModelFromRole(model *Model, role *admin.CloudProviderAccessRole) {
-	if role == nil {
-		return
-	}
-	if role.RoleId != nil {
-		model.RoleId = role.RoleId
-	}
-	if role.IamAssumedRoleArn != nil {
-		model.IamAssumedRoleArn = role.IamAssumedRoleArn
-	}
-	model.AuthorizedDate = util.TimePtrToStringPtr(role.AuthorizedDate)
-	model.FeatureUsages = FeatureUsagesFromRole(role)
-}
-
-// FeatureUsagesFromRole maps the feature type of each usage. The Atlas API models
-// featureId as a polymorphic object that the typed SDK only covers for push-based
-// log export, so it is deliberately not exposed.
-func FeatureUsagesFromRole(role *admin.CloudProviderAccessRole) []FeatureUsage {
-	usages := role.GetFeatureUsages()
-	result := make([]FeatureUsage, 0, len(usages))
-	for i := range usages {
-		result = append(result, FeatureUsage{FeatureType: usages[i].FeatureType})
-	}
-	return result
-}
-
 func roleLookupFailed(resp *http.Response, err error) handler.ProgressEvent {
 	if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
 		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role was not found. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it: %s", err.Error()))

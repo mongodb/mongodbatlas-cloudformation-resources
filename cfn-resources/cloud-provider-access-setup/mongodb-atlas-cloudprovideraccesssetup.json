@@ -32,13 +32,6 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
-    "ProviderName": {
-      "type": "string",
-      "description": "Human-readable label that identifies the cloud provider of the role. Only AWS is supported.",
-      "enum": [
-        "AWS"
-      ]
-    },
     "RoleId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies the Cloud Provider Access role. Atlas generates it when the role is registered."
@@ -66,8 +59,7 @@
   },
   "additionalProperties": false,
   "required": [
-    "ProjectId",
-    "ProviderName"
+    "ProjectId"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",
@@ -76,8 +68,7 @@
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/Profile",
-    "/properties/ProviderName"
+    "/properties/Profile"
   ],
   "readOnlyProperties": [
     "/properties/RoleId",

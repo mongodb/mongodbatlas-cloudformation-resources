@@ -6,14 +6,6 @@
       "Type": "String",
       "Description": "Atlas Project Id."
     },
-    "ProviderName": {
-      "Type": "String",
-      "Default": "AWS",
-      "AllowedValues": [
-        "AWS"
-      ],
-      "Description": "Cloud provider of the access role. Only AWS is supported."
-    },
     "Profile": {
       "Type": "String",
       "Default": "default",
@@ -27,9 +19,6 @@
       "Properties": {
         "ProjectId": {
           "Ref": "ProjectId"
-        },
-        "ProviderName": {
-          "Ref": "ProviderName"
         },
         "Profile": {
           "Ref": "Profile"

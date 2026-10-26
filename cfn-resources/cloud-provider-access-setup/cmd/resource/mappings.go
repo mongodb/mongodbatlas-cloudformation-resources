@@ -17,8 +17,6 @@ package resource
 import (
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
@@ -46,16 +44,9 @@ func NewCFNCloudProviderAccessSetupFromAWSIAMRole(model *Model, role *admin.Clou
 }
 
 func newBaseModel(model *Model) Model {
-	// Read receives the stored resource state, but ProviderName is create-only and not part of the
-	// primary identifier, so fall back to the only supported provider when it is not present.
-	providerName := model.ProviderName
-	if providerName == nil {
-		providerName = aws.String(awsProviderName)
-	}
 	return Model{
-		Profile:      model.Profile,
-		ProjectId:    model.ProjectId,
-		ProviderName: providerName,
+		Profile:   model.Profile,
+		ProjectId: model.ProjectId,
 	}
 }
 

@@ -46,9 +46,8 @@ func TestCreateCheckpointsRoleAndResumesWithoutRegisteringAgain(t *testing.T) {
 		return atlasResponse(http.StatusOK, roleResponseJSON()), nil
 	})
 	model := resource.Model{
-		Profile:      aws.String(profile),
-		ProjectId:    aws.String(projectID),
-		ProviderName: aws.String("AWS"),
+		Profile:   aws.String(profile),
+		ProjectId: aws.String(projectID),
 	}
 
 	created := resource.HandleCreate(nil, client, &model)
@@ -71,9 +70,8 @@ func TestCreateCheckpointsRoleAndResumesWithoutRegisteringAgain(t *testing.T) {
 	// CloudFormation may pass only the original properties plus the callback context, so the role id
 	// must also travel in the callback context.
 	resumed := resource.HandleCreate(created.CallbackContext, client, &resource.Model{
-		Profile:      aws.String(profile),
-		ProjectId:    aws.String(projectID),
-		ProviderName: aws.String("AWS"),
+		Profile:   aws.String(profile),
+		ProjectId: aws.String(projectID),
 	})
 	require.Equal(t, handler.Success, resumed.OperationStatus)
 	resumedModel, ok := resumed.ResourceModel.(resource.Model)
@@ -106,10 +104,9 @@ func TestCreateWithKnownRoleDoesNotReplaceItWhenReadFails(t *testing.T) {
 				return atlasResponse(tc.status, `{"errorCode":"TEST_ERROR","detail":"Read failed"}`), nil
 			})
 			model := resource.Model{
-				Profile:      aws.String(profile),
-				ProjectId:    aws.String(projectID),
-				ProviderName: aws.String("AWS"),
-				RoleId:       aws.String(roleID),
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
+				RoleId:    aws.String(roleID),
 			}
 
 			event := resource.HandleCreate(nil, client, &model)
@@ -127,25 +124,14 @@ func TestCreateFailsWhenRegistrationHasNoRoleId(t *testing.T) {
 		return atlasResponse(http.StatusCreated, `{"providerName":"AWS"}`), nil
 	})
 	model := resource.Model{
-		Profile:      aws.String(profile),
-		ProjectId:    aws.String(projectID),
-		ProviderName: aws.String("AWS"),
+		Profile:   aws.String(profile),
+		ProjectId: aws.String(projectID),
 	}
 
 	event := resource.HandleCreate(nil, client, &model)
 
 	assert.Equal(t, handler.Failed, event.OperationStatus)
 	assert.Equal(t, string(types.HandlerErrorCodeInternalFailure), event.HandlerErrorCode)
-}
-
-func TestCreateRejectsUnsupportedProviderBeforeAccessingCredentials(t *testing.T) {
-	model := resource.Model{ProjectId: aws.String(projectID), ProviderName: aws.String("AZURE")}
-
-	event, err := resource.Create(handler.Request{}, nil, &model)
-
-	require.NoError(t, err)
-	assert.Equal(t, handler.Failed, event.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeInvalidRequest), event.HandlerErrorCode)
 }
 
 func cloudProviderAccessClient(t *testing.T, transport roundTripFunc) *util.MongoDBClient {

@@ -46,7 +46,7 @@ const (
 )
 
 var (
-	CreateRequiredFields = []string{constants.ProjectID, constants.ProviderName}
+	CreateRequiredFields = []string{constants.ProjectID}
 	ReadRequiredFields   = []string{constants.ProjectID, constants.CloudProviderAccessRoleID}
 	DeleteRequiredFields = []string{constants.ProjectID, constants.CloudProviderAccessRoleID}
 	ListRequiredFields   = []string{constants.ProjectID}
@@ -63,14 +63,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
-	}
-
-	// The schema restricts ProviderName to AWS. Check it here as well so that a request that
-	// bypasses the schema cannot register a GCP or Azure role that this resource cannot manage.
-	if *currentModel.ProviderName != awsProviderName {
-		return progress_events.GetFailedEventByCode(
-			fmt.Sprintf("ProviderName must be %s", awsProviderName),
-			string(types.HandlerErrorCodeInvalidRequest)), nil
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)

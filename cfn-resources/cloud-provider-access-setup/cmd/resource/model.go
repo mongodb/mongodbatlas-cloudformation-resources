@@ -6,7 +6,6 @@ package resource
 type Model struct {
 	Profile                    *string        `json:",omitempty"`
 	ProjectId                  *string        `json:",omitempty"`
-	ProviderName               *string        `json:",omitempty"`
 	RoleId                     *string        `json:",omitempty"`
 	AtlasAWSAccountArn         *string        `json:",omitempty"`
 	AtlasAssumedRoleExternalId *string        `json:",omitempty"`

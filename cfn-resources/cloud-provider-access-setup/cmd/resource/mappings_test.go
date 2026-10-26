@@ -49,9 +49,8 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 		{
 			name: "Maps the registration and its feature usages",
 			model: resource.Model{
-				Profile:      aws.String(profile),
-				ProjectId:    aws.String(projectID),
-				ProviderName: aws.String("AWS"),
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
 			},
 			role: &admin.CloudProviderAccessRole{
 				RoleId:                     aws.String(roleID),
@@ -65,7 +64,6 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 			expectedModel: resource.Model{
 				Profile:                    aws.String(profile),
 				ProjectId:                  aws.String(projectID),
-				ProviderName:               aws.String("AWS"),
 				RoleId:                     aws.String(roleID),
 				AtlasAWSAccountArn:         aws.String(atlasAccountArn),
 				AtlasAssumedRoleExternalId: aws.String(externalID),
@@ -78,9 +76,8 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 		{
 			name: "A role that no feature uses has no feature usages",
 			model: resource.Model{
-				Profile:      aws.String(profile),
-				ProjectId:    aws.String(projectID),
-				ProviderName: aws.String("AWS"),
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
 			},
 			role: &admin.CloudProviderAccessRole{
 				RoleId:                     aws.String(roleID),
@@ -91,7 +88,6 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 			expectedModel: resource.Model{
 				Profile:                    aws.String(profile),
 				ProjectId:                  aws.String(projectID),
-				ProviderName:               aws.String("AWS"),
 				RoleId:                     aws.String(roleID),
 				AtlasAWSAccountArn:         aws.String(atlasAccountArn),
 				AtlasAssumedRoleExternalId: aws.String(externalID),
@@ -100,7 +96,7 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 			},
 		},
 		{
-			name: "An absent ProviderName defaults to the only supported provider",
+			name: "A role with only an id maps the remaining fields as empty",
 			model: resource.Model{
 				Profile:   aws.String(profile),
 				ProjectId: aws.String(projectID),
@@ -109,10 +105,9 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 				RoleId: aws.String(roleID),
 			},
 			expectedModel: resource.Model{
-				Profile:      aws.String(profile),
-				ProjectId:    aws.String(projectID),
-				ProviderName: aws.String("AWS"),
-				RoleId:       aws.String(roleID),
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
+				RoleId:    aws.String(roleID),
 			},
 		},
 	}
@@ -127,9 +122,8 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 
 func TestNewCFNCloudProviderAccessSetupFromAWSIAMRole(t *testing.T) {
 	model := resource.Model{
-		Profile:      aws.String(profile),
-		ProjectId:    aws.String(projectID),
-		ProviderName: aws.String("AWS"),
+		Profile:   aws.String(profile),
+		ProjectId: aws.String(projectID),
 	}
 	role := &admin.CloudProviderAccessAWSIAMRole{
 		RoleId:                     aws.String(roleID),
@@ -146,7 +140,6 @@ func TestNewCFNCloudProviderAccessSetupFromAWSIAMRole(t *testing.T) {
 	assert.Equal(t, resource.Model{
 		Profile:                    aws.String(profile),
 		ProjectId:                  aws.String(projectID),
-		ProviderName:               aws.String("AWS"),
 		RoleId:                     aws.String(roleID),
 		AtlasAWSAccountArn:         aws.String(atlasAccountArn),
 		AtlasAssumedRoleExternalId: aws.String(externalID),

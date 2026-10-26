@@ -14,7 +14,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
     }
 }
 </pre>
@@ -26,7 +25,6 @@ Type: MongoDB::Atlas::CloudProviderAccessSetup
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
-    <a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -54,18 +52,6 @@ _Minimum Length_: <code>24</code>
 _Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### ProviderName
-
-Human-readable label that identifies the cloud provider of the role. Only AWS is supported.
-
-_Required_: Yes
-
-_Type_: String
-
-_Allowed Values_: <code>AWS</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 

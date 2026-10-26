@@ -24,6 +24,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # Cloud Tag Policy compliance, see CLOUDP-441536
+  MONGODB_TAG_OWNER: ${{ vars.MONGODB_TAG_OWNER }}
+  MONGODB_TAG_ENV: ${{ github.event.inputs.resourceName=='organization' && 'dev' || 'qa' }}
+
 jobs:
   publish:
     env:

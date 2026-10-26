@@ -17,7 +17,24 @@ default: fix
 
 .PHONY: submit
 submit:
-	(cd cfn-resources && ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
+	@resources="$(filter-out $@,$(MAKECMDGOALS))"; \
+	if [ -z "$$resources" ]; then \
+		echo "Usage: make submit <resource> [<resource> ...]"; \
+		echo "or run 'make submit' from within cfn-resources/<resource>/"; \
+		exit 1; \
+	fi; \
+	for resource in $$resources; do \
+		$(MAKE) -C cfn-resources/$$resource submit || exit 1; \
+	done
+
+# 'make submit <resource>' passes the resource names as extra make goals.
+# Define no-op rules for them so make does not fail with "No rule to make target".
+ifneq ($(filter submit,$(MAKECMDGOALS)),)
+ifneq ($(filter-out submit,$(MAKECMDGOALS)),)
+$(filter-out submit,$(MAKECMDGOALS)):
+	@:
+endif
+endif
 
 .PHONY: test
 test:

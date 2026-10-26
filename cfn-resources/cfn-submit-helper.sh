@@ -2,18 +2,21 @@
 
 # cfn-submit-helper.sh
 #
+# Builds and submits one or more resources to the CloudFormation private
+# registry. Before the role stack is created, the tags required by the
+# Cloud Tag Policy are injected into the resource-role.yaml template.
 #
-# This tool works by running `cfn submit` on each resource
-# By default it will build and submit every resource found
-# in this directory.
+# Usage:
+# ./cfn-submit-helper.sh <resource-folder> [<resource-folder> ...]
+#
 # There are some options.
 #
 # BUILD_ONLY=true|false
 # SUBMIT_ONLY=true|false
-# LOG_LEVEL=logrus valid string loglevel
+# CFN_SUBMIT_LOG_LEVEL=logrus valid string loglevel
 #
-# Example with DEBUG logging enabled by default for set of resources:
-# LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
+# Example with DEBUG logging enabled for a set of resources:
+# CFN_SUBMIT_LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
 set -eo
 # shellcheck source=/dev/null
@@ -28,9 +31,13 @@ _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
-# By default, submit the entire library of active custom resources, but usually
-# this is run one resource at a time.
-resources="${1:-project}"
+# One or more resource folders are required, for example:
+# ./cfn-submit-helper.sh project database-user
+resources="$*"
+if [ -z "${resources}" ]; then
+	echo "Usage: $(basename "$0") <resource-folder> [<resource-folder> ...]" >&2
+	exit 1
+fi
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -76,7 +83,7 @@ for resource in ${resources}; do
 	echo "${command}"
 	${command}
 
-	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
+	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS[*]}"
 	require_tag_policy_vars
 	# Re-add the Cloud Tag Policy tags missing from the S3 role template, right before
 	# cfn submit creates the role stack (also covers SUBMIT_ONLY runs). Skipped when the
@@ -89,6 +96,6 @@ for resource in ${resources}; do
 		fi
 	fi
 	# ensure error is thrown if registration to private registry fails
-	cfn submit "${CFN_SUBMIT_CFN_FLAGS}"
+	cfn submit "${CFN_SUBMIT_CFN_FLAGS[@]}"
 	cd -
 done

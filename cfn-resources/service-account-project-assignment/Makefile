@@ -18,9 +18,9 @@ debug:
 clean:
 	rm -rf bin
 
-submit: clean build
+submit: clean build # submit to private registry must use release build not debug build
 	@echo "==> Submitting to private registry for testing"
-	 cfn submit --set-default --region us-east-1
+	(cd .. && SUBMIT_ONLY=true ./cfn-submit-helper.sh $(notdir $(CURDIR)))
 
 create-test-resources:
 	@echo "==> Creating test files and resources for contract testing"

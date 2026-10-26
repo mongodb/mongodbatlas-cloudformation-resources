@@ -17,3 +17,7 @@ debug:
 
 clean:
 	rm -rf bin
+
+submit: clean build # submit to private registry must use release build not debug build
+	@echo "==> Submitting to private registry for testing"
+	(cd .. && SUBMIT_ONLY=true ./cfn-submit-helper.sh $(notdir $(CURDIR)))

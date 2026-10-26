@@ -26,7 +26,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-access-authorization/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -283,7 +283,42 @@ func TestDeleteRoleInUseIsAResourceConflict(t *testing.T) {
 
 	assert.Equal(t, handler.Failed, event.OperationStatus)
 	assert.Equal(t, string(types.HandlerErrorCodeResourceConflict), event.HandlerErrorCode)
-	assert.Contains(t, event.Message, "Remove the feature")
+	assert.Contains(t, event.Message, testRoleID)
+}
+
+func TestDeleteRemovesTheRegistration(t *testing.T) {
+	var methods []string
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		methods = append(methods, req.Method)
+		if req.Method == http.MethodGet {
+			return roleResponse(testARN), nil
+		}
+		require.Equal(t, http.MethodDelete, req.Method)
+		assert.Contains(t, req.URL.Path, "/cloudProviderAccess/AWS/"+testRoleID)
+		return jsonResponse(http.StatusNoContent, ""), nil
+	})
+
+	event := resource.HandleDelete(client, authorizationModel())
+
+	assert.Equal(t, handler.Success, event.OperationStatus)
+	assert.Equal(t, "Delete Complete", event.Message)
+	assert.Nil(t, event.ResourceModel, "a delete response must not carry a model")
+	assert.Equal(t, []string{http.MethodGet, http.MethodDelete}, methods)
+}
+
+func TestDeleteTreatsAnAlreadyRemovedRegistrationAsNotFound(t *testing.T) {
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == http.MethodGet {
+			return roleResponse(testARN), nil
+		}
+		require.Equal(t, http.MethodDelete, req.Method)
+		return errorResponse(http.StatusNotFound, roleNotFound), nil
+	})
+
+	event := resource.HandleDelete(client, authorizationModel())
+
+	assert.Equal(t, handler.Failed, event.OperationStatus)
+	assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
 }
 
 func TestReadAndDeleteTreatUnapprovedRegistrationAsNotFound(t *testing.T) {
@@ -318,12 +353,12 @@ func callbackRequest(t *testing.T, event handler.ProgressEvent) handler.Request 
 
 func authorizationClient(t *testing.T, transport roundTripFunc) *util.MongoDBClient {
 	t.Helper()
-	client, err := admin20231115014.NewClient(
-		admin20231115014.UseBaseURL("https://atlas.example.test/"),
-		admin20231115014.UseHTTPClient(&http.Client{Transport: transport}),
+	client, err := admin.NewClient(
+		admin.UseBaseURL("https://atlas.example.test/"),
+		admin.UseHTTPClient(&http.Client{Transport: transport}),
 	)
 	require.NoError(t, err)
-	return &util.MongoDBClient{Atlas20231115014: client}
+	return &util.MongoDBClient{AtlasSDK: client}
 }
 
 type roundTripFunc func(*http.Request) (*http.Response, error)

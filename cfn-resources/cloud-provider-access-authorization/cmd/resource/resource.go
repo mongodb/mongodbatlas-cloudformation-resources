@@ -19,13 +19,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -203,16 +202,16 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
 	}
 
-	resp, err = client.Atlas20231115014.CloudProviderAccessApi.
-		DeauthorizeCloudProviderAccessRole(context.Background(), util.SafeString(currentModel.ProjectId), constants.AWS, util.SafeString(currentModel.RoleId)).
+	resp, err = client.AtlasSDK.CloudProviderAccessApi.
+		DeauthorizeProviderAccessRole(context.Background(), util.SafeString(currentModel.ProjectId), constants.AWS, util.SafeString(currentModel.RoleId)).
 		Execute()
 	if err != nil {
-		if util.StatusNotFound(resp) || HasErrorCode(err, errorCodeRoleNotFound) {
+		if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
 			return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was already removed.", util.SafeString(currentModel.RoleId)))
 		}
-		if HasErrorCode(err, errorCodeRoleInUse) {
+		if admin.IsErrorCode(err, errorCodeRoleInUse) {
 			return progressevent.GetFailedEventByCode(
-				"Cannot remove the AWS IAM role because it is still in use. Remove the feature that uses it first, for example disable Encryption at Rest, and retry the deletion.",
+				fmt.Sprintf("Cloud Provider Access role %s cannot be deleted because an Atlas feature still uses it. Remove the dependent feature, for example by disabling Encryption at Rest for the project, then retry the delete.", util.SafeString(currentModel.RoleId)),
 				string(types.HandlerErrorCodeResourceConflict))
 		}
 		return progressevent.GetFailedEventByResponse(err.Error(), resp)
@@ -228,9 +227,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func getRole(client *util.MongoDBClient, model *Model) (*admin20231115014.CloudProviderAccessRole, *http.Response, error) {
-	return client.Atlas20231115014.CloudProviderAccessApi.
-		GetCloudProviderAccessRole(context.Background(), util.SafeString(model.ProjectId), util.SafeString(model.RoleId)).
+func getRole(client *util.MongoDBClient, model *Model) (*admin.CloudProviderAccessRole, *http.Response, error) {
+	return client.AtlasSDK.CloudProviderAccessApi.
+		GetCloudProviderAccess(context.Background(), util.SafeString(model.ProjectId), util.SafeString(model.RoleId)).
 		Execute()
 }
 
@@ -246,16 +245,16 @@ func authorizeRole(client *util.MongoDBClient, model *Model, operation string, s
 	roleID := util.SafeString(model.RoleId)
 	arn := util.SafeString(model.IamAssumedRoleArn)
 
-	role, resp, err := client.Atlas20231115014.CloudProviderAccessApi.
-		AuthorizeCloudProviderAccessRole(context.Background(), projectID, roleID, &admin20231115014.CloudProviderAccessRole{
+	role, resp, err := client.AtlasSDK.CloudProviderAccessApi.
+		AuthorizeProviderAccessRole(context.Background(), projectID, roleID, &admin.CloudProviderAccessRoleRequestUpdate{
 			ProviderName:      constants.AWS,
 			IamAssumedRoleArn: &arn,
 		}).Execute()
 	if err != nil {
-		if HasErrorCode(err, errorCodeCannotAssumeRole) {
+		if admin.IsErrorCode(err, errorCodeCannotAssumeRole) {
 			return pendingAuthorization(model, operation, startedAt)
 		}
-		if util.StatusNotFound(resp) || HasErrorCode(err, errorCodeRoleNotFound) {
+		if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
 			event := notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it.", roleID, projectID))
 			event.ResourceModel = model
 			return event
@@ -268,7 +267,7 @@ func authorizeRole(client *util.MongoDBClient, model *Model, operation string, s
 	return authorizationComplete(model, role)
 }
 
-func authorizationComplete(model *Model, role *admin20231115014.CloudProviderAccessRole) handler.ProgressEvent {
+func authorizationComplete(model *Model, role *admin.CloudProviderAccessRole) handler.ProgressEvent {
 	SetModelFromRole(model, role)
 
 	return handler.ProgressEvent{
@@ -306,27 +305,11 @@ func authorizationCallback(req handler.Request, model *Model, operation string) 
 	return parsed, err == nil
 }
 
-// HasErrorCode reports whether the Atlas API error carries the given
-// application error code. The SDK exposes the decoded error through
-// GenericOpenAPIError, and its formatted message also contains the code, so
-// both are checked.
-func HasErrorCode(err error, code string) bool {
-	if err == nil {
-		return false
-	}
-	if apiErr, ok := errors.AsType[*admin20231115014.GenericOpenAPIError](err); ok {
-		if model := apiErr.Model(); model.GetErrorCode() == code {
-			return true
-		}
-	}
-	return strings.Contains(err.Error(), code)
-}
-
-func IsAuthorized(role *admin20231115014.CloudProviderAccessRole) bool {
+func IsAuthorized(role *admin.CloudProviderAccessRole) bool {
 	return role != nil && role.HasAuthorizedDate()
 }
 
-func SetModelFromRole(model *Model, role *admin20231115014.CloudProviderAccessRole) {
+func SetModelFromRole(model *Model, role *admin.CloudProviderAccessRole) {
 	if role == nil {
 		return
 	}
@@ -343,7 +326,7 @@ func SetModelFromRole(model *Model, role *admin20231115014.CloudProviderAccessRo
 // FeatureUsagesFromRole maps the feature type of each usage. The Atlas API models
 // featureId as a polymorphic object that the typed SDK only covers for push-based
 // log export, so it is deliberately not exposed.
-func FeatureUsagesFromRole(role *admin20231115014.CloudProviderAccessRole) []FeatureUsage {
+func FeatureUsagesFromRole(role *admin.CloudProviderAccessRole) []FeatureUsage {
 	usages := role.GetFeatureUsages()
 	result := make([]FeatureUsage, 0, len(usages))
 	for i := range usages {
@@ -353,7 +336,7 @@ func FeatureUsagesFromRole(role *admin20231115014.CloudProviderAccessRole) []Fea
 }
 
 func roleLookupFailed(resp *http.Response, err error) handler.ProgressEvent {
-	if util.StatusNotFound(resp) || HasErrorCode(err, errorCodeRoleNotFound) {
+	if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
 		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role was not found. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it: %s", err.Error()))
 	}
 	return progressevent.GetFailedEventByResponse(err.Error(), resp)

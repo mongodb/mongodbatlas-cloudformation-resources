@@ -103,5 +103,5 @@ Date and time when the role was authorized for the specified cloud service provi
 
 #### FeatureUsages
 
-List of MongoDB Cloud features that use the authorized AWS IAM role.
+Atlas features that use the role. The role cannot be deleted while a feature still uses it.
 

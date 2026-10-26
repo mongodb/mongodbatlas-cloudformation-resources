@@ -1,6 +1,6 @@
 # MongoDB::Atlas::CloudProviderAccessAuthorization FeatureUsage
 
-MongoDB Cloud feature associated with the authorized AWS IAM role.
+One Atlas feature that uses the Cloud Provider Access role. A role that a feature still uses cannot be deleted.
 
 ## Syntax
 
@@ -24,7 +24,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### FeatureType
 
-Human-readable label that describes one MongoDB Cloud feature linked to this AWS IAM role.
+Human-readable label that describes the Atlas feature that uses the role, for example ENCRYPTION_AT_REST.
 
 _Required_: No
 

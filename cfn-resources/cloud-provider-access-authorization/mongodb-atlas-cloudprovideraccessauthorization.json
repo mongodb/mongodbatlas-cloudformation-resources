@@ -3,12 +3,12 @@
   "description": "Authorizes an AWS IAM role against a Cloud Provider Access role registration so Atlas can assume it. Use MongoDB::Atlas::CloudProviderAccessSetup to register the role first, then use this resource to authorize it. Deleting this resource removes the whole Cloud Provider Access role registration, not only the authorization.",
   "definitions": {
     "FeatureUsage": {
-      "description": "MongoDB Cloud feature associated with the authorized AWS IAM role.",
+      "description": "One Atlas feature that uses the Cloud Provider Access role. A role that a feature still uses cannot be deleted.",
       "type": "object",
       "properties": {
         "FeatureType": {
           "type": "string",
-          "description": "Human-readable label that describes one MongoDB Cloud feature linked to this AWS IAM role."
+          "description": "Human-readable label that describes the Atlas feature that uses the role, for example ENCRYPTION_AT_REST."
         }
       },
       "additionalProperties": false
@@ -47,7 +47,7 @@
     "FeatureUsages": {
       "type": "array",
       "insertionOrder": false,
-      "description": "List of MongoDB Cloud features that use the authorized AWS IAM role.",
+      "description": "Atlas features that use the role. The role cannot be deleted while a feature still uses it.",
       "items": {
         "$ref": "#/definitions/FeatureUsage"
       }

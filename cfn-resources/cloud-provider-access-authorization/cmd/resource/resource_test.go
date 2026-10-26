@@ -15,15 +15,13 @@
 package resource_test
 
 import (
-	"errors"
-	"fmt"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-access-authorization/cmd/resource"
 )
@@ -34,49 +32,19 @@ const (
 	roleNotFound     = "CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND"
 )
 
-// apiError builds the error the Atlas SDK returns for a failed request: a
-// GenericOpenAPIError carrying the decoded ApiError and the formatted message.
-func apiError(code string) error {
-	e := &admin20231115014.GenericOpenAPIError{}
-	e.SetError(fmt.Sprintf("PATCH /cloudProviderAccess: HTTP 400 (Error code: %q) Reason: Bad Request", code))
-	e.SetModel(admin20231115014.ApiError{ErrorCode: &code})
-	return e
-}
-
-func TestHasErrorCode(t *testing.T) {
-	testCases := []struct {
-		name     string
-		err      error
-		code     string
-		expected bool
-	}{
-		{name: "nil error", err: nil, code: cannotAssumeRole, expected: false},
-		{name: "decoded model code", err: apiError(cannotAssumeRole), code: cannotAssumeRole, expected: true},
-		{name: "decoded model code mismatch", err: apiError(cannotAssumeRole), code: roleInUse, expected: false},
-		{name: "message fallback", err: errors.New("HTTP 400 (Error code: \"AWS_IAM_ROLE_IN_USE\")"), code: roleInUse, expected: true},
-		{name: "unrelated error", err: errors.New("connection reset"), code: cannotAssumeRole, expected: false},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.expected, resource.HasErrorCode(tc.err, tc.code))
-		})
-	}
-}
-
 func TestIsAuthorized(t *testing.T) {
 	authorizedDate := time.Date(2026, 10, 21, 12, 0, 0, 0, time.UTC)
 
 	assert.False(t, resource.IsAuthorized(nil))
-	assert.False(t, resource.IsAuthorized(&admin20231115014.CloudProviderAccessRole{}))
-	assert.True(t, resource.IsAuthorized(&admin20231115014.CloudProviderAccessRole{AuthorizedDate: &authorizedDate}))
+	assert.False(t, resource.IsAuthorized(&admin.CloudProviderAccessRole{}))
+	assert.True(t, resource.IsAuthorized(&admin.CloudProviderAccessRole{AuthorizedDate: &authorizedDate}))
 }
 
 func TestFeatureUsagesFromRole_MapsFeatureType(t *testing.T) {
 	encryptionAtRest := "ENCRYPTION_AT_REST"
 	logExport := "PUSH_BASED_LOG_EXPORT"
-	usages := resource.FeatureUsagesFromRole(&admin20231115014.CloudProviderAccessRole{
-		FeatureUsages: &[]admin20231115014.CloudProviderAccessFeatureUsage{
+	usages := resource.FeatureUsagesFromRole(&admin.CloudProviderAccessRole{
+		FeatureUsages: &[]admin.CloudProviderAccessFeatureUsage{
 			{FeatureType: &encryptionAtRest},
 			{FeatureType: &logExport},
 		},
@@ -97,12 +65,12 @@ func TestSetModelFromRole_KeepsIdentifierAndSetsReadOnly(t *testing.T) {
 
 	model := &resource.Model{ProjectId: &projectID, RoleId: &roleID, IamAssumedRoleArn: &arn}
 	featureType := "ENCRYPTION_AT_REST"
-	role := &admin20231115014.CloudProviderAccessRole{
+	role := &admin.CloudProviderAccessRole{
 		ProviderName:      "AWS",
 		RoleId:            &roleID,
 		IamAssumedRoleArn: &arn,
 		AuthorizedDate:    &authorizedDate,
-		FeatureUsages:     &[]admin20231115014.CloudProviderAccessFeatureUsage{{FeatureType: &featureType}},
+		FeatureUsages:     &[]admin.CloudProviderAccessFeatureUsage{{FeatureType: &featureType}},
 	}
 
 	resource.SetModelFromRole(model, role)

@@ -1,4 +1,4 @@
-.PHONY: build debug clean
+.PHONY: build debug clean submit create-test-resources delete-test-resources run-contract-testing
 tags=logging callback metrics scheduler
 cgo=0
 goos=linux
@@ -18,9 +18,11 @@ debug:
 clean:
 	rm -rf bin
 
-submit: clean build
-	@echo "==> Submitting to private registry for testing"
-	cfn submit --set-default --region us-east-1
+# The shared helper injects the Cloud Tag Policy tags into resource-role.yaml before
+# cfn submit creates the execution role stack, which raw cfn submit does not do.
+submit:
+	@echo "==> Submitting to the private registry through the shared helper"
+	(cd .. && ./cfn-submit-helper.sh $(notdir $(CURDIR)))
 
 create-test-resources:
 	@echo "==> Creating test files and resources for contract testing"

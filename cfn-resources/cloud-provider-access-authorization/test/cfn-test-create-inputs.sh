@@ -17,6 +17,11 @@ function usage {
 	echo "Creates a project, a Cloud Provider Access role registration and an assumable AWS IAM role"
 }
 
+# Cloud Tag Policy: the IAM role created below must carry the required tags.
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../tag-policy.sh"
+require_tag_policy_vars
+
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
@@ -61,7 +66,7 @@ jq --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
 roleName="mongodb-atlas-cpa-role-$(date +%s)-${RANDOM}"
 echo "roleName: ${roleName}"
 
-aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/trust-policy.json >/dev/null
+aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/trust-policy.json --tags Key=mongodb-owner,Value="${MONGODB_TAG_OWNER}" Key=mongodb-env,Value="${MONGODB_TAG_ENV}" >/dev/null
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq -r '.Role.Arn')
 echo "Created AWS IAM role: ${awsArn}"
 

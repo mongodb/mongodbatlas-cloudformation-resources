@@ -16,6 +16,8 @@ The following components use this resource and are potentially impacted by any c
 
 All of these resources are created as part of `cfn-testing-helper.sh`, except for the contract-test deviation described below.
 
+The test input script creates the AWS IAM role, so export the Cloud Tag Policy variables before running it: `MONGODB_TAG_OWNER` and `MONGODB_TAG_ENV`. See [TESTING.md](../../../TESTING.md).
+
 ## Manual QA
 
 Please follow the steps in [TESTING.md](../../../TESTING.md).

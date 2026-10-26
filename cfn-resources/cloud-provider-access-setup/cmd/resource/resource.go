@@ -28,7 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
 
@@ -105,7 +105,7 @@ func HandleCreate(callbackContext map[string]any, client *util.MongoDBClient, cu
 		CreateCloudProviderAccess(context.Background(), *currentModel.ProjectId, roleRequest).
 		Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(
+		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error creating Cloud Provider Access role: %s", err.Error()), response)
 	}
 
@@ -113,12 +113,12 @@ func HandleCreate(callbackContext map[string]any, client *util.MongoDBClient, cu
 	if !util.IsStringPresent(registered.RoleId) {
 		// Without the role id the registration cannot be tracked or read back, and a retry would
 		// register another role, so fail instead of returning an unusable checkpoint.
-		return progress_events.GetFailedEventByCode(
+		return progressevent.GetFailedEventByCode(
 			"Cloud Provider Access role registration did not return a role id",
 			string(types.HandlerErrorCodeInternalFailure))
 	}
 
-	return progress_events.GetInProgressProgressEvent(
+	return progressevent.GetInProgressProgressEvent(
 		"Cloud Provider Access role registered; verifying registration",
 		map[string]any{roleIDCallbackKey: *registered.RoleId},
 		registered, 1)
@@ -150,11 +150,11 @@ func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.Progres
 		Execute()
 	if err != nil {
 		if util.StatusNotFound(response) {
-			return progress_events.GetFailedEventByCode(
+			return progressevent.GetFailedEventByCode(
 				fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId),
 				string(types.HandlerErrorCodeNotFound))
 		}
-		return progress_events.GetFailedEventByResponse(
+		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error reading Cloud Provider Access role: %s", err.Error()), response)
 	}
 
@@ -200,12 +200,12 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 		ListCloudProviderAccess(ctx, *currentModel.ProjectId).
 		Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(
+		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error listing Cloud Provider Access roles: %s", err.Error()), response)
 	}
 
 	if FindAWSRole(roles, *currentModel.RoleId) == nil {
-		return progress_events.GetFailedEventByCode(
+		return progressevent.GetFailedEventByCode(
 			fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId),
 			string(types.HandlerErrorCodeNotFound))
 	}
@@ -220,11 +220,11 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 			return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}
 		}
 		if admin.IsErrorCode(err, roleInUseErrorCode) {
-			return progress_events.GetFailedEventByCode(
+			return progressevent.GetFailedEventByCode(
 				fmt.Sprintf(roleInUseMessage, *currentModel.RoleId),
 				string(types.HandlerErrorCodeResourceConflict))
 		}
-		return progress_events.GetFailedEventByResponse(
+		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error deleting Cloud Provider Access role: %s", err.Error()), response)
 	}
 
@@ -256,7 +256,7 @@ func HandleList(client *util.MongoDBClient, currentModel *Model) handler.Progres
 		ListCloudProviderAccess(context.Background(), *currentModel.ProjectId).
 		Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(
+		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error listing Cloud Provider Access roles: %s", err.Error()), response)
 	}
 

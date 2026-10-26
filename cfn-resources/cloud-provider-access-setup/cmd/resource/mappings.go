@@ -22,31 +22,28 @@ import (
 
 // NewCFNCloudProviderAccessSetup builds the resource model from a create or read API response.
 func NewCFNCloudProviderAccessSetup(model *Model, role *admin.CloudProviderAccessRole) Model {
-	result := newBaseModel(model)
-	result.RoleId = role.RoleId
-	result.AtlasAWSAccountArn = role.AtlasAWSAccountArn
-	result.AtlasAssumedRoleExternalId = role.AtlasAssumedRoleExternalId
-	result.CreatedDate = util.TimePtrToStringPtr(role.CreatedDate)
-	result.FeatureUsages = newFeatureUsages(role.FeatureUsages)
-	return result
+	return Model{
+		Profile:                    model.Profile,
+		ProjectId:                  model.ProjectId,
+		RoleId:                     role.RoleId,
+		AtlasAWSAccountArn:         role.AtlasAWSAccountArn,
+		AtlasAssumedRoleExternalId: role.AtlasAssumedRoleExternalId,
+		CreatedDate:                util.TimePtrToStringPtr(role.CreatedDate),
+		FeatureUsages:              newFeatureUsages(role.FeatureUsages),
+	}
 }
 
 // NewCFNCloudProviderAccessSetupFromAWSIAMRole builds the resource model from one AWS entry of the
 // list API response.
 func NewCFNCloudProviderAccessSetupFromAWSIAMRole(model *Model, role *admin.CloudProviderAccessAWSIAMRole) Model {
-	result := newBaseModel(model)
-	result.RoleId = role.RoleId
-	result.AtlasAWSAccountArn = role.AtlasAWSAccountArn
-	result.AtlasAssumedRoleExternalId = role.AtlasAssumedRoleExternalId
-	result.CreatedDate = util.TimePtrToStringPtr(role.CreatedDate)
-	result.FeatureUsages = newFeatureUsages(role.FeatureUsages)
-	return result
-}
-
-func newBaseModel(model *Model) Model {
 	return Model{
-		Profile:   model.Profile,
-		ProjectId: model.ProjectId,
+		Profile:                    model.Profile,
+		ProjectId:                  model.ProjectId,
+		RoleId:                     role.RoleId,
+		AtlasAWSAccountArn:         role.AtlasAWSAccountArn,
+		AtlasAssumedRoleExternalId: role.AtlasAssumedRoleExternalId,
+		CreatedDate:                util.TimePtrToStringPtr(role.CreatedDate),
+		FeatureUsages:              newFeatureUsages(role.FeatureUsages),
 	}
 }
 

@@ -17,7 +17,6 @@ package resource_test
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"testing"
 	"time"
 
@@ -42,80 +41,6 @@ func apiError(code string) error {
 	e.SetError(fmt.Sprintf("PATCH /cloudProviderAccess: HTTP 400 (Error code: %q) Reason: Bad Request", code))
 	e.SetModel(admin20231115014.ApiError{ErrorCode: &code})
 	return e
-}
-
-func TestAuthorizeWithRetry_RetriesCannotAssumeRoleThenSucceeds(t *testing.T) {
-	var (
-		calls  int
-		slept  []time.Duration
-		delay  = 10 * time.Second
-		role   = &admin20231115014.CloudProviderAccessRole{ProviderName: "AWS"}
-		okResp = &http.Response{StatusCode: http.StatusOK}
-	)
-
-	got, resp, err := resource.AuthorizeWithRetry(3, delay, func(d time.Duration) { slept = append(slept, d) }, func() (*admin20231115014.CloudProviderAccessRole, *http.Response, error) {
-		calls++
-		if calls < 3 {
-			return nil, nil, apiError(cannotAssumeRole)
-		}
-		return role, okResp, nil
-	})
-
-	require.NoError(t, err)
-	assert.Same(t, role, got)
-	assert.Same(t, okResp, resp)
-	assert.Equal(t, 3, calls)
-	assert.Equal(t, []time.Duration{delay, delay}, slept)
-}
-
-func TestAuthorizeWithRetry_StopsOnNonRetryableError(t *testing.T) {
-	var (
-		calls int
-		slept int
-	)
-
-	got, _, err := resource.AuthorizeWithRetry(3, time.Second, func(time.Duration) { slept++ }, func() (*admin20231115014.CloudProviderAccessRole, *http.Response, error) {
-		calls++
-		return nil, &http.Response{StatusCode: http.StatusBadRequest}, apiError(roleInUse)
-	})
-
-	require.Error(t, err)
-	assert.Nil(t, got)
-	assert.Equal(t, 1, calls)
-	assert.Equal(t, 0, slept)
-}
-
-func TestAuthorizeWithRetry_ExhaustsAttempts(t *testing.T) {
-	var (
-		calls int
-		slept int
-	)
-
-	got, _, err := resource.AuthorizeWithRetry(3, time.Second, func(time.Duration) { slept++ }, func() (*admin20231115014.CloudProviderAccessRole, *http.Response, error) {
-		calls++
-		return nil, nil, apiError(cannotAssumeRole)
-	})
-
-	require.Error(t, err)
-	assert.Nil(t, got)
-	assert.Equal(t, 3, calls)
-	assert.Equal(t, 2, slept)
-}
-
-func TestAuthorizeWithRetry_SucceedsOnFirstAttempt(t *testing.T) {
-	var (
-		calls int
-		slept int
-	)
-
-	_, _, err := resource.AuthorizeWithRetry(3, time.Second, func(time.Duration) { slept++ }, func() (*admin20231115014.CloudProviderAccessRole, *http.Response, error) {
-		calls++
-		return &admin20231115014.CloudProviderAccessRole{}, nil, nil
-	})
-
-	require.NoError(t, err)
-	assert.Equal(t, 1, calls)
-	assert.Equal(t, 0, slept)
 }
 
 func TestHasErrorCode(t *testing.T) {

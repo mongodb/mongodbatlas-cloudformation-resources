@@ -418,11 +418,11 @@ jobs:
         run: |
           pushd cfn-resources/cloud-provider-access-authorization
           make create-test-resources
+          trap 'make delete-test-resources' EXIT
 
           cat inputs/inputs_1_create.json
 
           make run-contract-testing
-          make delete-test-resources
   cluster-outage-simulation :
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cluster-outage-simulation == 'true' }}

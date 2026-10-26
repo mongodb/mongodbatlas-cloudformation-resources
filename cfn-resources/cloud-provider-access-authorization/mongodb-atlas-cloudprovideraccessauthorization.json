@@ -88,7 +88,8 @@
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",
-    "/properties/RoleId"
+    "/properties/RoleId",
+    "/properties/Profile"
   ],
   "handlers": {
     "create": {

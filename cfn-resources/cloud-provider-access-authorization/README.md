@@ -23,10 +23,16 @@ See the examples [CFN Template](/examples/cloud-provider-access-authorization/cl
 
 - Deleting this resource removes the whole Cloud Provider Access role registration, not only the authorization. Atlas has no operation that revokes an authorization while keeping the role registered, so the paired `MongoDB::Atlas::CloudProviderAccessSetup` resource is left orphaned after a delete.
 - Re-creating after a delete is not supported for the same role. It means registering the role again with `MongoDB::Atlas::CloudProviderAccessSetup`, which produces a new role id and a new external id, and the IAM trust policy has to be updated too.
-- A role that a feature uses cannot be removed. The delete fails with `AWS_IAM_ROLE_IN_USE` and the dependent feature has to be removed first, for example by disabling Encryption at Rest. A normal stack teardown is unaffected, because Encryption at Rest is destroyed before this resource.
+- A role that a feature uses cannot be removed. The delete fails with `ResourceConflict` for `AWS_IAM_ROLE_IN_USE` and the dependent feature has to be removed first, for example by disabling Encryption at Rest. When Encryption at Rest gets its role id from the setup resource, add `DependsOn: CloudProviderAccessAuthorization` to the Encryption at Rest resource. That explicit dependency ensures authorization completes before enabling encryption and that encryption is disabled before removing authorization during teardown.
 - Changing `IamAssumedRoleArn` re-authorizes the same role in place. The resource is not replaced, the role id does not change, and the paired setup resource keeps its registration.
-- Creating this resource for a role that is already authorized to the same ARN fails with `AlreadyExists`, because a second create cannot produce a new distinct identifier.
+- Creating this resource for a role that is already authorized fails with `AlreadyExists`, even if the requested ARN differs. The role registration identifies the authorization; a second resource must not overwrite it.
+- Create checkpoints its callback state before changing Atlas. A repeated callback that finds its requested ARN already authorized succeeds without another write. A fresh create still returns `AlreadyExists`.
+- `CANNOT_ASSUME_ROLE` is retried through callbacks every ten seconds for up to five minutes. No handler sleeps between attempts. If the trust policy never becomes usable, the operation fails with `NotStabilized` and guidance to check the policy and external ID.
+- Update returns `NotFound` when the registration has no authorization. It does not create an authorization that Read considers absent.
+- `Profile` is part of the primary identifier so Read and Delete can use the original credentials even when CloudFormation supplies only identifying properties.
+
+Deleting this resource while retaining the paired `MongoDB::Atlas::CloudProviderAccessSetup` resource also affects stack rollback: a later stack failure cannot restore the deleted authorization using the old role id.
 
 ## CloudFormation contract tests
 
-The v1 contract test `contract_delete_create` expects a deleted resource to be creatable again. Because the delete removes the whole role registration, the re-create fails with `CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND`. This deviation is expected and is covered by an exception request to AWS.
+The v1 contract test `contract_delete_create` expects a deleted resource to be creatable again. Because the delete removes the whole role registration, the re-create fails with `CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND`. This deviation is expected and is pending an exception request to AWS.

@@ -37,12 +37,9 @@ import (
 const (
 	iamAssumedRoleArnField = "IamAssumedRoleArn"
 
-	// authorizeAttempts and authorizeRetryDelay bound the retry of the authorize
-	// call while AWS is still propagating a newly created IAM role. Three
-	// attempts with a ten second pause stay well inside the CloudFormation
-	// progress-event budget.
-	authorizeAttempts   = 3
-	authorizeRetryDelay = 10 * time.Second
+	// Retry IAM propagation across callbacks instead of sleeping inside a handler.
+	authorizeTimeout      = 5 * time.Minute
+	authorizeRetrySeconds = 10
 
 	// Atlas API error codes this resource reacts to.
 	errorCodeCannotAssumeRole = "CANNOT_ASSUME_ROLE"
@@ -74,20 +71,34 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	// A second create for the same role cannot produce a new distinct
-	// identifier, so an existing authorization to the same ARN is reported as
-	// AlreadyExists. This also makes a retried create idempotent.
+	return HandleCreate(req, client, currentModel), nil
+}
+
+// HandleCreate checkpoints the operation before authorizing so a retried callback
+// can recognize its own completed authorization without taking over an existing one.
+func HandleCreate(req handler.Request, client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
+	startedAt, continuing := authorizationCallback(req, currentModel, "CREATE")
 	role, resp, err := getRole(client, currentModel)
 	if err != nil {
-		return roleLookupFailed(resp, err), nil
+		event := roleLookupFailed(resp, err)
+		if continuing {
+			event.ResourceModel = currentModel
+		}
+		return event
 	}
-	if IsAuthorized(role) && role.GetIamAssumedRoleArn() == util.SafeString(currentModel.IamAssumedRoleArn) {
+	if IsAuthorized(role) {
+		if continuing && role.GetIamAssumedRoleArn() == util.SafeString(currentModel.IamAssumedRoleArn) {
+			return authorizationComplete(currentModel, role)
+		}
 		return progressevent.GetFailedEventByCode(
-			fmt.Sprintf("The role %s is already authorized to %s.", util.SafeString(currentModel.RoleId), util.SafeString(currentModel.IamAssumedRoleArn)),
-			string(types.HandlerErrorCodeAlreadyExists)), nil
+			fmt.Sprintf("The role %s is already authorized to %s.", util.SafeString(currentModel.RoleId), role.GetIamAssumedRoleArn()),
+			string(types.HandlerErrorCodeAlreadyExists))
 	}
 
-	return authorizeRole(client, currentModel)
+	if !continuing {
+		return pendingAuthorization(currentModel, "CREATE", time.Now())
+	}
+	return authorizeRole(client, currentModel, "CREATE", startedAt)
 }
 
 // Update re-authorizes the same role in place. Changing IamAssumedRoleArn does
@@ -104,7 +115,30 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	return authorizeRole(client, currentModel)
+	return HandleUpdate(req, client, currentModel), nil
+}
+
+// HandleUpdate changes an existing authorization without creating a missing one.
+func HandleUpdate(req handler.Request, client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
+	role, resp, err := getRole(client, currentModel)
+	if err != nil {
+		event := roleLookupFailed(resp, err)
+		event.ResourceModel = currentModel
+		return event
+	}
+	if !IsAuthorized(role) {
+		event := notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
+		event.ResourceModel = currentModel
+		return event
+	}
+	if role.GetIamAssumedRoleArn() == util.SafeString(currentModel.IamAssumedRoleArn) {
+		return authorizationComplete(currentModel, role)
+	}
+	startedAt, continuing := authorizationCallback(req, currentModel, "UPDATE")
+	if !continuing {
+		startedAt = time.Now()
+	}
+	return authorizeRole(client, currentModel, "UPDATE", startedAt)
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -119,12 +153,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
+	return HandleRead(client, currentModel), nil
+}
+
+// HandleRead returns the existing authorization, if any.
+func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	role, resp, err := getRole(client, currentModel)
 	if err != nil {
-		return roleLookupFailed(resp, err), nil
+		return roleLookupFailed(resp, err)
 	}
 	if !IsAuthorized(role) {
-		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId))), nil
+		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
 	}
 
 	SetModelFromRole(currentModel, role)
@@ -133,7 +172,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
 		ResourceModel:   currentModel,
-	}, nil
+	}
 }
 
 // Delete removes the Cloud Provider Access role registration, not only the
@@ -151,12 +190,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
+	return HandleDelete(client, currentModel), nil
+}
+
+// HandleDelete removes the authorization and its backing registration.
+func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	role, resp, err := getRole(client, currentModel)
 	if err != nil {
-		return roleLookupFailed(resp, err), nil
+		return roleLookupFailed(resp, err)
 	}
 	if !IsAuthorized(role) {
-		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId))), nil
+		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
 	}
 
 	resp, err = client.Atlas20231115014.CloudProviderAccessApi.
@@ -164,20 +208,20 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Execute()
 	if err != nil {
 		if util.StatusNotFound(resp) || HasErrorCode(err, errorCodeRoleNotFound) {
-			return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was already removed.", util.SafeString(currentModel.RoleId))), nil
+			return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was already removed.", util.SafeString(currentModel.RoleId)))
 		}
 		if HasErrorCode(err, errorCodeRoleInUse) {
 			return progressevent.GetFailedEventByCode(
 				"Cannot remove the AWS IAM role because it is still in use. Remove the feature that uses it first, for example disable Encryption at Rest, and retry the deletion.",
-				string(types.HandlerErrorCodeInvalidRequest)), nil
+				string(types.HandlerErrorCodeResourceConflict))
 		}
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp)
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
-	}, nil
+	}
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -190,56 +234,76 @@ func getRole(client *util.MongoDBClient, model *Model) (*admin20231115014.CloudP
 		Execute()
 }
 
-func authorizeRole(client *util.MongoDBClient, model *Model) (handler.ProgressEvent, error) {
+func authorizeRole(client *util.MongoDBClient, model *Model, operation string, startedAt time.Time) handler.ProgressEvent {
+	if time.Since(startedAt) >= authorizeTimeout {
+		// HandlerErrorCodeServiceTimeout carries the value "NotStabilized", the
+		// CloudFormation code for a resource that never reached a stable state.
+		event := progressevent.GetFailedEventByCode("Timed out waiting for Atlas to assume the AWS IAM role. Check its trust policy and external ID.", string(types.HandlerErrorCodeServiceTimeout))
+		event.ResourceModel = model
+		return event
+	}
 	projectID := util.SafeString(model.ProjectId)
 	roleID := util.SafeString(model.RoleId)
 	arn := util.SafeString(model.IamAssumedRoleArn)
 
-	role, resp, err := AuthorizeWithRetry(authorizeAttempts, authorizeRetryDelay, time.Sleep, func() (*admin20231115014.CloudProviderAccessRole, *http.Response, error) {
-		return client.Atlas20231115014.CloudProviderAccessApi.
-			AuthorizeCloudProviderAccessRole(context.Background(), projectID, roleID, &admin20231115014.CloudProviderAccessRole{
-				ProviderName:      constants.AWS,
-				IamAssumedRoleArn: &arn,
-			}).
-			Execute()
-	})
+	role, resp, err := client.Atlas20231115014.CloudProviderAccessApi.
+		AuthorizeCloudProviderAccessRole(context.Background(), projectID, roleID, &admin20231115014.CloudProviderAccessRole{
+			ProviderName:      constants.AWS,
+			IamAssumedRoleArn: &arn,
+		}).Execute()
 	if err != nil {
-		if util.StatusNotFound(resp) || HasErrorCode(err, errorCodeRoleNotFound) {
-			return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it.", roleID, projectID)), nil
+		if HasErrorCode(err, errorCodeCannotAssumeRole) {
+			return pendingAuthorization(model, operation, startedAt)
 		}
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		if util.StatusNotFound(resp) || HasErrorCode(err, errorCodeRoleNotFound) {
+			event := notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it.", roleID, projectID))
+			event.ResourceModel = model
+			return event
+		}
+		event := progressevent.GetFailedEventByResponse(err.Error(), resp)
+		event.ResourceModel = model
+		return event
 	}
 
+	return authorizationComplete(model, role)
+}
+
+func authorizationComplete(model *Model, role *admin20231115014.CloudProviderAccessRole) handler.ProgressEvent {
 	SetModelFromRole(model, role)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Authorization Complete",
 		ResourceModel:   model,
-	}, nil
+	}
 }
 
-// AuthorizeWithRetry runs attempt until it succeeds, fails with something other
-// than CANNOT_ASSUME_ROLE, or exhausts the attempt budget. Atlas returns
-// CANNOT_ASSUME_ROLE while AWS is still propagating a newly created IAM role,
-// so a short retry usually succeeds. sleep is injectable so the retry can be
-// unit tested without waiting.
-func AuthorizeWithRetry(attempts int, delay time.Duration, sleep func(time.Duration), attempt func() (*admin20231115014.CloudProviderAccessRole, *http.Response, error)) (*admin20231115014.CloudProviderAccessRole, *http.Response, error) {
-	var (
-		role *admin20231115014.CloudProviderAccessRole
-		resp *http.Response
-		err  error
-	)
-	for i := range attempts {
-		role, resp, err = attempt()
-		if err == nil || !HasErrorCode(err, errorCodeCannotAssumeRole) {
-			return role, resp, err
-		}
-		if i < attempts-1 {
-			sleep(delay)
+func pendingAuthorization(model *Model, operation string, startedAt time.Time) handler.ProgressEvent {
+	return progressevent.GetInProgressProgressEvent("Waiting to authorize the AWS IAM role", map[string]any{
+		"operation": operation,
+		"projectId": util.SafeString(model.ProjectId),
+		"roleId":    util.SafeString(model.RoleId),
+		"profile":   util.SafeString(model.Profile),
+		"arn":       util.SafeString(model.IamAssumedRoleArn),
+		"startedAt": startedAt.UTC().Format(time.RFC3339Nano),
+	}, model, authorizeRetrySeconds)
+}
+
+func authorizationCallback(req handler.Request, model *Model, operation string) (time.Time, bool) {
+	for key, expected := range map[string]string{
+		"operation": operation,
+		"projectId": util.SafeString(model.ProjectId),
+		"roleId":    util.SafeString(model.RoleId),
+		"profile":   util.SafeString(model.Profile),
+		"arn":       util.SafeString(model.IamAssumedRoleArn),
+	} {
+		if req.CallbackContext[key] != expected {
+			return time.Time{}, false
 		}
 	}
-	return role, resp, err
+	startedAt, _ := req.CallbackContext["startedAt"].(string)
+	parsed, err := time.Parse(time.RFC3339Nano, startedAt)
+	return parsed, err == nil
 }
 
 // HasErrorCode reports whether the Atlas API error carries the given

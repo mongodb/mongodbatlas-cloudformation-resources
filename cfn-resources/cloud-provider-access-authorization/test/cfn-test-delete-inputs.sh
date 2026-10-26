@@ -22,7 +22,12 @@ echo "Check if a project is created ${projectId}"
 if [ -f "$(dirname "$0")/role-name.txt" ]; then
 	roleName=$(cat "$(dirname "$0")/role-name.txt")
 	echo "Deleting AWS IAM role: ${roleName}"
-	aws iam delete-role --role-name "${roleName}" 2>/dev/null || echo "Role already deleted or doesn't exist"
+	if ! deleteOutput=$(aws iam delete-role --role-name "${roleName}" 2>&1); then
+		if [[ "$deleteOutput" != *"(NoSuchEntity)"* ]]; then
+			printf '%s\n' "$deleteOutput" >&2
+			exit 1
+		fi
+	fi
 	rm -f "$(dirname "$0")/role-name.txt"
 else
 	echo "No role-name.txt found, nothing to delete"

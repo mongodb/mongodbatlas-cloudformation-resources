@@ -1,0 +1,71 @@
+name: 'Submit Workflow Smoke Test'
+
+# Guards the local private-registry submit workflow (root Makefile and the
+# cfn-resources helpers). Runs in seconds, with no AWS credentials and no Go build.
+on:
+  pull_request:
+    paths:
+      - 'Makefile'
+      - 'cfn-resources/cfn-submit-helper.sh'
+      - 'cfn-resources/cfn-submit-helper.config'
+      - 'cfn-resources/tag-policy.sh'
+      - 'cfn-resources/autogen/templateMakeFile'
+      - '.github/workflows/submit-workflow-smoke.yaml'
+  push:
+    branches:
+      - master
+    paths:
+      - 'Makefile'
+      - 'cfn-resources/cfn-submit-helper.sh'
+      - 'cfn-resources/cfn-submit-helper.config'
+      - 'cfn-resources/tag-policy.sh'
+      - 'cfn-resources/autogen/templateMakeFile'
+      - '.github/workflows/submit-workflow-smoke.yaml'
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Root submit without a resource prints usage and fails
+        run: |
+          if make submit > "$RUNNER_TEMP/usage.txt" 2>&1; then
+            echo "make submit without a resource must fail"
+            exit 1
+          fi
+          grep -q "Usage: make submit <resource>" "$RUNNER_TEMP/usage.txt"
+      - name: Root submit resolves resource goals without a make error
+        run: |
+          make -n submit database-user > "$RUNNER_TEMP/dry-run.txt" 2>&1
+          cat "$RUNNER_TEMP/dry-run.txt"
+          if grep -q "No rule to make target" "$RUNNER_TEMP/dry-run.txt"; then
+            echo "a resource name must not be an unresolved make goal"
+            exit 1
+          fi
+          grep -q "SUBMIT_ONLY=true ./cfn-submit-helper.sh database-user" "$RUNNER_TEMP/dry-run.txt"
+      - name: Helper dry run reports the resource
+        run: |
+          (cd cfn-resources && SUBMIT_ONLY=true DRY_RUN=true ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/helper.txt" 2>&1
+          cat "$RUNNER_TEMP/helper.txt"
+          grep -q "would have run 'cfn submit' on:database-user" "$RUNNER_TEMP/helper.txt"
+      - name: Missing tag variables fail before any AWS call
+        run: |
+          mkdir -p "$RUNNER_TEMP/stubs"
+          printf '#!/bin/sh\necho "$*" >> "$STUB_LOG"\n' > "$RUNNER_TEMP/stubs/aws"
+          cp "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
+          chmod +x "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
+          export STUB_LOG="$RUNNER_TEMP/stub-calls.log"
+          : > "$STUB_LOG"
+          if (cd cfn-resources && unset MONGODB_TAG_OWNER MONGODB_TAG_ENV && SUBMIT_ONLY=true PATH="$RUNNER_TEMP/stubs:$PATH" ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/tag.txt" 2>&1; then
+            echo "a submit without the Cloud Tag Policy variables must fail"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/tag.txt"
+          grep -q "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set" "$RUNNER_TEMP/tag.txt"
+          if [ -s "$STUB_LOG" ]; then
+            echo "no AWS or cfn call may happen before the tag variables are validated"
+            cat "$STUB_LOG"
+            exit 1
+          fi

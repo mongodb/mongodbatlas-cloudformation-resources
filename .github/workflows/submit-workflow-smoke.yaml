@@ -53,6 +53,23 @@ jobs:
           (cd cfn-resources && SUBMIT_ONLY=true DRY_RUN=true ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/helper.txt" 2>&1
           cat "$RUNNER_TEMP/helper.txt"
           grep -q "would have run 'cfn submit' on:database-user" "$RUNNER_TEMP/helper.txt"
+      - name: Parallel submit finishes cleaning before building
+        run: |
+          fixture=$(mktemp -d)
+          trap 'rm -rf "$fixture"' EXIT
+          cp Makefile "$fixture/Makefile"
+          mkdir -p "$fixture/cfn-resources/fake"
+          printf '%b\n' \
+            '.PHONY: clean build' \
+            'clean:' \
+            '\t@sleep 1' \
+            '\t@touch clean-complete' \
+            'build:' \
+            '\t@test -f clean-complete' \
+            '\t@touch built' > "$fixture/cfn-resources/fake/Makefile"
+          printf '#!/bin/sh\ntest -f fake/built\n' > "$fixture/cfn-resources/cfn-submit-helper.sh"
+          chmod +x "$fixture/cfn-resources/cfn-submit-helper.sh"
+          make -C "$fixture" -j2 submit fake
       - name: Missing tag variables fail before any AWS call
         run: |
           mkdir -p "$RUNNER_TEMP/stubs"

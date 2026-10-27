@@ -24,7 +24,8 @@ submit:
 		exit 1; \
 	fi; \
 	for resource in $$resources; do \
-		$(MAKE) -C cfn-resources/$$resource clean build || exit 1; \
+		$(MAKE) -C cfn-resources/$$resource clean || exit 1; \
+		$(MAKE) -C cfn-resources/$$resource build || exit 1; \
 	done
 	(cd cfn-resources && SUBMIT_ONLY=true ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
 

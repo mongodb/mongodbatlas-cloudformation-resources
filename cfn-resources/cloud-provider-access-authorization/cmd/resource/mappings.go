@@ -36,14 +36,21 @@ func SetModelFromRole(model *Model, role *admin.CloudProviderAccessRole) {
 	model.FeatureUsages = FeatureUsagesFromRole(role)
 }
 
-// FeatureUsagesFromRole maps the feature type of each usage. The Atlas API models
-// featureId as a polymorphic object that the typed SDK only covers for push-based
-// log export, so it is deliberately not exposed.
+// FeatureUsagesFromRole maps the feature type of each usage and, when Atlas
+// identifies the feature, its project and bucket. Features that Atlas does not
+// identify, for example ENCRYPTION_AT_REST, carry no feature id.
 func FeatureUsagesFromRole(role *admin.CloudProviderAccessRole) []FeatureUsage {
 	usages := role.GetFeatureUsages()
 	result := make([]FeatureUsage, 0, len(usages))
 	for i := range usages {
-		result = append(result, FeatureUsage{FeatureType: usages[i].FeatureType})
+		usage := FeatureUsage{FeatureType: usages[i].FeatureType}
+		if id := usages[i].FeatureId; id != nil && (id.BucketName != nil || id.GroupId != nil) {
+			usage.FeatureId = &FeatureId{
+				ProjectId:  id.GroupId,
+				BucketName: id.BucketName,
+			}
+		}
+		result = append(result, usage)
 	}
 	return result
 }

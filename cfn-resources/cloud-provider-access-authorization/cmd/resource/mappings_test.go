@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -41,6 +42,53 @@ func TestFeatureUsagesFromRole_MapsFeatureType(t *testing.T) {
 	assert.Equal(t, encryptionAtRest, *usages[0].FeatureType)
 	require.NotNil(t, usages[1].FeatureType)
 	assert.Equal(t, logExport, *usages[1].FeatureType)
+}
+
+func TestFeatureUsagesFromRole_MapsFeatureId(t *testing.T) {
+	projectID := "66d979971ec97b7de1ef8777"
+	bucketName := "mongodb-atlas-log-export"
+
+	testCases := []struct {
+		usage    admin.CloudProviderAccessFeatureUsage
+		expected *resource.FeatureId
+		name     string
+	}{
+		{
+			name: "Maps the project and bucket of an identified feature",
+			usage: admin.CloudProviderAccessFeatureUsage{
+				FeatureType: aws.String("PUSH_BASED_LOG_EXPORT"),
+				FeatureId: &admin.CloudProviderAccessFeatureUsagePushBasedLogExportFeatureId{
+					BucketName: aws.String(bucketName),
+					GroupId:    aws.String(projectID),
+				},
+			},
+			expected: &resource.FeatureId{ProjectId: aws.String(projectID), BucketName: aws.String(bucketName)},
+		},
+		{
+			name: "Omits a feature id without identifiers",
+			usage: admin.CloudProviderAccessFeatureUsage{
+				FeatureType: aws.String("ENCRYPTION_AT_REST"),
+				FeatureId:   &admin.CloudProviderAccessFeatureUsagePushBasedLogExportFeatureId{},
+			},
+			expected: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			usages := resource.FeatureUsagesFromRole(&admin.CloudProviderAccessRole{
+				FeatureUsages: &[]admin.CloudProviderAccessFeatureUsage{tc.usage},
+			})
+
+			require.Len(t, usages, 1)
+			if tc.expected == nil {
+				assert.Nil(t, usages[0].FeatureId)
+				return
+			}
+			require.NotNil(t, usages[0].FeatureId)
+			assert.Equal(t, tc.expected, usages[0].FeatureId)
+		})
+	}
 }
 
 func TestSetModelFromRole_KeepsIdentifierAndSetsReadOnly(t *testing.T) {

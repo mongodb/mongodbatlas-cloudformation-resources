@@ -1,6 +1,6 @@
 # MongoDB::Atlas::CloudProviderAccessSetup FeatureUsage
 
-One Atlas feature that uses the Cloud Provider Access role. A role that a feature still uses cannot be deleted.
+One Atlas feature that uses the Cloud Provider Access role. A role that a feature still uses cannot be deleted. Only the feature type is returned; the Atlas API's feature identifier is not exposed because its shape varies by feature type.
 
 ## Syntax
 

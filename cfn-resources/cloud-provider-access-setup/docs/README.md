@@ -81,5 +81,5 @@ Date and time when the role was registered, in the ISO 8601 timestamp format in 
 
 #### FeatureUsages
 
-Atlas features that use the role. The role cannot be deleted while a feature still uses it.
+Atlas features that use the role. The role cannot be deleted while a feature still uses it. Only the feature type is returned for each entry; the Atlas API's feature identifier is not exposed because its shape varies by feature type.
 

@@ -17,6 +17,7 @@ See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/
 
 * cloud-backup-snapshot-export-job
 * cloud-provider-access
+* cloud-provider-access-setup
 * federated-settings-identity-provider
 * federated-settings-org-configs
 

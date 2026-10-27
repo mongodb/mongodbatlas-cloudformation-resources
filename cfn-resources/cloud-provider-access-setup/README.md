@@ -37,9 +37,8 @@ This does not provide full create idempotency. If Atlas creates the registration
 CloudFormation receives the `RoleId`, replaying the original request can create an orphaned registration. The Atlas
 create endpoint accepts no idempotency key or caller-supplied role identifier, and matching on project/provider
 cannot distinguish independently managed registrations, so this is an accepted risk rather than something the
-handler can detect. It does not block publishing, because the contract's create-create assertion accepts a
-replayed create that returns a new role id, and the orphaned registration can be removed from the project's Cloud
-Provider Access roles in Atlas.
+handler can detect. An orphaned registration can be removed from the project's Cloud Provider Access roles in
+Atlas.
 
 ## Delete
 

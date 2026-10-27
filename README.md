@@ -15,11 +15,29 @@ See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/
 ## Limitations
 1. Any third-party resource must support all CRUD operations. MongoDB Atlas for CloudFormation does not support the following MongoDB Atlas resources because they do not support all CRUD operations: 
 
+* access-list-api-key
+* cloud-backup-restore-jobs
+* cloud-backup-snapshot
+* cloud-backup-snapshot-export-bucket
 * cloud-backup-snapshot-export-job
 * cloud-provider-access
 * cloud-provider-access-setup
+* cluster-outage-simulation
+* custom-dns-configuration-cluster-aws
 * federated-settings-identity-provider
 * federated-settings-org-configs
+* global-cluster-config
+* ldap-verify
+* private-endpoint
+* private-endpoint-aws
+* private-endpoint-regional-mode
+* private-endpoint-service
+* project-service-account-access-list-entry
+* project-service-account-secret
+* service-account-access-list-entry
+* service-account-secret
+* stream-privatelink-endpoint
+* x509-authentication-database-user
 
 ## Import Support
 CloudFormation import is supported for MongoDB Atlas resources. This allows you to bring existing resources under CloudFormation management. For more details, please see [Resource Import Operations](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/README.md#resource-import-operations) section.

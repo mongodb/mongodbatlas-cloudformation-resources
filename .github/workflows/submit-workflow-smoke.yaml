@@ -53,7 +53,10 @@ jobs:
       - name: Missing tag variables fail before any AWS call
         run: |
           mkdir -p "$RUNNER_TEMP/stubs"
-          printf '#!/bin/sh\necho "$*" >> "$STUB_LOG"\n' > "$RUNNER_TEMP/stubs/aws"
+          cat > "$RUNNER_TEMP/stubs/aws" <<'STUB'
+          #!/bin/sh
+          echo "$*" >> "$STUB_LOG"
+          STUB
           cp "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
           chmod +x "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
           export STUB_LOG="$RUNNER_TEMP/stub-calls.log"

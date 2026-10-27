@@ -13,19 +13,15 @@ See the [`cfn` examples](examples/README.md) to setup prerequisites and get star
 See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/blob/main/examples/README.md) to setup prerequisites and get started with your first cluster using our AWS CDK sample code.
 
 ## Limitations
-1. Any third-party resource must support all CRUD operations. MongoDB Atlas for CloudFormation does not support the following MongoDB Atlas resources because they do not support all CRUD operations: 
+1. Any third-party resource must support all CRUD operations. The following MongoDB Atlas resources do not implement an update handler, so CloudFormation replaces them instead of updating them in place:
 
 * access-list-api-key
 * cloud-backup-restore-jobs
 * cloud-backup-snapshot
 * cloud-backup-snapshot-export-bucket
-* cloud-backup-snapshot-export-job
-* cloud-provider-access
 * cloud-provider-access-setup
 * cluster-outage-simulation
 * custom-dns-configuration-cluster-aws
-* federated-settings-identity-provider
-* federated-settings-org-configs
 * global-cluster-config
 * ldap-verify
 * private-endpoint

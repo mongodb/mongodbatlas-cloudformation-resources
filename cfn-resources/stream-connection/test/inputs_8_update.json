@@ -20,8 +20,8 @@
   },
   "Provider": "Confluent",
   "SchemaRegistryUrls": [
-    "https://schema-registry1.example.com:8081",
-    "https://schema-registry2.example.com:8081"
+    "https://httpbin.org/anything/schema-registry-1",
+    "https://httpbin.org/anything/schema-registry-2"
   ],
   "SchemaRegistryAuthentication": {
     "Type": "BASIC",

@@ -19,7 +19,7 @@
     }
   },
   "Provider": "Confluent",
-  "SchemaRegistryUrls": ["https://schema-registry.example.com:8081"],
+  "SchemaRegistryUrls": ["https://httpbin.org/anything/schema-registry"],
   "SchemaRegistryAuthentication": {
     "Type": "BASIC",
     "Username": "schema-user",

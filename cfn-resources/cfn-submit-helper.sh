@@ -68,6 +68,8 @@ echo "Step 2/2: Submit resource type to CloudFormation Private Registry"
 for resource in ${resources}; do
 	echo "Working on resource:${resource}"
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn submit' on:${resource}" && continue
+	# Fail before any AWS call when the Cloud Tag Policy variables are missing.
+	require_tag_policy_vars
 	cd "${resource}"
 	echo "resource: ${resource}"
 
@@ -84,7 +86,6 @@ for resource in ${resources}; do
 	${command}
 
 	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS[*]}"
-	require_tag_policy_vars
 	# Re-add the Cloud Tag Policy tags missing from the S3 role template, right before
 	# cfn submit creates the role stack (also covers SUBMIT_ONLY runs). Skipped when the
 	# file is already tagged, so repeated runs cannot add a duplicate Tags key.

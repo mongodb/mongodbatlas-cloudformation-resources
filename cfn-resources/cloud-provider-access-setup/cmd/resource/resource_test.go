@@ -101,6 +101,39 @@ func TestReadRejectsNonAWSRegistrations(t *testing.T) {
 	}
 }
 
+func TestReadMapsErrors(t *testing.T) {
+	testCases := []struct {
+		name      string
+		errorCode types.HandlerErrorCode
+		status    int
+	}{
+		{"A missing registration is NotFound", types.HandlerErrorCodeNotFound, http.StatusNotFound},
+		{"An Atlas failure keeps its error code", types.HandlerErrorCodeServiceInternalError, http.StatusInternalServerError},
+		{"An access denied keeps its error code", types.HandlerErrorCodeAccessDenied, http.StatusUnauthorized},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var requests []string
+			client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
+				requests = append(requests, req.Method+" "+req.URL.Path)
+				return atlasResponse(tc.status, `{"errorCode":"TEST_ERROR","detail":"Read failed"}`), nil
+			})
+			model := resource.Model{
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
+				RoleId:    aws.String(roleID),
+			}
+
+			event := resource.HandleRead(client, &model)
+
+			assert.Equal(t, handler.Failed, event.OperationStatus)
+			assert.Equal(t, string(tc.errorCode), event.HandlerErrorCode)
+			assert.Nil(t, event.ResourceModel)
+			assert.Equal(t, []string{"GET /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess/" + roleID}, requests)
+		})
+	}
+}
+
 func TestDeleteRegistration(t *testing.T) {
 	const otherRoleID = "111111111111111111111111"
 
@@ -116,7 +149,15 @@ func TestDeleteRegistration(t *testing.T) {
 		expectedContains string
 		expectedRequests []string
 		deleteStatus     int
+		listStatus       int
 	}{
+		{
+			name:             "A list failure is reported",
+			listStatus:       http.StatusInternalServerError,
+			expectedStatus:   handler.Failed,
+			expectedCode:     string(types.HandlerErrorCodeServiceInternalError),
+			expectedRequests: []string{listPath},
+		},
 		{
 			name:             "A role that a feature still uses fails with ResourceConflict",
 			roleIDs:          []string{roleID},
@@ -154,10 +195,17 @@ func TestDeleteRegistration(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			listStatus := tc.listStatus
+			if listStatus == 0 {
+				listStatus = http.StatusOK
+			}
 			var requests []string
 			client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
 				requests = append(requests, req.Method+" "+req.URL.Path)
 				if req.Method == http.MethodGet {
+					if listStatus != http.StatusOK {
+						return atlasResponse(listStatus, `{"errorCode":"TEST_ERROR","detail":"List failed"}`), nil
+					}
 					return atlasResponse(http.StatusOK, awsRolesJSON(tc.roleIDs...)), nil
 				}
 				return atlasResponse(tc.deleteStatus, tc.deleteBody), nil

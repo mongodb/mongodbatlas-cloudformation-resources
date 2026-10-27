@@ -145,28 +145,35 @@ jobs:
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - &checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - &setup-go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
+      - &setup-atlas-cli
+        name: setup Atlas CLI
         uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
+      - &setup-sam
+        uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
+      - &aws-credentials
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+      - &setup-python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - &install-cfn-cli
+        run: pip install cloudformation-cli cloudformation-cli-go-plugin
       - name: Run the Contract test
         shell: bash
-        env:
+        env: &contract-test-env
           MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
@@ -183,33 +190,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.alert-configuration == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/alert-configuration
           make create-test-resources
@@ -223,25 +213,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-         use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:
@@ -264,33 +242,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.auditing == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-      with:
-        go-version-file: 'cfn-resources/go.mod'
-    - name: setup Atlas CLI
-      uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-    - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-      with:
-       use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-        aws-region: eu-west-1
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-      with:
-        python-version: '3.9'
-        cache: 'pip' # caching pip dependencies
-    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - *checkout
+    - *setup-go
+    - *setup-atlas-cli
+    - *setup-sam
+    - *aws-credentials
+    - *setup-python
+    - *install-cfn-cli
     - name: Run the Contract test
       shell: bash
-      env:
-       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-       MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+      env: *contract-test-env
       run: |
        pushd cfn-resources/auditing
        make create-test-resources
@@ -307,33 +268,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.backup-compliance-policy == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-      with:
-        go-version-file: 'cfn-resources/go.mod'
-    - name: setup Atlas CLI
-      uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-    - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-      with:
-       use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-        aws-region: eu-west-1
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-      with:
-        python-version: '3.9'
-        cache: 'pip' # caching pip dependencies
-    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - *checkout
+    - *setup-go
+    - *setup-atlas-cli
+    - *setup-sam
+    - *aws-credentials
+    - *setup-python
+    - *install-cfn-cli
     - name: Run the Contract test
       shell: bash
-      env:
-       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-       MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+      env: *contract-test-env
       run: |
        cd cfn-resources/backup-compliance-policy
        make create-test-resources
@@ -348,25 +292,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.cloud-backup-restore-jobs == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:
@@ -389,25 +321,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.cluster-outage-simulation == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:
@@ -430,33 +350,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.database-user == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/database-user
           make create-test-resources
@@ -470,33 +373,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.encryption-at-rest == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/encryption-at-rest
           make create-test-resources
@@ -511,33 +397,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/federated-database-instance
           make create-test-resources
@@ -552,33 +421,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-query-limit == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/federated-query-limit
           make create-test-resources
@@ -594,25 +446,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-settings-identity-provider == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:
@@ -637,25 +477,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-settings-org-role-mapping == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:
@@ -679,33 +507,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.flex-cluster == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-      with:
-        go-version-file: 'cfn-resources/go.mod'
-    - name: setup Atlas CLI
-      uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-    - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-      with:
-        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-        aws-region: eu-west-1
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-      with:
-        python-version: '3.9'
-        cache: 'pip' # caching pip dependencies
-    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - *checkout
+    - *setup-go
+    - *setup-atlas-cli
+    - *setup-sam
+    - *aws-credentials
+    - *setup-python
+    - *install-cfn-cli
     - name: Run the Contract test
       shell: bash
-      env:
-        MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-        MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-        MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-        MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-        MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+      env: *contract-test-env
       run: |
         pushd cfn-resources/flex-cluster
         make create-test-resources
@@ -721,33 +532,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.log-integration == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/log-integration
           make create-test-resources
@@ -762,33 +556,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.mongodb-employee-access-grant == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-      with:
-        go-version-file: 'cfn-resources/go.mod'
-    - name: setup Atlas CLI
-      uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-    - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-      with:
-        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-        aws-region: eu-west-1
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-      with:
-        python-version: '3.9'
-        cache: 'pip'
-    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - *checkout
+    - *setup-go
+    - *setup-atlas-cli
+    - *setup-sam
+    - *aws-credentials
+    - *setup-python
+    - *install-cfn-cli
     - name: Run the Contract test
       shell: bash
-      env:
-        MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-        MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-        MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-        MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-        MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+      env: *contract-test-env
       run: |
         pushd cfn-resources/mongodb-employee-access-grant
         make create-test-resources
@@ -803,33 +580,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/online-archive
           make create-test-resources
@@ -843,25 +603,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.organization == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:
@@ -885,33 +633,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.service-account == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/service-account
           make create-test-resources
@@ -926,33 +657,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.service-account-project-assignment == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/service-account-project-assignment
           make create-test-resources
@@ -967,33 +681,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.service-account-secret == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/service-account-secret
           make create-test-resources
@@ -1008,33 +705,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.service-account-access-list-entry == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/service-account-access-list-entry
           make create-test-resources
@@ -1049,25 +729,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:
@@ -1090,25 +758,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-service == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:
@@ -1131,33 +787,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.privatelink-endpoint-service-data-federation-online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/privatelink-endpoint-service-data-federation-online-archive
           make create-test-resources
@@ -1172,25 +811,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-      with:
-        go-version-file: 'cfn-resources/go.mod'
-    - name: setup Atlas CLI
-      uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-    - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-      with:
-       use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-        aws-region: eu-west-1
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-      with:
-        python-version: '3.9'
-        cache: 'pip' # caching pip dependencies
-    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - *checkout
+    - *setup-go
+    - *setup-atlas-cli
+    - *setup-sam
+    - *aws-credentials
+    - *setup-python
+    - *install-cfn-cli
     - name: Run the Contract test
       shell: bash
       env:
@@ -1215,33 +842,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.project-service-account-secret == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/project-service-account-secret
           make create-test-resources
@@ -1256,33 +866,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.project-service-account == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-      with:
-        go-version-file: 'cfn-resources/go.mod'
-    - name: setup Atlas CLI
-      uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-    - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-      with:
-       use-installer: true
-    - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-        aws-region: eu-west-1
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-      with:
-        python-version: '3.9'
-        cache: 'pip' # caching pip dependencies
-    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - *checkout
+    - *setup-go
+    - *setup-atlas-cli
+    - *setup-sam
+    - *aws-credentials
+    - *setup-python
+    - *install-cfn-cli
     - name: Run the Contract test
       shell: bash
-      env:
-       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-       MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+      env: *contract-test-env
       run: |
        pushd cfn-resources/project-service-account
        make create-test-resources
@@ -1297,33 +890,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.project-service-account-access-list-entry == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/project-service-account-access-list-entry
           make create-test-resources
@@ -1338,33 +914,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.resource-policy == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/resource-policy
           make create-test-resources
@@ -1381,33 +940,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.search-deployment == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/search-deployment
           make create-test-resources
@@ -1421,33 +963,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.search-index == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/search-index
           make create-test-resources
@@ -1461,33 +986,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/stream-connection
           make create-test-resources
@@ -1504,33 +1012,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/stream-instance
           make create-test-resources
@@ -1542,33 +1033,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-privatelink-endpoint == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           pushd cfn-resources/stream-privatelink-endpoint
           make create-test-resources
@@ -1582,33 +1056,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-processor == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/stream-processor
           make create-test-resources
@@ -1622,33 +1079,16 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-workspace == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        env: *contract-test-env
         run: |
           cd cfn-resources/stream-workspace
           make create-test-resources
@@ -1663,25 +1103,13 @@ jobs:
     if: ${{ needs.change-detection.outputs.third-party-integration == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@e3c9e0204659bafbb3b65e1eb1ee745cca0e9f3b
-      - uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
       - name: Run the Contract test
         shell: bash
         env:

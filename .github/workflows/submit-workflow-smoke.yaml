@@ -45,6 +45,9 @@ jobs:
             exit 1
           fi
           grep -q "SUBMIT_ONLY=true ./cfn-submit-helper.sh database-user" "$RUNNER_TEMP/dry-run.txt"
+          make -n submit database-user cluster > "$RUNNER_TEMP/dry-run-multi.txt" 2>&1
+          cat "$RUNNER_TEMP/dry-run-multi.txt"
+          grep -q "SUBMIT_ONLY=true ./cfn-submit-helper.sh database-user cluster" "$RUNNER_TEMP/dry-run-multi.txt"
       - name: Helper dry run reports the resource
         run: |
           (cd cfn-resources && SUBMIT_ONLY=true DRY_RUN=true ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/helper.txt" 2>&1

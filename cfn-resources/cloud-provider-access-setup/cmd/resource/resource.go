@@ -66,9 +66,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	restoreRoleID(req.CallbackContext, currentModel)
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
+		if util.IsStringPresent(currentModel.RoleId) {
+			// Client setup can fail on a callback after Atlas has already registered the role.
+			peErr.ResourceModel = currentModel
+		}
 		return *peErr, nil
 	}
 
@@ -79,11 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // travels in the callback context, which is the state CloudFormation carries between invocations; the
 // returned model is the fallback when the callback context is absent.
 func HandleCreate(callbackContext map[string]any, client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-	if !util.IsStringPresent(currentModel.RoleId) {
-		if roleID, ok := callbackContext[roleIDCallbackKey].(string); ok && roleID != "" {
-			currentModel.RoleId = aws.String(roleID)
-		}
-	}
+	restoreRoleID(callbackContext, currentModel)
 
 	if util.IsStringPresent(currentModel.RoleId) {
 		event := HandleRead(client, currentModel)
@@ -124,6 +125,14 @@ func HandleCreate(callbackContext map[string]any, client *util.MongoDBClient, cu
 		registered, 1)
 }
 
+func restoreRoleID(callbackContext map[string]any, model *Model) {
+	if !util.IsStringPresent(model.RoleId) {
+		if roleID, ok := callbackContext[roleIDCallbackKey].(string); ok && roleID != "" {
+			model.RoleId = aws.String(roleID)
+		}
+	}
+}
+
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
@@ -156,6 +165,14 @@ func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.Progres
 		}
 		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error reading Cloud Provider Access role: %s", err.Error()), response)
+	}
+
+	// The lookup endpoint also returns Azure and GCP registrations, which this AWS-only
+	// resource neither lists nor deletes.
+	if role.GetProviderName() != awsProviderName {
+		return progressevent.GetFailedEventByCode(
+			fmt.Sprintf("AWS Cloud Provider Access role %s not found", *currentModel.RoleId),
+			string(types.HandlerErrorCodeNotFound))
 	}
 
 	return handler.ProgressEvent{

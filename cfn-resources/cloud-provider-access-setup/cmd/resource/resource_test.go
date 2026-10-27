@@ -24,6 +24,9 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	awsv1 "github.com/aws/aws-sdk-go/aws"       //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
+	"github.com/aws/aws-sdk-go/aws/credentials" //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
+	"github.com/aws/aws-sdk-go/aws/session"     //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
@@ -132,6 +135,87 @@ func TestCreateFailsWhenRegistrationHasNoRoleId(t *testing.T) {
 
 	assert.Equal(t, handler.Failed, event.OperationStatus)
 	assert.Equal(t, string(types.HandlerErrorCodeInternalFailure), event.HandlerErrorCode)
+}
+
+func TestCreateRetainsCheckpointWhenClientSetupFails(t *testing.T) {
+	testCases := []struct {
+		roleID          *string
+		callbackContext map[string]any
+		name            string
+		registered      bool
+	}{
+		{
+			name:       "Role ID in model",
+			roleID:     aws.String(roleID),
+			registered: true,
+		},
+		{
+			name:            "Role ID only in callback context",
+			callbackContext: map[string]any{"roleId": roleID},
+			registered:      true,
+		},
+		{
+			name: "No registration yet",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Empty static credentials fail locally before any Secrets Manager HTTP request.
+			req := handler.Request{
+				CallbackContext: tc.callbackContext,
+				Session: &session.Session{Config: &awsv1.Config{
+					Region:      aws.String("us-east-1"),
+					Credentials: credentials.NewStaticCredentials("", "", ""),
+				}},
+			}
+			model := resource.Model{
+				ProjectId: aws.String(projectID),
+				RoleId:    tc.roleID,
+			}
+
+			event, err := resource.Create(req, nil, &model)
+
+			require.NoError(t, err)
+			require.Equal(t, handler.Failed, event.OperationStatus)
+			assert.Contains(t, event.Message, "EmptyStaticCreds")
+			if tc.registered {
+				returned, ok := event.ResourceModel.(*resource.Model)
+				require.True(t, ok, "retain the registered model for rollback")
+				assert.Equal(t, aws.String(roleID), returned.RoleId)
+				assert.Equal(t, aws.String(projectID), returned.ProjectId)
+				assert.Equal(t, aws.String(profile), returned.Profile)
+			} else {
+				assert.Nil(t, event.ResourceModel)
+			}
+		})
+	}
+}
+
+func TestReadRejectsNonAWSRegistrations(t *testing.T) {
+	for _, provider := range []string{"AZURE", "GCP"} {
+		t.Run(provider, func(t *testing.T) {
+			client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
+				assert.Equal(t, http.MethodGet, req.Method)
+				assert.Equal(t, "/api/atlas/v2/groups/"+projectID+"/cloudProviderAccess/"+roleID, req.URL.Path)
+				idField := "roleId"
+				if provider == "AZURE" {
+					idField = "_id"
+				}
+				return atlasResponse(http.StatusOK, `{"providerName":"`+provider+`","`+idField+`":"`+roleID+`"}`), nil
+			})
+			model := resource.Model{
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
+				RoleId:    aws.String(roleID),
+			}
+
+			event := resource.HandleRead(client, &model)
+
+			assert.Equal(t, handler.Failed, event.OperationStatus)
+			assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+			assert.Nil(t, event.ResourceModel)
+		})
+	}
 }
 
 func TestDeleteRegistration(t *testing.T) {

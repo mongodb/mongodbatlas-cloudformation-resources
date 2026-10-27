@@ -22,7 +22,6 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -40,9 +39,6 @@ const (
 	// has to be removed before the role can be deleted.
 	roleInUseMessage = "Cloud Provider Access role %s cannot be deleted because an Atlas feature still uses it. " +
 		"Remove the dependent feature, for example by disabling Encryption at Rest for the project, then retry the delete."
-	// roleIDCallbackKey carries the registered role id across the create callback. CloudFormation
-	// passes the callback context between invocations, so it is the reliable carrier of the id.
-	roleIDCallbackKey = "roleId"
 )
 
 var (
@@ -66,40 +62,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	restoreRoleID(req.CallbackContext, currentModel)
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
-		if util.IsStringPresent(currentModel.RoleId) {
-			// Client setup can fail on a callback after Atlas has already registered the role.
-			peErr.ResourceModel = currentModel
-		}
 		return *peErr, nil
 	}
 
-	return HandleCreate(req.CallbackContext, client, currentModel), nil
+	return HandleCreate(client, currentModel), nil
 }
 
-// HandleCreate registers a role once and then reads the registered role on the callback. The role id
-// travels in the callback context, which is the state CloudFormation carries between invocations; the
-// returned model is the fallback when the callback context is absent.
-func HandleCreate(callbackContext map[string]any, client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-	restoreRoleID(callbackContext, currentModel)
-
-	if util.IsStringPresent(currentModel.RoleId) {
-		event := HandleRead(client, currentModel)
-		if event.OperationStatus == handler.Success {
-			event.Message = "Create Complete"
-		} else {
-			// Preserve the identifier so CloudFormation can roll back this registration.
-			event.ResourceModel = currentModel
-		}
-		return event
-	}
-
-	// Atlas cannot deduplicate a create whose response was lost before RoleId was
-	// checkpointed. Do not adopt another role by project/provider: several independent
-	// registrations may exist in the same project.
+// HandleCreate registers the role and returns the registered model from the same request. Atlas
+// cannot deduplicate a create whose response is lost, so a retry registers another role; that
+// accepted risk is documented in the resource README.
+func HandleCreate(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	roleRequest := &admin.CloudProviderAccessRoleRequest{ProviderName: awsProviderName}
 
 	role, response, err := client.AtlasSDK.CloudProviderAccessApi.
@@ -112,24 +87,17 @@ func HandleCreate(callbackContext map[string]any, client *util.MongoDBClient, cu
 
 	registered := NewCFNCloudProviderAccessSetup(currentModel, role)
 	if !util.IsStringPresent(registered.RoleId) {
-		// Without the role id the registration cannot be tracked or read back, and a retry would
-		// register another role, so fail instead of returning an unusable checkpoint.
+		// Without the role id the registration cannot be tracked, so fail instead of returning an
+		// unusable model.
 		return progressevent.GetFailedEventByCode(
 			"Cloud Provider Access role registration did not return a role id",
 			string(types.HandlerErrorCodeInternalFailure))
 	}
 
-	return progressevent.GetInProgressProgressEvent(
-		"Cloud Provider Access role registered; verifying registration",
-		map[string]any{roleIDCallbackKey: *registered.RoleId},
-		registered, 1)
-}
-
-func restoreRoleID(callbackContext map[string]any, model *Model) {
-	if !util.IsStringPresent(model.RoleId) {
-		if roleID, ok := callbackContext[roleIDCallbackKey].(string); ok && roleID != "" {
-			model.RoleId = aws.String(roleID)
-		}
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Create Complete",
+		ResourceModel:   registered,
 	}
 }
 

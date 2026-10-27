@@ -24,9 +24,6 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
-	awsv1 "github.com/aws/aws-sdk-go/aws"       //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
-	"github.com/aws/aws-sdk-go/aws/credentials" //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
-	"github.com/aws/aws-sdk-go/aws/session"     //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
@@ -35,91 +32,31 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func TestCreateCheckpointsRoleAndResumesWithoutRegisteringAgain(t *testing.T) {
+func TestCreateRegistersTheRole(t *testing.T) {
 	var requests []string
 	client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
 		requests = append(requests, req.Method+" "+req.URL.Path)
-		if req.Method == http.MethodPost {
-			var body map[string]string
-			require.NoError(t, json.NewDecoder(req.Body).Decode(&body))
-			assert.Equal(t, map[string]string{"providerName": "AWS"}, body)
-			return atlasResponse(http.StatusCreated, roleResponseJSON()), nil
-		}
-		require.Equal(t, http.MethodGet, req.Method)
-		return atlasResponse(http.StatusOK, roleResponseJSON()), nil
+		require.Equal(t, http.MethodPost, req.Method)
+		var body map[string]string
+		require.NoError(t, json.NewDecoder(req.Body).Decode(&body))
+		assert.Equal(t, map[string]string{"providerName": "AWS"}, body)
+		return atlasResponse(http.StatusCreated, roleResponseJSON()), nil
 	})
 	model := resource.Model{
 		Profile:   aws.String(profile),
 		ProjectId: aws.String(projectID),
 	}
 
-	created := resource.HandleCreate(nil, client, &model)
-	require.Equal(t, handler.InProgress, created.OperationStatus)
-	assert.Positive(t, created.CallbackDelaySeconds)
-	assert.Equal(t, map[string]any{"roleId": roleID}, created.CallbackContext)
-	checkpoint, ok := created.ResourceModel.(resource.Model)
+	event := resource.HandleCreate(client, &model)
+
+	require.Equal(t, handler.Success, event.OperationStatus)
+	assert.Equal(t, "Create Complete", event.Message)
+	registered, ok := event.ResourceModel.(resource.Model)
 	require.True(t, ok)
-	assert.Equal(t, aws.String(roleID), checkpoint.RoleId)
-	assert.Equal(t, aws.String(externalID), checkpoint.AtlasAssumedRoleExternalId)
-
-	// Repeat the callback as well: every invocation must keep the checkpointed identity.
-	for range 2 {
-		resumed := resource.HandleCreate(created.CallbackContext, client, &checkpoint)
-		require.Equal(t, handler.Success, resumed.OperationStatus)
-		assert.Equal(t, "Create Complete", resumed.Message)
-		assert.Equal(t, checkpoint, resumed.ResourceModel)
-	}
-
-	// CloudFormation may pass only the original properties plus the callback context, so the role id
-	// must also travel in the callback context.
-	resumed := resource.HandleCreate(created.CallbackContext, client, &resource.Model{
-		Profile:   aws.String(profile),
-		ProjectId: aws.String(projectID),
-	})
-	require.Equal(t, handler.Success, resumed.OperationStatus)
-	resumedModel, ok := resumed.ResourceModel.(resource.Model)
-	require.True(t, ok)
-	assert.Equal(t, aws.String(roleID), resumedModel.RoleId)
-
-	assert.Equal(t, []string{
-		"POST /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess",
-		"GET /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess/" + roleID,
-		"GET /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess/" + roleID,
-		"GET /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess/" + roleID,
-	}, requests)
-}
-
-func TestCreateWithKnownRoleDoesNotReplaceItWhenReadFails(t *testing.T) {
-	testCases := []struct {
-		name      string
-		errorCode types.HandlerErrorCode
-		status    int
-	}{
-		{"Missing registration", types.HandlerErrorCodeNotFound, http.StatusNotFound},
-		{"Atlas failure", types.HandlerErrorCodeServiceInternalError, http.StatusInternalServerError},
-		{"Access denied", types.HandlerErrorCodeAccessDenied, http.StatusUnauthorized},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			var requests []string
-			client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
-				requests = append(requests, req.Method+" "+req.URL.Path)
-				return atlasResponse(tc.status, `{"errorCode":"TEST_ERROR","detail":"Read failed"}`), nil
-			})
-			model := resource.Model{
-				Profile:   aws.String(profile),
-				ProjectId: aws.String(projectID),
-				RoleId:    aws.String(roleID),
-			}
-
-			event := resource.HandleCreate(nil, client, &model)
-
-			assert.Equal(t, handler.Failed, event.OperationStatus)
-			assert.Equal(t, string(tc.errorCode), event.HandlerErrorCode)
-			assert.Equal(t, &model, event.ResourceModel, "retain the role ID for rollback")
-			assert.Equal(t, []string{"GET /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess/" + roleID}, requests)
-		})
-	}
+	assert.Equal(t, aws.String(roleID), registered.RoleId)
+	assert.Equal(t, aws.String(atlasAccountArn), registered.AtlasAWSAccountArn)
+	assert.Equal(t, aws.String(externalID), registered.AtlasAssumedRoleExternalId)
+	assert.Equal(t, []string{"POST /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess"}, requests)
 }
 
 func TestCreateFailsWhenRegistrationHasNoRoleId(t *testing.T) {
@@ -131,64 +68,10 @@ func TestCreateFailsWhenRegistrationHasNoRoleId(t *testing.T) {
 		ProjectId: aws.String(projectID),
 	}
 
-	event := resource.HandleCreate(nil, client, &model)
+	event := resource.HandleCreate(client, &model)
 
 	assert.Equal(t, handler.Failed, event.OperationStatus)
 	assert.Equal(t, string(types.HandlerErrorCodeInternalFailure), event.HandlerErrorCode)
-}
-
-func TestCreateRetainsCheckpointWhenClientSetupFails(t *testing.T) {
-	testCases := []struct {
-		roleID          *string
-		callbackContext map[string]any
-		name            string
-		registered      bool
-	}{
-		{
-			name:       "Role ID in model",
-			roleID:     aws.String(roleID),
-			registered: true,
-		},
-		{
-			name:            "Role ID only in callback context",
-			callbackContext: map[string]any{"roleId": roleID},
-			registered:      true,
-		},
-		{
-			name: "No registration yet",
-		},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Empty static credentials fail locally before any Secrets Manager HTTP request.
-			req := handler.Request{
-				CallbackContext: tc.callbackContext,
-				Session: &session.Session{Config: &awsv1.Config{
-					Region:      aws.String("us-east-1"),
-					Credentials: credentials.NewStaticCredentials("", "", ""),
-				}},
-			}
-			model := resource.Model{
-				ProjectId: aws.String(projectID),
-				RoleId:    tc.roleID,
-			}
-
-			event, err := resource.Create(req, nil, &model)
-
-			require.NoError(t, err)
-			require.Equal(t, handler.Failed, event.OperationStatus)
-			assert.Contains(t, event.Message, "EmptyStaticCreds")
-			if tc.registered {
-				returned, ok := event.ResourceModel.(*resource.Model)
-				require.True(t, ok, "retain the registered model for rollback")
-				assert.Equal(t, aws.String(roleID), returned.RoleId)
-				assert.Equal(t, aws.String(projectID), returned.ProjectId)
-				assert.Equal(t, aws.String(profile), returned.Profile)
-			} else {
-				assert.Nil(t, event.ResourceModel)
-			}
-		})
-	}
 }
 
 func TestReadRejectsNonAWSRegistrations(t *testing.T) {

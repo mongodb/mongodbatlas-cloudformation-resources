@@ -27,18 +27,12 @@ See the examples [CFN Template](/examples/cloud-provider-access-setup/cloud-prov
 
 ## Create retries
 
-Create registers the role and returns `IN_PROGRESS` with the registered `RoleId`, which also travels in the
-callback context. CloudFormation re-invokes the handler with the callback context, and that invocation reads
-the same role and returns `SUCCESS`. An invocation that already knows the `RoleId` never registers a
-replacement, even when the read fails; a failed read keeps the identifier so CloudFormation can roll the
-registration back.
-
-This does not provide full create idempotency. If Atlas creates the registration but its response is lost before
-CloudFormation receives the `RoleId`, replaying the original request can create an orphaned registration. The Atlas
-create endpoint accepts no idempotency key or caller-supplied role identifier, and matching on project/provider
-cannot distinguish independently managed registrations, so this is an accepted risk rather than something the
-handler can detect. An orphaned registration can be removed from the project's Cloud Provider Access roles in
-Atlas.
+Create registers the role with a single request and returns the registered role. Create is not idempotent: if
+Atlas creates the registration but its response is lost before CloudFormation receives it, replaying the
+original request creates an orphaned registration. The Atlas create endpoint accepts no idempotency key or
+caller-supplied role identifier, and matching on project/provider cannot distinguish independently managed
+registrations, so this is an accepted risk rather than something the handler can detect. An orphaned
+registration can be removed from the project's Cloud Provider Access roles in Atlas.
 
 ## Delete
 

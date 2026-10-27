@@ -421,8 +421,8 @@ jobs:
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/cloud-provider-access-authorization
-          make create-test-resources
           trap 'make delete-test-resources' EXIT
+          make create-test-resources
 
           cat inputs/inputs_1_create.json
 

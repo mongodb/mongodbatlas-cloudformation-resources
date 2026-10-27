@@ -9,16 +9,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-function usage {
-	echo "usage:$0 <project_name>"
-}
-
-if [ "$#" -ne 1 ]; then usage; fi
-
-projectName="${1}"
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
-echo "Check if a project is created ${projectId}"
-
 if [ -f "$(dirname "$0")/role-name.txt" ]; then
 	roleName=$(cat "$(dirname "$0")/role-name.txt")
 	echo "Deleting AWS IAM role: ${roleName}"

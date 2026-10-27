@@ -44,6 +44,9 @@ else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
+# Keep cleanup possible if provisioning fails before the input files are complete.
+printf '%s\n' "$projectId" >inputs/project-id.txt
+
 echo "Check if a project is created $projectId"
 
 echo "--------------------------------register Cloud Provider Access role starts ----------------------------"
@@ -66,12 +69,12 @@ jq --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
 roleName="mongodb-atlas-cpa-role-$(date +%s)-${RANDOM}"
 echo "roleName: ${roleName}"
 
+# Record the name before creation, including when the response or next lookup fails.
+printf '%s\n' "$roleName" >"$(dirname "$0")/role-name.txt"
 aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/trust-policy.json --tags Key=mongodb-owner,Value="${MONGODB_TAG_OWNER}" Key=mongodb-env,Value="${MONGODB_TAG_ENV}" >/dev/null
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq -r '.Role.Arn')
 echo "Created AWS IAM role: ${awsArn}"
 
-# Keep the role name for cleanup.
-echo "${roleName}" >"$(dirname "$0")/role-name.txt"
 echo "--------------------------------create AWS IAM role ends ----------------------------"
 
 jq --arg projectId "$projectId" \

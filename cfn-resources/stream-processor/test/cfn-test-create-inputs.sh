@@ -121,7 +121,7 @@ echo -e "Creating Kafka Source Connection \"${kafkaSourceConnectionName}\" for i
 kafkaSourceConnectionConfig=$(mktemp).json
 jq -n \
 	--arg type "Kafka" \
-	--arg bootstrapServers "localhost:9092,localhost:9092" \
+	--arg bootstrapServers "example.com:9092,example.com:9092" \
 	--arg mechanism "PLAIN" \
 	--arg username "user" \
 	--arg password "rawpassword" \
@@ -158,7 +158,7 @@ echo -e "Creating Kafka Sink Connection \"${kafkaSinkConnectionName}\" for input
 kafkaSinkConnectionConfig=$(mktemp).json
 jq -n \
 	--arg type "Kafka" \
-	--arg bootstrapServers "localhost:9092,localhost:9092" \
+	--arg bootstrapServers "example.com:9092,example.com:9092" \
 	--arg mechanism "PLAIN" \
 	--arg username "user" \
 	--arg password "rawpassword" \

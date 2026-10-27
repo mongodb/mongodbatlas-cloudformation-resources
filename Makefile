@@ -24,8 +24,9 @@ submit:
 		exit 1; \
 	fi; \
 	for resource in $$resources; do \
-		$(MAKE) -C cfn-resources/$$resource submit || exit 1; \
+		$(MAKE) -C cfn-resources/$$resource clean build || exit 1; \
 	done
+	(cd cfn-resources && SUBMIT_ONLY=true ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
 
 # 'make submit <resource>' passes the resource names as extra make goals.
 # Define no-op rules for them so make does not fail with "No rule to make target".

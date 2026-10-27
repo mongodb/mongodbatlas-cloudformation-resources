@@ -10,10 +10,10 @@
 #
 # BUILD_ONLY=true|false
 # SUBMIT_ONLY=true|false
-# LOG_LEVEL=logrus valid string loglevel
+# CFN_SUBMIT_LOG_LEVEL=logrus valid string loglevel
 #
-# Example with DEBUG logging enabled by default for set of resources:
-# LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
+# Example with DEBUG logging enabled for a set of resources:
+# CFN_SUBMIT_LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
 set -eo
 # shellcheck source=/dev/null

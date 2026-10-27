@@ -22,8 +22,16 @@ projectName="${1:-$PROJECT_NAME}"
 echo "$projectName"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-
+	# Atlas project lists are eventually consistent: when this script follows a project
+	# creation (contract testing creates the project first), the lookup above can miss
+	# the new project and the create below fails with HTTP 409. Re-resolve by name.
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id') ||
+		projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id') ||
+		projectId=""
+	if [ -z "$projectId" ]; then
+		echo "Failed to create or find project ${projectName}" >&2
+		exit 1
+	fi
 	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"

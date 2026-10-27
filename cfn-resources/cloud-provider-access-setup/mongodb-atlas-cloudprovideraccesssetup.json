@@ -9,11 +9,26 @@
   "definitions": {
     "FeatureUsage": {
       "type": "object",
-      "description": "One Atlas feature that uses the Cloud Provider Access role. A role that a feature still uses cannot be deleted. Only the feature type is returned; the Atlas API's feature identifier is not exposed because its shape varies by feature type.",
+      "description": "One Atlas feature that uses the Cloud Provider Access role. A role that a feature still uses cannot be deleted.",
       "properties": {
         "FeatureType": {
           "type": "string",
           "description": "Human-readable label that describes the Atlas feature that uses the role, for example ENCRYPTION_AT_REST."
+        },
+        "FeatureId": {
+          "type": "object",
+          "description": "Identifying characteristics of the feature that uses the role, when Atlas returns them, for example the S3 bucket name for a push-based log export. Not set for features that Atlas does not identify, for example ENCRYPTION_AT_REST.",
+          "properties": {
+            "ProjectId": {
+              "type": "string",
+              "description": "Unique 24-hexadecimal digit string that identifies the project."
+            },
+            "BucketName": {
+              "type": "string",
+              "description": "Name of the AWS S3 bucket that the push-based log export writes to."
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -53,7 +68,7 @@
     },
     "FeatureUsages": {
       "type": "array",
-      "description": "Atlas features that use the role. The role cannot be deleted while a feature still uses it. Only the feature type is returned for each entry; the Atlas API's feature identifier is not exposed because its shape varies by feature type.",
+      "description": "Atlas features that use the role. The role cannot be deleted while a feature still uses it.",
       "insertionOrder": false,
       "items": {
         "$ref": "#/definitions/FeatureUsage"

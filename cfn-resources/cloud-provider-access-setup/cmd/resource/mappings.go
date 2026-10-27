@@ -53,7 +53,14 @@ func newFeatureUsages(usages *[]admin.CloudProviderAccessFeatureUsage) []Feature
 	}
 	result := make([]FeatureUsage, 0, len(*usages))
 	for i := range *usages {
-		result = append(result, FeatureUsage{FeatureType: (*usages)[i].FeatureType})
+		usage := FeatureUsage{FeatureType: (*usages)[i].FeatureType}
+		if id := (*usages)[i].FeatureId; id != nil && (id.BucketName != nil || id.GroupId != nil) {
+			usage.FeatureId = &FeatureId{
+				ProjectId:  id.GroupId,
+				BucketName: id.BucketName,
+			}
+		}
+		result = append(result, usage)
 	}
 	return result
 }

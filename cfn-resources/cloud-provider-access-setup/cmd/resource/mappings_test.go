@@ -74,6 +74,75 @@ func TestNewCFNCloudProviderAccessSetup(t *testing.T) {
 			},
 		},
 		{
+			name: "Maps the identifiers of a feature that uses the role",
+			model: resource.Model{
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
+			},
+			role: &admin.CloudProviderAccessRole{
+				RoleId:                     aws.String(roleID),
+				AtlasAWSAccountArn:         aws.String(atlasAccountArn),
+				AtlasAssumedRoleExternalId: aws.String(externalID),
+				CreatedDate:                createdDate(),
+				FeatureUsages: &[]admin.CloudProviderAccessFeatureUsage{
+					{
+						FeatureType: aws.String("PUSH_BASED_LOG_EXPORT"),
+						FeatureId: &admin.CloudProviderAccessFeatureUsagePushBasedLogExportFeatureId{
+							BucketName: aws.String("mongodb-atlas-log-export"),
+							GroupId:    aws.String(projectID),
+						},
+					},
+				},
+			},
+			expectedModel: resource.Model{
+				Profile:                    aws.String(profile),
+				ProjectId:                  aws.String(projectID),
+				RoleId:                     aws.String(roleID),
+				AtlasAWSAccountArn:         aws.String(atlasAccountArn),
+				AtlasAssumedRoleExternalId: aws.String(externalID),
+				CreatedDate:                aws.String("2026-10-21T12:00:00Z"),
+				FeatureUsages: []resource.FeatureUsage{
+					{
+						FeatureType: aws.String("PUSH_BASED_LOG_EXPORT"),
+						FeatureId: &resource.FeatureId{
+							ProjectId:  aws.String(projectID),
+							BucketName: aws.String("mongodb-atlas-log-export"),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "A feature id without identifiers is not mapped",
+			model: resource.Model{
+				Profile:   aws.String(profile),
+				ProjectId: aws.String(projectID),
+			},
+			role: &admin.CloudProviderAccessRole{
+				RoleId:                     aws.String(roleID),
+				AtlasAWSAccountArn:         aws.String(atlasAccountArn),
+				AtlasAssumedRoleExternalId: aws.String(externalID),
+				CreatedDate:                createdDate(),
+				FeatureUsages: &[]admin.CloudProviderAccessFeatureUsage{
+					{
+						FeatureType: aws.String("ENCRYPTION_AT_REST"),
+						FeatureId:   &admin.CloudProviderAccessFeatureUsagePushBasedLogExportFeatureId{},
+					},
+				},
+			},
+			expectedModel: resource.Model{
+				Profile:                    aws.String(profile),
+				ProjectId:                  aws.String(projectID),
+				RoleId:                     aws.String(roleID),
+				AtlasAWSAccountArn:         aws.String(atlasAccountArn),
+				AtlasAssumedRoleExternalId: aws.String(externalID),
+				CreatedDate:                aws.String("2026-10-21T12:00:00Z"),
+				FeatureUsages: []resource.FeatureUsage{
+					{FeatureType: aws.String("ENCRYPTION_AT_REST")},
+				},
+			},
+		},
+		{
 			name: "A role that no feature uses has no feature usages",
 			model: resource.Model{
 				Profile:   aws.String(profile),

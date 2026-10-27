@@ -18,11 +18,9 @@ debug:
 clean:
 	rm -rf bin
 
-# The shared helper injects the Cloud Tag Policy tags into resource-role.yaml before
-# cfn submit creates the execution role stack, which raw cfn submit does not do.
-submit:
-	@echo "==> Submitting to the private registry through the shared helper"
-	(cd .. && ./cfn-submit-helper.sh $(notdir $(CURDIR)))
+submit: clean build # submit to private registry must use release build not debug build
+	@echo "==> Submitting to private registry for testing"
+	(cd .. && SUBMIT_ONLY=true ./cfn-submit-helper.sh $(notdir $(CURDIR)))
 
 create-test-resources:
 	@echo "==> Creating test files and resources for contract testing"

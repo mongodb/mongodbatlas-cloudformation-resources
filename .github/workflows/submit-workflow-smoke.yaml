@@ -31,6 +31,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: Every resource Makefile delegates submit to the root Makefile
         # The resources are the folders with an .rpdk-config file.
         run: |
@@ -54,6 +57,8 @@ jobs:
           fi
           grep -q "Usage: make submit <resource>" "$RUNNER_TEMP/usage.txt"
       - name: Root submit resolves resource goals without a make error
+        # make -n still executes the submit recipe line that contains $(MAKE); the
+        # sub-make inherits -n and stays dry, so keep that line free of side effects.
         run: |
           make -n submit database-user > "$RUNNER_TEMP/dry-run.txt" 2>&1
           cat "$RUNNER_TEMP/dry-run.txt"
@@ -126,3 +131,18 @@ jobs:
             cat "$STUB_LOG"
             exit 1
           fi
+      - name: Configured flags reach cfn submit
+        run: |
+          git checkout -- cfn-resources/database-user/resource-role.yaml
+          mkdir -p "$RUNNER_TEMP/stubs"
+          cat > "$RUNNER_TEMP/stubs/aws" <<'STUB'
+          #!/bin/sh
+          echo "$*" >> "$STUB_LOG"
+          STUB
+          cp "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
+          chmod +x "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
+          export STUB_LOG="$RUNNER_TEMP/submit-calls.log"
+          : > "$STUB_LOG"
+          (cd cfn-resources && MONGODB_TAG_OWNER=test-owner MONGODB_TAG_ENV=dev SUBMIT_ONLY=true PATH="$RUNNER_TEMP/stubs:$PATH" ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/submit.txt" 2>&1
+          cat "$RUNNER_TEMP/submit.txt"
+          grep -q -- "--set-default" "$STUB_LOG"

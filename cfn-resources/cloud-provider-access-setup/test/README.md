@@ -25,14 +25,11 @@ An existing Atlas project is required. The test input generator creates one.
 3. Delete removes the whole role registration. Deleting an already removed registration returns `NotFound`.
 4. Deleting a role that a feature still uses, for example Encryption at Rest, fails with a clear message.
 5. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
-6. Create first returns `IN_PROGRESS` with the registered role, and the callback context carries that
-   `RoleId`. The callback returns `SUCCESS` for the same role. Repeating the callback must not add another
-   registration. A callback for a missing role must fail with `NotFound` and retain the role id, rather than
-   register a replacement.
+6. Create returns `SUCCESS` with the registered role from a single request, and registers exactly one role.
 
-The unit tests exercise the create checkpoint, the callback context, and repeated callbacks with a fake HTTP
-transport. They do not cover recovery after a create response is lost before the role id is checkpointed; see
-the [create retry limitation](../README.md#create-retries).
+The unit tests exercise the create request, the read error mapping, the non-AWS read guard, the delete in-use and
+not-found paths, and the list mapping with a fake HTTP transport. They do not cover a create response that is lost
+after Atlas registers the role; see the [create retry limitation](../README.md#create-retries).
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-cloud-provider-access)

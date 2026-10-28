@@ -1,0 +1,8 @@
+{
+  "desiredResourceState": {
+    "ProjectId": "",
+    "Profile": "default"
+  },
+  "providerLogGroupName": "mongodb-atlas-cloud-provider-access-setup-logs",
+  "previousResourceState": {}
+}

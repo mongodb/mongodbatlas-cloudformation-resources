@@ -29,7 +29,6 @@ if [ -z "$projectId" ]; then
 	echo "Failed to create or find project ${projectName}" >&2
 	exit 1
 fi
-echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 jq --arg project_id "$projectId" \
 	'.ProjectId?|=$project_id' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"

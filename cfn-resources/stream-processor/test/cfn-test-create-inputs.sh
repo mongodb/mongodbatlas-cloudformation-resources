@@ -28,7 +28,6 @@ if [ -z "$projectId" ]; then
 	echo "Failed to create or find project ${projectName}" >&2
 	exit 1
 fi
-echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 # Create Stream Instance/Workspace (this is a LONG-RUNNING operation, can take 10-30+ minutes)

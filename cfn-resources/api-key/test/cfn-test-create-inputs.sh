@@ -64,21 +64,18 @@ if [ -z "$projectId1" ]; then
 	echo "Failed to create or find project ${project1}" >&2
 	exit 1
 fi
-echo -e "Using project \"${project1}\" with id: ${projectId1}\n"
 
 projectId2=$(resolve_project_id "${project2}")
 if [ -z "$projectId2" ]; then
 	echo "Failed to create or find project ${project2}" >&2
 	exit 1
 fi
-echo -e "Using project \"${project2}\" with id: ${projectId2}\n"
 
 projectId3=$(resolve_project_id "${project3}")
 if [ -z "$projectId3" ]; then
 	echo "Failed to create or find project ${project3}" >&2
 	exit 1
 fi
-echo -e "Using project \"${project3}\" with id: ${projectId3}\n"
 
 # Create assigns 2 projects
 jq --arg orgId "$orgId" \

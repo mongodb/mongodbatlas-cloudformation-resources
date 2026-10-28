@@ -52,7 +52,6 @@ if [ -z "$projectId" ]; then
 	echo "Failed to create or find project ${projectName}" >&2
 	exit 1
 fi
-echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 
 atlas clusters create "${clusterName}" --projectId "${projectId}" -f "$SCRIPTDIR"/cluster.json --output=json
 atlas clusters watch "${clusterName}" --projectId "${projectId}"

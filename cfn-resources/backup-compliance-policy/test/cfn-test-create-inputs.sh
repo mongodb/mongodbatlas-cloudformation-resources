@@ -36,7 +36,6 @@ if [ -z "$projectId" ]; then
 	echo "Failed to create or find project ${projectName}" >&2
 	exit 1
 fi
-echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 
 # Get the current user email for authorized email
 # Second argument is optional - if not provided, use default test email

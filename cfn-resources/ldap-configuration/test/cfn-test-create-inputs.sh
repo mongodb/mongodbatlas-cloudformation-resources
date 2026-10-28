@@ -32,7 +32,6 @@ if [ -z "$projectId" ]; then
 	echo "Failed to create or find project ${projectName}" >&2
 	exit 1
 fi
-echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 
 jq --arg project_id "$projectId" \
 	--arg bindPassword "$bindPassword" \

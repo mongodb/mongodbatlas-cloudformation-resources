@@ -34,7 +34,6 @@ if [ -z "$projectId" ]; then
 	echo "Failed to create or find project ${projectName}" >&2
 	exit 1
 fi
-echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 
 #LimitName is an enum from this list. i.e. "bytesProcessed.query" "bytesProcessed.daily" "bytesProcessed.weekly" "bytesProcessed.monthly"
 

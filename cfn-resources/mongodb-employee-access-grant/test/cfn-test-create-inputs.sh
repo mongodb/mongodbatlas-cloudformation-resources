@@ -37,7 +37,6 @@ if [ -z "$projectId" ]; then
 	echo "Failed to create or find project ${projectName}" >&2
 	exit 1
 fi
-echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 
 # Create a cluster for the employee access grant test
 clusterName="cfn-test-cluster-$(date +%s)-$RANDOM"

@@ -6,9 +6,7 @@ on:
   pull_request:
     paths:
       - 'Makefile'
-      - 'cfn-resources/cfn-submit-helper.sh'
-      - 'cfn-resources/cfn-submit-helper.config'
-      - 'cfn-resources/tag-policy.sh'
+      - 'cfn-resources/*'
       - 'cfn-resources/autogen/templateMakeFile'
       - 'cfn-resources/*/Makefile'
       - '.github/workflows/submit-workflow-smoke.yaml'
@@ -17,9 +15,7 @@ on:
       - master
     paths:
       - 'Makefile'
-      - 'cfn-resources/cfn-submit-helper.sh'
-      - 'cfn-resources/cfn-submit-helper.config'
-      - 'cfn-resources/tag-policy.sh'
+      - 'cfn-resources/*'
       - 'cfn-resources/autogen/templateMakeFile'
       - 'cfn-resources/*/Makefile'
       - '.github/workflows/submit-workflow-smoke.yaml'

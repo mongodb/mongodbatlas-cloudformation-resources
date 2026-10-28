@@ -25,14 +25,18 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
-projectName="${1}"
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
-if [ -z "$projectId" ]; then
-	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../tag-policy.sh"
+require_tag_policy_vars
 
-	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
-else
-	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+projectName="${1}"
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
+
+projectId=$(resolve_project_id "${projectName}")
+if [ -z "$projectId" ]; then
+	echo "Failed to create or find project ${projectName}" >&2
+	exit 1
 fi
 
 echo "Check if a project is created $projectId"
@@ -54,7 +58,7 @@ echo "roleName: ${roleName} , policyName: ${policyName}"
 
 echo "--------------------------------create key and key policy document starts ----------------------------"
 
-keyARN=$(aws kms create-key | jq '.KeyMetadata|.Arn')
+keyARN=$(aws kms create-key --tags TagKey=mongodb-owner,TagValue="${MONGODB_TAG_OWNER}" TagKey=mongodb-env,TagValue="${MONGODB_TAG_ENV}" | jq '.KeyMetadata|.Arn')
 # shellcheck disable=SC2089
 prefix='{ "Version": "2012-10-17", "Statement": ['
 echo "--------------------------------printing key  starts ----------------------------"
@@ -94,12 +98,12 @@ echo "--------------------------------AWS Role creation ends -------------------
 
 awsRoleID=$(aws iam get-role --role-name "${roleName}" 2>/dev/null | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId' || true)
 if [ -z "$awsRoleID" ]; then
-	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json --tags Key=mongodb-owner,Value="${MONGODB_TAG_OWNER}" Key=mongodb-env,Value="${MONGODB_TAG_ENV}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 	echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
 else
 	aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}" 2>/dev/null || true
 	aws iam delete-role --role-name "${roleName}"
-	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json --tags Key=mongodb-owner,Value="${MONGODB_TAG_OWNER}" Key=mongodb-env,Value="${MONGODB_TAG_ENV}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 	echo -e "FOUND id: ${awsRoleID}\n"
 fi
 echo "--------------------------------AWS Role creation ends ----------------------------"

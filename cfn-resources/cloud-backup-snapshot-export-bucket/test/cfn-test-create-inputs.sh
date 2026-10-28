@@ -11,30 +11,34 @@ function usage {
 	echo "Creates a new cloud backup export bucket role for the test"
 }
 
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../tag-policy.sh"
+require_tag_policy_vars
+
 region=$AWS_DEFAULT_REGION
-awsRegion=$AWS_DEFAULT_REGION
 if [ -z "$region" ]; then
 	region=$(aws configure get region)
 fi
+awsRegion=$region
 
 # shellcheck disable=SC2001
 region=$(echo "$region" | sed -e "s/-/_/g")
 region=$(echo "$region" | tr '[:lower:]' '[:upper:]')
 echo "$region"
 
-roleName="mongodb-test-cloud-backup-export-bucket-role-${region}"
+roleName="mongodb-atlas-cfn-test-backup-role-${region}"
 policyName="atlas-cloud-backup-export-bucket-S3-role-policy-${region}"
 
 echo "roleName: ${roleName} , policyName: ${policyName}"
 
 projectName="${1}"
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
-if [ -z "$projectId" ]; then
-	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
 
-	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
-else
-	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+projectId=$(resolve_project_id "${projectName}")
+if [ -z "$projectId" ]; then
+	echo "Failed to create or find project ${projectName}" >&2
+	exit 1
 fi
 
 #------------ CREATING AtlAS ROLE -------------------
@@ -52,7 +56,7 @@ jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 
 awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 if [ -z "$awsRoleID" ]; then
-	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" --tags Key=mongodb-owner,Value="${MONGODB_TAG_OWNER}" Key=mongodb-env,Value="${MONGODB_TAG_ENV}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 	aws iam put-role-policy --role-name "${roleName}" --policy-name "${policyName}" --policy-document "file://$(dirname "$0")/policy.json"
 	echo -e "No role found, hence creating the role: ${awsRoleID}\n"
 
@@ -76,10 +80,10 @@ echo -e "--------------------------------authorize mongodb  Role ends ----------
 
 #create the s3 bucket
 
-bucketName="cloud-backup-snapshot-${CFN_TEST_TAG}-${awsRegion}"
+bucketName="mongodb-atlas-cfn-test-backup-${CFN_TEST_TAG}-${awsRegion}"
 
 aws s3 rb "s3://${bucketName}" --force
-aws s3 mb "s3://${bucketName}" --output json
+create_tagged_bucket "${bucketName}" "${awsRegion}"
 
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi

@@ -4,7 +4,7 @@
   "WorkspaceName": "",
   "ConnectionName": "ConnectionNameKafkaSSL",
   "Type": "Kafka",
-  "BootstrapServers": "kafka.example.com:9092",
+  "BootstrapServers": "example.com:9092",
   "Authentication": {
     "Mechanism": "SCRAM-256",
     "Username": "updateduser",

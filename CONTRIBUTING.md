@@ -144,7 +144,7 @@ There are two main parts of this project:
 
 1. Please check that you satisfy all the [requirements](#Requirements) before proceeding.
 2. Clone this repo.
-3. Use the helper script to `[cfn-resources/cfn-submit-helper.sh](cfn-submit-helper.sh)` will build and submit each resource for you. You can also run the `cfn submit` tool yourself. Note- this step will soon not be required when AWS launch a public registry.
+3. Use the helper script to `[cfn-resources/cfn-submit-helper.sh](cfn-submit-helper.sh)` will build and submit each resource for you. Do not run `cfn submit` directly: it skips the Cloud Tag Policy tags that the helper injects into the execution-role template (see [TESTING.md](TESTING.md)). Note- this step will soon not be required when AWS launch a public registry.
 
 The following command builds and registers all the types used in the quickstart:
 

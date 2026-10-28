@@ -18,7 +18,7 @@
 # Example with DEBUG logging enabled for a set of resources:
 # CFN_SUBMIT_LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-set -eo
+set -eo pipefail
 # shellcheck source=/dev/null
 . ./cfn-submit-helper.config
 # shellcheck source=/dev/null

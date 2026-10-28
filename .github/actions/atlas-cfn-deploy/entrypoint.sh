@@ -22,5 +22,6 @@ echo "[profile 711489243244_AdministratorAccess]
 region = $INPUT_AWS_DEFAULT_REGION
 output = json " >~/.aws/config
 cd cfn-resources
-BUILD_ONLY=1 CFN_FLAGS="--verbose --set-default --region ${INPUT_AWS_DEFAULT_REGION}" ./cfn-submit-helper.sh project
+# Submit flags come from cfn-submit-helper.config; the region is set in ~/.aws/config above.
+BUILD_ONLY=true ./cfn-submit-helper.sh project
 cat project/rpdk.log

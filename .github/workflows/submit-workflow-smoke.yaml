@@ -10,6 +10,7 @@ on:
       - 'cfn-resources/cfn-submit-helper.config'
       - 'cfn-resources/tag-policy.sh'
       - 'cfn-resources/autogen/templateMakeFile'
+      - 'cfn-resources/*/Makefile'
       - '.github/workflows/submit-workflow-smoke.yaml'
   push:
     branches:
@@ -20,6 +21,7 @@ on:
       - 'cfn-resources/cfn-submit-helper.config'
       - 'cfn-resources/tag-policy.sh'
       - 'cfn-resources/autogen/templateMakeFile'
+      - 'cfn-resources/*/Makefile'
       - '.github/workflows/submit-workflow-smoke.yaml'
 permissions:
   contents: read
@@ -29,6 +31,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Every resource Makefile delegates submit to the root Makefile
+        # The resources are the folders with an .rpdk-config file.
+        run: |
+          expected=$(grep -A1 '^submit:$' cfn-resources/autogen/templateMakeFile)
+          mismatched=""
+          for config in cfn-resources/*/.rpdk-config; do
+            makefile="$(dirname "$config")/Makefile"
+            if [ "$(grep -A1 '^submit:$' "$makefile")" != "$expected" ]; then
+              mismatched="$mismatched $makefile"
+            fi
+          done
+          if [ -n "$mismatched" ]; then
+            echo "these Makefiles must use the submit target from cfn-resources/autogen/templateMakeFile:$mismatched"
+            exit 1
+          fi
       - name: Root submit without a resource prints usage and fails
         run: |
           if make submit > "$RUNNER_TEMP/usage.txt" 2>&1; then

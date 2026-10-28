@@ -87,6 +87,23 @@ jobs:
           printf '#!/bin/sh\ntest -f fake/built\n' > "$fixture/cfn-resources/cfn-submit-helper.sh"
           chmod +x "$fixture/cfn-resources/cfn-submit-helper.sh"
           make -C "$fixture" -j2 submit fake
+      - name: Default log level builds the release binary
+        run: |
+          mkdir -p "$RUNNER_TEMP/stubs"
+          cat > "$RUNNER_TEMP/stubs/make" <<'STUB'
+          #!/bin/sh
+          echo "make $*" >> "$STUB_LOG"
+          STUB
+          printf '#!/bin/sh\nexit 0\n' > "$RUNNER_TEMP/stubs/curl"
+          chmod +x "$RUNNER_TEMP/stubs/make" "$RUNNER_TEMP/stubs/curl"
+          export STUB_LOG="$RUNNER_TEMP/make-calls.log"
+          : > "$STUB_LOG"
+          (cd cfn-resources && PATH="$RUNNER_TEMP/stubs:$PATH" BUILD_ONLY=true ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/default-build.txt" 2>&1
+          grep -qx "make " "$STUB_LOG"
+          : > "$STUB_LOG"
+          (cd cfn-resources && CFN_SUBMIT_LOG_LEVEL=debug PATH="$RUNNER_TEMP/stubs:$PATH" BUILD_ONLY=true ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/debug-build.txt" 2>&1
+          grep -qx "make debug" "$STUB_LOG"
+          ( unset CFN_SUBMIT_LOG_LEVEL; . cfn-resources/cfn-submit-helper.config && [ "$CFN_SUBMIT_LOG_LEVEL" = "info" ] )
       - name: Missing tag variables fail before any AWS call
         run: |
           mkdir -p "$RUNNER_TEMP/stubs"

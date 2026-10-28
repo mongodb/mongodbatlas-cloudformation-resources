@@ -20,28 +20,15 @@ fi
 
 projectName="${1:-$PROJECT_NAME}"
 echo "$projectName"
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
+
+projectId=$(resolve_project_id "${projectName}")
 if [ -z "$projectId" ]; then
-	# Atlas project lists are eventually consistent: when this script follows a project
-	# creation (contract testing creates the project first), the lookup above can miss
-	# the new project and the create below fails with HTTP 409. Retry the lookup with
-	# a bounded delay because the list can still be stale right after the conflict.
-	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id') || projectId=""
-	if [ -z "$projectId" ]; then
-		for _ in $(seq 1 12); do
-			projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id') || projectId=""
-			if [ -n "$projectId" ]; then break; fi
-			sleep 5
-		done
-	fi
-	if [ -z "$projectId" ]; then
-		echo "Failed to create or find project ${projectName}" >&2
-		exit 1
-	fi
-	echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
-else
-	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+	echo "Failed to create or find project ${projectName}" >&2
+	exit 1
 fi
+echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 # Create Stream Instance/Workspace (this is a LONG-RUNNING operation, can take 10-30+ minutes)

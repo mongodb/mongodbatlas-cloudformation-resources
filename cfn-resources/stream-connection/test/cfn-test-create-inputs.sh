@@ -24,19 +24,20 @@ fi
 projectName="${1:-$PROJECT_NAME}"
 echo "$projectName"
 
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
+
 # Use existing project ID if set, otherwise try to find or create project
 if [ -n "${MONGODB_ATLAS_PROJECT_ID:-}" ]; then
 	projectId="${MONGODB_ATLAS_PROJECT_ID}"
 	echo -e "Using existing project ID from MONGODB_ATLAS_PROJECT_ID: ${projectId}\n"
 else
-	projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+	projectId=$(resolve_project_id "${projectName}")
 	if [ -z "$projectId" ]; then
-		projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-		echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
-	else
-		echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+		echo "Failed to create or find project ${projectName}" >&2
+		exit 1
 	fi
-fi
+	fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 workspaceName="stream-workspace-$(date +%s)-$RANDOM"

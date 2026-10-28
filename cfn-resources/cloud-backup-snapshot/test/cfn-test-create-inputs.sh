@@ -37,10 +37,13 @@ projectName="${1}"
 clusterName=$projectName
 echo "Came inside create inputs to test"
 
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
+
+projectId=$(resolve_project_id "${projectName}")
 if [ -z "$projectId" ]; then
-	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-	echo -e "Cant find project \"${projectName}\"\n"
+	echo "Failed to create or find project ${projectName}" >&2
+	exit 1
 fi
 
 atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --diskSizeGB 10 --output=json

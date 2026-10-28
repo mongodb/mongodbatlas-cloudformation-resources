@@ -18,28 +18,20 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
+
 # Try to find existing project first, or use provided project ID
 if [ ${MONGODB_ATLAS_PROJECT_ID+x} ] && [ -n "${MONGODB_ATLAS_PROJECT_ID}" ]; then
 	projectId="${MONGODB_ATLAS_PROJECT_ID}"
 	echo -e "Using provided project ID: ${projectId}\n"
 else
-	projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+	projectId=$(resolve_project_id "${projectName}")
 	if [ -z "$projectId" ]; then
-		# Try to create project, but if IP is not on access list, use default project ID
-		if projectId=$(atlas projects create "${projectName}" --output=json 2>/dev/null | jq -r '.id'); then
-			echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
-		else
-			# Fallback to project ID from environment variable
-			if [ -z "${MONGODB_ATLAS_PROJECT_ID:-}" ]; then
-				echo -e "ERROR: Could not create project and MONGODB_ATLAS_PROJECT_ID is not set. Please set MONGODB_ATLAS_PROJECT_ID environment variable.\n"
-				exit 1
-			fi
-			projectId="${MONGODB_ATLAS_PROJECT_ID}"
-			echo -e "Could not create project (IP may not be on access list). Using project ID from environment: ${projectId}\n"
-		fi
-	else
-		echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+		echo "Failed to create or find project ${projectName}" >&2
+		exit 1
 	fi
+	echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 fi
 
 streamWorkspaceName="stream-workspace-$(date +%s)-$RANDOM"

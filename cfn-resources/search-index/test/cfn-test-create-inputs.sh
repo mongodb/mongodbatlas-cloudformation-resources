@@ -27,14 +27,15 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 fi
 
 projectName="${1}"
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
-if [ -z "$projectId" ]; then
-	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
 
-	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
-else
-	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+projectId=$(resolve_project_id "${projectName}")
+if [ -z "$projectId" ]; then
+	echo "Failed to create or find project ${projectName}" >&2
+	exit 1
 fi
+echo -e "Using project \"${projectName}\" with id: ${projectId}\n"
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 ClusterName="${projectName}"

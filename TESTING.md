@@ -44,12 +44,23 @@ This file contains the steps to follow to test any changes to the CFN resources.
 
 ##### Create a stack
 - Ensure all steps above are complete
-- Publish the resource to the AWS Private registry (from the `cfn-resources/` directory)
+- Publish the resource to the AWS Private registry. Run this from the resource directory:
   ```bash
-  ./cfn-submit-helper.sh <resource-folder>
+  cd cfn-resources/<resource-folder>
+  make submit
+  ```
+  or from the repository root:
+  ```bash
+  make submit <resource-folder>
   ```
 
-  > **Note:** use the helper script instead of `cfn submit --set-default` directly. It injects the required `mongodb-owner`/`mongodb-env` tags (see CLOUDP-441536) into the role template before the role stack is created, which raw `cfn submit` does not do.
+  `make submit` builds a release binary and runs `cfn-submit-helper.sh` with `SUBMIT_ONLY=true`. The helper deletes the previous execution-role stack, injects the required `mongodb-owner`/`mongodb-env` tags (see CLOUDP-441536) into `resource-role.yaml`, and submits with the flags configured in `cfn-submit-helper.config`.
+
+  > **Notes:**
+  > - Use `make submit` or `./cfn-submit-helper.sh <resource-folder>` (from `cfn-resources/`) instead of `cfn submit --set-default` directly. Raw `cfn submit` does not inject the Cloud Tag Policy tags into the role template.
+  > - The resource is published to the private registry of your configured AWS region (the `AWS_DEFAULT_REGION` environment variable or the region in your AWS profile). Set it before submitting; the private registry is per-region.
+  > - The submit requires the Cloud Tag Policy variables from the Prerequisites.
+  > - The helper rewrites `resource-role.yaml` in the working tree when it injects the tags. Do not commit that change.
 - Getting test parameters: 
   - Option 1 [Recommended]: Re-use params from `cfn-resources/[resource-folder]/inputs/inputs_1_create.template.json` generated as part of prerequisites
   - Option 2: Run again  `cfn-testing-helper` to create new parameters.  This will create some required resources for you in your configured Atlas account

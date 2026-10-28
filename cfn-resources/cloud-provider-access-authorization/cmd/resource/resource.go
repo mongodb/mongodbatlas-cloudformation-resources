@@ -27,6 +27,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/cloudprovideraccess"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -40,10 +41,8 @@ const (
 	authorizeTimeout      = 5 * time.Minute
 	authorizeRetrySeconds = 10
 
-	// Atlas API error codes this resource reacts to.
+	// Atlas API error code this resource retries on.
 	errorCodeCannotAssumeRole = "CANNOT_ASSUME_ROLE"
-	errorCodeRoleInUse        = "AWS_IAM_ROLE_IN_USE"
-	errorCodeRoleNotFound     = "CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND"
 )
 
 var (
@@ -208,15 +207,15 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 	if err != nil {
 		// The registration was removed between the lookup and the delete. The end
 		// state this handler wants is reached, so tolerate the 404.
-		if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
+		if cloudprovideraccess.IsRoleNotFound(err, resp) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				Message:         "Delete Complete",
 			}
 		}
-		if admin.IsErrorCode(err, errorCodeRoleInUse) {
+		if cloudprovideraccess.IsRoleInUse(err) {
 			return progressevent.GetFailedEventByCode(
-				fmt.Sprintf("Cloud Provider Access role %s cannot be deleted because an Atlas feature still uses it. Remove the dependent feature, for example by disabling Encryption at Rest for the project, then retry the delete.", util.SafeString(currentModel.RoleId)),
+				fmt.Sprintf(cloudprovideraccess.RoleInUseMessage, util.SafeString(currentModel.RoleId)),
 				string(types.HandlerErrorCodeResourceConflict))
 		}
 		return progressevent.GetFailedEventByResponse(err.Error(), resp)
@@ -259,7 +258,7 @@ func authorizeRole(client *util.MongoDBClient, model *Model, operation string, s
 		if admin.IsErrorCode(err, errorCodeCannotAssumeRole) {
 			return pendingAuthorization(model, operation, startedAt)
 		}
-		if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
+		if cloudprovideraccess.IsRoleNotFound(err, resp) {
 			event := notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it.", roleID, projectID))
 			event.ResourceModel = model
 			return event
@@ -318,7 +317,7 @@ func IsAuthorized(role *admin.CloudProviderAccessRole) bool {
 }
 
 func roleLookupFailed(model *Model, resp *http.Response, err error) handler.ProgressEvent {
-	if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
+	if cloudprovideraccess.IsRoleNotFound(err, resp) {
 		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s: %s", util.SafeString(model.RoleId), util.SafeString(model.ProjectId), err.Error()))
 	}
 	return progressevent.GetFailedEventByResponse(err.Error(), resp)

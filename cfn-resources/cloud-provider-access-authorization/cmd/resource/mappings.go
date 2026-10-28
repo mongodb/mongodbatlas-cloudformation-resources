@@ -18,6 +18,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/cloudprovideraccess"
 )
 
 // SetModelFromRole copies an API response into the resource model. The identifier
@@ -36,21 +37,24 @@ func SetModelFromRole(model *Model, role *admin.CloudProviderAccessRole) {
 	model.FeatureUsages = FeatureUsagesFromRole(role)
 }
 
-// FeatureUsagesFromRole maps the feature type of each usage and, when Atlas
-// identifies the feature, its project and bucket. Features that Atlas does not
-// identify, for example ENCRYPTION_AT_REST, carry no feature id.
+// FeatureUsagesFromRole maps the feature usages of a role into the resource model.
+// It uses the shared conversion so both Cloud Provider Access resources expose the
+// same shape, and leaves the attribute unset when Atlas reports no usage.
 func FeatureUsagesFromRole(role *admin.CloudProviderAccessRole) []FeatureUsage {
-	usages := role.GetFeatureUsages()
-	result := make([]FeatureUsage, 0, len(usages))
-	for i := range usages {
-		usage := FeatureUsage{FeatureType: usages[i].FeatureType}
-		if id := usages[i].FeatureId; id != nil && (id.BucketName != nil || id.GroupId != nil) {
-			usage.FeatureId = &FeatureId{
-				ProjectId:  id.GroupId,
-				BucketName: id.BucketName,
+	converted := cloudprovideraccess.FeatureUsages(role.FeatureUsages)
+	if converted == nil {
+		return nil
+	}
+	result := make([]FeatureUsage, 0, len(converted))
+	for _, usage := range converted {
+		item := FeatureUsage{FeatureType: usage.FeatureType}
+		if usage.ProjectID != nil || usage.BucketName != nil {
+			item.FeatureId = &FeatureId{
+				ProjectId:  usage.ProjectID,
+				BucketName: usage.BucketName,
 			}
 		}
-		result = append(result, usage)
+		result = append(result, item)
 	}
 	return result
 }

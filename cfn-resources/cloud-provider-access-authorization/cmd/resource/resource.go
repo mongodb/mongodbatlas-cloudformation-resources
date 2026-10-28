@@ -206,8 +206,13 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 		DeauthorizeProviderAccessRole(context.Background(), util.SafeString(currentModel.ProjectId), constants.AWS, util.SafeString(currentModel.RoleId)).
 		Execute()
 	if err != nil {
+		// The registration was removed between the lookup and the delete. The end
+		// state this handler wants is reached, so tolerate the 404.
 		if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
-			return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was already removed.", util.SafeString(currentModel.RoleId)))
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Delete Complete",
+			}
 		}
 		if admin.IsErrorCode(err, errorCodeRoleInUse) {
 			return progressevent.GetFailedEventByCode(

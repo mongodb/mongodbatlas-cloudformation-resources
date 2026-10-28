@@ -306,7 +306,9 @@ func TestDeleteRemovesTheRegistration(t *testing.T) {
 	assert.Equal(t, []string{http.MethodGet, http.MethodDelete}, methods)
 }
 
-func TestDeleteTreatsAnAlreadyRemovedRegistrationAsNotFound(t *testing.T) {
+// The registration can be removed between the lookup and the delete. The end
+// state this handler wants is reached, so the delete succeeds.
+func TestDeleteToleratesARegistrationRemovedDuringTheDelete(t *testing.T) {
 	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
 		if req.Method == http.MethodGet {
 			return roleResponse(testARN), nil
@@ -317,8 +319,9 @@ func TestDeleteTreatsAnAlreadyRemovedRegistrationAsNotFound(t *testing.T) {
 
 	event := resource.HandleDelete(client, authorizationModel())
 
-	assert.Equal(t, handler.Failed, event.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+	assert.Equal(t, handler.Success, event.OperationStatus)
+	assert.Equal(t, "Delete Complete", event.Message)
+	assert.Nil(t, event.ResourceModel, "a delete response must not carry a model")
 }
 
 func TestReadAndDeleteTreatUnapprovedRegistrationAsNotFound(t *testing.T) {

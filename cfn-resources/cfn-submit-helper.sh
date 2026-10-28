@@ -2,10 +2,13 @@
 
 # cfn-submit-helper.sh
 #
+# Builds and submits one or more resources to the CloudFormation private
+# registry. Before the role stack is created, the tags required by the
+# Cloud Tag Policy are injected into the resource-role.yaml template.
 #
-# This tool works by running `cfn submit` on each resource
-# By default it will build and submit every resource found
-# in this directory.
+# Usage:
+# ./cfn-submit-helper.sh <resource-folder> [<resource-folder> ...]
+#
 # There are some options.
 #
 # BUILD_ONLY=true|false
@@ -15,7 +18,7 @@
 # Example with DEBUG logging enabled for a set of resources:
 # CFN_SUBMIT_LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-set -eo
+set -eo pipefail
 # shellcheck source=/dev/null
 . ./cfn-submit-helper.config
 # shellcheck source=/dev/null
@@ -28,9 +31,13 @@ _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
-# By default, submit the entire library of active custom resources, but usually
-# this is run one resource at a time.
-resources="${1:-project}"
+# One or more resource folders are required, for example:
+# ./cfn-submit-helper.sh project database-user
+resources="$*"
+if [ -z "${resources}" ]; then
+	echo "Usage: $(basename "$0") <resource-folder> [<resource-folder> ...]" >&2
+	exit 1
+fi
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -61,6 +68,8 @@ echo "Step 2/2: Submit resource type to CloudFormation Private Registry"
 for resource in ${resources}; do
 	echo "Working on resource:${resource}"
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn submit' on:${resource}" && continue
+	# Fail before any AWS call when the Cloud Tag Policy variables are missing.
+	require_tag_policy_vars
 	cd "${resource}"
 	echo "resource: ${resource}"
 
@@ -76,8 +85,7 @@ for resource in ${resources}; do
 	echo "${command}"
 	${command}
 
-	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
-	require_tag_policy_vars
+	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS[*]}"
 	# Re-add the Cloud Tag Policy tags missing from the S3 role template, right before
 	# cfn submit creates the role stack (also covers SUBMIT_ONLY runs). Skipped when the
 	# file is already tagged, so repeated runs cannot add a duplicate Tags key.
@@ -89,6 +97,6 @@ for resource in ${resources}; do
 		fi
 	fi
 	# ensure error is thrown if registration to private registry fails
-	cfn submit "${CFN_SUBMIT_CFN_FLAGS}"
+	cfn submit "${CFN_SUBMIT_CFN_FLAGS[@]}"
 	cd -
 done

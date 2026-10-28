@@ -35,6 +35,8 @@ func TestIsAuthorized(t *testing.T) {
 	authorizedDate := time.Date(2026, 10, 21, 12, 0, 0, 0, time.UTC)
 
 	assert.False(t, resource.IsAuthorized(nil))
-	assert.False(t, resource.IsAuthorized(&admin.CloudProviderAccessRole{}))
-	assert.True(t, resource.IsAuthorized(&admin.CloudProviderAccessRole{AuthorizedDate: &authorizedDate}))
+	assert.False(t, resource.IsAuthorized(&admin.CloudProviderAccessRole{ProviderName: "AWS"}))
+	assert.False(t, resource.IsAuthorized(&admin.CloudProviderAccessRole{AuthorizedDate: &authorizedDate}))
+	assert.False(t, resource.IsAuthorized(&admin.CloudProviderAccessRole{ProviderName: "AZURE", AuthorizedDate: &authorizedDate}))
+	assert.True(t, resource.IsAuthorized(&admin.CloudProviderAccessRole{ProviderName: "AWS", AuthorizedDate: &authorizedDate}))
 }

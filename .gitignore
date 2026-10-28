@@ -54,3 +54,6 @@ cfn-resources/resource-versions.md
 **/test/trust-policy.json
 **/test/s3-policy.json
 **/test/add-policy.json
+
+# test fixture state written before the AWS IAM role exists, read by the cleanup scripts
+**/test/role-name.txt

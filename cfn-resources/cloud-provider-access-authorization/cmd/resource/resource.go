@@ -79,7 +79,7 @@ func HandleCreate(req handler.Request, client *util.MongoDBClient, currentModel 
 	startedAt, continuing := authorizationCallback(req, currentModel, "CREATE")
 	role, resp, err := getRole(client, currentModel)
 	if err != nil {
-		event := roleLookupFailed(resp, err)
+		event := roleLookupFailed(currentModel, resp, err)
 		if continuing {
 			event.ResourceModel = currentModel
 		}
@@ -121,7 +121,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func HandleUpdate(req handler.Request, client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	role, resp, err := getRole(client, currentModel)
 	if err != nil {
-		event := roleLookupFailed(resp, err)
+		event := roleLookupFailed(currentModel, resp, err)
 		event.ResourceModel = currentModel
 		return event
 	}
@@ -159,7 +159,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	role, resp, err := getRole(client, currentModel)
 	if err != nil {
-		return roleLookupFailed(resp, err)
+		return roleLookupFailed(currentModel, resp, err)
 	}
 	if !IsAuthorized(role) {
 		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
@@ -196,7 +196,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	role, resp, err := getRole(client, currentModel)
 	if err != nil {
-		return roleLookupFailed(resp, err)
+		return roleLookupFailed(currentModel, resp, err)
 	}
 	if !IsAuthorized(role) {
 		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
@@ -305,13 +305,16 @@ func authorizationCallback(req handler.Request, model *Model, operation string) 
 	return parsed, err == nil
 }
 
+// IsAuthorized reports whether the role is an authorized AWS registration. The
+// lookup endpoint also returns Azure and GCP registrations, which this AWS-only
+// resource does not manage.
 func IsAuthorized(role *admin.CloudProviderAccessRole) bool {
-	return role != nil && role.HasAuthorizedDate()
+	return role != nil && role.GetProviderName() == constants.AWS && role.HasAuthorizedDate()
 }
 
-func roleLookupFailed(resp *http.Response, err error) handler.ProgressEvent {
+func roleLookupFailed(model *Model, resp *http.Response, err error) handler.ProgressEvent {
 	if util.StatusNotFound(resp) || admin.IsErrorCode(err, errorCodeRoleNotFound) {
-		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role was not found. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it: %s", err.Error()))
+		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s: %s", util.SafeString(model.RoleId), util.SafeString(model.ProjectId), err.Error()))
 	}
 	return progressevent.GetFailedEventByResponse(err.Error(), resp)
 }

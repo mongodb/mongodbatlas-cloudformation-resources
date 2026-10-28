@@ -11,19 +11,22 @@
           "description": "Human-readable label that describes the Atlas feature that uses the role, for example ENCRYPTION_AT_REST."
         },
         "FeatureId": {
-          "description": "Identifying characteristics of the feature that uses the role, when Atlas returns them, for example the S3 bucket name for a push-based log export. Not set for features that Atlas does not identify, for example ENCRYPTION_AT_REST.",
-          "type": "object",
-          "properties": {
-            "ProjectId": {
-              "type": "string",
-              "description": "Unique 24-hexadecimal digit string that identifies the project."
-            },
-            "BucketName": {
-              "type": "string",
-              "description": "Name of the AWS S3 bucket that the push-based log export writes to."
-            }
-          },
-          "additionalProperties": false
+          "$ref": "#/definitions/FeatureId"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FeatureId": {
+      "description": "Identifying characteristics of the feature that uses the role, when Atlas returns them, for example the S3 bucket name for a push-based log export. Not set for features that Atlas does not identify, for example ENCRYPTION_AT_REST.",
+      "type": "object",
+      "properties": {
+        "ProjectId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the project."
+        },
+        "BucketName": {
+          "type": "string",
+          "description": "Name of the AWS S3 bucket that the push-based log export writes to."
         }
       },
       "additionalProperties": false

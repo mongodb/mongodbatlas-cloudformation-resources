@@ -334,6 +334,104 @@ func TestReadAndDeleteTreatUnapprovedRegistrationAsNotFound(t *testing.T) {
 	}
 }
 
+// The lookup endpoint also returns Azure and GCP registrations. Even when Atlas
+// reports an authorization date for one of them, this AWS-only resource must not
+// treat it as its own.
+func TestNonAWSRegistrationIsNotFound(t *testing.T) {
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		require.Equal(t, http.MethodGet, req.Method, "must not authorize or delete a non-AWS registration")
+		return jsonResponse(http.StatusOK, `{"providerName":"AZURE","_id":"`+testRoleID+`","authorizedDate":"2026-10-21T12:00:00Z"}`), nil
+	})
+
+	for _, event := range []handler.ProgressEvent{
+		resource.HandleRead(client, authorizationModel()),
+		resource.HandleDelete(client, authorizationModel()),
+		resource.HandleUpdate(handler.Request{}, client, authorizationModel()),
+	} {
+		assert.Equal(t, handler.Failed, event.OperationStatus)
+		assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+	}
+}
+
+func TestReadReturnsTheAuthorization(t *testing.T) {
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		require.Equal(t, http.MethodGet, req.Method)
+		return roleResponse(otherARN), nil
+	})
+	model := &resource.Model{ProjectId: new(testProjectID), RoleId: new(testRoleID), Profile: new("custom-profile")}
+
+	event := resource.HandleRead(client, model)
+
+	require.Equal(t, handler.Success, event.OperationStatus)
+	read, ok := event.ResourceModel.(*resource.Model)
+	require.True(t, ok)
+	assert.Equal(t, testProjectID, *read.ProjectId)
+	assert.Equal(t, testRoleID, *read.RoleId)
+	assert.Equal(t, "custom-profile", *read.Profile)
+	require.NotNil(t, read.IamAssumedRoleArn, "read must report the ARN Atlas has authorized")
+	assert.Equal(t, otherARN, *read.IamAssumedRoleArn)
+	assert.NotNil(t, read.AuthorizedDate)
+}
+
+func TestReadAndDeleteMapLookupErrors(t *testing.T) {
+	testCases := []struct {
+		expectedCode types.HandlerErrorCode
+		errorCode    string
+		status       int
+	}{
+		{status: http.StatusNotFound, errorCode: roleNotFound, expectedCode: types.HandlerErrorCodeNotFound},
+		{status: http.StatusInternalServerError, errorCode: "UNEXPECTED_ERROR", expectedCode: types.HandlerErrorCodeServiceInternalError},
+	}
+	for _, tc := range testCases {
+		t.Run(http.StatusText(tc.status), func(t *testing.T) {
+			client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+				require.Equal(t, http.MethodGet, req.Method, "must not delete when the lookup fails")
+				return errorResponse(tc.status, tc.errorCode), nil
+			})
+			for _, event := range []handler.ProgressEvent{
+				resource.HandleRead(client, authorizationModel()),
+				resource.HandleDelete(client, authorizationModel()),
+			} {
+				assert.Equal(t, handler.Failed, event.OperationStatus)
+				assert.Equal(t, string(tc.expectedCode), event.HandlerErrorCode)
+			}
+		})
+	}
+}
+
+func TestDeleteReportsUnexpectedErrors(t *testing.T) {
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == http.MethodGet {
+			return roleResponse(testARN), nil
+		}
+		require.Equal(t, http.MethodDelete, req.Method)
+		return errorResponse(http.StatusInternalServerError, "UNEXPECTED_ERROR"), nil
+	})
+
+	event := resource.HandleDelete(client, authorizationModel())
+
+	assert.Equal(t, handler.Failed, event.OperationStatus)
+	assert.Equal(t, string(types.HandlerErrorCodeServiceInternalError), event.HandlerErrorCode)
+}
+
+func TestAuthorizationOfAMissingRegistrationIsNotFound(t *testing.T) {
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == http.MethodGet {
+			return roleResponse(""), nil
+		}
+		require.Equal(t, http.MethodPatch, req.Method)
+		return errorResponse(http.StatusNotFound, roleNotFound), nil
+	})
+	model := authorizationModel()
+	first := resource.HandleCreate(handler.Request{}, client, model)
+
+	event := resource.HandleCreate(callbackRequest(t, first), client, model)
+
+	assert.Equal(t, handler.Failed, event.OperationStatus)
+	assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+	assert.Same(t, model, event.ResourceModel)
+}
+
 func authorizationModel() *resource.Model {
 	return &resource.Model{
 		ProjectId: new(testProjectID), RoleId: new(testRoleID),

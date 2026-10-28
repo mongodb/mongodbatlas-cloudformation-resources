@@ -18,6 +18,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/cloudprovideraccess"
 )
 
 // NewCFNCloudProviderAccessSetup builds the resource model from a create or read API response.
@@ -48,19 +49,20 @@ func NewCFNCloudProviderAccessSetupFromAWSIAMRole(model *Model, role *admin.Clou
 }
 
 func newFeatureUsages(usages *[]admin.CloudProviderAccessFeatureUsage) []FeatureUsage {
-	if usages == nil || len(*usages) == 0 {
+	converted := cloudprovideraccess.FeatureUsages(usages)
+	if converted == nil {
 		return nil
 	}
-	result := make([]FeatureUsage, 0, len(*usages))
-	for i := range *usages {
-		usage := FeatureUsage{FeatureType: (*usages)[i].FeatureType}
-		if id := (*usages)[i].FeatureId; id != nil && (id.BucketName != nil || id.GroupId != nil) {
-			usage.FeatureId = &FeatureId{
-				ProjectId:  id.GroupId,
-				BucketName: id.BucketName,
+	result := make([]FeatureUsage, 0, len(converted))
+	for _, usage := range converted {
+		item := FeatureUsage{FeatureType: usage.FeatureType}
+		if usage.ProjectID != nil || usage.BucketName != nil {
+			item.FeatureId = &FeatureId{
+				ProjectId:  usage.ProjectID,
+				BucketName: usage.BucketName,
 			}
 		}
-		result = append(result, usage)
+		result = append(result, item)
 	}
 	return result
 }

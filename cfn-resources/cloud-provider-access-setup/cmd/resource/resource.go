@@ -25,21 +25,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/cloudprovideraccess"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
 
-const (
-	awsProviderName = "AWS"
-	// roleInUseErrorCode is returned by Atlas when a feature still uses the role.
-	roleInUseErrorCode = "AWS_IAM_ROLE_IN_USE"
-	// roleInUseMessage tells the customer how to unblock the delete, because the dependent feature
-	// has to be removed before the role can be deleted.
-	roleInUseMessage = "Cloud Provider Access role %s cannot be deleted because an Atlas feature still uses it. " +
-		"Remove the dependent feature, for example by disabling Encryption at Rest for the project, then retry the delete."
-)
+const awsProviderName = "AWS"
 
 var (
 	CreateRequiredFields = []string{constants.ProjectID}
@@ -204,9 +197,9 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 		if util.StatusNotFound(response) {
 			return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}
 		}
-		if admin.IsErrorCode(err, roleInUseErrorCode) {
+		if cloudprovideraccess.IsRoleInUse(err) {
 			return progressevent.GetFailedEventByCode(
-				fmt.Sprintf(roleInUseMessage, *currentModel.RoleId),
+				fmt.Sprintf(cloudprovideraccess.RoleInUseMessage, *currentModel.RoleId),
 				string(types.HandlerErrorCodeResourceConflict))
 		}
 		return progressevent.GetFailedEventByResponse(

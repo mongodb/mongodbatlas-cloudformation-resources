@@ -84,7 +84,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	}
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              fmt.Sprintf("Create Cluster `%s`", *cluster.StateName),
+		Message:              fmt.Sprintf("Create Cluster %#q", *cluster.StateName),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: callBackSeconds,
 		CallbackContext:      callbackContext,
@@ -407,7 +407,7 @@ func RejectPauseWithSkipWaitForIdle(currentModel *Model, currentlyPaused bool) *
 	}
 	return &handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
-		Message:          fmt.Sprintf("Cluster `%s` cannot be paused in the same operation that sets SkipWaitForIdle, because Atlas does not pause a cluster while a change is pending. Apply the pause in a separate update.", *currentModel.Name),
+		Message:          fmt.Sprintf("Cluster %#q cannot be paused in the same operation that sets SkipWaitForIdle, because Atlas does not pause a cluster while a change is pending. Apply the pause in a separate update.", *currentModel.Name),
 		HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
 	}
 }
@@ -437,7 +437,7 @@ func reportSuccessWithoutWaiting(client *util.MongoDBClient, currentModel *Model
 	currentModel.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         fmt.Sprintf("Cluster `%s` accepted, SkipWaitForIdle is true, not waiting for IDLE", *currentModel.Name),
+		Message:         fmt.Sprintf("Cluster %#q accepted, SkipWaitForIdle is true, not waiting for IDLE", *currentModel.Name),
 		ResourceModel:   currentModel,
 	}, nil
 }

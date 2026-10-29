@@ -64,6 +64,9 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 	currentModel.validateDefaultLabel()
+	if pe := RejectPauseWithSkipWaitForIdle(currentModel, false); pe != nil {
+		return *pe, nil
+	}
 	clusterRequest, errEvent := setClusterRequest(currentModel)
 	if errEvent != nil {
 		return *errEvent, nil
@@ -73,6 +76,12 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		return *pe, nil
 	}
 	currentModel.StateName = cluster.StateName
+	if ShouldSkipWaitForIdle(currentModel) {
+		if pe := applyAdvancedSettings(client, currentModel); pe != nil {
+			return *pe, nil
+		}
+		return reportSuccessWithoutWaiting(client, currentModel)
+	}
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create Cluster `%s`", *cluster.StateName),
@@ -125,6 +134,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
+	if pe := RejectPauseWithSkipWaitForIdle(currentModel, currentCluster.GetPaused()); pe != nil {
+		return *pe, nil
+	}
+
 	// Unpausing must be handled separately from other updates to avoid errors from the API.
 	if pe := handleUnpausingUpdate(client, currentCluster, currentModel); pe != nil {
 		return *pe, nil
@@ -140,6 +153,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
+	if ShouldSkipWaitForIdle(currentModel) {
+		if pe := applyAdvancedSettings(client, currentModel); pe != nil {
+			return *pe, nil
+		}
+	}
+
 	model, resp, err := updateCluster(context.Background(), client, currentModel, adminCluster)
 	if pe := util.HandleClusterError(err, resp); pe != nil {
 		return *pe, nil
@@ -148,6 +167,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	var state string
 	if model.StateName != nil {
 		state = *model.StateName
+	}
+	if ShouldSkipWaitForIdle(model) {
+		return reportSuccessWithoutWaiting(client, model)
 	}
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -371,6 +393,53 @@ func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 		}
 	}
 	return *pe, nil
+}
+
+// ShouldSkipWaitForIdle reports whether the operation returns without waiting for the cluster to reach IDLE.
+func ShouldSkipWaitForIdle(m *Model) bool {
+	return m.SkipWaitForIdle != nil && *m.SkipWaitForIdle
+}
+
+// RejectPauseWithSkipWaitForIdle returns a failure event when a pause is combined with SkipWaitForIdle, and nil otherwise.
+func RejectPauseWithSkipWaitForIdle(currentModel *Model, currentlyPaused bool) *handler.ProgressEvent {
+	if !ShouldSkipWaitForIdle(currentModel) || currentlyPaused || currentModel.Paused == nil || !*currentModel.Paused {
+		return nil
+	}
+	return &handler.ProgressEvent{
+		OperationStatus:  handler.Failed,
+		Message:          fmt.Sprintf("Cluster `%s` cannot be paused in the same operation that sets SkipWaitForIdle, because Atlas does not pause a cluster while a change is pending. Apply the pause in a separate update.", *currentModel.Name),
+		HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
+	}
+}
+
+// applyAdvancedSettings applies AdvancedSettings through the process args endpoint, which Atlas accepts while the cluster converges.
+func applyAdvancedSettings(client *util.MongoDBClient, currentModel *Model) *handler.ProgressEvent {
+	if currentModel.AdvancedSettings == nil {
+		return nil
+	}
+	advancedConfig := expandAdvancedSettings(*currentModel.AdvancedSettings)
+	_, resp, err := client.Atlas20231115014.ClustersApi.UpdateClusterAdvancedConfiguration(
+		context.Background(), *currentModel.ProjectId, *currentModel.Name, advancedConfig).Execute()
+	return util.HandleClusterError(err, resp)
+}
+
+// reportSuccessWithoutWaiting reads the cluster once, then reports success while Atlas is still converging.
+func reportSuccessWithoutWaiting(client *util.MongoDBClient, currentModel *Model) (handler.ProgressEvent, error) {
+	cluster, resp, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
+	}
+
+	currentModel.Id = cluster.Id
+	currentModel.CreatedDate = util.TimePtrToStringPtr(cluster.CreateDate)
+	currentModel.MongoDBVersion = cluster.MongoDBVersion
+	currentModel.StateName = cluster.StateName
+	currentModel.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         fmt.Sprintf("Cluster `%s` accepted, SkipWaitForIdle is true, not waiting for IDLE", *currentModel.Name),
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {

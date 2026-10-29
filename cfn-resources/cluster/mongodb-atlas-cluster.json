@@ -422,7 +422,7 @@
       "type": "boolean"
     },
     "SkipWaitForIdle": {
-      "description": "Flag that indicates whether the operation skips waiting for the cluster to reach IDLE before reporting success. When true, the operation reports success as soon as Atlas accepts the request, while the cluster is still converging. Set this only if your stack exceeds the CloudFormation operation timeout. Atlas failures after the operation reports success are not reported back to CloudFormation",
+      "description": "Flag that indicates whether the operation skips waiting for the cluster to reach IDLE before reporting success. When true, the operation reports success as soon as Atlas accepts the request, while the cluster is still converging. Set this only if your stack exceeds the CloudFormation operation timeout. Atlas failures after the operation reports success are not reported back to CloudFormation.",
       "type": "boolean",
       "default": false
     },

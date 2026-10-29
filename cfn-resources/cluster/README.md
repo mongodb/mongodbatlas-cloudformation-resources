@@ -33,6 +33,7 @@ Set `SkipWaitForIdle` to `true` to report success as soon as Atlas accepts the c
 - Read-only properties reflect the cluster before the change converges. `Id` and `CreatedDate` are final, but `StateName` reports `CREATING` or `UPDATING`, and on update `ConnectionStrings` and `MongoDBVersion` can be stale if the change alters them.
 - On create, Atlas has not generated connection strings yet, so a template that reads `ConnectionStrings` with `Fn::GetAtt` fails and the stack rolls back.
 - `SkipWaitForIdle` cannot be combined with a change to `Paused`. Apply the pause in a separate update.
+- `SkipWaitForIdle` has no effect on flex clusters. Flex clusters support no long-running changes, such as shard removal or a storage scale-down, so the CloudFormation operation timeout is not a risk for them.
 
 
 ## Cloudformation Examples

@@ -21,6 +21,20 @@ set up an [AWS Profile](/README.md#mongodb-atlas-api-keys-credential-management)
 For futher information, see the [resource docs](docs/README.md) section.
 
 
+## Operation timeout
+
+CloudFormation limits how long a single resource operation can run. This resource does not set that limit, so the CloudFormation default of 120 minutes applies and you cannot override it. Long Atlas changes, such as a shard removal or a storage scale-down, can outlast that limit. When they do, CloudFormation fails the operation and rolls back the stack, which can leave the cluster mid-change.
+
+Set `SkipWaitForIdle` to `true` to report success as soon as Atlas accepts the change, instead of polling until the cluster reaches `IDLE`. Leave `SkipWaitForIdle` unset to keep the default behavior of waiting for `IDLE`.
+
+### SkipWaitForIdle limitations
+
+- The stack reports success before the change converges. An Atlas failure after that point is not reported to CloudFormation, and anything triggered by the stack completing can reach a cluster that is not ready yet. To confirm the change landed, check the cluster in Atlas. Drift detection only catches a failed change when you run it, and only for properties set in your template.
+- Read-only properties reflect the cluster before the change converges. `Id` and `CreatedDate` are final, but `StateName` reports `CREATING` or `UPDATING`, and on update `ConnectionStrings` and `MongoDBVersion` can be stale if the change alters them.
+- On create, Atlas has not generated connection strings yet, so a template that reads `ConnectionStrings` with `Fn::GetAtt` fails and the stack rolls back.
+- `SkipWaitForIdle` cannot be combined with a change to `Paused`. Apply the pause in a separate update.
+
+
 ## Cloudformation Examples
 
 For examples, see the [CFN Template](/examples/cluster/cluster.json) example.

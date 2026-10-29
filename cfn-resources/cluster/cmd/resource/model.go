@@ -22,6 +22,7 @@ type Model struct {
 	Name                             *string                   `json:",omitempty"`
 	Paused                           *bool                     `json:",omitempty"`
 	PitEnabled                       *bool                     `json:",omitempty"`
+	SkipWaitForIdle                  *bool                     `json:",omitempty"`
 	ReplicationSpecs                 []AdvancedReplicationSpec `json:",omitempty"`
 	RootCertType                     *string                   `json:",omitempty"`
 	StateName                        *string                   `json:",omitempty"`

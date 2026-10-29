@@ -13,11 +13,13 @@
 {{- end }}
         "ClusterType": "REPLICASET",
         "Paused": false,
+{{- if .WithAdvancedSettings }}
         "AdvancedSettings": {
           "DefaultReadConcern": "{{ .DefaultReadConcern }}",
           "JavascriptEnabled": "true",
           "MinimumEnabledTLSProtocol": "TLS1_2"
         },
+{{- end }}
         "ReplicationSpecs": [
           {
             "NumShards": 1,

@@ -50,9 +50,6 @@ const (
 	skipWaitIdleStateName   = "IDLE"
 	skipWaitPollInterval    = 30 * time.Second
 	skipWaitPollAttempts    = 60
-	// cloud-dev returns transient rejections, so reads are retried rather than failing the run.
-	skipWaitReadAttempts      = 5
-	skipWaitReadRetryInterval = 5 * time.Second
 )
 
 var (
@@ -218,21 +215,10 @@ func testDeleteSkipWaitStack(t *testing.T, c *skipWaitTestContext) {
 
 func readSkipWaitClusterFromAtlas(t *testing.T, c *skipWaitTestContext) *admin20231115014.AdvancedClusterDescription {
 	t.Helper()
-	var lastErr error
-	for attempt := range skipWaitReadAttempts {
-		if attempt > 0 {
-			time.Sleep(skipWaitReadRetryInterval)
-		}
-		cluster, resp, err := c.atlasClient20231115014.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
-		if err == nil {
-			assert.Equal(t, 200, resp.StatusCode)
-			return cluster
-		}
-		lastErr = err
-		t.Logf("retrying read of cluster %s (attempt %d): %v", c.clusterTmplObj.Name, attempt+1, err)
-	}
-	t.Fatalf("Err while retrieving Cluster from Atlas after %d attempts: %v", skipWaitReadAttempts, lastErr)
-	return nil
+	cluster, resp, err := c.atlasClient20231115014.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
+	utility.FailNowIfError(t, "Err while retrieving Cluster from Atlas: %v", err)
+	assert.Equal(t, 200, resp.StatusCode)
+	return cluster
 }
 
 func readSkipWaitProcessArgs(t *testing.T, c *skipWaitTestContext) *admin20231115014.ClusterDescriptionProcessArgs {

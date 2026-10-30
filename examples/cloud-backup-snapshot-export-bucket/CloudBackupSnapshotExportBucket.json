@@ -9,15 +9,15 @@
     },
     "MongoDBAtlasProjectId": {
       "Type": "String",
-      "Description": "Atlas project ID."
+      "Description": "MongoDB project Key"
     },
     "IamRoleID": {
       "Type": "String",
-      "Description": "Atlas Cloud Provider Access registration ID, not an IAM role ARN. The registration must already be authorized for the IAM role that can access the S3 bucket."
+      "Description": "Unique identifier of the role that Atlas uses to access the bucket, check https://www.mongodb.com/docs/atlas/backup/cloud-backup/export/ for mor information"
     },
     "BucketName": {
       "Type": "String",
-      "Description": "Name of the existing S3 bucket to register as a snapshot export destination."
+      "Description": "Unique 24-hexadecimal digit string identifying the project."
     }
   },
   "Mappings": {},

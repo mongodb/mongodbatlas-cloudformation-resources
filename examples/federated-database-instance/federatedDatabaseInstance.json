@@ -9,11 +9,11 @@
     },
     "ProjectId": {
       "Type": "String",
-      "Description": "Atlas Project Id"
+      "Description": "Atlas Project Id",
     },
     "RoleID": {
       "Type": "String",
-      "Description": "Atlas Cloud Provider Access registration ID, not an IAM role ARN. The registration must already be authorized for the IAM role that can access TestS3Bucket.",
+      "Description": "Unique identifier of the role that the federated database instance can use to access S3 Buckets. If necessary, use the Atlas API to retrieve the role ID. You must also specify the testS3Bucket",
       "ConstraintDescription": ""
     },
     "TestS3Bucket": {
@@ -79,7 +79,7 @@
             "Ref": "Region"
           }
         },
-        "SkipRoleValidation": true,
+        "SkipRoleValidation": "true",
         "Storage": {
           "Databases": [
             {

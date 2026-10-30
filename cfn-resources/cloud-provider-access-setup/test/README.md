@@ -23,15 +23,12 @@ An existing Atlas project is required. The test input generator creates one.
    `AtlasAssumedRoleExternalId`, `CreatedDate`, and `FeatureUsages`.
 2. The role appears in the project's Cloud Provider Access roles in the Atlas UI.
 3. Delete removes the whole role registration. Deleting an already removed registration returns `NotFound`.
-   In the [combined stack lifecycle test](../../cloud-provider-access-authorization/test/README.md#validate-the-two-resources-together),
-   Authorization removes the registration first; Setup then returns `NotFound` and stack deletion must complete.
 4. Deleting a role that a feature still uses, for example Encryption at Rest, fails with a clear message.
 5. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 6. Create returns `SUCCESS` with the registered role from a single request, and registers exactly one role.
 
 The unit tests exercise the create request, the read error mapping, the non-AWS read guard, the delete in-use and
-not-found paths, and the list mapping with a fake HTTP transport. Read and Delete recognize both HTTP 404 and
-Atlas's `CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND` code while preserving unrelated errors. They do not cover a create response that is lost
+not-found paths, and the list mapping with a fake HTTP transport. They do not cover a create response that is lost
 after Atlas registers the role; see the [create retry limitation](../README.md#create-retries).
 
 ## Important Links

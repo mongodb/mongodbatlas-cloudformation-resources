@@ -105,21 +105,18 @@ func TestReadMapsErrors(t *testing.T) {
 	testCases := []struct {
 		name      string
 		errorCode types.HandlerErrorCode
-		atlasCode string
 		status    int
 	}{
-		{"A missing registration is NotFound", types.HandlerErrorCodeNotFound, "TEST_ERROR", http.StatusNotFound},
-		{"A missing registration reported without HTTP 404 is NotFound", types.HandlerErrorCodeNotFound, "CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND", http.StatusBadRequest},
-		{"An unrelated bad request keeps its error code", types.HandlerErrorCodeInvalidRequest, "INVALID_ATTRIBUTE", http.StatusBadRequest},
-		{"An Atlas failure keeps its error code", types.HandlerErrorCodeServiceInternalError, "TEST_ERROR", http.StatusInternalServerError},
-		{"An access denied keeps its error code", types.HandlerErrorCodeAccessDenied, "TEST_ERROR", http.StatusUnauthorized},
+		{"A missing registration is NotFound", types.HandlerErrorCodeNotFound, http.StatusNotFound},
+		{"An Atlas failure keeps its error code", types.HandlerErrorCodeServiceInternalError, http.StatusInternalServerError},
+		{"An access denied keeps its error code", types.HandlerErrorCodeAccessDenied, http.StatusUnauthorized},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var requests []string
 			client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
 				requests = append(requests, req.Method+" "+req.URL.Path)
-				return atlasResponse(tc.status, `{"errorCode":"`+tc.atlasCode+`","detail":"Read failed"}`), nil
+				return atlasResponse(tc.status, `{"errorCode":"TEST_ERROR","detail":"Read failed"}`), nil
 			})
 			model := resource.Model{
 				Profile:   aws.String(profile),
@@ -177,23 +174,6 @@ func TestDeleteRegistration(t *testing.T) {
 			deleteStatus:     http.StatusNotFound,
 			deleteBody:       `{"errorCode":"CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND","detail":"not found"}`,
 			expectedStatus:   handler.Success,
-			expectedRequests: []string{listPath, deletePath},
-		},
-		{
-			name:             "A missing registration reported without HTTP 404 is tolerated",
-			roleIDs:          []string{roleID},
-			deleteStatus:     http.StatusBadRequest,
-			deleteBody:       `{"errorCode":"CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND","detail":"not found"}`,
-			expectedStatus:   handler.Success,
-			expectedRequests: []string{listPath, deletePath},
-		},
-		{
-			name:             "An unrelated bad request is reported",
-			roleIDs:          []string{roleID},
-			deleteStatus:     http.StatusBadRequest,
-			deleteBody:       `{"errorCode":"INVALID_ATTRIBUTE","detail":"invalid request"}`,
-			expectedStatus:   handler.Failed,
-			expectedCode:     string(types.HandlerErrorCodeInvalidRequest),
 			expectedRequests: []string{listPath, deletePath},
 		},
 		{

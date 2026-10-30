@@ -32,8 +32,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
 
-const awsProviderName = "AWS"
-
 var (
 	CreateRequiredFields = []string{constants.ProjectID}
 	ReadRequiredFields   = []string{constants.ProjectID, constants.CloudProviderAccessRoleID}
@@ -68,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // cannot deduplicate a create whose response is lost, so a retry registers another role; that
 // accepted risk is documented in the resource README.
 func HandleCreate(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-	roleRequest := &admin.CloudProviderAccessRoleRequest{ProviderName: awsProviderName}
+	roleRequest := &admin.CloudProviderAccessRoleRequest{ProviderName: constants.AWS}
 
 	role, response, err := client.AtlasSDK.CloudProviderAccessApi.
 		CreateCloudProviderAccess(context.Background(), *currentModel.ProjectId, roleRequest).
@@ -115,14 +113,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // HandleRead reads a registration without changing its identity.
 func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-	role, response, err := client.AtlasSDK.CloudProviderAccessApi.
-		GetCloudProviderAccess(context.Background(), *currentModel.ProjectId, *currentModel.RoleId).
-		Execute()
+	role, response, err := cloudprovideraccess.GetRole(context.Background(), client, *currentModel.ProjectId, *currentModel.RoleId)
 	if err != nil {
 		if cloudprovideraccess.IsRoleNotFound(err, response) {
-			return progressevent.GetFailedEventByCode(
-				fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId),
-				string(types.HandlerErrorCodeNotFound))
+			return cloudprovideraccess.NotFoundEvent(fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId))
 		}
 		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("error reading Cloud Provider Access role: %s", err.Error()), response)
@@ -130,10 +124,8 @@ func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.Progres
 
 	// The lookup endpoint also returns Azure and GCP registrations, which this AWS-only
 	// resource neither lists nor deletes.
-	if role.GetProviderName() != awsProviderName {
-		return progressevent.GetFailedEventByCode(
-			fmt.Sprintf("AWS Cloud Provider Access role %s not found", *currentModel.RoleId),
-			string(types.HandlerErrorCodeNotFound))
+	if !cloudprovideraccess.IsAWSRole(role) {
+		return cloudprovideraccess.NotFoundEvent(fmt.Sprintf("AWS Cloud Provider Access role %s not found", *currentModel.RoleId))
 	}
 
 	return handler.ProgressEvent{
@@ -169,41 +161,23 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // HandleDelete removes the role registration, tolerating a registration that is already gone.
 func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-	ctx := context.Background()
-
-	// Deleting removes the whole role registration, not just an authorization. The delete endpoint
-	// reports a missing role with a message that names the project, so list the roles first and
-	// report a missing registration as NotFound.
-	roles, response, err := client.AtlasSDK.CloudProviderAccessApi.
-		ListCloudProviderAccess(ctx, *currentModel.ProjectId).
-		Execute()
+	// Deleting removes the whole role registration, not just an authorization. A missing
+	// registration is reported as NotFound before the delete; a registration that is removed
+	// concurrently is the end state this handler wants, so it is tolerated as success.
+	role, response, err := cloudprovideraccess.GetRole(context.Background(), client, *currentModel.ProjectId, *currentModel.RoleId)
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(
-			fmt.Sprintf("error listing Cloud Provider Access roles: %s", err.Error()), response)
-	}
-
-	if FindAWSRole(roles, *currentModel.RoleId) == nil {
-		return progressevent.GetFailedEventByCode(
-			fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId),
-			string(types.HandlerErrorCodeNotFound))
-	}
-
-	response, err = client.AtlasSDK.CloudProviderAccessApi.
-		DeauthorizeProviderAccessRole(ctx, *currentModel.ProjectId, awsProviderName, *currentModel.RoleId).
-		Execute()
-	if err != nil {
-		// The role was removed between the list and the delete. The registration is gone, which is
-		// the end state this handler wants, so tolerate either a 404 or Atlas's missing-role code.
 		if cloudprovideraccess.IsRoleNotFound(err, response) {
-			return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}
-		}
-		if cloudprovideraccess.IsRoleInUse(err) {
-			return progressevent.GetFailedEventByCode(
-				fmt.Sprintf(cloudprovideraccess.RoleInUseMessage, *currentModel.RoleId),
-				string(types.HandlerErrorCodeResourceConflict))
+			return cloudprovideraccess.NotFoundEvent(fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId))
 		}
 		return progressevent.GetFailedEventByResponse(
-			fmt.Sprintf("error deleting Cloud Provider Access role: %s", err.Error()), response)
+			fmt.Sprintf("error reading Cloud Provider Access role: %s", err.Error()), response)
+	}
+	if !cloudprovideraccess.IsAWSRole(role) {
+		return cloudprovideraccess.NotFoundEvent(fmt.Sprintf("AWS Cloud Provider Access role %s not found", *currentModel.RoleId))
+	}
+
+	if pe := cloudprovideraccess.DeauthorizeRole(context.Background(), client, *currentModel.ProjectId, *currentModel.RoleId); pe != nil {
+		return *pe
 	}
 
 	return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}

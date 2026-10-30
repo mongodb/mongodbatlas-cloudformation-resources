@@ -27,66 +27,53 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-access-authorization/cmd/resource"
 )
 
-func TestFeatureUsagesFromRole_MapsFeatureType(t *testing.T) {
-	encryptionAtRest := "ENCRYPTION_AT_REST"
-	logExport := "PUSH_BASED_LOG_EXPORT"
-	usages := resource.FeatureUsagesFromRole(&admin.CloudProviderAccessRole{
-		FeatureUsages: &[]admin.CloudProviderAccessFeatureUsage{
-			{FeatureType: &encryptionAtRest},
-			{FeatureType: &logExport},
-		},
-	})
-
-	require.Len(t, usages, 2)
-	require.NotNil(t, usages[0].FeatureType)
-	assert.Equal(t, encryptionAtRest, *usages[0].FeatureType)
-	require.NotNil(t, usages[1].FeatureType)
-	assert.Equal(t, logExport, *usages[1].FeatureType)
-}
-
-func TestFeatureUsagesFromRole_MapsFeatureId(t *testing.T) {
+func TestFeatureUsagesFromRole(t *testing.T) {
 	projectID := "66d979971ec97b7de1ef8777"
 	bucketName := "mongodb-atlas-log-export"
-
 	testCases := []struct {
-		usage    admin.CloudProviderAccessFeatureUsage
-		expected *resource.FeatureId
-		name     string
+		wantIDs   []*resource.FeatureId
+		name      string
+		wantTypes []string
+		usages    []admin.CloudProviderAccessFeatureUsage
 	}{
 		{
+			name:      "Maps feature types in order",
+			usages:    []admin.CloudProviderAccessFeatureUsage{{FeatureType: aws.String("ENCRYPTION_AT_REST")}, {FeatureType: aws.String("PUSH_BASED_LOG_EXPORT")}},
+			wantTypes: []string{"ENCRYPTION_AT_REST", "PUSH_BASED_LOG_EXPORT"},
+			wantIDs:   []*resource.FeatureId{nil, nil},
+		},
+		{
 			name: "Maps the project and bucket of an identified feature",
-			usage: admin.CloudProviderAccessFeatureUsage{
+			usages: []admin.CloudProviderAccessFeatureUsage{{
 				FeatureType: aws.String("PUSH_BASED_LOG_EXPORT"),
 				FeatureId: &admin.CloudProviderAccessFeatureUsagePushBasedLogExportFeatureId{
 					BucketName: aws.String(bucketName),
 					GroupId:    aws.String(projectID),
 				},
-			},
-			expected: &resource.FeatureId{ProjectId: aws.String(projectID), BucketName: aws.String(bucketName)},
+			}},
+			wantTypes: []string{"PUSH_BASED_LOG_EXPORT"},
+			wantIDs:   []*resource.FeatureId{{ProjectId: aws.String(projectID), BucketName: aws.String(bucketName)}},
 		},
 		{
 			name: "Omits a feature id without identifiers",
-			usage: admin.CloudProviderAccessFeatureUsage{
+			usages: []admin.CloudProviderAccessFeatureUsage{{
 				FeatureType: aws.String("ENCRYPTION_AT_REST"),
 				FeatureId:   &admin.CloudProviderAccessFeatureUsagePushBasedLogExportFeatureId{},
-			},
-			expected: nil,
+			}},
+			wantTypes: []string{"ENCRYPTION_AT_REST"},
+			wantIDs:   []*resource.FeatureId{nil},
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			usages := resource.FeatureUsagesFromRole(&admin.CloudProviderAccessRole{
-				FeatureUsages: &[]admin.CloudProviderAccessFeatureUsage{tc.usage},
-			})
+			usages := resource.FeatureUsagesFromRole(&admin.CloudProviderAccessRole{FeatureUsages: &tc.usages})
 
-			require.Len(t, usages, 1)
-			if tc.expected == nil {
-				assert.Nil(t, usages[0].FeatureId)
-				return
+			require.Len(t, usages, len(tc.wantTypes))
+			for i, wantType := range tc.wantTypes {
+				require.NotNil(t, usages[i].FeatureType)
+				assert.Equal(t, wantType, *usages[i].FeatureType)
+				assert.Equal(t, tc.wantIDs[i], usages[i].FeatureId)
 			}
-			require.NotNil(t, usages[0].FeatureId)
-			assert.Equal(t, tc.expected, usages[0].FeatureId)
 		})
 	}
 }

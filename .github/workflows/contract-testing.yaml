@@ -329,17 +329,19 @@ jobs:
       - *aws-credentials
       - *setup-python
       - *install-cfn-cli
-      - name: Run the Contract test
+      - name: Run the Contract tests (isolated groups)
         shell: bash
         env: *contract-test-env
         run: |
           pushd cfn-resources/cloud-provider-access-authorization
-          trap 'make delete-test-resources' EXIT
-          make create-test-resources
+          make run-contract-testing-isolated
 
-          cat inputs/inputs_1_create.json
-
-          make run-contract-testing
+      - name: Check contract_delete_create (known deviation)
+        shell: bash
+        env: *contract-test-env
+        run: |
+          pushd cfn-resources/cloud-provider-access-authorization
+          make check-contract-delete-create
   cloud-provider-access-setup:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cloud-provider-access-setup == 'true' }}

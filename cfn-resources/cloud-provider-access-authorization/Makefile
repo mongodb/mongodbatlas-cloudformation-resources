@@ -1,4 +1,4 @@
-.PHONY: build debug clean submit create-test-resources delete-test-resources run-contract-testing
+.PHONY: build debug clean submit create-test-resources delete-test-resources run-contract-testing run-contract-testing-isolated check-contract-delete-create
 tags=logging callback metrics scheduler
 cgo=0
 goos=linux
@@ -34,3 +34,11 @@ run-contract-testing:
 	make build
 	sam local start-lambda &
 	cfn test --function-name TestEntrypoint --verbose
+
+run-contract-testing-isolated:
+	@echo "==> Run contract testing with isolated fixture groups"
+	./test/contract-testing/run-contract-cases.sh
+
+check-contract-delete-create:
+	@echo "==> Check the contract_delete_create deviation"
+	./test/contract-testing/check-contract-delete-create.sh

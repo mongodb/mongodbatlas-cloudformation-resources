@@ -8,7 +8,8 @@
 #
 # Default mode: every selected case must pass, with no failures, errors or
 # skips. With --expect-failure CASE: the named case must be the only case in
-# the report and must fail.
+# the report and must fail. With --outcome CASE: prints the outcome of the
+# named case.
 
 import argparse
 import sys
@@ -34,10 +35,16 @@ def read_cases(path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("junit", help="pytest JUnit XML report")
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--expect-failure",
         metavar="CASE",
         help="expect CASE to be the only case and to fail",
+    )
+    mode.add_argument(
+        "--outcome",
+        metavar="CASE",
+        help="print the outcome of CASE",
     )
     args = parser.parse_args()
 
@@ -50,6 +57,14 @@ def main():
     if not cases:
         print("the JUnit report contains no test cases")
         return 1
+
+    if args.outcome:
+        target = [case for case in cases if case[0] == args.outcome]
+        if len(target) != 1:
+            print(f"expected one {args.outcome} case, got: {cases}")
+            return 1
+        print(target[0][1])
+        return 0
 
     if args.expect_failure:
         others = [case for case in cases if case[0] != args.expect_failure]

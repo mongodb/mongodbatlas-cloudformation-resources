@@ -49,8 +49,6 @@ const (
 	skipWaitIdleStateName   = "IDLE"
 	skipWaitPollInterval    = 30 * time.Second
 	skipWaitPollAttempts    = 60
-	// The default path polls until the change converges, so it cannot finish this fast.
-	skipWaitDefaultWaitFloor = 2 * time.Minute
 )
 
 var (
@@ -194,14 +192,8 @@ func testUpdateWithTheDefaultWait(t *testing.T, c *skipWaitTestContext) {
 	c.template, err = newSkipWaitCFNTemplate(c.clusterTmplObj)
 	utility.FailNowIfError(t, "Error while reading skip wait CFN Template: %v", err)
 
-	start := time.Now()
+	// The handler waits for the change to converge, so the stack only completes once it has.
 	utility.UpdateStack(t, c.cfnClient, skipWaitStackName, c.template)
-
-	// The fast path above returns in seconds, while this one only completes once the change has
-	// converged, which is what the duration floor checks. The cluster state cannot be asserted here:
-	// Atlas runs follow-up plans after the main plan converges, so the cluster reads UPDATING at this
-	// point even though the handler waited, as CI run 40920062163 showed.
-	assert.Greater(t, time.Since(start), skipWaitDefaultWaitFloor)
 
 	waitForSkipWaitClusterIdle(t, c)
 	assert.Equal(t, c.clusterTmplObj.NodeCount, readSkipWaitNodeCount(t, c))

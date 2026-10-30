@@ -1,0 +1,121 @@
+{
+  "typeName": "MongoDB::Atlas::CloudProviderAccessAuthorization",
+  "description": "Authorizes an AWS IAM role against a Cloud Provider Access role registration so Atlas can assume it. Use MongoDB::Atlas::CloudProviderAccessSetup to register the role first, then use this resource to authorize it. Deleting this resource removes the whole Cloud Provider Access role registration, not only the authorization.",
+  "definitions": {
+    "FeatureUsage": {
+      "description": "One Atlas feature that uses the Cloud Provider Access role. A role that a feature still uses cannot be deleted.",
+      "type": "object",
+      "properties": {
+        "FeatureType": {
+          "type": "string",
+          "description": "Human-readable label that describes the Atlas feature that uses the role, for example ENCRYPTION_AT_REST."
+        },
+        "FeatureId": {
+          "$ref": "#/definitions/FeatureId"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FeatureId": {
+      "description": "Identifying characteristics of the feature that uses the role, when Atlas returns them, for example the S3 bucket name for a push-based log export. Not set for features that Atlas does not identify, for example ENCRYPTION_AT_REST.",
+      "type": "object",
+      "properties": {
+        "ProjectId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the project."
+        },
+        "BucketName": {
+          "type": "string",
+          "description": "Name of the AWS S3 bucket that the push-based log export writes to."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
+    },
+    "ProjectId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "RoleId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the Cloud Provider Access role registration to authorize. This is the RoleId returned by MongoDB::Atlas::CloudProviderAccessSetup.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IamAssumedRoleArn": {
+      "type": "string",
+      "description": "Amazon Resource Name (ARN) that identifies the AWS IAM role that MongoDB Cloud assumes when it accesses resources in your AWS account. Changing this value re-authorizes the same Cloud Provider Access role in place.",
+      "maxLength": 2048,
+      "minLength": 20
+    },
+    "AuthorizedDate": {
+      "type": "string",
+      "description": "Date and time when the role was authorized for the specified cloud service provider. This parameter expresses its value in the ISO 8601 timestamp format in UTC."
+    },
+    "FeatureUsages": {
+      "type": "array",
+      "insertionOrder": false,
+      "description": "Atlas features that use the role. The role cannot be deleted while a feature still uses it.",
+      "items": {
+        "$ref": "#/definitions/FeatureUsage"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId",
+    "RoleId",
+    "IamAssumedRoleArn"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/RoleId",
+    "/properties/Profile"
+  ],
+  "readOnlyProperties": [
+    "/properties/AuthorizedDate",
+    "/properties/FeatureUsages"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/RoleId",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-provider-access-authorization/README.md",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/cloud-provider-access-authorization",
+  "tagging": {
+    "taggable": false
+  }
+}

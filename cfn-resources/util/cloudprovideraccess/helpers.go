@@ -16,11 +16,18 @@
 package cloudprovideraccess
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
 const (
@@ -60,6 +67,33 @@ func FeatureUsages(usages *[]admin.CloudProviderAccessFeatureUsage) []FeatureUsa
 	return result
 }
 
+// MapFeatureUsages converts the feature usages of a role and maps each one with the caller's
+// constructor, so both Cloud Provider Access resources share the conversion.
+func MapFeatureUsages[T any](usages *[]admin.CloudProviderAccessFeatureUsage, makeItem func(FeatureUsage) T) []T {
+	converted := FeatureUsages(usages)
+	if converted == nil {
+		return nil
+	}
+	result := make([]T, 0, len(converted))
+	for _, usage := range converted {
+		result = append(result, makeItem(usage))
+	}
+	return result
+}
+
+// GetRole returns the registration with the given id.
+func GetRole(ctx context.Context, client *util.MongoDBClient, projectID, roleID string) (*admin.CloudProviderAccessRole, *http.Response, error) {
+	return client.AtlasSDK.CloudProviderAccessApi.
+		GetCloudProviderAccess(ctx, projectID, roleID).
+		Execute()
+}
+
+// IsAWSRole reports whether the role is an AWS registration. The lookup endpoint also returns
+// Azure and GCP registrations, which the AWS-only resources do not manage.
+func IsAWSRole(role *admin.CloudProviderAccessRole) bool {
+	return role != nil && role.GetProviderName() == constants.AWS
+}
+
 // IsRoleInUse reports whether Atlas rejected the call because a feature still uses the role.
 func IsRoleInUse(err error) bool {
 	return admin.IsErrorCode(err, ErrorCodeRoleInUse)
@@ -68,4 +102,32 @@ func IsRoleInUse(err error) bool {
 // IsRoleNotFound reports whether the call failed because the registration is gone.
 func IsRoleNotFound(err error, response *http.Response) bool {
 	return util.StatusNotFound(response) || admin.IsErrorCode(err, ErrorCodeRoleNotFound)
+}
+
+// NotFoundEvent builds the failed event used when a registration is missing, and logs the message.
+func NotFoundEvent(message string) handler.ProgressEvent {
+	_, _ = logger.Warnf("%s", message)
+	return progressevent.GetFailedEventByCode(message, string(types.HandlerErrorCodeNotFound))
+}
+
+// DeauthorizeRole removes the registration. It returns nil on success, including a registration
+// that was removed concurrently, and a failed event otherwise: ResourceConflict when an Atlas
+// feature still uses the role, and the mapped API error for anything else.
+func DeauthorizeRole(ctx context.Context, client *util.MongoDBClient, projectID, roleID string) *handler.ProgressEvent {
+	response, err := client.AtlasSDK.CloudProviderAccessApi.
+		DeauthorizeProviderAccessRole(ctx, projectID, constants.AWS, roleID).
+		Execute()
+	if err == nil || IsRoleNotFound(err, response) {
+		return nil
+	}
+
+	var event handler.ProgressEvent
+	if IsRoleInUse(err) {
+		event = progressevent.GetFailedEventByCode(
+			fmt.Sprintf(RoleInUseMessage, roleID),
+			string(types.HandlerErrorCodeResourceConflict))
+	} else {
+		event = progressevent.GetFailedEventByResponse(err.Error(), response)
+	}
+	return &event
 }

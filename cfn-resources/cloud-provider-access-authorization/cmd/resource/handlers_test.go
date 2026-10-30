@@ -393,15 +393,14 @@ func TestSetupDeleteAfterAuthorizationDelete(t *testing.T) {
 		requests = append(requests, request)
 		switch request {
 		case "GET " + rolesPath + "/" + testRoleID:
-			require.True(t, registrationExists)
+			if !registrationExists {
+				return jsonResponse(http.StatusNotFound, `{"errorCode":"CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND","detail":"not found"}`), nil
+			}
 			return roleResponse(testARN), nil
 		case "DELETE " + rolesPath + "/AWS/" + testRoleID:
 			require.True(t, registrationExists, "delete the registration only once")
 			registrationExists = false
 			return jsonResponse(http.StatusNoContent, ""), nil
-		case "GET " + rolesPath:
-			require.False(t, registrationExists, "authorization has already removed the registration")
-			return jsonResponse(http.StatusOK, `{"awsIamRoles":[]}`), nil
 		default:
 			t.Fatalf("unexpected request: %s", request)
 			return nil, nil
@@ -422,7 +421,7 @@ func TestSetupDeleteAfterAuthorizationDelete(t *testing.T) {
 	assert.Equal(t, []string{
 		"GET " + rolesPath + "/" + testRoleID,
 		"DELETE " + rolesPath + "/AWS/" + testRoleID,
-		"GET " + rolesPath,
+		"GET " + rolesPath + "/" + testRoleID,
 	}, requests)
 }
 

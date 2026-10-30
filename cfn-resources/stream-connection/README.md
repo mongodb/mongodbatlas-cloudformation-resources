@@ -18,8 +18,28 @@ Example templates are available in the [examples directory](/examples/atlas-stre
 - **Cluster Connection**: [cluster-stream-connection.json](/examples/atlas-streams/stream-connection/cluster-stream-connection.json) - Connects a Stream Workspace to an Atlas cluster
 - **Kafka Connection**: [kafka-stream-connection.json](/examples/atlas-streams/stream-connection/kafka-stream-connection.json) - Connects a Stream Workspace to a Kafka cluster
 - **Sample Connection**: [sample-stream-connection.json](/examples/atlas-streams/stream-connection/sample-stream-connection.json) - Uses a sample dataset
+- **AWS Lambda Connection**: [aws-lambda-stream-connection.json](/examples/atlas-streams/stream-connection/aws-lambda-stream-connection.json) - Uses an existing authorized IAM role
 
 For detailed deployment and verification instructions, see the [examples README](/examples/atlas-streams/stream-connection/README.md).
+
+## AWS Lambda and Unified AWS Access
+
+An `AWSLambda` connection can use the role authorized by
+[`MongoDB::Atlas::CloudProviderAccessAuthorization`](../cloud-provider-access-authorization/README.md).
+Create the trust chain `CloudProviderAccessSetup → AWS::IAM::Role → CloudProviderAccessAuthorization → StreamConnection`.
+The IAM role's trust policy uses Setup's Atlas principal and external ID, and its permissions must allow
+`lambda:InvokeFunction` on the target Lambda function. See the
+[Atlas Lambda connection documentation](https://www.mongodb.com/docs/atlas/atlas-stream-processing/add-sp-connection/).
+
+Set `Aws.RoleArn` to the **AWS IAM role ARN**, such as `!GetAtt AtlasLambdaRole.Arn`; it does not accept the Atlas
+registration `RoleId`. Add `DependsOn: CloudProviderAccessAuthorization`: referencing the IAM role alone does not
+wait for Atlas authorization. The [combined Lambda snippet](/examples/atlas-streams/stream-connection/README.md#aws-lambda-with-setup-and-authorization)
+shows this wiring. Make downstream stream processors depend on the connection, so teardown removes processors
+and the connection before Authorization deletes the shared registration.
+
+This resource's current `Type` enum supports `Cluster`, `Kafka`, `Sample`, `AWSLambda` and `Https`. Atlas and
+Terraform support additional connection types, including S3, Kinesis, GCP Pub/Sub and Azure Blob Storage, that
+are not exposed by this CloudFormation schema.
 
 ## Deployment
 

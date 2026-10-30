@@ -66,6 +66,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
+		if _, continuing := authorizationCallback(req, currentModel, "CREATE"); continuing {
+			// A previous callback may have authorized the role before its response
+			// was lost. Preserve its identifiers so CloudFormation can roll back.
+			pe.ResourceModel = currentModel
+		}
 		return *pe, nil
 	}
 
@@ -84,13 +89,24 @@ func HandleCreate(req handler.Request, client *util.MongoDBClient, currentModel 
 		}
 		return event
 	}
+	if role.GetProviderName() != constants.AWS {
+		event := notFoundEvent(fmt.Sprintf("The AWS Cloud Provider Access role %s was not found in project %s.", util.SafeString(currentModel.RoleId), util.SafeString(currentModel.ProjectId)))
+		if continuing {
+			event.ResourceModel = currentModel
+		}
+		return event
+	}
 	if IsAuthorized(role) {
 		if continuing && role.GetIamAssumedRoleArn() == util.SafeString(currentModel.IamAssumedRoleArn) {
 			return authorizationComplete(currentModel, role)
 		}
-		return progressevent.GetFailedEventByCode(
+		event := progressevent.GetFailedEventByCode(
 			fmt.Sprintf("The role %s is already authorized to %s.", util.SafeString(currentModel.RoleId), role.GetIamAssumedRoleArn()),
 			string(types.HandlerErrorCodeAlreadyExists))
+		if continuing {
+			event.ResourceModel = currentModel
+		}
+		return event
 	}
 
 	if !continuing {

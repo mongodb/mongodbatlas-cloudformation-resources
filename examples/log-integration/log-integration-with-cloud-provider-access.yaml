@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Register Atlas cloud provider access, create and authorize an AWS IAM role,
+  and export Atlas logs to an existing S3 bucket using LogIntegration.
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: Atlas project containing the clusters whose logs will be exported.
+    AllowedPattern: "^[a-f0-9]{24}$"
+  Profile:
+    Type: String
+    Default: default
+    Description: Atlas credential profile stored in AWS Secrets Manager.
+  BucketName:
+    Type: String
+    Description: Existing S3 bucket in this AWS account, with SSE-S3 default encryption.
+    MinLength: 3
+    MaxLength: 63
+  PrefixPath:
+    Type: String
+    Default: mongodb/logs
+    MinLength: 1
+    Description: Prefix under which Atlas writes the selected logs.
+  LogType:
+    Type: String
+    Default: MONGOD
+    AllowedValues:
+      - MONGOD
+      - MONGOS
+      - MONGOD_AUDIT
+      - MONGOS_AUDIT
+    Description: Log type to export. Audit logs require auditing on the source clusters.
+
+Resources:
+  CloudProviderAccessSetup:
+    Type: MongoDB::Atlas::CloudProviderAccessSetup
+    Properties:
+      ProjectId: !Ref ProjectId
+      Profile: !Ref Profile
+
+  AtlasLogRole:
+    Type: AWS::IAM::Role
+    Properties:
+      MaxSessionDuration: 43200
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt CloudProviderAccessSetup.AtlasAWSAccountArn
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: !GetAtt CloudProviderAccessSetup.AtlasAssumedRoleExternalId
+      Policies:
+        - PolicyName: AtlasS3LogExport
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                Resource: !Sub arn:${AWS::Partition}:s3:::${BucketName}
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub arn:${AWS::Partition}:s3:::${BucketName}/*
+
+  CloudProviderAccessAuthorization:
+    Type: MongoDB::Atlas::CloudProviderAccessAuthorization
+    Properties:
+      ProjectId: !Ref ProjectId
+      Profile: !Ref Profile
+      RoleId: !GetAtt CloudProviderAccessSetup.RoleId
+      IamAssumedRoleArn: !GetAtt AtlasLogRole.Arn
+
+  AtlasLogIntegration:
+    Type: MongoDB::Atlas::LogIntegration
+    # Setup.RoleId alone does not wait for authorization to finish.
+    # This dependency also removes the integration before authorization.
+    DependsOn: CloudProviderAccessAuthorization
+    Properties:
+      ProjectId: !Ref ProjectId
+      Profile: !Ref Profile
+      Type: S3_LOG_EXPORT
+      BucketName: !Ref BucketName
+      IamRoleId: !GetAtt CloudProviderAccessSetup.RoleId
+      PrefixPath: !Ref PrefixPath
+      LogTypes:
+        - !Ref LogType
+
+Outputs:
+  IntegrationId:
+    Description: Atlas identifier of the S3 log integration.
+    Value: !GetAtt AtlasLogIntegration.IntegrationId
+  RoleId:
+    Description: Atlas Cloud Provider Access role registration identifier.
+    Value: !GetAtt CloudProviderAccessSetup.RoleId
+  IamAssumedRoleArn:
+    Description: AWS IAM role authorized for Atlas S3 log export.
+    Value: !GetAtt AtlasLogRole.Arn

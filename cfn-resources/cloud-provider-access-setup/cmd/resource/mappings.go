@@ -30,7 +30,7 @@ func NewCFNCloudProviderAccessSetup(model *Model, role *admin.CloudProviderAcces
 		AtlasAWSAccountArn:         role.AtlasAWSAccountArn,
 		AtlasAssumedRoleExternalId: role.AtlasAssumedRoleExternalId,
 		CreatedDate:                util.TimePtrToStringPtr(role.CreatedDate),
-		FeatureUsages:              newFeatureUsages(role.FeatureUsages),
+		FeatureUsages:              cloudprovideraccess.MapFeatureUsages(role.FeatureUsages, newFeatureUsage),
 	}
 }
 
@@ -44,40 +44,19 @@ func NewCFNCloudProviderAccessSetupFromAWSIAMRole(model *Model, role *admin.Clou
 		AtlasAWSAccountArn:         role.AtlasAWSAccountArn,
 		AtlasAssumedRoleExternalId: role.AtlasAssumedRoleExternalId,
 		CreatedDate:                util.TimePtrToStringPtr(role.CreatedDate),
-		FeatureUsages:              newFeatureUsages(role.FeatureUsages),
+		FeatureUsages:              cloudprovideraccess.MapFeatureUsages(role.FeatureUsages, newFeatureUsage),
 	}
 }
 
-func newFeatureUsages(usages *[]admin.CloudProviderAccessFeatureUsage) []FeatureUsage {
-	converted := cloudprovideraccess.FeatureUsages(usages)
-	if converted == nil {
-		return nil
-	}
-	result := make([]FeatureUsage, 0, len(converted))
-	for _, usage := range converted {
-		item := FeatureUsage{FeatureType: usage.FeatureType}
-		if usage.ProjectID != nil || usage.BucketName != nil {
-			item.FeatureId = &FeatureId{
-				ProjectId:  usage.ProjectID,
-				BucketName: usage.BucketName,
-			}
-		}
-		result = append(result, item)
-	}
-	return result
-}
-
-// FindAWSRole returns the AWS role with the given id from a list response, or nil when the project
-// has no such registration.
-func FindAWSRole(roles *admin.CloudProviderAccessRoles, roleID string) *admin.CloudProviderAccessAWSIAMRole {
-	if roles == nil {
-		return nil
-	}
-	awsRoles := roles.GetAwsIamRoles()
-	for i := range awsRoles {
-		if awsRoles[i].GetRoleId() == roleID {
-			return &awsRoles[i]
+// newFeatureUsage maps one shared feature usage into the resource model. It uses the shared
+// conversion so both Cloud Provider Access resources expose the same shape.
+func newFeatureUsage(usage cloudprovideraccess.FeatureUsage) FeatureUsage {
+	item := FeatureUsage{FeatureType: usage.FeatureType}
+	if usage.ProjectID != nil || usage.BucketName != nil {
+		item.FeatureId = &FeatureId{
+			ProjectId:  usage.ProjectID,
+			BucketName: usage.BucketName,
 		}
 	}
-	return nil
+	return item
 }

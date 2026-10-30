@@ -16,6 +16,13 @@ scriptDir=$(cd "$(dirname "$0")" && pwd)
 cd "${scriptDir}/../.."
 # shellcheck source=/dev/null
 source "${scriptDir}/contract-lib.sh"
+
+# Assigned by contract-lib.sh.
+resultDir=""
+samLog=""
+
+projectName="cfn-test-bot-$(date +%s)-${RANDOM}"
+
 trap stop_contract_environment EXIT
 start_contract_environment
 
@@ -39,7 +46,7 @@ for group in "${groups[@]}"; do
 	echo "==> Preparing a fresh registration and IAM roles for: ${group}"
 	./test/cfn-test-create-inputs.sh "${projectName}"
 
-	if run_contract_cases "${selector}" && ./test/contract-testing/contract_junit.py "${junit}"; then
+	if run_contract_cases "${selector}" "${log}" "${junit}" && ./test/contract-testing/contract_junit.py "${junit}"; then
 		echo "PASS: ${group}"
 	else
 		echo "FAIL: ${group}"

@@ -17,6 +17,13 @@ scriptDir=$(cd "$(dirname "$0")" && pwd)
 cd "${scriptDir}/../.."
 # shellcheck source=/dev/null
 source "${scriptDir}/contract-lib.sh"
+
+# Assigned by contract-lib.sh.
+resultDir=""
+samLog=""
+
+projectName="cfn-test-bot-$(date +%s)-${RANDOM}"
+
 trap stop_contract_environment EXIT
 start_contract_environment
 
@@ -30,7 +37,7 @@ junit="${resultDir}/junit.xml"
 echo "==> Preparing a fresh registration and IAM roles"
 ./test/cfn-test-create-inputs.sh "${projectName}"
 
-run_contract_cases "${caseName}" || true
+run_contract_cases "${caseName}" "${log}" "${junit}" || true
 
 # The signature is a test failure (not a fixture setup error) plus the
 # registration-not-found error the re-create produces. The helper rejects a

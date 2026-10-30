@@ -10,7 +10,6 @@ start_contract_environment() {
 	resultDir=$(mktemp -d)
 	samLog="${resultDir}/sam.log"
 	samPid=""
-	projectName="cfn-test-bot-$(date +%s)-${RANDOM}"
 
 	echo "==> Building the resource"
 	make build
@@ -42,8 +41,8 @@ stop_contract_environment() {
 }
 
 # run_contract_cases runs the selected contract cases and writes the output to
-# ${log} and the JUnit report to ${junit}.
+# the given log file and the JUnit report to the given path.
 run_contract_cases() {
-	local selector="$1"
+	local selector="$1" log="$2" junit="$3"
 	cfn test --function-name TestEntrypoint --verbose -- -k "${selector}" --junitxml="${junit}" >"${log}" 2>&1
 }

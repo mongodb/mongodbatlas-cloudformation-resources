@@ -97,7 +97,7 @@ func TestCreateCheckpointsBeforeAuthorizingAndRetriesCallbacks(t *testing.T) {
 	assert.Equal(t, handler.Success, replayed.OperationStatus)
 	assert.Equal(t, 2, patches)
 	duplicate := resource.HandleCreate(handler.Request{}, client, authorizationModel())
-	assert.Equal(t, string(types.HandlerErrorCodeAlreadyExists), duplicate.HandlerErrorCode)
+	assertFailed(t, duplicate, types.HandlerErrorCodeAlreadyExists)
 }
 
 func TestCreateRejectsAnyExistingAuthorization(t *testing.T) {
@@ -111,8 +111,7 @@ func TestCreateRejectsAnyExistingAuthorization(t *testing.T) {
 
 			event := resource.HandleCreate(handler.Request{}, client, authorizationModel())
 
-			assert.Equal(t, handler.Failed, event.OperationStatus)
-			assert.Equal(t, string(types.HandlerErrorCodeAlreadyExists), event.HandlerErrorCode)
+			assertFailed(t, event, types.HandlerErrorCodeAlreadyExists)
 			assert.Contains(t, event.Message, arn)
 			assert.Equal(t, []string{http.MethodGet}, methods)
 		})
@@ -138,7 +137,7 @@ func TestCreateDoesNotReuseCallbackForAnotherTarget(t *testing.T) {
 
 			event := resource.HandleCreate(req, client, model)
 
-			assert.Equal(t, string(types.HandlerErrorCodeAlreadyExists), event.HandlerErrorCode)
+			assertFailed(t, event, types.HandlerErrorCodeAlreadyExists)
 		})
 	}
 }
@@ -162,8 +161,7 @@ func TestCreateCallbackRejectsForeignAuthorization(t *testing.T) {
 	model := authorizationModel()
 	event := resource.HandleCreate(callback, client, model)
 
-	assert.Equal(t, handler.Failed, event.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeAlreadyExists), event.HandlerErrorCode)
+	assertFailed(t, event, types.HandlerErrorCodeAlreadyExists)
 	assert.Same(t, model, event.ResourceModel)
 }
 
@@ -179,8 +177,7 @@ func TestAuthorizationCallbackTimesOutWithoutAnotherPatch(t *testing.T) {
 
 	event := resource.HandleCreate(req, client, model)
 
-	assert.Equal(t, handler.Failed, event.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeServiceTimeout), event.HandlerErrorCode)
+	assertFailed(t, event, types.HandlerErrorCodeServiceTimeout)
 	assert.Same(t, model, event.ResourceModel)
 }
 
@@ -197,8 +194,7 @@ func TestAuthorizationDoesNotRetryPermanentErrors(t *testing.T) {
 
 	event := resource.HandleCreate(callbackRequest(t, first), client, model)
 
-	assert.Equal(t, handler.Failed, event.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeInvalidRequest), event.HandlerErrorCode)
+	assertFailed(t, event, types.HandlerErrorCodeInvalidRequest)
 	assert.Same(t, model, event.ResourceModel)
 }
 
@@ -226,8 +222,7 @@ func TestCreateCallbackRetainsIdentifierWhenLookupFails(t *testing.T) {
 
 			event := resource.HandleCreate(callbackRequest(t, first), client, model)
 
-			assert.Equal(t, handler.Failed, event.OperationStatus)
-			assert.Equal(t, string(tc.expectedCode), event.HandlerErrorCode)
+			assertFailed(t, event, tc.expectedCode)
 			assert.Same(t, model, event.ResourceModel)
 		})
 	}
@@ -297,6 +292,14 @@ func assertPendingIdentifiers(t *testing.T, event handler.ProgressEvent) {
 	assert.Equal(t, "custom-profile", *model.Profile)
 }
 
+// assertFailed checks the failed response contract used by the handler error
+// paths.
+func assertFailed(t *testing.T, event handler.ProgressEvent, code types.HandlerErrorCode) {
+	t.Helper()
+	assert.Equal(t, handler.Failed, event.OperationStatus)
+	assert.Equal(t, string(code), event.HandlerErrorCode)
+}
+
 func TestUpdateRequiresExistingAuthorization(t *testing.T) {
 	for _, status := range []int{http.StatusOK, http.StatusNotFound} {
 		t.Run(http.StatusText(status), func(t *testing.T) {
@@ -310,8 +313,7 @@ func TestUpdateRequiresExistingAuthorization(t *testing.T) {
 
 			event := resource.HandleUpdate(handler.Request{}, client, authorizationModel())
 
-			assert.Equal(t, handler.Failed, event.OperationStatus)
-			assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+			assertFailed(t, event, types.HandlerErrorCodeNotFound)
 		})
 	}
 }
@@ -358,8 +360,7 @@ func TestDeleteRoleInUseIsAResourceConflict(t *testing.T) {
 
 	event := resource.HandleDelete(client, authorizationModel())
 
-	assert.Equal(t, handler.Failed, event.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeResourceConflict), event.HandlerErrorCode)
+	assertFailed(t, event, types.HandlerErrorCodeResourceConflict)
 	assert.Contains(t, event.Message, testRoleID)
 }
 
@@ -416,8 +417,7 @@ func TestSetupDeleteAfterAuthorizationDelete(t *testing.T) {
 	})
 	// The registry contract requires NotFound for a previously removed resource;
 	// the stack engine tolerates it during deletion. Do not issue a second DELETE.
-	assert.Equal(t, handler.Failed, setupDelete.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeNotFound), setupDelete.HandlerErrorCode)
+	assertFailed(t, setupDelete, types.HandlerErrorCodeNotFound)
 	assert.Nil(t, setupDelete.ResourceModel)
 	assert.Equal(t, []string{
 		"GET " + rolesPath + "/" + testRoleID,
@@ -444,16 +444,36 @@ func TestDeleteToleratesARegistrationRemovedDuringTheDelete(t *testing.T) {
 	assert.Nil(t, event.ResourceModel, "a delete response must not carry a model")
 }
 
-func TestReadAndDeleteTreatUnapprovedRegistrationAsNotFound(t *testing.T) {
-	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
-		require.Equal(t, http.MethodGet, req.Method)
-		return roleResponse(""), nil
-	})
-	for _, event := range []handler.ProgressEvent{
-		resource.HandleRead(client, authorizationModel()),
-		resource.HandleDelete(client, authorizationModel()),
-	} {
-		assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+// Read and Delete map the lookup response: an unapproved registration and a
+// missing role are NotFound, and lookup errors keep their mapped codes. The
+// delete must not run when the lookup fails.
+func TestReadAndDeleteMapLookupOutcomes(t *testing.T) {
+	testCases := []struct {
+		expectedCode types.HandlerErrorCode
+		errorCode    string
+		name         string
+		status       int
+	}{
+		{name: "Unapproved registration", status: http.StatusOK, expectedCode: types.HandlerErrorCodeNotFound},
+		{name: "Missing role", status: http.StatusNotFound, errorCode: roleNotFound, expectedCode: types.HandlerErrorCodeNotFound},
+		{name: "Unexpected error", status: http.StatusInternalServerError, errorCode: "UNEXPECTED_ERROR", expectedCode: types.HandlerErrorCodeServiceInternalError},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+				require.Equal(t, http.MethodGet, req.Method, "must not delete when the lookup fails")
+				if tc.status == http.StatusOK {
+					return roleResponse(""), nil
+				}
+				return errorResponse(tc.status, tc.errorCode), nil
+			})
+			for _, event := range []handler.ProgressEvent{
+				resource.HandleRead(client, authorizationModel()),
+				resource.HandleDelete(client, authorizationModel()),
+			} {
+				assertFailed(t, event, tc.expectedCode)
+			}
+		})
 	}
 }
 
@@ -485,16 +505,14 @@ func TestNonAWSRegistrationIsNotFound(t *testing.T) {
 				resource.HandleDelete(client, authorizationModel()),
 				resource.HandleUpdate(handler.Request{}, client, authorizationModel()),
 			} {
-				assert.Equal(t, handler.Failed, event.OperationStatus)
-				assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+				assertFailed(t, event, types.HandlerErrorCodeNotFound)
 			}
 
 			// A callback that finds a non-AWS registration keeps its checkpointed
 			// model so CloudFormation can roll back the resource it created.
 			callbackModel := authorizationModel()
 			callbackEvent := resource.HandleCreate(callback, client, callbackModel)
-			assert.Equal(t, handler.Failed, callbackEvent.OperationStatus)
-			assert.Equal(t, string(types.HandlerErrorCodeNotFound), callbackEvent.HandlerErrorCode)
+			assertFailed(t, callbackEvent, types.HandlerErrorCodeNotFound)
 			assert.Same(t, callbackModel, callbackEvent.ResourceModel)
 		})
 	}
@@ -520,32 +538,6 @@ func TestReadReturnsTheAuthorization(t *testing.T) {
 	assert.NotNil(t, read.AuthorizedDate)
 }
 
-func TestReadAndDeleteMapLookupErrors(t *testing.T) {
-	testCases := []struct {
-		expectedCode types.HandlerErrorCode
-		errorCode    string
-		status       int
-	}{
-		{status: http.StatusNotFound, errorCode: roleNotFound, expectedCode: types.HandlerErrorCodeNotFound},
-		{status: http.StatusInternalServerError, errorCode: "UNEXPECTED_ERROR", expectedCode: types.HandlerErrorCodeServiceInternalError},
-	}
-	for _, tc := range testCases {
-		t.Run(http.StatusText(tc.status), func(t *testing.T) {
-			client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
-				require.Equal(t, http.MethodGet, req.Method, "must not delete when the lookup fails")
-				return errorResponse(tc.status, tc.errorCode), nil
-			})
-			for _, event := range []handler.ProgressEvent{
-				resource.HandleRead(client, authorizationModel()),
-				resource.HandleDelete(client, authorizationModel()),
-			} {
-				assert.Equal(t, handler.Failed, event.OperationStatus)
-				assert.Equal(t, string(tc.expectedCode), event.HandlerErrorCode)
-			}
-		})
-	}
-}
-
 func TestDeleteReportsUnexpectedErrors(t *testing.T) {
 	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
 		if req.Method == http.MethodGet {
@@ -557,8 +549,7 @@ func TestDeleteReportsUnexpectedErrors(t *testing.T) {
 
 	event := resource.HandleDelete(client, authorizationModel())
 
-	assert.Equal(t, handler.Failed, event.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeServiceInternalError), event.HandlerErrorCode)
+	assertFailed(t, event, types.HandlerErrorCodeServiceInternalError)
 }
 
 func TestAuthorizationOfAMissingRegistrationIsNotFound(t *testing.T) {
@@ -574,8 +565,7 @@ func TestAuthorizationOfAMissingRegistrationIsNotFound(t *testing.T) {
 
 	event := resource.HandleCreate(callbackRequest(t, first), client, model)
 
-	assert.Equal(t, handler.Failed, event.OperationStatus)
-	assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+	assertFailed(t, event, types.HandlerErrorCodeNotFound)
 	assert.Same(t, model, event.ResourceModel)
 }
 

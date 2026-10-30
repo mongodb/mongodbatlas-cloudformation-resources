@@ -35,14 +35,13 @@ type skipWaitTestContext struct {
 }
 
 type skipWaitTestCluster struct {
-	ResourceTypeName     string
-	Name                 string
-	Profile              string
-	ProjectID            string
-	DefaultReadConcern   string
-	NodeCount            int
-	SkipWaitForIdle      bool
-	WithAdvancedSettings bool
+	ResourceTypeName   string
+	Name               string
+	Profile            string
+	ProjectID          string
+	DefaultReadConcern string
+	NodeCount          int
+	SkipWaitForIdle    bool
 }
 
 const (
@@ -50,6 +49,8 @@ const (
 	skipWaitIdleStateName   = "IDLE"
 	skipWaitPollInterval    = 30 * time.Second
 	skipWaitPollAttempts    = 60
+	// The default path polls until the change converges, so it cannot finish this fast.
+	skipWaitDefaultWaitFloor = 2 * time.Minute
 )
 
 var (
@@ -123,14 +124,13 @@ func (c *skipWaitTestContext) setupPrerequisites(t *testing.T) {
 	// The create and update steps use different read concerns, and cloud-dev accepts only available
 	// and local, so the update assertion proves the fast path applied the change.
 	c.clusterTmplObj = skipWaitTestCluster{
-		Name:                 skipWaitClusterName,
-		ProjectID:            projectID,
-		Profile:              skipWaitProfile,
-		DefaultReadConcern:   "local",
-		NodeCount:            3,
-		SkipWaitForIdle:      true,
-		WithAdvancedSettings: true,
-		ResourceTypeName:     os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
+		Name:               skipWaitClusterName,
+		ProjectID:          projectID,
+		Profile:            skipWaitProfile,
+		DefaultReadConcern: "local",
+		NodeCount:          3,
+		SkipWaitForIdle:    true,
+		ResourceTypeName:   os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
 	}
 
 	var err error
@@ -187,22 +187,23 @@ func testUpdateWithTheDefaultWait(t *testing.T, c *skipWaitTestContext) {
 	t.Helper()
 
 	// Removing the property reverts to the default behavior, so the handler waits for the change to converge.
-	// AdvancedSettings are dropped too, because the default path applies them after convergence and that
-	// call starts a second Atlas update, which would leave the cluster UPDATING at this point.
 	c.clusterTmplObj.SkipWaitForIdle = false
 	c.clusterTmplObj.NodeCount = 7
-	c.clusterTmplObj.WithAdvancedSettings = false
 
 	var err error
 	c.template, err = newSkipWaitCFNTemplate(c.clusterTmplObj)
 	utility.FailNowIfError(t, "Error while reading skip wait CFN Template: %v", err)
 
+	start := time.Now()
 	utility.UpdateStack(t, c.cfnClient, skipWaitStackName, c.template)
 
-	// The fast path above returns while Atlas is still converging. This one only completes once the
-	// change has converged, so the cluster is already IDLE when the stack update returns.
-	cluster := readSkipWaitClusterFromAtlas(t, c)
-	assert.Equal(t, skipWaitIdleStateName, cluster.GetStateName())
+	// The fast path above returns in seconds, while this one only completes once the change has
+	// converged, which is what the duration floor checks. The cluster state cannot be asserted here:
+	// Atlas runs follow-up plans after the main plan converges, so the cluster reads UPDATING at this
+	// point even though the handler waited, as CI run 40920062163 showed.
+	assert.Greater(t, time.Since(start), skipWaitDefaultWaitFloor)
+
+	waitForSkipWaitClusterIdle(t, c)
 	assert.Equal(t, c.clusterTmplObj.NodeCount, readSkipWaitNodeCount(t, c))
 }
 

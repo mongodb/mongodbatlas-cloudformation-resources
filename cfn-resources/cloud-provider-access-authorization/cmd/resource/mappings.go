@@ -41,12 +41,7 @@ func SetModelFromRole(model *Model, role *admin.CloudProviderAccessRole) {
 // It uses the shared conversion so both Cloud Provider Access resources expose the
 // same shape, and leaves the attribute unset when Atlas reports no usage.
 func FeatureUsagesFromRole(role *admin.CloudProviderAccessRole) []FeatureUsage {
-	converted := cloudprovideraccess.FeatureUsages(role.FeatureUsages)
-	if converted == nil {
-		return nil
-	}
-	result := make([]FeatureUsage, 0, len(converted))
-	for _, usage := range converted {
+	return cloudprovideraccess.MapFeatureUsages(role.FeatureUsages, func(usage cloudprovideraccess.FeatureUsage) FeatureUsage {
 		item := FeatureUsage{FeatureType: usage.FeatureType}
 		if usage.ProjectID != nil || usage.BucketName != nil {
 			item.FeatureId = &FeatureId{
@@ -54,7 +49,6 @@ func FeatureUsagesFromRole(role *admin.CloudProviderAccessRole) []FeatureUsage {
 				BucketName: usage.BucketName,
 			}
 		}
-		result = append(result, item)
-	}
-	return result
+		return item
+	})
 }

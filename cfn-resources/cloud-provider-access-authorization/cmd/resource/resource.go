@@ -29,7 +29,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/cloudprovideraccess"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
@@ -89,8 +88,8 @@ func HandleCreate(req handler.Request, client *util.MongoDBClient, currentModel 
 		}
 		return event
 	}
-	if role.GetProviderName() != constants.AWS {
-		event := notFoundEvent(fmt.Sprintf("The AWS Cloud Provider Access role %s was not found in project %s.", util.SafeString(currentModel.RoleId), util.SafeString(currentModel.ProjectId)))
+	if !cloudprovideraccess.IsAWSRole(role) {
+		event := cloudprovideraccess.NotFoundEvent(fmt.Sprintf("The AWS Cloud Provider Access role %s was not found in project %s.", util.SafeString(currentModel.RoleId), util.SafeString(currentModel.ProjectId)))
 		if continuing {
 			event.ResourceModel = currentModel
 		}
@@ -141,7 +140,7 @@ func HandleUpdate(req handler.Request, client *util.MongoDBClient, currentModel 
 		return event
 	}
 	if !IsAuthorized(role) {
-		event := notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
+		event := cloudprovideraccess.NotFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
 		event.ResourceModel = currentModel
 		return event
 	}
@@ -177,7 +176,7 @@ func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.Progres
 		return roleLookupFailed(currentModel, resp, err)
 	}
 	if !IsAuthorized(role) {
-		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
+		return cloudprovideraccess.NotFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
 	}
 
 	SetModelFromRole(currentModel, role)
@@ -214,27 +213,11 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 		return roleLookupFailed(currentModel, resp, err)
 	}
 	if !IsAuthorized(role) {
-		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
+		return cloudprovideraccess.NotFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s is registered but not authorized.", util.SafeString(currentModel.RoleId)))
 	}
 
-	resp, err = client.AtlasSDK.CloudProviderAccessApi.
-		DeauthorizeProviderAccessRole(context.Background(), util.SafeString(currentModel.ProjectId), constants.AWS, util.SafeString(currentModel.RoleId)).
-		Execute()
-	if err != nil {
-		// The registration was removed between the lookup and the delete. The end
-		// state this handler wants is reached, so tolerate the 404.
-		if cloudprovideraccess.IsRoleNotFound(err, resp) {
-			return handler.ProgressEvent{
-				OperationStatus: handler.Success,
-				Message:         "Delete Complete",
-			}
-		}
-		if cloudprovideraccess.IsRoleInUse(err) {
-			return progressevent.GetFailedEventByCode(
-				fmt.Sprintf(cloudprovideraccess.RoleInUseMessage, util.SafeString(currentModel.RoleId)),
-				string(types.HandlerErrorCodeResourceConflict))
-		}
-		return progressevent.GetFailedEventByResponse(err.Error(), resp)
+	if pe := cloudprovideraccess.DeauthorizeRole(context.Background(), client, util.SafeString(currentModel.ProjectId), util.SafeString(currentModel.RoleId)); pe != nil {
+		return *pe
 	}
 
 	return handler.ProgressEvent{
@@ -248,9 +231,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func getRole(client *util.MongoDBClient, model *Model) (*admin.CloudProviderAccessRole, *http.Response, error) {
-	return client.AtlasSDK.CloudProviderAccessApi.
-		GetCloudProviderAccess(context.Background(), util.SafeString(model.ProjectId), util.SafeString(model.RoleId)).
-		Execute()
+	return cloudprovideraccess.GetRole(context.Background(), client, util.SafeString(model.ProjectId), util.SafeString(model.RoleId))
 }
 
 func authorizeRole(client *util.MongoDBClient, model *Model, operation string, startedAt time.Time) handler.ProgressEvent {
@@ -275,7 +256,7 @@ func authorizeRole(client *util.MongoDBClient, model *Model, operation string, s
 			return pendingAuthorization(model, operation, startedAt)
 		}
 		if cloudprovideraccess.IsRoleNotFound(err, resp) {
-			event := notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it.", roleID, projectID))
+			event := cloudprovideraccess.NotFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s. Create it with MongoDB::Atlas::CloudProviderAccessSetup before authorizing it.", roleID, projectID))
 			event.ResourceModel = model
 			return event
 		}
@@ -329,17 +310,12 @@ func authorizationCallback(req handler.Request, model *Model, operation string) 
 // lookup endpoint also returns Azure and GCP registrations, which this AWS-only
 // resource does not manage.
 func IsAuthorized(role *admin.CloudProviderAccessRole) bool {
-	return role != nil && role.GetProviderName() == constants.AWS && role.HasAuthorizedDate()
+	return cloudprovideraccess.IsAWSRole(role) && role.HasAuthorizedDate()
 }
 
 func roleLookupFailed(model *Model, resp *http.Response, err error) handler.ProgressEvent {
 	if cloudprovideraccess.IsRoleNotFound(err, resp) {
-		return notFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s: %s", util.SafeString(model.RoleId), util.SafeString(model.ProjectId), err.Error()))
+		return cloudprovideraccess.NotFoundEvent(fmt.Sprintf("The Cloud Provider Access role %s was not found in project %s: %s", util.SafeString(model.RoleId), util.SafeString(model.ProjectId), err.Error()))
 	}
 	return progressevent.GetFailedEventByResponse(err.Error(), resp)
-}
-
-func notFoundEvent(message string) handler.ProgressEvent {
-	_, _ = logger.Warnf("%s", message)
-	return progressevent.GetFailedEventByCode(message, string(types.HandlerErrorCodeNotFound))
 }

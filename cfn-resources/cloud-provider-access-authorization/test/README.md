@@ -16,7 +16,7 @@ The following components use this resource and are potentially impacted by any c
 
 All of these resources are created as part of `cfn-testing-helper.sh`, except for the contract-test deviation described below.
 
-The test input script creates the AWS IAM role, so export the Cloud Tag Policy variables before running it: `MONGODB_TAG_OWNER` and `MONGODB_TAG_ENV`. See [TESTING.md](../../../TESTING.md).
+The test input script creates the AWS IAM roles, so export the Cloud Tag Policy variables before running it: `MONGODB_TAG_OWNER` and `MONGODB_TAG_ENV`. See [TESTING.md](../../../TESTING.md).
 
 ## Manual QA
 
@@ -65,12 +65,9 @@ not evidence that the live workflows have passed.
 
 The CloudFormation v1 contract test `contract_delete_create` expects a deleted resource to be creatable again. Atlas has no operation that revokes an authorization while keeping the role registered, so after the delete the re-create fails with `CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND`. Exception approval remains to be verified.
 
-The current input generator supplies one registration for the entire suite. The first delete invalidates
-that input and causes later fixture setup errors; the [PR contract run](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/runs/39738197633/job/119688830903)
-recorded eight such errors. Provision a fresh registration and its matching IAM trust policy for
-independent tests before interpreting their results.
-The create/update input files also use the same ARN, so a passing no-op update does not validate changing
-to a second assumable IAM role. That change needs a separate live test.
+CI runs the suite in isolated groups (`test/contract-testing/run-contract-cases.sh`), each with a fresh registration and matching IAM roles. A single shared registration would be invalidated by the first delete and later fixtures would fail at setup instead of validating their cases. The update group uses a second IAM role, so changing `IamAssumedRoleArn` exercises a real re-authorization.
+
+`contract_delete_create` runs in its own step (`test/contract-testing/check-contract-delete-create.sh`). The step verifies the exact expected signature, a failed re-create with `CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND` after a successful create and delete with no other failure, and stays red until the AWS exception is accepted. Flip `EXCEPTION_ACCEPTED` in the script in the commit that records the acceptance.
 
 The [current AWS contract-test documentation](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/contract-tests.html)
 also describes v2 requirements for newly registered types. Its delete/create assertion differs from the v1

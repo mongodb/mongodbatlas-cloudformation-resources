@@ -24,11 +24,15 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
+	awsv1 "github.com/aws/aws-sdk-go/aws"       //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
+	"github.com/aws/aws-sdk-go/aws/credentials" //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
+	"github.com/aws/aws-sdk-go/aws/session"     //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/atlas-sdk/v20250312013/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-access-authorization/cmd/resource"
+	setupresource "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-access-setup/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
@@ -139,6 +143,30 @@ func TestCreateDoesNotReuseCallbackForAnotherTarget(t *testing.T) {
 	}
 }
 
+// A callback whose registration was authorized to a different ARN must not take
+// over that authorization. It keeps its checkpointed model so CloudFormation can
+// roll back the resource it created.
+func TestCreateCallbackRejectsForeignAuthorization(t *testing.T) {
+	authorized := false
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		require.Equal(t, http.MethodGet, req.Method)
+		if authorized {
+			return roleResponse(otherARN), nil
+		}
+		return roleResponse(""), nil
+	})
+	pending := resource.HandleCreate(handler.Request{}, client, authorizationModel())
+	callback := callbackRequest(t, pending)
+	authorized = true
+
+	model := authorizationModel()
+	event := resource.HandleCreate(callback, client, model)
+
+	assert.Equal(t, handler.Failed, event.OperationStatus)
+	assert.Equal(t, string(types.HandlerErrorCodeAlreadyExists), event.HandlerErrorCode)
+	assert.Same(t, model, event.ResourceModel)
+}
+
 func TestAuthorizationCallbackTimesOutWithoutAnotherPatch(t *testing.T) {
 	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
 		require.Equal(t, http.MethodGet, req.Method)
@@ -201,6 +229,55 @@ func TestCreateCallbackRetainsIdentifierWhenLookupFails(t *testing.T) {
 			assert.Equal(t, handler.Failed, event.OperationStatus)
 			assert.Equal(t, string(tc.expectedCode), event.HandlerErrorCode)
 			assert.Same(t, model, event.ResourceModel)
+		})
+	}
+}
+
+func TestCreateRetainsCheckpointWhenClientSetupFails(t *testing.T) {
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		require.Equal(t, http.MethodGet, req.Method)
+		return roleResponse(""), nil
+	})
+	testCases := []struct {
+		name            string
+		changedField    string
+		includeCallback bool
+		wantModel       bool
+	}{
+		{name: "Initial create"},
+		{name: "Matching callback", includeCallback: true, wantModel: true},
+		{name: "Callback for another target", includeCallback: true, changedField: "roleId"},
+		{name: "Invalid callback timestamp", includeCallback: true, changedField: "startedAt"},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			model := authorizationModel()
+			var req handler.Request
+			if tc.includeCallback {
+				pending := resource.HandleCreate(req, client, model)
+				req = callbackRequest(t, pending)
+				if tc.changedField != "" {
+					req.CallbackContext[tc.changedField] = "another-value"
+				}
+			}
+			// Empty static credentials fail locally before any Secrets Manager HTTP request.
+			req.Session = &session.Session{Config: &awsv1.Config{
+				Region:      new("us-east-1"),
+				Credentials: credentials.NewStaticCredentials("", "", ""),
+			}}
+
+			event, err := resource.Create(req, nil, model)
+
+			require.NoError(t, err)
+			assert.Equal(t, handler.Failed, event.OperationStatus)
+			// The AWS SDK v1 error for empty static credentials mentions credentials.
+			// Keep the check loose so an SDK wording change does not break the test.
+			assert.Contains(t, strings.ToLower(event.Message), "credential")
+			if tc.wantModel {
+				assert.Same(t, model, event.ResourceModel, "retain the checkpointed model for rollback")
+			} else {
+				assert.Nil(t, event.ResourceModel, "do not claim an unrelated authorization")
+			}
 		})
 	}
 }
@@ -306,6 +383,49 @@ func TestDeleteRemovesTheRegistration(t *testing.T) {
 	assert.Equal(t, []string{http.MethodGet, http.MethodDelete}, methods)
 }
 
+func TestSetupDeleteAfterAuthorizationDelete(t *testing.T) {
+	registrationExists := true
+	var requests []string
+	rolesPath := "/api/atlas/v2/groups/" + testProjectID + "/cloudProviderAccess"
+	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		request := req.Method + " " + req.URL.Path
+		requests = append(requests, request)
+		switch request {
+		case "GET " + rolesPath + "/" + testRoleID:
+			require.True(t, registrationExists)
+			return roleResponse(testARN), nil
+		case "DELETE " + rolesPath + "/AWS/" + testRoleID:
+			require.True(t, registrationExists, "delete the registration only once")
+			registrationExists = false
+			return jsonResponse(http.StatusNoContent, ""), nil
+		case "GET " + rolesPath:
+			require.False(t, registrationExists, "authorization has already removed the registration")
+			return jsonResponse(http.StatusOK, `{"awsIamRoles":[]}`), nil
+		default:
+			t.Fatalf("unexpected request: %s", request)
+			return nil, nil
+		}
+	})
+
+	authorizationDelete := resource.HandleDelete(client, authorizationModel())
+	require.Equal(t, handler.Success, authorizationDelete.OperationStatus)
+	assert.Nil(t, authorizationDelete.ResourceModel)
+
+	setupDelete := setupresource.HandleDelete(client, &setupresource.Model{
+		ProjectId: new(testProjectID), RoleId: new(testRoleID), Profile: new("custom-profile"),
+	})
+	// The registry contract requires NotFound for a previously removed resource;
+	// the stack engine tolerates it during deletion. Do not issue a second DELETE.
+	assert.Equal(t, handler.Failed, setupDelete.OperationStatus)
+	assert.Equal(t, string(types.HandlerErrorCodeNotFound), setupDelete.HandlerErrorCode)
+	assert.Nil(t, setupDelete.ResourceModel)
+	assert.Equal(t, []string{
+		"GET " + rolesPath + "/" + testRoleID,
+		"DELETE " + rolesPath + "/AWS/" + testRoleID,
+		"GET " + rolesPath,
+	}, requests)
+}
+
 // The registration can be removed between the lookup and the delete. The end
 // state this handler wants is reached, so the delete succeeds.
 func TestDeleteToleratesARegistrationRemovedDuringTheDelete(t *testing.T) {
@@ -341,18 +461,42 @@ func TestReadAndDeleteTreatUnapprovedRegistrationAsNotFound(t *testing.T) {
 // reports an authorization date for one of them, this AWS-only resource must not
 // treat it as its own.
 func TestNonAWSRegistrationIsNotFound(t *testing.T) {
-	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+	checkpointClient := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
 		require.Equal(t, http.MethodGet, req.Method, "must not authorize or delete a non-AWS registration")
-		return jsonResponse(http.StatusOK, `{"providerName":"AZURE","_id":"`+testRoleID+`","authorizedDate":"2026-10-21T12:00:00Z"}`), nil
+		return roleResponse(""), nil
 	})
+	pending := resource.HandleCreate(handler.Request{}, checkpointClient, authorizationModel())
+	callback := callbackRequest(t, pending)
 
-	for _, event := range []handler.ProgressEvent{
-		resource.HandleRead(client, authorizationModel()),
-		resource.HandleDelete(client, authorizationModel()),
-		resource.HandleUpdate(handler.Request{}, client, authorizationModel()),
-	} {
-		assert.Equal(t, handler.Failed, event.OperationStatus)
-		assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+	for _, provider := range []string{"AZURE", "GCP"} {
+		t.Run(provider, func(t *testing.T) {
+			client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+				require.Equal(t, http.MethodGet, req.Method, "must not authorize or delete a non-AWS registration")
+				idField := "roleId"
+				if provider == "AZURE" {
+					idField = "_id"
+				}
+				return jsonResponse(http.StatusOK, `{"providerName":"`+provider+`","`+idField+`":"`+testRoleID+`","authorizedDate":"2026-10-21T12:00:00Z"}`), nil
+			})
+
+			for _, event := range []handler.ProgressEvent{
+				resource.HandleCreate(handler.Request{}, client, authorizationModel()),
+				resource.HandleRead(client, authorizationModel()),
+				resource.HandleDelete(client, authorizationModel()),
+				resource.HandleUpdate(handler.Request{}, client, authorizationModel()),
+			} {
+				assert.Equal(t, handler.Failed, event.OperationStatus)
+				assert.Equal(t, string(types.HandlerErrorCodeNotFound), event.HandlerErrorCode)
+			}
+
+			// A callback that finds a non-AWS registration keeps its checkpointed
+			// model so CloudFormation can roll back the resource it created.
+			callbackModel := authorizationModel()
+			callbackEvent := resource.HandleCreate(callback, client, callbackModel)
+			assert.Equal(t, handler.Failed, callbackEvent.OperationStatus)
+			assert.Equal(t, string(types.HandlerErrorCodeNotFound), callbackEvent.HandlerErrorCode)
+			assert.Same(t, callbackModel, callbackEvent.ResourceModel)
+		})
 	}
 }
 

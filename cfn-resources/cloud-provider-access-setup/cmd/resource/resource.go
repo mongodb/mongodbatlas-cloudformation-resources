@@ -119,7 +119,7 @@ func HandleRead(client *util.MongoDBClient, currentModel *Model) handler.Progres
 		GetCloudProviderAccess(context.Background(), *currentModel.ProjectId, *currentModel.RoleId).
 		Execute()
 	if err != nil {
-		if util.StatusNotFound(response) {
+		if cloudprovideraccess.IsRoleNotFound(err, response) {
 			return progressevent.GetFailedEventByCode(
 				fmt.Sprintf("Cloud Provider Access role %s not found", *currentModel.RoleId),
 				string(types.HandlerErrorCodeNotFound))
@@ -193,8 +193,8 @@ func HandleDelete(client *util.MongoDBClient, currentModel *Model) handler.Progr
 		Execute()
 	if err != nil {
 		// The role was removed between the list and the delete. The registration is gone, which is
-		// the end state this handler wants, so tolerate the 404.
-		if util.StatusNotFound(response) {
+		// the end state this handler wants, so tolerate either a 404 or Atlas's missing-role code.
+		if cloudprovideraccess.IsRoleNotFound(err, response) {
 			return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}
 		}
 		if cloudprovideraccess.IsRoleInUse(err) {

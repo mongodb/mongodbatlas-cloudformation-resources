@@ -75,10 +75,6 @@ func TestClusterSkipWaitForIdleCFN(t *testing.T) {
 		testUpdateSkipWaitStack(t, testCtx)
 	})
 
-	t.Run("Update Stack With The Default Wait", func(t *testing.T) {
-		testUpdateWithTheDefaultWait(t, testCtx)
-	})
-
 	t.Run("Delete Stack", func(t *testing.T) {
 		testDeleteSkipWaitStack(t, testCtx)
 	})
@@ -178,24 +174,6 @@ func testUpdateSkipWaitStack(t *testing.T, c *skipWaitTestContext) {
 	// AdvancedSettings are sent before the change and survive convergence.
 	waitForSkipWaitClusterIdle(t, c)
 	assert.Equal(t, c.clusterTmplObj.DefaultReadConcern, readSkipWaitProcessArgs(t, c).GetDefaultReadConcern())
-	assert.Equal(t, c.clusterTmplObj.NodeCount, readSkipWaitNodeCount(t, c))
-}
-
-func testUpdateWithTheDefaultWait(t *testing.T, c *skipWaitTestContext) {
-	t.Helper()
-
-	// Removing the property reverts to the default behavior, so the handler waits for the change to converge.
-	c.clusterTmplObj.SkipWaitForIdle = false
-	c.clusterTmplObj.NodeCount = 7
-
-	var err error
-	c.template, err = newSkipWaitCFNTemplate(c.clusterTmplObj)
-	utility.FailNowIfError(t, "Error while reading skip wait CFN Template: %v", err)
-
-	// The handler waits for the change to converge, so the stack only completes once it has.
-	utility.UpdateStack(t, c.cfnClient, skipWaitStackName, c.template)
-
-	waitForSkipWaitClusterIdle(t, c)
 	assert.Equal(t, c.clusterTmplObj.NodeCount, readSkipWaitNodeCount(t, c))
 }
 

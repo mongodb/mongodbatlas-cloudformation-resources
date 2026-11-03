@@ -1,0 +1,6 @@
+{
+  "Profile": "default",
+  "ProjectId": "$ProjectId",
+  "RoleId": "$RoleId",
+  "IamAssumedRoleArn": "$IamAssumedRoleArn"
+}

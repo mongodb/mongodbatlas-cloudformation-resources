@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Register Atlas cloud provider access, create and authorize an AWS IAM role,
+  and configure project Encryption at Rest with an existing AWS KMS key.
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: Atlas project to configure. Its Encryption at Rest configuration must not be managed elsewhere.
+    AllowedPattern: "^[a-f0-9]{24}$"
+  Profile:
+    Type: String
+    Default: default
+    Description: Atlas credential profile stored in AWS Secrets Manager.
+  KmsKeyArn:
+    Type: String
+    Description: ARN of an enabled symmetric customer-managed KMS key in this AWS account.
+    AllowedPattern: "^arn:[a-z0-9-]+:kms:[a-z0-9-]+:[0-9]{12}:key/[a-zA-Z0-9-]+$"
+  KmsKeyRegion:
+    Type: String
+    Description: Region of the KMS key in Atlas format, for example EU_WEST_1 (not eu-west-1).
+    AllowedPattern: "^[A-Z][A-Z0-9_]+_[0-9]+$"
+
+Resources:
+  CloudProviderAccessSetup:
+    Type: MongoDB::Atlas::CloudProviderAccessSetup
+    Properties:
+      ProjectId: !Ref ProjectId
+      Profile: !Ref Profile
+
+  AtlasKmsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt CloudProviderAccessSetup.AtlasAWSAccountArn
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: !GetAtt CloudProviderAccessSetup.AtlasAssumedRoleExternalId
+      Policies:
+        - PolicyName: AtlasEncryptionAtRest
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kms:DescribeKey
+                  - kms:Encrypt
+                  - kms:Decrypt
+                Resource: !Ref KmsKeyArn
+
+  CloudProviderAccessAuthorization:
+    Type: MongoDB::Atlas::CloudProviderAccessAuthorization
+    Properties:
+      ProjectId: !Ref ProjectId
+      Profile: !Ref Profile
+      RoleId: !GetAtt CloudProviderAccessSetup.RoleId
+      IamAssumedRoleArn: !GetAtt AtlasKmsRole.Arn
+
+  EncryptionAtRest:
+    Type: MongoDB::Atlas::EncryptionAtRest
+    # RoleId alone depends on Setup; this also waits for Authorization.
+    # On deletion, encryption is disabled before authorization is removed.
+    DependsOn: CloudProviderAccessAuthorization
+    Properties:
+      ProjectId: !Ref ProjectId
+      Profile: !Ref Profile
+      EnabledForSearchNodes: false
+      AwsKmsConfig:
+        Enabled: true
+        RoleID: !GetAtt CloudProviderAccessSetup.RoleId
+        CustomerMasterKeyID: !Ref KmsKeyArn
+        Region: !Ref KmsKeyRegion
+        RequirePrivateNetworking: false
+
+Outputs:
+  RoleId:
+    Description: Atlas Cloud Provider Access role registration identifier.
+    Value: !GetAtt CloudProviderAccessSetup.RoleId
+  IamAssumedRoleArn:
+    Description: AWS IAM role authorized for Atlas KMS access.
+    Value: !GetAtt AtlasKmsRole.Arn
+  AuthorizedDate:
+    Description: Date and time when Atlas authorized the role.
+    Value: !GetAtt CloudProviderAccessAuthorization.AuthorizedDate

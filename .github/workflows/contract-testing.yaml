@@ -25,6 +25,7 @@ jobs:
       auditing: ${{ steps.filter.outputs.auditing }}
       backup-compliance-policy: ${{ steps.filter.outputs.backup-compliance-policy }}
       cloud-backup-restore-jobs: ${{ steps.filter.outputs.cloud-backup-restore-jobs }}
+      cloud-provider-access-authorization: ${{ steps.filter.outputs.cloud-provider-access-authorization }}
       cloud-provider-access-setup: ${{ steps.filter.outputs.cloud-provider-access-setup }}
       cluster-outage-simulation: ${{ steps.filter.outputs.cluster-outage-simulation }}
       database-user: ${{ steps.filter.outputs.database-user }}
@@ -77,6 +78,8 @@ jobs:
               - 'cfn-resources/backup-compliance-policy/**'
             cloud-backup-restore-jobs:
               - 'cfn-resources/cloud-backup-restore-jobs/**'
+            cloud-provider-access-authorization:
+              - 'cfn-resources/cloud-provider-access-authorization/**'
             cloud-provider-access-setup:
               - 'cfn-resources/cloud-provider-access-setup/**'
             cluster-outage-simulation:
@@ -314,6 +317,31 @@ jobs:
 
           make run-contract-testing
           make delete-test-resources
+  cloud-provider-access-authorization:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.cloud-provider-access-authorization == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *setup-go
+      - *setup-atlas-cli
+      - *setup-sam
+      - *aws-credentials
+      - *setup-python
+      - *install-cfn-cli
+      - name: Run the Contract tests (isolated groups)
+        shell: bash
+        env: *contract-test-env
+        run: |
+          pushd cfn-resources/cloud-provider-access-authorization
+          make run-contract-testing-isolated
+
+      - name: Check contract_delete_create (known deviation)
+        shell: bash
+        env: *contract-test-env
+        run: |
+          pushd cfn-resources/cloud-provider-access-authorization
+          make check-contract-delete-create
   cloud-provider-access-setup:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cloud-provider-access-setup == 'true' }}

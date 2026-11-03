@@ -306,15 +306,22 @@ func runDelete(ctx context.Context, conn *admin.APIClient, currentModel *Model) 
 	case <-time.After(30 * time.Second):
 		// If the Delete is not completed in the above time,
 		// we return a progress event with inProgress status and callback context
-		return nil, &handler.ProgressEvent{
-			OperationStatus:      handler.InProgress,
-			Message:              DeleteInProgress,
-			ResourceModel:        currentModel,
-			CallbackDelaySeconds: CallBackSeconds,
-			CallbackContext: map[string]any{
-				constants.StateName: DeletingState,
-			},
-		}
+		progressEvent := deleteInProgress(currentModel)
+		return nil, &progressEvent
+	}
+}
+
+// deleteInProgress asks CloudFormation to invoke the handler again to continue
+// the deletion.
+func deleteInProgress(currentModel *Model) handler.ProgressEvent {
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              DeleteInProgress,
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: CallBackSeconds,
+		CallbackContext: map[string]any{
+			constants.StateName: DeletingState,
+		},
 	}
 }
 
@@ -338,15 +345,25 @@ func deleteCallback(ctx context.Context, conn *admin.APIClient, currentModel *Mo
 			ResourceModel:   nil}, nil
 	}
 
-	return handler.ProgressEvent{
-		OperationStatus:      handler.InProgress,
-		Message:              DeleteInProgress,
-		ResourceModel:        currentModel,
-		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext: map[string]any{
-			constants.StateName: DeletingState,
-		},
-	}, nil
+	// The organization still exists, so the earlier delete request did not
+	// complete. Retry it instead of failing the deletion.
+	responseMsg, progressEvent := runDelete(ctx, conn, currentModel)
+	if progressEvent != nil {
+		return *progressEvent, nil
+	}
+
+	return DeleteCallbackOutcome(responseMsg, currentModel)
+}
+
+// DeleteCallbackOutcome maps a delete attempt from the callback path. A
+// transient server error keeps the in-progress callback alive so CloudFormation
+// invokes the handler again and the delete is retried, instead of failing the
+// stack deletion.
+func DeleteCallbackOutcome(responseMsg *DeleteResponse, currentModel *Model) (handler.ProgressEvent, error) {
+	if isTransientDeleteError(responseMsg) {
+		return deleteInProgress(currentModel), nil
+	}
+	return DeleteOutcome(responseMsg, nil)
 }
 
 // List handles the List event from the Cloudformation service.

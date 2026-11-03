@@ -25,6 +25,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/organization/cmd/resource"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 )
 
 // A delete that outlives the synchronous Atlas call returns an in-progress
@@ -151,4 +152,44 @@ func TestDeleteWithRetriesDoesNotRetryOtherErrors(t *testing.T) {
 	assert.Equal(t, 1, calls, "only transient server errors are retried")
 	require.NotNil(t, responseMsg)
 	require.Error(t, responseMsg.Error)
+}
+
+// A transient server error on the callback path must keep the in-progress
+// callback alive so CloudFormation invokes the handler again and the delete is
+// retried, instead of failing the stack deletion.
+func TestDeleteCallbackOutcomeRetriesATransientErrorThroughTheCallback(t *testing.T) {
+	responseMsg := &resource.DeleteResponse{
+		Error:    errors.New("Internal Server Error"),
+		Response: &http.Response{StatusCode: http.StatusInternalServerError},
+	}
+	model := &resource.Model{}
+
+	event, err := resource.DeleteCallbackOutcome(responseMsg, model)
+
+	require.NoError(t, err)
+	assert.Equal(t, handler.InProgress, event.OperationStatus)
+	assert.Equal(t, resource.DeleteInProgress, event.Message)
+	assert.Same(t, model, event.ResourceModel)
+	assert.Equal(t, int64(resource.CallBackSeconds), event.CallbackDelaySeconds)
+	assert.Equal(t, resource.DeletingState, event.CallbackContext[constants.StateName])
+}
+
+func TestDeleteCallbackOutcomeCompletesWhenTheDeleteSucceeds(t *testing.T) {
+	event, err := resource.DeleteCallbackOutcome(&resource.DeleteResponse{}, &resource.Model{})
+
+	require.NoError(t, err)
+	assert.Equal(t, handler.Success, event.OperationStatus)
+	assert.Equal(t, resource.DeleteCompleted, event.Message)
+}
+
+func TestDeleteCallbackOutcomeFailsOnANonTransientError(t *testing.T) {
+	responseMsg := &resource.DeleteResponse{
+		Error:    errors.New("Bad Request"),
+		Response: &http.Response{StatusCode: http.StatusBadRequest},
+	}
+
+	event, err := resource.DeleteCallbackOutcome(responseMsg, &resource.Model{})
+
+	require.NoError(t, err)
+	assert.Equal(t, handler.Failed, event.OperationStatus)
 }

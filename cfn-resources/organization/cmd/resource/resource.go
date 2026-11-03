@@ -225,7 +225,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.IsDeleted = new(false)
 
 	responseMsg, progressEvent := runDelete(ctx, conn, currentModel)
-	if responseMsg.Error != nil {
+	if responseMsg != nil && responseMsg.Error != nil {
 		// Retry once on transient server error, waiting 20 seconds before retrying request
 		// This covers case of contract tests which create and delete an org within seconds, encountering an error while deleting the org
 		if responseMsg.Response != nil && responseMsg.Response.StatusCode == http.StatusInternalServerError {
@@ -234,6 +234,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			responseMsg, progressEvent = runDelete(ctx, conn, currentModel)
 		}
 	}
+
+	return DeleteOutcome(responseMsg, progressEvent)
+}
+
+// DeleteOutcome maps the result of runDelete to the CloudFormation response.
+// runDelete returns a nil responseMsg when the synchronous Atlas delete does not
+// finish within its wait, so the in-progress callback is checked before the
+// response to avoid dereferencing a nil responseMsg on that path.
+func DeleteOutcome(responseMsg *DeleteResponse, progressEvent *handler.ProgressEvent) (handler.ProgressEvent, error) {
 	if progressEvent != nil {
 		return *progressEvent, nil
 	}
@@ -259,7 +268,7 @@ func runDelete(ctx context.Context, conn *admin.APIClient, currentModel *Model) 
 
 	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
 	// we need to make the call in a goroutine and return a progress event
-	// after 10 Seconds. Reason for wait is that the Delete API
+	// after 30 Seconds. Reason for wait is that the Delete API
 	// may throw error immediately if the resource is not found.
 
 	responseChan := make(chan DeleteResponse, 1)

@@ -50,9 +50,9 @@ to Encryption at Rest; use the permissions required by each consuming feature.
 | --- | --- | --- | --- |
 | Encryption at Rest | `mongodbatlas_encryption_at_rest.aws_kms_config.role_id` | `MongoDB::Atlas::EncryptionAtRest.AwsKmsConfig.RoleID` | [Complete KMS stack](./cloud-provider-access-stack.yaml) |
 | S3 log export | `mongodbatlas_log_integration.iam_role_id` | `MongoDB::Atlas::LogIntegration.IamRoleId` | [Complete log-export stack](../log-integration/README.md) |
-| Backup export destination | `mongodbatlas_cloud_backup_snapshot_export_bucket.iam_role_id` | `MongoDB::Atlas::CloudBackupSnapshotExportBucket.IamRoleID` | [Backup export setup](../../cfn-resources/cloud-backup-snapshot-export-bucket/README.md) |
-| Data Federation AWS access | `mongodbatlas_federated_database_instance.cloud_provider_config.aws.role_id` | `MongoDB::Atlas::FederatedDatabaseInstance.CloudProviderConfig.RoleId` | [Configuration and schema limits](../../cfn-resources/federated-database-instance/README.md) |
-| AWS Lambda stream connection | `mongodbatlas_stream_connection.aws.role_arn` | `MongoDB::Atlas::StreamConnection.Aws.RoleArn` | [Lambda connection](../atlas-streams/stream-connection/README.md) |
+| Backup export destination | `mongodbatlas_cloud_backup_snapshot_export_bucket.iam_role_id` | `MongoDB::Atlas::CloudBackupSnapshotExportBucket.IamRoleID` | [Backup export setup](../cloud-backup-snapshot-export-bucket/README.md) |
+| Data Federation AWS access | `mongodbatlas_federated_database_instance.cloud_provider_config.aws.role_id` | `MongoDB::Atlas::FederatedDatabaseInstance.CloudProviderConfig.RoleId` | [Configuration and schema limits](../../cfn-resources/federated-database-instance/README.md#cloud-provider-access) |
+| AWS Lambda stream connection | `mongodbatlas_stream_connection.aws.role_arn` | `MongoDB::Atlas::StreamConnection.Aws.RoleArn` | [Lambda connection](../atlas-streams/stream-connection/README.md#aws-lambda-with-setup-and-authorization) |
 
 The first four consumers take the **Atlas registration ID**, obtained with
 `!GetAtt CloudProviderAccessSetup.RoleId`. Lambda takes the **AWS IAM role ARN**, obtained from the IAM role that

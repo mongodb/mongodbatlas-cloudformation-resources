@@ -105,18 +105,21 @@ func TestReadMapsErrors(t *testing.T) {
 	testCases := []struct {
 		name      string
 		errorCode types.HandlerErrorCode
+		atlasCode string
 		status    int
 	}{
-		{"A missing registration is NotFound", types.HandlerErrorCodeNotFound, http.StatusNotFound},
-		{"An Atlas failure keeps its error code", types.HandlerErrorCodeServiceInternalError, http.StatusInternalServerError},
-		{"An access denied keeps its error code", types.HandlerErrorCodeAccessDenied, http.StatusUnauthorized},
+		{"A missing registration is NotFound", types.HandlerErrorCodeNotFound, "TEST_ERROR", http.StatusNotFound},
+		{"A missing registration reported without HTTP 404 is NotFound", types.HandlerErrorCodeNotFound, "CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND", http.StatusBadRequest},
+		{"An unrelated bad request keeps its error code", types.HandlerErrorCodeInvalidRequest, "INVALID_ATTRIBUTE", http.StatusBadRequest},
+		{"An Atlas failure keeps its error code", types.HandlerErrorCodeServiceInternalError, "TEST_ERROR", http.StatusInternalServerError},
+		{"An access denied keeps its error code", types.HandlerErrorCodeAccessDenied, "TEST_ERROR", http.StatusUnauthorized},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var requests []string
 			client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
 				requests = append(requests, req.Method+" "+req.URL.Path)
-				return atlasResponse(tc.status, `{"errorCode":"TEST_ERROR","detail":"Read failed"}`), nil
+				return atlasResponse(tc.status, `{"errorCode":"`+tc.atlasCode+`","detail":"Read failed"}`), nil
 			})
 			model := resource.Model{
 				Profile:   aws.String(profile),
@@ -135,78 +138,91 @@ func TestReadMapsErrors(t *testing.T) {
 }
 
 func TestDeleteRegistration(t *testing.T) {
-	const otherRoleID = "111111111111111111111111"
-
-	listPath := "GET /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess"
+	getPath := "GET /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess/" + roleID
 	deletePath := "DELETE /api/atlas/v2/groups/" + projectID + "/cloudProviderAccess/AWS/" + roleID
 
 	testCases := []struct {
 		name             string
-		roleIDs          []string
 		deleteBody       string
 		expectedStatus   handler.Status
 		expectedCode     string
 		expectedContains string
 		expectedRequests []string
 		deleteStatus     int
-		listStatus       int
+		lookupStatus     int
+		lookupMissing    bool
 	}{
 		{
-			name:             "A list failure is reported",
-			listStatus:       http.StatusInternalServerError,
+			name:             "A lookup failure is reported",
+			lookupStatus:     http.StatusInternalServerError,
 			expectedStatus:   handler.Failed,
 			expectedCode:     string(types.HandlerErrorCodeServiceInternalError),
-			expectedRequests: []string{listPath},
+			expectedRequests: []string{getPath},
 		},
 		{
 			name:             "A role that a feature still uses fails with ResourceConflict",
-			roleIDs:          []string{roleID},
 			deleteStatus:     http.StatusBadRequest,
 			deleteBody:       `{"errorCode":"AWS_IAM_ROLE_IN_USE","detail":"Cannot remove the AWS IAM role because it is still in use."}`,
 			expectedStatus:   handler.Failed,
 			expectedCode:     string(types.HandlerErrorCodeResourceConflict),
 			expectedContains: roleID,
-			expectedRequests: []string{listPath, deletePath},
+			expectedRequests: []string{getPath, deletePath},
 		},
 		{
-			name:             "A registration removed between the list and the delete is tolerated",
-			roleIDs:          []string{roleID},
+			name:             "A registration removed between the lookup and the delete is tolerated",
 			deleteStatus:     http.StatusNotFound,
 			deleteBody:       `{"errorCode":"CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND","detail":"not found"}`,
 			expectedStatus:   handler.Success,
-			expectedRequests: []string{listPath, deletePath},
+			expectedRequests: []string{getPath, deletePath},
+		},
+		{
+			name:             "A missing registration reported without HTTP 404 is tolerated",
+			deleteStatus:     http.StatusBadRequest,
+			deleteBody:       `{"errorCode":"CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND","detail":"not found"}`,
+			expectedStatus:   handler.Success,
+			expectedRequests: []string{getPath, deletePath},
+		},
+		{
+			name:             "An unrelated bad request is reported",
+			deleteStatus:     http.StatusBadRequest,
+			deleteBody:       `{"errorCode":"INVALID_ATTRIBUTE","detail":"invalid request"}`,
+			expectedStatus:   handler.Failed,
+			expectedCode:     string(types.HandlerErrorCodeInvalidRequest),
+			expectedRequests: []string{getPath, deletePath},
 		},
 		{
 			name:             "A registration that is already gone is NotFound",
-			roleIDs:          []string{otherRoleID},
+			lookupMissing:    true,
 			expectedStatus:   handler.Failed,
 			expectedCode:     string(types.HandlerErrorCodeNotFound),
 			expectedContains: roleID,
-			expectedRequests: []string{listPath},
+			expectedRequests: []string{getPath},
 		},
 		{
 			name:             "A registration that is present is removed",
-			roleIDs:          []string{otherRoleID, roleID},
 			deleteStatus:     http.StatusNoContent,
 			expectedStatus:   handler.Success,
-			expectedRequests: []string{listPath, deletePath},
+			expectedRequests: []string{getPath, deletePath},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			listStatus := tc.listStatus
-			if listStatus == 0 {
-				listStatus = http.StatusOK
+			lookupStatus := tc.lookupStatus
+			if lookupStatus == 0 {
+				lookupStatus = http.StatusOK
 			}
 			var requests []string
 			client := cloudProviderAccessClient(t, func(req *http.Request) (*http.Response, error) {
 				requests = append(requests, req.Method+" "+req.URL.Path)
 				if req.Method == http.MethodGet {
-					if listStatus != http.StatusOK {
-						return atlasResponse(listStatus, `{"errorCode":"TEST_ERROR","detail":"List failed"}`), nil
+					if lookupStatus != http.StatusOK {
+						return atlasResponse(lookupStatus, `{"errorCode":"TEST_ERROR","detail":"Lookup failed"}`), nil
 					}
-					return atlasResponse(http.StatusOK, awsRolesJSON(tc.roleIDs...)), nil
+					if tc.lookupMissing {
+						return atlasResponse(http.StatusNotFound, `{"errorCode":"CLOUD_PROVIDER_ACCESS_ROLE_NOT_FOUND","detail":"not found"}`), nil
+					}
+					return atlasResponse(http.StatusOK, roleResponseJSON()), nil
 				}
 				return atlasResponse(tc.deleteStatus, tc.deleteBody), nil
 			})

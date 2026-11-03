@@ -47,7 +47,8 @@ fi
 echo -e "Created Cluster \"${ClusterName}\""
 
 SnapshotId=$(atlas backup snapshots create "${ClusterName}" --projectId "${projectId}" --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
-sleep 300
+echo -e "Waiting for snapshot \"${SnapshotId}\" to complete"
+atlas backup snapshots watch "${SnapshotId}" --clusterName "${ClusterName}" --projectId "${projectId}"
 
 jq --arg cluster_name "$ClusterName" \
 	--arg group_id "$projectId" \

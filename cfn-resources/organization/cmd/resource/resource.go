@@ -44,6 +44,14 @@ const (
 	DeletingState    = "Deleting"
 	DeleteInProgress = "Delete Organization is in progress"
 	DeleteCompleted  = "Delete Organization is completed"
+
+	// deleteRetryAttempts is the maximum number of times the synchronous Atlas
+	// delete is attempted when it fails with a transient server error. Atlas
+	// returns HTTP 500 when an organization is deleted seconds after it is
+	// created, which the contract tests exercise.
+	deleteRetryAttempts = 3
+	// deleteRetryWait is the pause before retrying a transient delete error.
+	deleteRetryWait = 20 * time.Second
 )
 
 type OrgProfile struct {
@@ -224,18 +232,33 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.IsDeleted = new(false)
 
-	responseMsg, progressEvent := runDelete(ctx, conn, currentModel)
-	if responseMsg != nil && responseMsg.Error != nil {
-		// Retry once on transient server error, waiting 20 seconds before retrying request
-		// This covers case of contract tests which create and delete an org within seconds, encountering an error while deleting the org
-		if responseMsg.Response != nil && responseMsg.Response.StatusCode == http.StatusInternalServerError {
-			_, _ = logger.Warnf("Transient server error while deleting organization, retrying in 20 seconds")
-			time.Sleep(20 * time.Second)
-			responseMsg, progressEvent = runDelete(ctx, conn, currentModel)
-		}
-	}
+	responseMsg, progressEvent := DeleteWithRetries(func() (*DeleteResponse, *handler.ProgressEvent) {
+		return runDelete(ctx, conn, currentModel)
+	}, deleteRetryWait)
 
 	return DeleteOutcome(responseMsg, progressEvent)
+}
+
+// DeleteWithRetries calls deleteFn and retries it while it reports a transient
+// server error, up to deleteRetryAttempts calls. A nil response means the
+// synchronous Atlas call did not finish within its wait and returned an
+// in-progress callback, which is not retried.
+func DeleteWithRetries(deleteFn func() (*DeleteResponse, *handler.ProgressEvent), wait time.Duration) (*DeleteResponse, *handler.ProgressEvent) {
+	responseMsg, progressEvent := deleteFn()
+	for attempt := 1; attempt < deleteRetryAttempts && isTransientDeleteError(responseMsg); attempt++ {
+		// This covers the contract tests, which create and delete an organization within seconds.
+		_, _ = logger.Warnf("Transient server error while deleting organization, retrying in %d seconds", int(wait.Seconds()))
+		time.Sleep(wait)
+		responseMsg, progressEvent = deleteFn()
+	}
+	return responseMsg, progressEvent
+}
+
+// isTransientDeleteError reports whether the delete failed with a transient
+// server error worth retrying.
+func isTransientDeleteError(responseMsg *DeleteResponse) bool {
+	return responseMsg != nil && responseMsg.Error != nil &&
+		responseMsg.Response != nil && responseMsg.Response.StatusCode == http.StatusInternalServerError
 }
 
 // DeleteOutcome maps the result of runDelete to the CloudFormation response.

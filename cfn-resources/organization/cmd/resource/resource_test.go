@@ -85,3 +85,70 @@ func TestDeleteOutcomeMapsDeleteErrors(t *testing.T) {
 		})
 	}
 }
+
+// A delete that outlives the synchronous Atlas call returns an in-progress
+// callback with a nil response. The retry decision must return that callback
+// without dereferencing the nil response, which panicked before.
+func TestDeleteWithRetriesReturnsTheInProgressCallbackWithoutRetrying(t *testing.T) {
+	progress := &handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              resource.DeleteInProgress,
+		CallbackDelaySeconds: 20,
+	}
+	calls := 0
+
+	responseMsg, progressEvent := resource.DeleteWithRetries(func() (*resource.DeleteResponse, *handler.ProgressEvent) {
+		calls++
+		return nil, progress
+	}, 0)
+
+	assert.Equal(t, 1, calls, "an in-progress callback is not retried")
+	assert.Nil(t, responseMsg)
+	require.NotNil(t, progressEvent)
+	assert.Equal(t, handler.InProgress, progressEvent.OperationStatus)
+	assert.Equal(t, resource.DeleteInProgress, progressEvent.Message)
+}
+
+func TestDeleteWithRetriesRetriesTransientServerErrors(t *testing.T) {
+	calls := 0
+
+	responseMsg, progressEvent := resource.DeleteWithRetries(func() (*resource.DeleteResponse, *handler.ProgressEvent) {
+		calls++
+		if calls < 3 {
+			return &resource.DeleteResponse{Error: errors.New("Internal Server Error"), Response: &http.Response{StatusCode: http.StatusInternalServerError}}, nil
+		}
+		return &resource.DeleteResponse{}, nil
+	}, 0)
+
+	assert.Equal(t, 3, calls, "transient errors are retried until the delete succeeds")
+	require.NotNil(t, responseMsg)
+	require.NoError(t, responseMsg.Error)
+	assert.Nil(t, progressEvent)
+}
+
+func TestDeleteWithRetriesStopsAtTheAttemptLimit(t *testing.T) {
+	calls := 0
+
+	responseMsg, progressEvent := resource.DeleteWithRetries(func() (*resource.DeleteResponse, *handler.ProgressEvent) {
+		calls++
+		return &resource.DeleteResponse{Error: errors.New("Internal Server Error"), Response: &http.Response{StatusCode: http.StatusInternalServerError}}, nil
+	}, 0)
+
+	assert.Equal(t, 3, calls, "the delete is attempted deleteRetryAttempts times")
+	require.NotNil(t, responseMsg)
+	require.Error(t, responseMsg.Error)
+	assert.Nil(t, progressEvent)
+}
+
+func TestDeleteWithRetriesDoesNotRetryOtherErrors(t *testing.T) {
+	calls := 0
+
+	responseMsg, _ := resource.DeleteWithRetries(func() (*resource.DeleteResponse, *handler.ProgressEvent) {
+		calls++
+		return &resource.DeleteResponse{Error: errors.New("Unauthorized"), Response: &http.Response{StatusCode: http.StatusUnauthorized}}, nil
+	}, 0)
+
+	assert.Equal(t, 1, calls, "only transient server errors are retried")
+	require.NotNil(t, responseMsg)
+	require.Error(t, responseMsg.Error)
+}

@@ -76,10 +76,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return HandleCreate(req, client, currentModel), nil
 }
 
-// HandleCreate checkpoints the operation before authorizing so a retried callback
-// can recognize its own completed authorization without taking over an existing one.
+// HandleCreate authorizes the role on the first invocation and retries
+// CANNOT_ASSUME_ROLE across callbacks; a callback that finds its own completed
+// authorization succeeds without another PATCH.
 func HandleCreate(req handler.Request, client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	startedAt, continuing := authorizationCallback(req, currentModel, "CREATE")
+	if !continuing {
+		startedAt = time.Now()
+	}
 	role, resp, err := getRole(client, currentModel)
 	if err != nil {
 		event := roleLookupFailed(currentModel, resp, err)
@@ -108,9 +112,6 @@ func HandleCreate(req handler.Request, client *util.MongoDBClient, currentModel 
 		return event
 	}
 
-	if !continuing {
-		return pendingAuthorization(currentModel, "CREATE", time.Now())
-	}
 	return authorizeRole(client, currentModel, "CREATE", startedAt)
 }
 

@@ -53,7 +53,15 @@ have separate permissions and deletion lifecycles.
   a missing authorization by creating it.
 
 Setup has a separate [Create retry limitation](../cloud-provider-access-setup/README.md#create-retries): a lost
-registration response can leave a duplicate registration. Authorization's callback handling does not fix that.
+registration response can leave a duplicate registration.
+
+## Create retries
+
+Create authorizes the role with a single authorize request and returns the authorization from its response. Create
+is not idempotent in the lost-response case: if Atlas authorizes the role but its response is lost before
+CloudFormation receives it, the replayed create reports `AlreadyExists` instead of succeeding, because Create
+never adopts an existing authorization. The authorize endpoint accepts no idempotency key, so this is an accepted
+risk rather than something the handler can detect. Remove the registration before deploying again.
 
 ## Delete and recovery
 

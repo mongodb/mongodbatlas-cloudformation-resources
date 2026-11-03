@@ -30,7 +30,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md).
 - Deleting the resource removes the whole Cloud Provider Access role registration. The paired `MongoDB::Atlas::CloudProviderAccessSetup` resource is then orphaned.
 - Deleting a role that a feature uses fails with `AWS_IAM_ROLE_IN_USE`. Disable the feature first, for example by disabling Encryption at Rest.
 - A second create for an existing authorization fails with `AlreadyExists` for either the same or a different ARN.
-- Create returns a checkpoint before authorizing. Replaying its callback after successful authorization returns `SUCCESS` without another PATCH.
+- Create authorizes the role on the first request. Replaying a callback after successful authorization returns `SUCCESS` without another PATCH.
 - `CANNOT_ASSUME_ROLE` returns `IN_PROGRESS` and retries across callbacks. A callback after the five-minute budget fails with `NotStabilized`.
 - Updating a registered but unauthorized role returns `NotFound` without a PATCH.
 - Read and Delete work with only `ProjectId`, `RoleId`, and a non-default `Profile`.

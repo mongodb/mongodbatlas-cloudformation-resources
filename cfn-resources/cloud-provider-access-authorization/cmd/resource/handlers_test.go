@@ -43,7 +43,7 @@ const (
 	otherARN      = "arn:aws:iam::123456789012:role/other-role"
 )
 
-func TestCreateCheckpointsBeforeAuthorizingAndRetriesCallbacks(t *testing.T) {
+func TestCreateAuthorizesAndRetriesCallbacks(t *testing.T) {
 	var (
 		patches    int
 		authorized bool
@@ -62,7 +62,7 @@ func TestCreateCheckpointsBeforeAuthorizingAndRetriesCallbacks(t *testing.T) {
 			require.NoError(t, json.NewDecoder(req.Body).Decode(&body))
 			assert.Equal(t, testARN, body["iamAssumedRoleArn"])
 			assert.Equal(t, "AWS", body["providerName"])
-			if patches == 1 {
+			if patches <= 2 {
 				return errorResponse(http.StatusBadRequest, cannotAssumeRole), nil
 			}
 			authorized = true
@@ -76,12 +76,12 @@ func TestCreateCheckpointsBeforeAuthorizingAndRetriesCallbacks(t *testing.T) {
 	first := resource.HandleCreate(handler.Request{}, client, model)
 	require.Equal(t, handler.InProgress, first.OperationStatus)
 	assertPendingIdentifiers(t, first)
-	assert.Zero(t, patches, "checkpoint before changing Atlas")
+	assert.Equal(t, 1, patches, "authorize on the first invocation")
 
 	retry := resource.HandleCreate(callbackRequest(t, first), client, model)
 	require.Equal(t, handler.InProgress, retry.OperationStatus)
 	assertPendingIdentifiers(t, retry)
-	assert.Equal(t, 1, patches, "only one PATCH per invocation")
+	assert.Equal(t, 2, patches, "only one PATCH per invocation")
 	assert.Positive(t, retry.CallbackDelaySeconds)
 	assert.Equal(t, first.CallbackContext["startedAt"], retry.CallbackContext["startedAt"])
 
@@ -89,13 +89,13 @@ func TestCreateCheckpointsBeforeAuthorizingAndRetriesCallbacks(t *testing.T) {
 	complete := resource.HandleCreate(req, client, model)
 	require.Equal(t, handler.Success, complete.OperationStatus)
 	assert.NotNil(t, model.AuthorizedDate)
-	assert.Equal(t, 2, patches)
+	assert.Equal(t, 3, patches)
 
 	// Replaying the callback after its successful response is lost must succeed,
 	// whereas a different create for the same resource must still fail.
 	replayed := resource.HandleCreate(req, client, model)
 	assert.Equal(t, handler.Success, replayed.OperationStatus)
-	assert.Equal(t, 2, patches)
+	assert.Equal(t, 3, patches)
 	duplicate := resource.HandleCreate(handler.Request{}, client, authorizationModel())
 	assertFailed(t, duplicate, types.HandlerErrorCodeAlreadyExists)
 }
@@ -123,6 +123,9 @@ func TestCreateDoesNotReuseCallbackForAnotherTarget(t *testing.T) {
 		t.Run(field, func(t *testing.T) {
 			authorized := false
 			client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+				if req.Method == http.MethodPatch {
+					return errorResponse(http.StatusBadRequest, cannotAssumeRole), nil
+				}
 				require.Equal(t, http.MethodGet, req.Method)
 				if authorized {
 					return roleResponse(testARN), nil
@@ -148,6 +151,9 @@ func TestCreateDoesNotReuseCallbackForAnotherTarget(t *testing.T) {
 func TestCreateCallbackRejectsForeignAuthorization(t *testing.T) {
 	authorized := false
 	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == http.MethodPatch {
+			return errorResponse(http.StatusBadRequest, cannotAssumeRole), nil
+		}
 		require.Equal(t, http.MethodGet, req.Method)
 		if authorized {
 			return roleResponse(otherARN), nil
@@ -167,6 +173,9 @@ func TestCreateCallbackRejectsForeignAuthorization(t *testing.T) {
 
 func TestAuthorizationCallbackTimesOutWithoutAnotherPatch(t *testing.T) {
 	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == http.MethodPatch {
+			return errorResponse(http.StatusBadRequest, cannotAssumeRole), nil
+		}
 		require.Equal(t, http.MethodGet, req.Method)
 		return roleResponse(""), nil
 	})
@@ -190,9 +199,8 @@ func TestAuthorizationDoesNotRetryPermanentErrors(t *testing.T) {
 		return errorResponse(http.StatusBadRequest, "INVALID_ATTRIBUTE"), nil
 	})
 	model := authorizationModel()
-	first := resource.HandleCreate(handler.Request{}, client, model)
 
-	event := resource.HandleCreate(callbackRequest(t, first), client, model)
+	event := resource.HandleCreate(handler.Request{}, client, model)
 
 	assertFailed(t, event, types.HandlerErrorCodeInvalidRequest)
 	assert.Same(t, model, event.ResourceModel)
@@ -210,6 +218,9 @@ func TestCreateCallbackRetainsIdentifierWhenLookupFails(t *testing.T) {
 		t.Run(http.StatusText(tc.status), func(t *testing.T) {
 			lookupFails := false
 			client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+				if req.Method == http.MethodPatch {
+					return errorResponse(http.StatusBadRequest, cannotAssumeRole), nil
+				}
 				require.Equal(t, http.MethodGet, req.Method)
 				if lookupFails {
 					return errorResponse(tc.status, "UNEXPECTED_ERROR"), nil
@@ -230,6 +241,9 @@ func TestCreateCallbackRetainsIdentifierWhenLookupFails(t *testing.T) {
 
 func TestCreateRetainsCheckpointWhenClientSetupFails(t *testing.T) {
 	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == http.MethodPatch {
+			return errorResponse(http.StatusBadRequest, cannotAssumeRole), nil
+		}
 		require.Equal(t, http.MethodGet, req.Method)
 		return roleResponse(""), nil
 	})
@@ -482,6 +496,9 @@ func TestReadAndDeleteMapLookupOutcomes(t *testing.T) {
 // treat it as its own.
 func TestNonAWSRegistrationIsNotFound(t *testing.T) {
 	checkpointClient := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == http.MethodPatch {
+			return errorResponse(http.StatusBadRequest, cannotAssumeRole), nil
+		}
 		require.Equal(t, http.MethodGet, req.Method, "must not authorize or delete a non-AWS registration")
 		return roleResponse(""), nil
 	})
@@ -553,6 +570,7 @@ func TestDeleteReportsUnexpectedErrors(t *testing.T) {
 }
 
 func TestAuthorizationOfAMissingRegistrationIsNotFound(t *testing.T) {
+	// The first invocation authorizes directly.
 	client := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
 		if req.Method == http.MethodGet {
 			return roleResponse(""), nil
@@ -561,12 +579,34 @@ func TestAuthorizationOfAMissingRegistrationIsNotFound(t *testing.T) {
 		return errorResponse(http.StatusNotFound, roleNotFound), nil
 	})
 	model := authorizationModel()
-	first := resource.HandleCreate(handler.Request{}, client, model)
 
-	event := resource.HandleCreate(callbackRequest(t, first), client, model)
+	event := resource.HandleCreate(handler.Request{}, client, model)
 
 	assertFailed(t, event, types.HandlerErrorCodeNotFound)
 	assert.Same(t, model, event.ResourceModel)
+
+	// A callback whose registration disappears before its authorize request keeps
+	// its model so CloudFormation can roll back.
+	patches := 0
+	retryClient := authorizationClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == http.MethodGet {
+			return roleResponse(""), nil
+		}
+		require.Equal(t, http.MethodPatch, req.Method)
+		patches++
+		if patches == 1 {
+			return errorResponse(http.StatusBadRequest, cannotAssumeRole), nil
+		}
+		return errorResponse(http.StatusNotFound, roleNotFound), nil
+	})
+	pendingModel := authorizationModel()
+	pending := resource.HandleCreate(handler.Request{}, retryClient, pendingModel)
+	require.Equal(t, handler.InProgress, pending.OperationStatus)
+
+	callbackEvent := resource.HandleCreate(callbackRequest(t, pending), retryClient, pendingModel)
+
+	assertFailed(t, callbackEvent, types.HandlerErrorCodeNotFound)
+	assert.Same(t, pendingModel, callbackEvent.ResourceModel)
 }
 
 func authorizationModel() *resource.Model {

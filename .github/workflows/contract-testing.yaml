@@ -150,6 +150,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: &contractTimeout 180
     steps:
       - &checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -195,6 +196,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.alert-configuration == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -218,6 +220,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.api-key == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -242,6 +245,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.auditing == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -268,6 +272,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.backup-compliance-policy == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -292,6 +297,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cloud-backup-restore-jobs == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -321,6 +327,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cloud-provider-access-authorization == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -346,6 +353,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cloud-provider-access-setup == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -369,6 +377,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cluster-outage-simulation == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -392,6 +401,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.database-user == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -415,6 +425,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.encryption-at-rest == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -439,6 +450,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -463,6 +475,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-query-limit == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -488,6 +501,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-settings-identity-provider == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -519,6 +533,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-settings-org-role-mapping == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -543,6 +558,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.flex-cluster == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -568,6 +584,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.log-integration == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -592,6 +609,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.mongodb-employee-access-grant == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -616,6 +634,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.online-archive == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -639,6 +658,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.organization == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -669,6 +689,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.service-account == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -693,6 +714,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.service-account-project-assignment == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -717,6 +739,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.service-account-secret == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -741,6 +764,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.service-account-access-list-entry == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -765,6 +789,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -788,6 +813,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.private-endpoint-service == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -811,6 +837,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.privatelink-endpoint-service-data-federation-online-archive == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -835,6 +862,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -860,6 +888,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project-service-account-secret == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -884,6 +913,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project-service-account == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -908,6 +938,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project-service-account-access-list-entry == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -932,6 +963,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.resource-policy == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -958,6 +990,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.search-deployment == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -981,6 +1014,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.search-index == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 300 # search-index normally runs for about 250 minutes
     steps:
       - *checkout
       - *setup-go
@@ -1004,6 +1038,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -1030,6 +1065,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.stream-instance == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -1051,6 +1087,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.stream-privatelink-endpoint == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -1074,6 +1111,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.stream-processor == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -1097,6 +1135,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.stream-workspace == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go
@@ -1121,6 +1160,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.third-party-integration == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: *contractTimeout
     steps:
       - *checkout
       - *setup-go

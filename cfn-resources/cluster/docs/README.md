@@ -27,6 +27,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#paused" title="Paused">Paused</a>" : <i>Boolean</i>,
         "<a href="#pitenabled" title="PitEnabled">PitEnabled</a>" : <i>Boolean</i>,
+        "<a href="#skipwaitforidle" title="SkipWaitForIdle">SkipWaitForIdle</a>" : <i>Boolean</i>,
         "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="advancedreplicationspec.md">advancedReplicationSpec</a>, ... ]</i>,
         "<a href="#rootcerttype" title="RootCertType">RootCertType</a>" : <i>String</i>,
         "<a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>" : <i>String</i>,
@@ -58,6 +59,7 @@ Properties:
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#paused" title="Paused">Paused</a>: <i>Boolean</i>
     <a href="#pitenabled" title="PitEnabled">PitEnabled</a>: <i>Boolean</i>
+    <a href="#skipwaitforidle" title="SkipWaitForIdle">SkipWaitForIdle</a>: <i>Boolean</i>
     <a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>: <i>
       - <a href="advancedreplicationspec.md">advancedReplicationSpec</a></i>
     <a href="#rootcerttype" title="RootCertType">RootCertType</a>: <i>String</i>
@@ -214,6 +216,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 #### PitEnabled
 
 Flag that indicates whether the cluster uses continuous cloud backups.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SkipWaitForIdle
+
+Flag that indicates whether the operation skips waiting for the cluster to reach IDLE before reporting success. When true, the operation reports success as soon as Atlas accepts the request, while the cluster is still converging. Set this only if your stack exceeds the CloudFormation operation timeout. Atlas failures after the operation reports success are not reported back to CloudFormation.
 
 _Required_: No
 

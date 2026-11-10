@@ -29,7 +29,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"     //nolint:staticcheck // handler.Request.Session requires AWS SDK v1.
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312028/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-access-authorization/cmd/resource"
 	setupresource "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-access-setup/cmd/resource"

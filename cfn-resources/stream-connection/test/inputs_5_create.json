@@ -4,7 +4,7 @@
   "WorkspaceName": "",
   "ConnectionName": "ConnectionNameHttps",
   "Type": "Https",
-  "Url": "https://api.example.com/webhook",
+  "Url": "https://example.com",
   "Headers": {
     "Content-Type": "application/json",
     "Authorization": "Bearer token123"

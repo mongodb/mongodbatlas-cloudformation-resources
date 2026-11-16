@@ -1,0 +1,51 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template authorizes an AWS IAM role against an existing Cloud Provider Access role registration on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id."
+    },
+    "RoleId": {
+      "Type": "String",
+      "Description": "Id of the Cloud Provider Access role registration to authorize. It is returned by MongoDB::Atlas::CloudProviderAccessSetup."
+    },
+    "IamAssumedRoleArn": {
+      "Type": "String",
+      "Description": "ARN of the AWS IAM role that MongoDB Cloud assumes when it accesses resources in your AWS account."
+    },
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys."
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "CloudProviderAccessAuthorization": {
+      "Type": "MongoDB::Atlas::CloudProviderAccessAuthorization",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "RoleId": {
+          "Ref": "RoleId"
+        },
+        "IamAssumedRoleArn": {
+          "Ref": "IamAssumedRoleArn"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AuthorizedDate": {
+      "Description": "Date and time when the role was authorized",
+      "Value": {
+        "Fn::GetAtt": ["CloudProviderAccessAuthorization", "AuthorizedDate"]
+      }
+    }
+  }
+}

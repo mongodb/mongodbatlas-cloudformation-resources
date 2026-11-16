@@ -1,0 +1,32 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::CloudProviderAccessAuthorization
+Parameters:
+  Profile:
+    Description: "Your MongoDB Atlas Profile"
+    Type: String
+    Default: "default"
+  ProjectId:
+    Description: "Your MongoDB Cloud Project Id"
+    Type: String
+    Default: ""
+  RoleId:
+    Description: "Id of the Cloud Provider Access role registration to authorize"
+    Type: String
+    Default: ""
+  IamAssumedRoleArn:
+    Description: "ARN of the AWS IAM role that Atlas assumes"
+    Type: String
+    Default: ""
+Resources:
+  CloudProviderAccessAuthorization:
+    Type: MongoDB::Atlas::CloudProviderAccessAuthorization
+    Properties:
+      ProjectId: !Ref "ProjectId"
+      Profile: !Ref "Profile"
+      RoleId: !Ref "RoleId"
+      IamAssumedRoleArn: !Ref "IamAssumedRoleArn"
+Outputs:
+  AuthorizedDate:
+    Description: "Date and time when the role was authorized"
+    Value: !GetAtt CloudProviderAccessAuthorization.AuthorizedDate

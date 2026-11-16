@@ -20,7 +20,7 @@ keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
 
-roleName="mongodb-test-cloud-backup-export-bucket-role-${keyRegion}"
+roleName="mongodb-atlas-cfn-test-backup-role-${keyRegion}"
 policyName="atlas-cloud-backup-export-bucket-S3-role-policy-${keyRegion}"
 
 pwd
@@ -41,7 +41,7 @@ aws iam delete-role-policy --role-name "$roleName" --policy-name "$policyName"
 aws iam delete-role --role-name "$roleName"
 echo "--------------------------------delete role ends ----------------------------"
 
-bucketName="cloud-backup-snapshot-${CFN_TEST_TAG}-${awsRegion}"
+bucketName="mongodb-atlas-cfn-test-backup-${CFN_TEST_TAG}-${awsRegion}"
 
 aws s3 rb s3://"${bucketName}" --force
 echo "--------------------------------delete bucket ends ----------------------------"

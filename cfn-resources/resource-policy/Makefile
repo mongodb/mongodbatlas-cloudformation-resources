@@ -18,6 +18,9 @@ debug:
 clean:
 	rm -rf bin
 
+submit:
+	$(MAKE) -C ../.. submit $(notdir $(CURDIR))
+
 create-test-resources:
 	@echo "==> Creating test files for contract testing"
 	./test/contract-testing/cfn-test-create-inputs.sh

@@ -8,6 +8,10 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../tag-policy.sh"
+require_tag_policy_vars
+
 profile="dev-cloud-profile"
 orgOwnerId="${MONGODB_ATLAS_ORG_OWNER_ID}"
 
@@ -17,7 +21,7 @@ orgName="${1}"
 awsSecretName="mongodb/atlas/apikey/${orgName}"
 if aws secretsmanager describe-secret --secret-id "${awsSecretName}";then
   echo "aws secret already exists with name : ${awsSecretName}"
-elif aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas org api-keys goes here";then
+elif aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas org api-keys goes here" --tags Key=mongodb-owner,Value="${MONGODB_TAG_OWNER}" Key=mongodb-env,Value="${MONGODB_TAG_ENV}";then
   echo "aws secret created with name : ${awsSecretName}"
 else
   echo "aws secret create failed with name : ${awsSecretName}"

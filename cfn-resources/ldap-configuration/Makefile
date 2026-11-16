@@ -17,3 +17,6 @@ debug:
 
 clean:
 	rm -rf bin
+
+submit:
+	$(MAKE) -C ../.. submit $(notdir $(CURDIR))

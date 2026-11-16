@@ -18,6 +18,10 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../tag-policy.sh"
+require_tag_policy_vars
+
 #set profile
 profile="default"
 if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
@@ -41,7 +45,7 @@ fi
 # create aws secret key
 awsSecretName="mongodb/atlas/apikey/${projectName}"
 aws secretsmanager delete-secret --secret-id "${awsSecretName}" --force-delete-without-recovery 2>/dev/null || true
-if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here"; then
+if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here" --tags Key=mongodb-owner,Value="${MONGODB_TAG_OWNER}" Key=mongodb-env,Value="${MONGODB_TAG_ENV}"; then
 	echo "aws secret created with name : ${awsSecretName}"
 else
 	echo "aws secret create failed with name : ${awsSecretName}"
@@ -52,28 +56,25 @@ project1="${projectName}-1"
 project2="${projectName}-2"
 project3="${projectName}-3"
 
-projectId1=$(atlas projects list --output json | jq --arg NAME "${project1}" -r '.results[] | select(.name==$NAME) | .id')
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
+
+projectId1=$(resolve_project_id "${project1}")
 if [ -z "$projectId1" ]; then
-	projectId1=$(atlas projects create "${project1}" --output=json | jq -r '.id')
-	echo -e "Created project \"${project1}\" with id: ${projectId1}\n"
-else
-	echo -e "FOUND project \"${project1}\" with id: ${projectId1}\n"
+	echo "Failed to create or find project ${project1}" >&2
+	exit 1
 fi
 
-projectId2=$(atlas projects list --output json | jq --arg NAME "${project2}" -r '.results[] | select(.name==$NAME) | .id')
+projectId2=$(resolve_project_id "${project2}")
 if [ -z "$projectId2" ]; then
-	projectId2=$(atlas projects create "${project2}" --output=json | jq -r '.id')
-	echo -e "Created project \"${project2}\" with id: ${projectId2}\n"
-else
-	echo -e "FOUND project \"${project2}\" with id: ${projectId2}\n"
+	echo "Failed to create or find project ${project2}" >&2
+	exit 1
 fi
 
-projectId3=$(atlas projects list --output json | jq --arg NAME "${project3}" -r '.results[] | select(.name==$NAME) | .id')
+projectId3=$(resolve_project_id "${project3}")
 if [ -z "$projectId3" ]; then
-	projectId3=$(atlas projects create "${project3}" --output=json | jq -r '.id')
-	echo -e "Created project \"${project3}\" with id: ${projectId3}\n"
-else
-	echo -e "FOUND project \"${project3}\" with id: ${projectId3}\n"
+	echo "Failed to create or find project ${project3}" >&2
+	exit 1
 fi
 
 # Create assigns 2 projects

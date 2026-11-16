@@ -67,6 +67,9 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	if pe := RejectPauseWithSkipWaitForIdle(currentModel, false); pe != nil {
 		return *pe, nil
 	}
+	// SkipWaitForIdle is write-only, so it must not appear in a returned resource model.
+	skipWaitForIdle := ShouldSkipWaitForIdle(currentModel)
+	currentModel.SkipWaitForIdle = nil
 	clusterRequest, errEvent := setClusterRequest(currentModel)
 	if errEvent != nil {
 		return *errEvent, nil
@@ -76,7 +79,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		return *pe, nil
 	}
 	currentModel.StateName = cluster.StateName
-	if ShouldSkipWaitForIdle(currentModel) {
+	if skipWaitForIdle {
 		if pe := applyAdvancedSettings(client, currentModel); pe != nil {
 			return *pe, nil
 		}
@@ -138,6 +141,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
+	// SkipWaitForIdle is write-only, so it must not appear in a returned resource model.
+	skipWaitForIdle := ShouldSkipWaitForIdle(currentModel)
+	currentModel.SkipWaitForIdle = nil
+
 	// Unpausing must be handled separately from other updates to avoid errors from the API.
 	if pe := handleUnpausingUpdate(client, currentCluster, currentModel); pe != nil {
 		return *pe, nil
@@ -153,7 +160,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if ShouldSkipWaitForIdle(currentModel) {
+	if skipWaitForIdle {
 		if pe := applyAdvancedSettings(client, currentModel); pe != nil {
 			return *pe, nil
 		}
@@ -168,7 +175,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if model.StateName != nil {
 		state = *model.StateName
 	}
-	if ShouldSkipWaitForIdle(model) {
+	if skipWaitForIdle {
 		return reportSuccessWithoutWaiting(client, model)
 	}
 	event := handler.ProgressEvent{

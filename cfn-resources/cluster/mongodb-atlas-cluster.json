@@ -483,6 +483,9 @@
     "/properties/Profile",
     "/properties/GlobalClusterSelfManagedSharding"
   ],
+  "writeOnlyProperties": [
+    "/properties/SkipWaitForIdle"
+  ],
   "primaryIdentifier": [
     "/properties/ProjectId",
     "/properties/Name",

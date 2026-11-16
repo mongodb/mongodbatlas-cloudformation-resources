@@ -18,9 +18,8 @@ debug:
 clean:
 	rm -rf bin
 
-submit: clean build
-	@echo "==> Submitting to private registry for testing"
-	 cfn submit --set-default --region us-east-1
+submit:
+	$(MAKE) -C ../.. submit $(notdir $(CURDIR))
 
 create-test-resources:
 	@echo "==> Creating test files and resources for contract testing"

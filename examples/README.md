@@ -143,6 +143,10 @@ To upgrade an existing `MongoDB::Atlas` resource type you need to: (see [Activat
 ## Using the examples
 Once your prerequisites are configured, use the examples in this folder as a starting template for a resource to quickly create a CloudFormation stack. 
 
+The [Cloud Provider Access guide](cloud-provider-access-authorization/README.md) explains Setup, IAM trust,
+Authorization, and the consuming resources. It includes complete Encryption at Rest and S3 log-export examples,
+plus backup export, Data Federation, and AWS Lambda stream-connection wiring and deletion guidance.
+
 For example, the [cluster example](cluster/project-cluster.json) creates a project & cluster in your MongoDB Atlas organization. The template requires the following properties to be configured:
 - OrgId - The name of the MongoDB Atlas Organization created earlier
 - Profile - The name of the profile that contains your API key information

@@ -24,6 +24,8 @@ set -e
 
 # shellcheck source=/dev/null
 . ./cfn-publishing-helper.config
+# shellcheck source=/dev/null
+source "$(dirname "$0")/tag-policy.sh"
 env | grep CFN_PUBLISH_
 
 _DRY_RUN=${DRY_RUN:-false}
@@ -41,13 +43,24 @@ version="${2:-00000001}"
 
 # Default, find all the directory names with the json custom resource schema files.
 resources="${1:-project}"
+
+# Cloud Tag Policy compliance
+tagOwner="${MONGODB_TAG_OWNER:-}"
+tagEnv="${MONGODB_TAG_ENV:-}"
+
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
 if aws s3api head-bucket --bucket "${_CFN_TEST_LOG_BUCKET}"; then
 	echo "found bucket with ${_CFN_TEST_LOG_BUCKET}"
 else
-	aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+	if [ -n "${tagOwner}" ] && [ -n "${tagEnv}" ]; then
+		region="${AWS_DEFAULT_REGION:-$(aws configure get region || true)}"
+		create_tagged_bucket "${_CFN_TEST_LOG_BUCKET}" "${region:-us-east-1}"
+	else
+		echo "MONGODB_TAG_OWNER/MONGODB_TAG_ENV not set; bucket will be created without Cloud Tag Policy tags"
+		aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+	fi
 fi
 
 for resource in ${resources}; do

@@ -22,6 +22,10 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../tag-policy.sh"
+require_tag_policy_vars
+
 profile="default"
 orgId="${MONGODB_ATLAS_ORG_ID}"
 
@@ -52,7 +56,7 @@ fi
 
 # create aws secret key
 awsSecretName="mongodb/atlas/apikey/${projectName}"
-if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here";then
+if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here" --tags Key=mongodb-owner,Value="${MONGODB_TAG_OWNER}" Key=mongodb-env,Value="${MONGODB_TAG_ENV}";then
   echo "aws secret created with name : ${awsSecretName}"
 else
   echo "aws secret create failed with name : ${awsSecretName}"

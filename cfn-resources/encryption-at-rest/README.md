@@ -55,8 +55,10 @@ cfn invoke DELETE test.request.json
 Both CREATE & DELETE tests must pass.
 
 ## Installation
-TAGS=logging make
-cfn submit --verbose --set-default
+```bash
+make submit
+```
+See [TESTING.md](../../TESTING.md) for the requirements of the submit workflow.
 
 ## Cloudformation Examples
 

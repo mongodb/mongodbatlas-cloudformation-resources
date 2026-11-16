@@ -4,11 +4,11 @@
   "WorkspaceName": "",
   "ConnectionName": "ConnectionNameKafkaOAuth",
   "Type": "Kafka",
-  "BootstrapServers": "pkc-example.us-east-1.aws.confluent.cloud:9092",
+  "BootstrapServers": "example.com:9092",
   "Authentication": {
     "Mechanism": "OAUTHBEARER",
     "Method": "OIDC",
-    "TokenEndpointUrl": "https://oauth.example.com/oauth2/token",
+    "TokenEndpointUrl": "https://your-domain.com/",
     "ClientId": "test-client-id-12345",
     "ClientSecret": "<PASSWORD>",
     "Scope": "read:messages write:messages",

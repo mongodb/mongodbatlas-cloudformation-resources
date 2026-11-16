@@ -4,7 +4,7 @@
   "WorkspaceName": "",
   "ConnectionName": "ConnectionNameKafka",
   "Type": "Kafka",
-  "BootstrapServers": "localhost:9092,localhost:9092",
+  "BootstrapServers": "example.com:9092,example.com:9092",
   "Authentication": {
     "Mechanism": "PLAIN",
     "Username": "user1",

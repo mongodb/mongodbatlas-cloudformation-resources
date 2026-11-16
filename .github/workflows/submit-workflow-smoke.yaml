@@ -1,0 +1,144 @@
+name: 'Submit Workflow Smoke Test'
+
+# Guards the local private-registry submit workflow (root Makefile and the
+# cfn-resources helpers). Runs in seconds, with no AWS credentials and no Go build.
+on:
+  pull_request:
+    paths:
+      - 'Makefile'
+      - 'cfn-resources/*'
+      - 'cfn-resources/autogen/templateMakeFile'
+      - 'cfn-resources/*/Makefile'
+      - '.github/workflows/submit-workflow-smoke.yaml'
+  push:
+    branches:
+      - master
+    paths:
+      - 'Makefile'
+      - 'cfn-resources/*'
+      - 'cfn-resources/autogen/templateMakeFile'
+      - 'cfn-resources/*/Makefile'
+      - '.github/workflows/submit-workflow-smoke.yaml'
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: Every resource Makefile delegates submit to the root Makefile
+        # The resources are the folders with an .rpdk-config file.
+        run: |
+          expected=$(grep -A1 '^submit:$' cfn-resources/autogen/templateMakeFile)
+          mismatched=""
+          for config in cfn-resources/*/.rpdk-config; do
+            makefile="$(dirname "$config")/Makefile"
+            if [ "$(grep -A1 '^submit:$' "$makefile")" != "$expected" ]; then
+              mismatched="$mismatched $makefile"
+            fi
+          done
+          if [ -n "$mismatched" ]; then
+            echo "these Makefiles must use the submit target from cfn-resources/autogen/templateMakeFile:$mismatched"
+            exit 1
+          fi
+      - name: Root submit without a resource prints usage and fails
+        run: |
+          if make submit > "$RUNNER_TEMP/usage.txt" 2>&1; then
+            echo "make submit without a resource must fail"
+            exit 1
+          fi
+          grep -q "Usage: make submit <resource>" "$RUNNER_TEMP/usage.txt"
+      - name: Root submit resolves resource goals without a make error
+        # make -n still executes the submit recipe line that contains $(MAKE); the
+        # sub-make inherits -n and stays dry, so keep that line free of side effects.
+        run: |
+          make -n submit database-user > "$RUNNER_TEMP/dry-run.txt" 2>&1
+          cat "$RUNNER_TEMP/dry-run.txt"
+          if grep -q "No rule to make target" "$RUNNER_TEMP/dry-run.txt"; then
+            echo "a resource name must not be an unresolved make goal"
+            exit 1
+          fi
+          grep -q "SUBMIT_ONLY=true ./cfn-submit-helper.sh database-user" "$RUNNER_TEMP/dry-run.txt"
+          make -n submit database-user cluster > "$RUNNER_TEMP/dry-run-multi.txt" 2>&1
+          cat "$RUNNER_TEMP/dry-run-multi.txt"
+          grep -q "SUBMIT_ONLY=true ./cfn-submit-helper.sh database-user cluster" "$RUNNER_TEMP/dry-run-multi.txt"
+      - name: Helper dry run reports the resource
+        run: |
+          (cd cfn-resources && SUBMIT_ONLY=true DRY_RUN=true ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/helper.txt" 2>&1
+          cat "$RUNNER_TEMP/helper.txt"
+          grep -q "would have run 'cfn submit' on:database-user" "$RUNNER_TEMP/helper.txt"
+      - name: Parallel submit finishes cleaning before building
+        run: |
+          fixture=$(mktemp -d)
+          trap 'rm -rf "$fixture"' EXIT
+          cp Makefile "$fixture/Makefile"
+          mkdir -p "$fixture/cfn-resources/fake"
+          printf '%b\n' \
+            '.PHONY: clean build' \
+            'clean:' \
+            '\t@sleep 1' \
+            '\t@touch clean-complete' \
+            'build:' \
+            '\t@test -f clean-complete' \
+            '\t@touch built' > "$fixture/cfn-resources/fake/Makefile"
+          printf '#!/bin/sh\ntest -f fake/built\n' > "$fixture/cfn-resources/cfn-submit-helper.sh"
+          chmod +x "$fixture/cfn-resources/cfn-submit-helper.sh"
+          make -C "$fixture" -j2 submit fake
+      - name: Default log level builds the release binary
+        run: |
+          mkdir -p "$RUNNER_TEMP/stubs"
+          cat > "$RUNNER_TEMP/stubs/make" <<'STUB'
+          #!/bin/sh
+          echo "make $*" >> "$STUB_LOG"
+          STUB
+          printf '#!/bin/sh\nexit 0\n' > "$RUNNER_TEMP/stubs/curl"
+          chmod +x "$RUNNER_TEMP/stubs/make" "$RUNNER_TEMP/stubs/curl"
+          export STUB_LOG="$RUNNER_TEMP/make-calls.log"
+          : > "$STUB_LOG"
+          (cd cfn-resources && PATH="$RUNNER_TEMP/stubs:$PATH" BUILD_ONLY=true ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/default-build.txt" 2>&1
+          grep -qx "make " "$STUB_LOG"
+          : > "$STUB_LOG"
+          (cd cfn-resources && CFN_SUBMIT_LOG_LEVEL=debug PATH="$RUNNER_TEMP/stubs:$PATH" BUILD_ONLY=true ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/debug-build.txt" 2>&1
+          grep -qx "make debug" "$STUB_LOG"
+          ( unset CFN_SUBMIT_LOG_LEVEL; . cfn-resources/cfn-submit-helper.config && [ "$CFN_SUBMIT_LOG_LEVEL" = "info" ] )
+      - name: Missing tag variables fail before any AWS call
+        run: |
+          mkdir -p "$RUNNER_TEMP/stubs"
+          cat > "$RUNNER_TEMP/stubs/aws" <<'STUB'
+          #!/bin/sh
+          echo "$*" >> "$STUB_LOG"
+          STUB
+          cp "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
+          chmod +x "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
+          export STUB_LOG="$RUNNER_TEMP/stub-calls.log"
+          : > "$STUB_LOG"
+          if (cd cfn-resources && unset MONGODB_TAG_OWNER MONGODB_TAG_ENV && SUBMIT_ONLY=true PATH="$RUNNER_TEMP/stubs:$PATH" ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/tag.txt" 2>&1; then
+            echo "a submit without the Cloud Tag Policy variables must fail"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/tag.txt"
+          grep -q "MONGODB_TAG_OWNER and MONGODB_TAG_ENV must be set" "$RUNNER_TEMP/tag.txt"
+          if [ -s "$STUB_LOG" ]; then
+            echo "no AWS or cfn call may happen before the tag variables are validated"
+            cat "$STUB_LOG"
+            exit 1
+          fi
+      - name: Configured flags reach cfn submit
+        run: |
+          git checkout -- cfn-resources/database-user/resource-role.yaml
+          mkdir -p "$RUNNER_TEMP/stubs"
+          cat > "$RUNNER_TEMP/stubs/aws" <<'STUB'
+          #!/bin/sh
+          echo "$*" >> "$STUB_LOG"
+          STUB
+          cp "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
+          chmod +x "$RUNNER_TEMP/stubs/aws" "$RUNNER_TEMP/stubs/cfn"
+          export STUB_LOG="$RUNNER_TEMP/submit-calls.log"
+          : > "$STUB_LOG"
+          (cd cfn-resources && MONGODB_TAG_OWNER=test-owner MONGODB_TAG_ENV=dev SUBMIT_ONLY=true PATH="$RUNNER_TEMP/stubs:$PATH" ./cfn-submit-helper.sh database-user) > "$RUNNER_TEMP/submit.txt" 2>&1
+          cat "$RUNNER_TEMP/submit.txt"
+          grep -q -- "--set-default" "$STUB_LOG"

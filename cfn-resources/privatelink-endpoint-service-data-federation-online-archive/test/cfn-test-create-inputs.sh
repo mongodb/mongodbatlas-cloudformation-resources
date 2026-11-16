@@ -32,12 +32,13 @@ if [ ${#projectName} -gt 24 ]; then
 fi
 
 region="${AWS_DEFAULT_REGION}"
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+# shellcheck source=/dev/null
+source "$(dirname "$0")/../../project-resolution.sh"
+
+projectId=$(resolve_project_id "${projectName}")
 if [ -z "$projectId" ]; then
-	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
-else
-	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+	echo "Failed to create or find project ${projectName}" >&2
+	exit 1
 fi
 
 id=$(atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json | jq -r '.id')

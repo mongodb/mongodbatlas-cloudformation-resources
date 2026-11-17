@@ -34,18 +34,16 @@ Set `SkipWaitForIdle` to `true` to report success as soon as Atlas accepts the c
 - On create, Atlas has not generated connection strings yet, so a template that reads `ConnectionStrings` with `Fn::GetAtt` fails and the stack rolls back.
 - `SkipWaitForIdle` cannot be combined with pausing the cluster. Apply the pause in a separate update with `SkipWaitForIdle` unset or `false`.
 
-### Disabling stack rollback
+### Recovering from a failed operation
 
-When an Atlas change outlasts the operation timeout, CloudFormation fails the operation and rolls back the stack. The rollback reverts the Atlas change, and for a change such as a shard removal it can leave the cluster in a worse state than the failed operation would have, because the revert runs while the original change is still in flight.
+When an operation fails, what CloudFormation does to the cluster depends on whether the stack operation was a create or an update.
 
-You can prevent that by disabling rollback on the stacks that drive long Atlas changes:
+- On a failed create, CloudFormation deletes the resources it already created, including the cluster. Passing `--disable-rollback` to `aws cloudformation create-stack`, or `--on-failure DO_NOTHING`, keeps them instead and leaves the cluster in a `CREATE_FAILED` state.
+- On a failed update, `--disable-rollback` on `aws cloudformation update-stack` or `aws cloudformation deploy` keeps the resources that updated successfully, but CloudFormation still rolls the resource that failed back to its last known stable state.
 
-- `--disable-rollback` on `aws cloudformation update-stack` and `aws cloudformation deploy`.
-- `--on-failure DO_NOTHING` on `aws cloudformation create-stack`.
+`SkipWaitForIdle` avoids the problem, because the operation completes before the timeout is reached.
 
-The stack still reports the failure and you have to resolve it, for example by correcting the template and redeploying with the same flag. What changes is that the Atlas change runs to completion instead of being reverted.
-
-A stack in `UPDATE_FAILED` accepts further updates only when you pass `--disable-rollback` again, and redeploying the corrected template with it returns the stack to `UPDATE_COMPLETE`. Do not run `rollback-stack` on it, because that reverts the cluster.
+A stack left in `UPDATE_FAILED` accepts further updates only when you pass `--disable-rollback` again, and redeploying the corrected template with it returns the stack to `UPDATE_COMPLETE`.
 
 ## Cloudformation Examples
 

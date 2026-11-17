@@ -112,13 +112,11 @@ func (c *skipWaitTestContext) setupPrerequisites(t *testing.T) {
 		projectID = utility.CreateProject(t, c.atlasClient20231115014, skipWaitOrgID, skipWaitProjectName)
 	}
 
-	// The create and update steps use different read concerns, and cloud-dev accepts only available
-	// and local, so the update assertion proves the fast path applied the change.
 	c.clusterTmplObj = skipWaitTestCluster{
 		Name:               skipWaitClusterName,
 		ProjectID:          projectID,
 		Profile:            skipWaitProfile,
-		DefaultReadConcern: "local",
+		DefaultReadConcern: "available",
 		NodeCount:          3,
 		SkipWaitForIdle:    true,
 		ResourceTypeName:   os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
@@ -156,7 +154,7 @@ func testCreateSkipWaitStack(t *testing.T, c *skipWaitTestContext) {
 func testUpdateSkipWaitStack(t *testing.T, c *skipWaitTestContext) {
 	t.Helper()
 
-	c.clusterTmplObj.DefaultReadConcern = "available"
+	c.clusterTmplObj.DefaultReadConcern = "local"
 	c.clusterTmplObj.NodeCount = 5
 
 	var err error

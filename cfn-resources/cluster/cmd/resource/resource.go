@@ -81,6 +81,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	currentModel.StateName = cluster.StateName
 	if skipWaitForIdle {
 		if pe := applyAdvancedSettings(client, currentModel); pe != nil {
+			pe.ResourceModel = currentModel
 			return *pe, nil
 		}
 		return reportSuccessWithoutWaiting(client, currentModel)
@@ -434,6 +435,7 @@ func applyAdvancedSettings(client *util.MongoDBClient, currentModel *Model) *han
 func reportSuccessWithoutWaiting(client *util.MongoDBClient, currentModel *Model) (handler.ProgressEvent, error) {
 	cluster, resp, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
 	if pe := util.HandleClusterError(err, resp); pe != nil {
+		pe.ResourceModel = currentModel
 		return *pe, nil
 	}
 

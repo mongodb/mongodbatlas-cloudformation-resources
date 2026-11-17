@@ -17,7 +17,6 @@ import (
 	ctx "context"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
@@ -47,8 +46,6 @@ type skipWaitTestCluster struct {
 const (
 	skipWaitCfnTemplatePath = "cluster_skip_wait.json.template"
 	skipWaitIdleStateName   = "IDLE"
-	skipWaitPollInterval    = 30 * time.Second
-	skipWaitPollAttempts    = 60
 )
 
 var (
@@ -150,8 +147,9 @@ func testCreateSkipWaitStack(t *testing.T, c *skipWaitTestContext) {
 	// The fast path reads the cluster once, so Id is populated without waiting for IDLE.
 	assert.NotEmpty(t, getSkipWaitClusterIDFromStack(output))
 
-	// AdvancedSettings are sent right after the create call and survive convergence.
-	waitForSkipWaitClusterIdle(t, c)
+	// AdvancedSettings are sent right after the create call, so they are applied while the cluster is
+	// still converging. Nothing here waits for IDLE: the cluster can take far longer than any fixed
+	// budget to get there, and none of these assertions needs convergence.
 	assert.Equal(t, c.clusterTmplObj.DefaultReadConcern, readSkipWaitProcessArgs(t, c).GetDefaultReadConcern())
 }
 
@@ -171,8 +169,8 @@ func testUpdateSkipWaitStack(t *testing.T, c *skipWaitTestContext) {
 	cluster := readSkipWaitClusterFromAtlas(t, c)
 	assert.NotEqual(t, skipWaitIdleStateName, cluster.GetStateName())
 
-	// AdvancedSettings are sent before the change and survive convergence.
-	waitForSkipWaitClusterIdle(t, c)
+	// AdvancedSettings are sent before the change, and the node count is the requested one, so both
+	// are visible without waiting for the cluster to converge.
 	assert.Equal(t, c.clusterTmplObj.DefaultReadConcern, readSkipWaitProcessArgs(t, c).GetDefaultReadConcern())
 	assert.Equal(t, c.clusterTmplObj.NodeCount, readSkipWaitNodeCount(t, c))
 }
@@ -208,17 +206,6 @@ func readSkipWaitNodeCount(t *testing.T, c *skipWaitTestContext) int {
 	require.NotEmpty(t, regionConfigs)
 	electableSpecs := regionConfigs[0].GetElectableSpecs()
 	return electableSpecs.GetNodeCount()
-}
-
-func waitForSkipWaitClusterIdle(t *testing.T, c *skipWaitTestContext) {
-	t.Helper()
-	for range skipWaitPollAttempts {
-		time.Sleep(skipWaitPollInterval)
-		if readSkipWaitClusterFromAtlas(t, c).GetStateName() == skipWaitIdleStateName {
-			return
-		}
-	}
-	t.Fatalf("Cluster %s did not reach %s", c.clusterTmplObj.Name, skipWaitIdleStateName)
 }
 
 func getSkipWaitClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {

@@ -34,6 +34,18 @@ Set `SkipWaitForIdle` to `true` to report success as soon as Atlas accepts the c
 - On create, Atlas has not generated connection strings yet, so a template that reads `ConnectionStrings` with `Fn::GetAtt` fails and the stack rolls back.
 - `SkipWaitForIdle` cannot be combined with pausing the cluster. Apply the pause in a separate update with `SkipWaitForIdle` unset or `false`.
 
+### Disabling stack rollback
+
+When an Atlas change outlasts the operation timeout, CloudFormation fails the operation and rolls back the stack. The rollback reverts the Atlas change, and for a change such as a shard removal it can leave the cluster in a worse state than the failed operation would have, because the revert runs while the original change is still in flight.
+
+You can prevent that by disabling rollback on the stacks that drive long Atlas changes:
+
+- `--disable-rollback` on `aws cloudformation update-stack` and `aws cloudformation deploy`.
+- `--on-failure DO_NOTHING` on `aws cloudformation create-stack`.
+
+The stack still reports the failure and you have to resolve it, for example by correcting the template and redeploying with the same flag. What changes is that the Atlas change runs to completion instead of being reverted.
+
+A stack in `UPDATE_FAILED` accepts further updates only when you pass `--disable-rollback` again, and redeploying the corrected template with it returns the stack to `UPDATE_COMPLETE`. Do not run `rollback-stack` on it, because that reverts the cluster.
 
 ## Cloudformation Examples
 

@@ -100,6 +100,23 @@ jobs:
           go test -timeout 90m -v -run '^TestClusterPauseCFN$' .    
   
   
+  cluster-skip-wait:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.cluster == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *setup-python
+      - *install-cfn-cli
+      - *setup-go
+      - *aws-credentials
+      - name: Run E2E test
+        shell: bash
+        env: *e2e-test-env
+        run: |
+          cd cfn-resources/test/e2e/cluster
+          go test -timeout 90m -v -run '^TestClusterSkipWaitForIdleCFN$' .
+
   flex-cluster:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.flex-cluster == 'true' }}

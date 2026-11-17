@@ -1,0 +1,58 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Cluster with SkipWaitForIdle, so the stack completes while Atlas is still converging",
+  "Resources": {
+    "Cluster": {
+      "Type": "{{ .ResourceTypeName }}",
+      "Properties": {
+        "Name": "{{ .Name }}",
+        "ProjectId": "{{ .ProjectID }}",
+        "Profile": "{{ .Profile }}",
+{{- if .SkipWaitForIdle }}
+        "SkipWaitForIdle": true,
+{{- end }}
+        "ClusterType": "REPLICASET",
+        "Paused": false,
+        "AdvancedSettings": {
+          "DefaultReadConcern": "{{ .DefaultReadConcern }}",
+          "JavascriptEnabled": "true",
+          "MinimumEnabledTLSProtocol": "TLS1_2"
+        },
+        "ReplicationSpecs": [
+          {
+            "NumShards": 1,
+            "AdvancedRegionConfigs": [
+              {
+                "RegionName": "US_EAST_1",
+                "Priority": 7,
+                "ProviderName": "AWS",
+                "ElectableSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": {{ .NodeCount }}
+                }
+              }
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "env",
+            "Value": "skip-wait"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "MongoDBAtlasClusterID": {
+      "Description": "Cluster Id, populated by the single read the fast path performs",
+      "Value": {
+        "Fn::GetAtt": [
+          "Cluster",
+          "Id"
+        ]
+      }
+    }
+  }
+}

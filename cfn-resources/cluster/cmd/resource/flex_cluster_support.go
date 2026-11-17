@@ -109,6 +109,10 @@ func fillModelForFlex(pe *handler.ProgressEvent, c *Model) {
 	f := pe.ResourceModel.(*flex.Model) // will panic if not a flex model
 	pe.ResourceModel = c
 
+	// SkipWaitForIdle is write-only, so it must not appear in a returned resource model. The flex
+	// paths return before Create and Update clear it, so it is cleared here instead.
+	c.SkipWaitForIdle = nil
+
 	c.Profile = f.Profile
 	c.ProjectId = f.ProjectId
 	c.Name = f.Name

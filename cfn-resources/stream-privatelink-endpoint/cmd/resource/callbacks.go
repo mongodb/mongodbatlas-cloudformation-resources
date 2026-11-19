@@ -48,7 +48,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) h
 	projectID := util.SafeString(model.ProjectId)
 	connectionID := util.SafeString(model.Id)
 
-	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsApi.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
+	streamsPrivateLinkConnection, apiResp, err := client.AtlasSDK.StreamsAPI.GetPrivateLinkConnection(ctx, projectID, connectionID).Execute()
 	notFound := util.StatusNotFound(apiResp)
 
 	if err != nil && !notFound {

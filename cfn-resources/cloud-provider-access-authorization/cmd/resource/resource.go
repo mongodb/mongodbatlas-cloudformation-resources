@@ -247,7 +247,7 @@ func authorizeRole(client *util.MongoDBClient, model *Model, operation string, s
 	roleID := util.SafeString(model.RoleId)
 	arn := util.SafeString(model.IamAssumedRoleArn)
 
-	role, resp, err := client.AtlasSDK.CloudProviderAccessApi.
+	role, resp, err := client.AtlasSDK.CloudProviderAccessAPI.
 		AuthorizeProviderAccessRole(context.Background(), projectID, roleID, &admin.CloudProviderAccessRoleRequestUpdate{
 			ProviderName:      constants.AWS,
 			IamAssumedRoleArn: &arn,

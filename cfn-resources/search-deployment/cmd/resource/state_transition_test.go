@@ -100,12 +100,12 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			mockSearchAPI := mockadmin.NewAtlasSearchApi(t)
+			mockSearchAPI := mockadmin.NewAtlasSearchAPI(t)
 			req := admin.GetClusterSearchDeploymentApiRequest{ApiService: mockSearchAPI}
 			mockSearchAPI.EXPECT().GetClusterSearchDeployment(mock.Anything, dummyProjectID, clusterName).Return(req).Once()
 			mockSearchAPI.EXPECT().GetClusterSearchDeploymentExecute(mock.Anything).Return(tc.respModel, tc.respHTTP, tc.respError).Once()
 
-			client := admin.APIClient{AtlasSearchApi: mockSearchAPI}
+			client := admin.APIClient{AtlasSearchAPI: mockSearchAPI}
 			eventResult := resource.HandleStateTransition(client, &prevModelStateTransition, tc.targetState)
 
 			assert.Equal(t, tc.expectedEventStatus, eventResult.OperationStatus)

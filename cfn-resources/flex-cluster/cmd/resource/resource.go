@@ -162,7 +162,7 @@ func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription2024111
 }
 
 func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) handler.ProgressEvent {
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
+	flexResp, resp, err := client.AtlasSDK.FlexClustersAPI.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
 	notFound := resp != nil && resp.StatusCode == http.StatusNotFound
 	if pe := util.HandleClusterError(err, nil); pe != nil && !notFound {
 		return *pe

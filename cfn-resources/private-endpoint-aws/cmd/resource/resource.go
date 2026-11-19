@@ -121,7 +121,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Id: currentModel.Id,
 	}
 
-	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesAPI.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
 		CloudProvider, *currentModel.EndpointServiceId, &endpointRequest)
 
 	_, response, err := privateEndpointRequest.Execute()
@@ -149,7 +149,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
-	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesAPI.GetPrivateEndpoint(context.Background(), *model.ProjectId,
 		CloudProvider, *model.Id, *model.EndpointServiceId)
 	privateEndpoint, response, err := privateEndpointRequest.Execute()
 
@@ -237,7 +237,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}}, nil
 	}
 
-	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(), *currentModel.ProjectId,
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesAPI.DeletePrivateEndpoint(context.Background(), *currentModel.ProjectId,
 		CloudProvider, *currentModel.Id, *currentModel.EndpointServiceId)
 	response, err := privateEndpointRequest.Execute()
 	if response != nil && response.Body != nil {

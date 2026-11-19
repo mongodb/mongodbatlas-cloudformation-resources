@@ -40,7 +40,7 @@ func getCIDROrIP(model *Model) string {
 
 func newListPageFunc(client *util.MongoDBClient, orgID, clientID string) serviceaccountaccesslist.ListPageFunc {
 	return func(ctx context.Context, pageNum int) (*admin.PaginatedServiceAccountIPAccessEntry, *http.Response, error) {
-		return client.AtlasSDK.ServiceAccountsApi.ListOrgAccessList(ctx, orgID, clientID).
+		return client.AtlasSDK.ServiceAccountsAPI.ListOrgAccessList(ctx, orgID, clientID).
 			PageNum(pageNum).ItemsPerPage(serviceaccountaccesslist.ItemsPerPage).Execute()
 	}
 }
@@ -57,7 +57,7 @@ func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 		},
 	}
 
-	firstPage, apiResp, err := client.AtlasSDK.ServiceAccountsApi.CreateOrgAccessList(ctx, orgID, clientID, &createReq).ItemsPerPage(serviceaccountaccesslist.ItemsPerPage).Execute()
+	firstPage, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.CreateOrgAccessList(ctx, orgID, clientID, &createReq).ItemsPerPage(serviceaccountaccesslist.ItemsPerPage).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -118,7 +118,7 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	clientID := *model.ClientId
 	cidrOrIP := getCIDROrIP(model)
 
-	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteOrgAccessEntry(ctx, orgID, clientID, cidrOrIP).Execute()
+	apiResp, err := client.AtlasSDK.ServiceAccountsAPI.DeleteOrgAccessEntry(ctx, orgID, clientID, cidrOrIP).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}

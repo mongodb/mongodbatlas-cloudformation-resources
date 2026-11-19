@@ -37,7 +37,7 @@ func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 		createReq.SecretExpiresAfterHours = *model.SecretExpiresAfterHours
 	}
 
-	secretResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.CreateOrgSecret(ctx, orgID, clientID, createReq).Execute()
+	secretResp, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.CreateOrgSecret(ctx, orgID, clientID, createReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -57,7 +57,7 @@ func handleRead(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 	clientID := *model.ClientId
 	secretID := *model.SecretId
 
-	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.GetOrgServiceAccount(ctx, orgID, clientID).Execute()
+	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.GetOrgServiceAccount(ctx, orgID, clientID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.READ, err)
 	}
@@ -96,7 +96,7 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	clientID := *model.ClientId
 	secretID := *model.SecretId
 
-	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteOrgSecret(ctx, clientID, secretID, orgID).Execute()
+	apiResp, err := client.AtlasSDK.ServiceAccountsAPI.DeleteOrgSecret(ctx, clientID, secretID, orgID).Execute()
 	if err != nil {
 		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
@@ -119,7 +119,7 @@ func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 	orgID := *model.OrgId
 	clientID := *model.ClientId
 
-	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.GetOrgServiceAccount(ctx, orgID, clientID).Execute()
+	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.GetOrgServiceAccount(ctx, orgID, clientID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.LIST, err)
 	}

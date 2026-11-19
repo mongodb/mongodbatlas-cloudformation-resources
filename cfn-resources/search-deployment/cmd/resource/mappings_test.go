@@ -25,8 +25,8 @@ import (
 type sdkToCFNModelTestCase struct {
 	prevModel     resource.Model
 	expectedModel resource.Model
-	SDKResp       admin.ApiSearchDeploymentResponse
 	name          string
+	SDKResp       admin.ApiSearchDeploymentResponse
 }
 
 const (

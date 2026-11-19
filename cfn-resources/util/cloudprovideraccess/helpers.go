@@ -83,7 +83,7 @@ func MapFeatureUsages[T any](usages *[]admin.CloudProviderAccessFeatureUsage, ma
 
 // GetRole returns the registration with the given id.
 func GetRole(ctx context.Context, client *util.MongoDBClient, projectID, roleID string) (*admin.CloudProviderAccessRole, *http.Response, error) {
-	return client.AtlasSDK.CloudProviderAccessApi.
+	return client.AtlasSDK.CloudProviderAccessAPI.
 		GetCloudProviderAccess(ctx, projectID, roleID).
 		Execute()
 }
@@ -114,7 +114,7 @@ func NotFoundEvent(message string) handler.ProgressEvent {
 // that was removed concurrently, and a failed event otherwise: ResourceConflict when an Atlas
 // feature still uses the role, and the mapped API error for anything else.
 func DeauthorizeRole(ctx context.Context, client *util.MongoDBClient, projectID, roleID string) *handler.ProgressEvent {
-	response, err := client.AtlasSDK.CloudProviderAccessApi.
+	response, err := client.AtlasSDK.CloudProviderAccessAPI.
 		DeauthorizeProviderAccessRole(ctx, projectID, constants.AWS, roleID).
 		Execute()
 	if err == nil || IsRoleNotFound(err, response) {

@@ -105,7 +105,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	currentModel.AutoDeferOnceEnabled = maintenanceWindow.AutoDeferOnceEnabled
-	currentModel.DayOfWeek = &maintenanceWindow.DayOfWeek
+	currentModel.DayOfWeek = maintenanceWindow.DayOfWeek
 	currentModel.HourOfDay = maintenanceWindow.HourOfDay
 	currentModel.StartASAP = maintenanceWindow.StartASAP
 	currentModel.NumberOfDeferrals = maintenanceWindow.NumberOfDeferrals
@@ -215,7 +215,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func (m Model) toAtlasModel() admin.GroupMaintenanceWindow {
 	return admin.GroupMaintenanceWindow{
-		DayOfWeek:            *m.DayOfWeek,
+		DayOfWeek:            m.DayOfWeek,
 		HourOfDay:            m.HourOfDay,
 		StartASAP:            m.StartASAP,
 		AutoDeferOnceEnabled: m.AutoDeferOnceEnabled,

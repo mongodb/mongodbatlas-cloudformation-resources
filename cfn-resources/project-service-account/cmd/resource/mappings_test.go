@@ -50,7 +50,7 @@ func TestNewGroupServiceAccountCreateReq(t *testing.T) {
 				Name:                    "test",
 				Description:             "desc",
 				Roles:                   []string{"GROUP_OWNER", "GROUP_READ_ONLY"},
-				SecretExpiresAfterHours: 720,
+				SecretExpiresAfterHours: new(720),
 			},
 		},
 	}

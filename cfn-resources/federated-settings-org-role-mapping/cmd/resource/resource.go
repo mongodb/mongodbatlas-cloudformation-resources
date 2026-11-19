@@ -224,8 +224,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	models := make([]any, 0)
 	if federatedSettingsOrganizationRoleMappings.Results != nil {
-		for i := range *federatedSettingsOrganizationRoleMappings.Results {
-			roleMappings := *federatedSettingsOrganizationRoleMappings.Results
+		for i := range federatedSettingsOrganizationRoleMappings.Results {
+			roleMappings := federatedSettingsOrganizationRoleMappings.Results
 			model := Model{}
 			model.Profile = currentModel.Profile
 			model.OrgId = currentModel.OrgId
@@ -257,7 +257,7 @@ func modelToRoleMappingRequest(currentModel *Model) (*admin.AuthFederationRoleMa
 	return roleMappingRequest, handler.ProgressEvent{}, nil
 }
 
-func expandRoleAssignments(assignments []RoleAssignment) *[]admin.ConnectedOrgConfigRoleAssignment {
+func expandRoleAssignments(assignments []RoleAssignment) []admin.ConnectedOrgConfigRoleAssignment {
 	roles := make([]admin.ConnectedOrgConfigRoleAssignment, len(assignments))
 	for i := range assignments {
 		role := admin.ConnectedOrgConfigRoleAssignment{}
@@ -275,7 +275,7 @@ func expandRoleAssignments(assignments []RoleAssignment) *[]admin.ConnectedOrgCo
 		roles[i] = role
 	}
 
-	return &roles
+	return roles
 }
 
 func roleMappingToModel(currentModel Model, roleMapping *admin.AuthFederationRoleMapping) *Model {
@@ -290,12 +290,12 @@ func roleMappingToModel(currentModel Model, roleMapping *admin.AuthFederationRol
 	return out
 }
 
-func flattenRoleAssignments(assignments *[]admin.ConnectedOrgConfigRoleAssignment) []RoleAssignment {
+func flattenRoleAssignments(assignments []admin.ConnectedOrgConfigRoleAssignment) []RoleAssignment {
 	roleAssignments := make([]RoleAssignment, 0)
 	if assignments == nil {
 		return roleAssignments
 	}
-	for _, role := range *assignments {
+	for _, role := range assignments {
 		roleAssignments = append(roleAssignments, RoleAssignment{
 			Role:      role.Role,
 			OrgId:     role.OrgId,

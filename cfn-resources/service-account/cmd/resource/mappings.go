@@ -74,7 +74,6 @@ func NewOrgServiceAccountCreateReq(model *Model) *admin.OrgServiceAccountRequest
 	if model.SecretExpiresAfterHours == nil {
 		return nil
 	}
-	secretExpiresAfterHours := *model.SecretExpiresAfterHours
 	roles := make([]string, len(model.Roles))
 	copy(roles, model.Roles)
 	sort.Strings(roles)
@@ -82,7 +81,7 @@ func NewOrgServiceAccountCreateReq(model *Model) *admin.OrgServiceAccountRequest
 		Name:                    *model.Name,
 		Description:             *model.Description,
 		Roles:                   roles,
-		SecretExpiresAfterHours: secretExpiresAfterHours,
+		SecretExpiresAfterHours: model.SecretExpiresAfterHours,
 	}
 }
 

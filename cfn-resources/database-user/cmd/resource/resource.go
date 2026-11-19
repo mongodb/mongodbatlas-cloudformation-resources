@@ -361,7 +361,7 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 	}
 
 	user := &admin.CloudDatabaseUser{
-		Roles:           &roles,
+		Roles:           roles,
 		GroupId:         groupID,
 		Username:        *currentModel.Username,
 		DatabaseName:    *currentModel.DatabaseName,

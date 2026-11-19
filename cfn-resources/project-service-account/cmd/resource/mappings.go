@@ -76,7 +76,6 @@ func NewGroupServiceAccountCreateReq(model *Model) (*admin.GroupServiceAccountRe
 	if model.SecretExpiresAfterHours == nil {
 		return nil, fmt.Errorf("SecretExpiresAfterHours is required")
 	}
-	secretExpiresAfterHours := *model.SecretExpiresAfterHours
 	roles := make([]string, len(model.Roles))
 	copy(roles, model.Roles)
 	sort.Strings(roles)
@@ -84,7 +83,7 @@ func NewGroupServiceAccountCreateReq(model *Model) (*admin.GroupServiceAccountRe
 		Name:                    *model.Name,
 		Description:             *model.Description,
 		Roles:                   roles,
-		SecretExpiresAfterHours: secretExpiresAfterHours,
+		SecretExpiresAfterHours: model.SecretExpiresAfterHours,
 	}, nil
 }
 

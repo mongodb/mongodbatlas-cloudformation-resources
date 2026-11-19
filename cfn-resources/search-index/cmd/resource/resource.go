@@ -360,7 +360,7 @@ func BuildTypeSets(currentModel *Model) (*[]admin.SearchTypeSets, error) {
 			for _, t := range typesList {
 				typesAny = append(typesAny, t)
 			}
-			ts.Types = &typesAny
+			ts.Types = typesAny
 		}
 		typeSets = append(typeSets, ts)
 	}

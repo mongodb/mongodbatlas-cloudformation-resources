@@ -47,7 +47,7 @@ func TestNewOrgServiceAccountCreateReq(t *testing.T) {
 				Name:                    "test",
 				Description:             "desc",
 				Roles:                   []string{"ORG_GROUP_CREATOR", "ORG_MEMBER"},
-				SecretExpiresAfterHours: 720,
+				SecretExpiresAfterHours: new(720),
 			},
 		},
 	}

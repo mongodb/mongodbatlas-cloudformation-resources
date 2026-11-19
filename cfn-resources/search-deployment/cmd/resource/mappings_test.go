@@ -127,10 +127,10 @@ func TestCFNModelToSDK(t *testing.T) {
 				},
 			},
 			expectedSDKReq: admin.ApiSearchDeploymentRequest{
-				Specs: []admin.ApiSearchDeploymentSpec{
+				Specs: []admin.ApiSearchDeploymentRequestSpec{
 					{
 						InstanceSize: instanceSize,
-						NodeCount:    nodeCount,
+						NodeCount:    new(nodeCount),
 					},
 				},
 			},
@@ -146,7 +146,7 @@ func TestCFNModelToSDK(t *testing.T) {
 				Specs:       []resource.ApiSearchDeploymentSpec{},
 			},
 			expectedSDKReq: admin.ApiSearchDeploymentRequest{
-				Specs: []admin.ApiSearchDeploymentSpec{},
+				Specs: []admin.ApiSearchDeploymentRequestSpec{},
 			},
 		},
 	}

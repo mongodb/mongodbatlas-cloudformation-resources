@@ -34,6 +34,16 @@ Set `SkipWaitForIdle` to `true` to report success as soon as Atlas accepts the c
 - On create, Atlas has not generated connection strings yet, so a template that reads `ConnectionStrings` with `Fn::GetAtt` fails and the stack rolls back.
 - `SkipWaitForIdle` cannot be combined with pausing the cluster. Apply the pause in a separate update with `SkipWaitForIdle` unset or `false`.
 
+### Recovering from a failed operation
+
+When an operation fails, what CloudFormation does to the cluster depends on whether the stack operation was a create or an update.
+
+- On a failed create, CloudFormation deletes the resources it already created, including the cluster. Passing `--disable-rollback` to `aws cloudformation create-stack`, or `--on-failure DO_NOTHING`, keeps them instead and leaves the cluster in a `CREATE_FAILED` state.
+- On a failed update, `--disable-rollback` on `aws cloudformation update-stack` or `aws cloudformation deploy` keeps the resources that updated successfully, but CloudFormation still rolls the resource that failed back to its last known stable state.
+
+`SkipWaitForIdle` avoids the problem, because the operation completes before the timeout is reached.
+
+A stack left in `UPDATE_FAILED` accepts further updates only when you pass `--disable-rollback` again, and redeploying the corrected template with it returns the stack to `UPDATE_COMPLETE`.
 
 ## Cloudformation Examples
 

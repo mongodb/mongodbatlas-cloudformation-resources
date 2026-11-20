@@ -31,7 +31,7 @@ func handleCreate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	orgID := model.OrgId
 	serviceAccountReq := NewOrgServiceAccountCreateReq(model)
 
-	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.CreateOrgServiceAccount(ctx, *orgID, serviceAccountReq).Execute()
+	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.CreateOrgServiceAccount(ctx, *orgID, serviceAccountReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -50,7 +50,7 @@ func handleRead(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 	orgID := model.OrgId
 	clientID := model.ClientId
 
-	serviceAccount, apiResp, err := client.AtlasSDK.ServiceAccountsApi.GetOrgServiceAccount(ctx, *orgID, *clientID).Execute()
+	serviceAccount, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.GetOrgServiceAccount(ctx, *orgID, *clientID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.READ, err)
 	}
@@ -75,7 +75,7 @@ func handleUpdate(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	clientID := model.ClientId
 
 	serviceAccountReq := NewOrgServiceAccountUpdateReq(model)
-	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsApi.UpdateOrgServiceAccount(ctx, *clientID, *orgID, serviceAccountReq).Execute()
+	serviceAccountResp, apiResp, err := client.AtlasSDK.ServiceAccountsAPI.UpdateOrgServiceAccount(ctx, *clientID, *orgID, serviceAccountReq).Execute()
 	if err != nil {
 		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{
@@ -106,7 +106,7 @@ func handleDelete(client *util.MongoDBClient, model *Model) handler.ProgressEven
 	orgID := model.OrgId
 	clientID := model.ClientId
 
-	apiResp, err := client.AtlasSDK.ServiceAccountsApi.DeleteOrgServiceAccount(ctx, *clientID, *orgID).Execute()
+	apiResp, err := client.AtlasSDK.ServiceAccountsAPI.DeleteOrgServiceAccount(ctx, *clientID, *orgID).Execute()
 	if err != nil {
 		if util.StatusNotFound(apiResp) {
 			return handler.ProgressEvent{

@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312028/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project-service-account/cmd/resource"
 	"github.com/stretchr/testify/assert"
@@ -50,7 +50,7 @@ func TestNewGroupServiceAccountCreateReq(t *testing.T) {
 				Name:                    "test",
 				Description:             "desc",
 				Roles:                   []string{"GROUP_OWNER", "GROUP_READ_ONLY"},
-				SecretExpiresAfterHours: 720,
+				SecretExpiresAfterHours: new(720),
 			},
 		},
 	}

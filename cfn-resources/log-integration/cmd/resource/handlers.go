@@ -27,7 +27,7 @@ import (
 
 func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	s3LogIntegrationReq := NewLogIntegrationCreateRequest(model)
-	logIntegrationResp, resp, err := client.AtlasSDK.PushBasedLogExportApi.CreateGroupLogIntegration(context.Background(), *model.ProjectId, s3LogIntegrationReq).Execute()
+	logIntegrationResp, resp, err := client.AtlasSDK.PushBasedLogExportAPI.CreateGroupLogIntegration(context.Background(), *model.ProjectId, s3LogIntegrationReq).Execute()
 	if err != nil {
 		return handleError(resp, err, "Error creating log integration")
 	}
@@ -41,7 +41,7 @@ func HandleCreate(req *handler.Request, client *util.MongoDBClient, model *Model
 }
 
 func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	logIntegrationResp, resp, err := client.AtlasSDK.PushBasedLogExportApi.GetGroupLogIntegration(context.Background(), *model.ProjectId, *model.IntegrationId).Execute()
+	logIntegrationResp, resp, err := client.AtlasSDK.PushBasedLogExportAPI.GetGroupLogIntegration(context.Background(), *model.ProjectId, *model.IntegrationId).Execute()
 	if err != nil {
 		return handleError(resp, err, "Error reading log integration")
 	}
@@ -56,7 +56,7 @@ func HandleRead(req *handler.Request, client *util.MongoDBClient, model *Model) 
 
 func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
 	logIntegrationReq := NewLogIntegrationUpdateRequest(model)
-	logIntegrationResp, resp, err := client.AtlasSDK.PushBasedLogExportApi.UpdateGroupLogIntegration(context.Background(), *model.ProjectId, *model.IntegrationId, logIntegrationReq).Execute()
+	logIntegrationResp, resp, err := client.AtlasSDK.PushBasedLogExportAPI.UpdateGroupLogIntegration(context.Background(), *model.ProjectId, *model.IntegrationId, logIntegrationReq).Execute()
 	if err != nil {
 		return handleError(resp, err, "Error updating log integration")
 	}
@@ -70,7 +70,7 @@ func HandleUpdate(req *handler.Request, client *util.MongoDBClient, model *Model
 }
 
 func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	resp, err := client.AtlasSDK.PushBasedLogExportApi.DeleteGroupLogIntegration(context.Background(), *model.ProjectId, *model.IntegrationId).Execute()
+	resp, err := client.AtlasSDK.PushBasedLogExportAPI.DeleteGroupLogIntegration(context.Background(), *model.ProjectId, *model.IntegrationId).Execute()
 	if err != nil {
 		return handleError(resp, err, "Error deleting log integration")
 	}
@@ -82,7 +82,7 @@ func HandleDelete(req *handler.Request, client *util.MongoDBClient, model *Model
 }
 
 func HandleList(req *handler.Request, client *util.MongoDBClient, model *Model) handler.ProgressEvent {
-	paginatedResp, resp, err := client.AtlasSDK.PushBasedLogExportApi.ListGroupLogIntegrations(context.Background(), *model.ProjectId).Execute()
+	paginatedResp, resp, err := client.AtlasSDK.PushBasedLogExportAPI.ListGroupLogIntegrations(context.Background(), *model.ProjectId).Execute()
 	if err != nil {
 		return handleError(resp, err, "Error listing log integrations")
 	}

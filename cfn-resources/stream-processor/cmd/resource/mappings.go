@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312028/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
@@ -51,15 +51,15 @@ func ConvertStatsToString(stats any) (string, error) {
 	return string(statsJSON), nil
 }
 
-func NewStreamProcessorReq(model *Model) (*admin.StreamsProcessor, error) {
+func NewStreamProcessorReq(model *Model) (*admin.StreamsProcessorRequest, error) {
 	pipeline, err := ConvertPipelineToSdk(util.SafeString(model.Pipeline))
 	if err != nil {
 		return nil, err
 	}
 
-	streamProcessor := &admin.StreamsProcessor{
-		Name:     model.ProcessorName,
-		Pipeline: &pipeline,
+	streamProcessor := &admin.StreamsProcessorRequest{
+		Name:     util.SafeString(model.ProcessorName),
+		Pipeline: pipeline,
 	}
 
 	if model.Options != nil && model.Options.Dlq != nil {

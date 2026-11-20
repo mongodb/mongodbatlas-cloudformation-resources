@@ -19,7 +19,7 @@ import (
 	"errors"
 	"fmt"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312028/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func HandleCreate(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	roleRequest := &admin.CloudProviderAccessRoleRequest{ProviderName: constants.AWS}
 
-	role, response, err := client.AtlasSDK.CloudProviderAccessApi.
+	role, response, err := client.AtlasSDK.CloudProviderAccessAPI.
 		CreateCloudProviderAccess(context.Background(), *currentModel.ProjectId, roleRequest).
 		Execute()
 	if err != nil {
@@ -204,7 +204,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // HandleList returns the project's AWS Cloud Provider Access roles.
 func HandleList(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-	roles, response, err := client.AtlasSDK.CloudProviderAccessApi.
+	roles, response, err := client.AtlasSDK.CloudProviderAccessAPI.
 		ListCloudProviderAccess(context.Background(), *currentModel.ProjectId).
 		Execute()
 	if err != nil {

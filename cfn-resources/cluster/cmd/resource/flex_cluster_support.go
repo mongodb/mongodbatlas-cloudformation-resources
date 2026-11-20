@@ -44,7 +44,7 @@ func clusterToFlexModelIdentifier(req *handler.Request, client *util.MongoDBClie
 	if flex.IsCallback(req) {
 		return f // flex operation in progress
 	}
-	_, _, errCluster := client.AtlasSDK.ClustersApi.GetCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
+	_, _, errCluster := client.AtlasSDK.ClustersAPI.GetCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
 	if errCluster != nil && strings.Contains(errCluster.Error(), "CANNOT_USE_FLEX_CLUSTER_IN_CLUSTER_API") {
 		return f
 	}

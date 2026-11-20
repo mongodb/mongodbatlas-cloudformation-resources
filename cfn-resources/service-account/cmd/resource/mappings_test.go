@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312028/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/service-account/cmd/resource"
 	"github.com/stretchr/testify/assert"
@@ -47,7 +47,7 @@ func TestNewOrgServiceAccountCreateReq(t *testing.T) {
 				Name:                    "test",
 				Description:             "desc",
 				Roles:                   []string{"ORG_GROUP_CREATOR", "ORG_MEMBER"},
-				SecretExpiresAfterHours: 720,
+				SecretExpiresAfterHours: new(720),
 			},
 		},
 	}

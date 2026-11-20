@@ -24,7 +24,7 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 
-	"go.mongodb.org/atlas-sdk/v20250312013/admin"
+	"go.mongodb.org/atlas-sdk/v20250312028/admin"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/cloudprovideraccess"
@@ -247,7 +247,7 @@ func authorizeRole(client *util.MongoDBClient, model *Model, operation string, s
 	roleID := util.SafeString(model.RoleId)
 	arn := util.SafeString(model.IamAssumedRoleArn)
 
-	role, resp, err := client.AtlasSDK.CloudProviderAccessApi.
+	role, resp, err := client.AtlasSDK.CloudProviderAccessAPI.
 		AuthorizeProviderAccessRole(context.Background(), projectID, roleID, &admin.CloudProviderAccessRoleRequestUpdate{
 			ProviderName:      constants.AWS,
 			IamAssumedRoleArn: &arn,

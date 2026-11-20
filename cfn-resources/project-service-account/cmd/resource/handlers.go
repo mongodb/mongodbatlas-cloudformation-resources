@@ -129,7 +129,7 @@ func handleList(client *util.MongoDBClient, model *Model) handler.ProgressEvent 
 	for pageNum := 1; ; pageNum++ {
 		listParams := &admin.ListGroupServiceAccountsApiParams{
 			GroupId:      projectID,
-			ItemsPerPage: util.Pointer(itemsPerPage),
+			ItemsPerPage: new(itemsPerPage),
 			PageNum:      new(pageNum),
 		}
 		serviceAccounts, apiResp, err := client.AtlasSDK.ServiceAccountsApi.ListGroupServiceAccountsWithParams(ctx, listParams).Execute()

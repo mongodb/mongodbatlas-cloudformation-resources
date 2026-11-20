@@ -230,7 +230,7 @@ func getAllStreamConnections(ctx context.Context, conn *admin.APIClient, project
 		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
 			GroupId:      projectID,
 			TenantName:   workspaceOrInstanceName,
-			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),
+			ItemsPerPage: new(constants.DefaultListItemsPerPage),
 			PageNum:      new(pageNum),
 		}).Execute()
 
